@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{14988279-62A5-4751-A9F8-6F38EAC45EE2}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>PokemonGame</RootNamespace>
+    <AssemblyName>PokemonGame</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.4.1.0, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Constants\TypeEffectivenessChartConstants.cs" />
+    <Compile Include="Enums\StatusType.cs" />
+    <Compile Include="Interface\IBattleParticipant.cs" />
+    <Compile Include="Interface\ICatchable.cs" />
+    <Compile Include="Interface\IEvolvable.cs" />
+    <Compile Include="Interface\Ipokemon.cs" />
+    <Compile Include="Interface\IStatusAffectable.cs" />
+    <Compile Include="Interface\ITyeable.cs" />
+    <Compile Include="Model\Data\MoveData.cs" />
+    <Compile Include="Model\Data\RouteData.cs" />
+    <Compile Include="Model\GameDataMannager.cs" />
+    <Compile Include="Interface\IMove.cs" />
+    <Compile Include="Interface\IStatValues.cs" />
+    <Compile Include="Model\PokemonCreation\WildPokemonGenartion.cs" />
+    <Compile Include="Model\RouteEncounterChooser.cs" />
+    <Compile Include="Model\TypeEffectivenessChart.cs" />
+    <Compile Include="Enums\PokemonType.cs" />
+    <Compile Include="Model\Data\MapData.cs" />
+    <Compile Include="Model\Data\PokemonData.cs" />
+    <Compile Include="ViewModel\GameViewModel.cs" />
+    <Compile Include="ViewModel\PokemonStatsViewModel .cs" />
+    <Compile Include="Views\PokemonStatsView.xaml.cs">
+      <DependentUpon>PokemonStatsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RadarChartControl.xaml.cs">
+      <DependentUpon>RadarChartControl.xaml</DependentUpon>
+    </Compile>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enums\TileType.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Views\PokemonStatsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RadarChartControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Model\GameMap.cs" />
+    <Compile Include="Model\Tile.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="resources\Moves.json" />
+    <None Include="resources\Routes.json" />
+    <Resource Include="resources\Maps.Json">
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="resources\Pokemons.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GenOnePokemon\1.png" />
+    <Resource Include="Images\GenOnePokemon\10.png" />
+    <Resource Include="Images\GenOnePokemon\100.png" />
+    <Resource Include="Images\GenOnePokemon\101.png" />
+    <Resource Include="Images\GenOnePokemon\102.png" />
+    <Resource Include="Images\GenOnePokemon\103.png" />
+    <Resource Include="Images\GenOnePokemon\104.png" />
+    <Resource Include="Images\GenOnePokemon\105.png" />
+    <Resource Include="Images\GenOnePokemon\106.png" />
+    <Resource Include="Images\GenOnePokemon\107.png" />
+    <Resource Include="Images\GenOnePokemon\108.png" />
+    <Resource Include="Images\GenOnePokemon\109.png" />
+    <Resource Include="Images\GenOnePokemon\11.png" />
+    <Resource Include="Images\GenOnePokemon\110.png" />
+    <Resource Include="Images\GenOnePokemon\111.png" />
+    <Resource Include="Images\GenOnePokemon\112.png" />
+    <Resource Include="Images\GenOnePokemon\113.png" />
+    <Resource Include="Images\GenOnePokemon\114.png" />
+    <Resource Include="Images\GenOnePokemon\115.png" />
+    <Resource Include="Images\GenOnePokemon\116.png" />
+    <Resource Include="Images\GenOnePokemon\117.png" />
+    <Resource Include="Images\GenOnePokemon\118.png" />
+    <Resource Include="Images\GenOnePokemon\119.png" />
+    <Resource Include="Images\GenOnePokemon\12.png" />
+    <Resource Include="Images\GenOnePokemon\120.png" />
+    <Resource Include="Images\GenOnePokemon\121.png" />
+    <Resource Include="Images\GenOnePokemon\122.png" />
+    <Resource Include="Images\GenOnePokemon\123.png" />
+    <Resource Include="Images\GenOnePokemon\124.png" />
+    <Resource Include="Images\GenOnePokemon\125.png" />
+    <Resource Include="Images\GenOnePokemon\126.png" />
+    <Resource Include="Images\GenOnePokemon\127.png" />
+    <Resource Include="Images\GenOnePokemon\128.png" />
+    <Resource Include="Images\GenOnePokemon\129.png" />
+    <Resource Include="Images\GenOnePokemon\13.png" />
+    <Resource Include="Images\GenOnePokemon\130.png" />
+    <Resource Include="Images\GenOnePokemon\131.png" />
+    <Resource Include="Images\GenOnePokemon\132.png" />
+    <Resource Include="Images\GenOnePokemon\133.png" />
+    <Resource Include="Images\GenOnePokemon\134.png" />
+    <Resource Include="Images\GenOnePokemon\135.png" />
+    <Resource Include="Images\GenOnePokemon\136.png" />
+    <Resource Include="Images\GenOnePokemon\137.png" />
+    <Resource Include="Images\GenOnePokemon\138.png" />
+    <Resource Include="Images\GenOnePokemon\139.png" />
+    <Resource Include="Images\GenOnePokemon\14.png" />
+    <Resource Include="Images\GenOnePokemon\140.png" />
+    <Resource Include="Images\GenOnePokemon\141.png" />
+    <Resource Include="Images\GenOnePokemon\142.png" />
+    <Resource Include="Images\GenOnePokemon\143.png" />
+    <Resource Include="Images\GenOnePokemon\144.png" />
+    <Resource Include="Images\GenOnePokemon\145.png" />
+    <Resource Include="Images\GenOnePokemon\146.png" />
+    <Resource Include="Images\GenOnePokemon\147.png" />
+    <Resource Include="Images\GenOnePokemon\148.png" />
+    <Resource Include="Images\GenOnePokemon\149.png" />
+    <Resource Include="Images\GenOnePokemon\15.png" />
+    <Resource Include="Images\GenOnePokemon\150.png" />
+    <Resource Include="Images\GenOnePokemon\151.png" />
+    <Resource Include="Images\GenOnePokemon\16.png" />
+    <Resource Include="Images\GenOnePokemon\17.png" />
+    <Resource Include="Images\GenOnePokemon\18.png" />
+    <Resource Include="Images\GenOnePokemon\19.png" />
+    <Resource Include="Images\GenOnePokemon\2.png" />
+    <Resource Include="Images\GenOnePokemon\20.png" />
+    <Resource Include="Images\GenOnePokemon\21.png" />
+    <Resource Include="Images\GenOnePokemon\22.png" />
+    <Resource Include="Images\GenOnePokemon\23.png" />
+    <Resource Include="Images\GenOnePokemon\24.png" />
+    <Resource Include="Images\GenOnePokemon\25.png" />
+    <Resource Include="Images\GenOnePokemon\26.png" />
+    <Resource Include="Images\GenOnePokemon\27.png" />
+    <Resource Include="Images\GenOnePokemon\28.png" />
+    <Resource Include="Images\GenOnePokemon\29.png" />
+    <Resource Include="Images\GenOnePokemon\3.png" />
+    <Resource Include="Images\GenOnePokemon\30.png" />
+    <Resource Include="Images\GenOnePokemon\31.png" />
+    <Resource Include="Images\GenOnePokemon\32.png" />
+    <Resource Include="Images\GenOnePokemon\33.png" />
+    <Resource Include="Images\GenOnePokemon\34.png" />
+    <Resource Include="Images\GenOnePokemon\35.png" />
+    <Resource Include="Images\GenOnePokemon\36.png" />
+    <Resource Include="Images\GenOnePokemon\37.png" />
+    <Resource Include="Images\GenOnePokemon\38.png" />
+    <Resource Include="Images\GenOnePokemon\39.png" />
+    <Resource Include="Images\GenOnePokemon\4.png" />
+    <Resource Include="Images\GenOnePokemon\40.png" />
+    <Resource Include="Images\GenOnePokemon\41.png" />
+    <Resource Include="Images\GenOnePokemon\42.png" />
+    <Resource Include="Images\GenOnePokemon\43.png" />
+    <Resource Include="Images\GenOnePokemon\44.png" />
+    <Resource Include="Images\GenOnePokemon\45.png" />
+    <Resource Include="Images\GenOnePokemon\46.png" />
+    <Resource Include="Images\GenOnePokemon\47.png" />
+    <Resource Include="Images\GenOnePokemon\48.png" />
+    <Resource Include="Images\GenOnePokemon\49.png" />
+    <Resource Include="Images\GenOnePokemon\5.png" />
+    <Resource Include="Images\GenOnePokemon\50.png" />
+    <Resource Include="Images\GenOnePokemon\51.png" />
+    <Resource Include="Images\GenOnePokemon\52.png" />
+    <Resource Include="Images\GenOnePokemon\53.png" />
+    <Resource Include="Images\GenOnePokemon\54.png" />
+    <Resource Include="Images\GenOnePokemon\55.png" />
+    <Resource Include="Images\GenOnePokemon\56.png" />
+    <Resource Include="Images\GenOnePokemon\57.png" />
+    <Resource Include="Images\GenOnePokemon\58.png" />
+    <Resource Include="Images\GenOnePokemon\59.png" />
+    <Resource Include="Images\GenOnePokemon\6.png" />
+    <Resource Include="Images\GenOnePokemon\60.png" />
+    <Resource Include="Images\GenOnePokemon\61.png" />
+    <Resource Include="Images\GenOnePokemon\62.png" />
+    <Resource Include="Images\GenOnePokemon\63.png" />
+    <Resource Include="Images\GenOnePokemon\64.png" />
+    <Resource Include="Images\GenOnePokemon\65.png" />
+    <Resource Include="Images\GenOnePokemon\66.png" />
+    <Resource Include="Images\GenOnePokemon\67.png" />
+    <Resource Include="Images\GenOnePokemon\68.png" />
+    <Resource Include="Images\GenOnePokemon\69.png" />
+    <Resource Include="Images\GenOnePokemon\7.png" />
+    <Resource Include="Images\GenOnePokemon\70.png" />
+    <Resource Include="Images\GenOnePokemon\71.png" />
+    <Resource Include="Images\GenOnePokemon\72.png" />
+    <Resource Include="Images\GenOnePokemon\73.png" />
+    <Resource Include="Images\GenOnePokemon\74.png" />
+    <Resource Include="Images\GenOnePokemon\75.png" />
+    <Resource Include="Images\GenOnePokemon\76.png" />
+    <Resource Include="Images\GenOnePokemon\77.png" />
+    <Resource Include="Images\GenOnePokemon\78.png" />
+    <Resource Include="Images\GenOnePokemon\79.png" />
+    <Resource Include="Images\GenOnePokemon\8.png" />
+    <Resource Include="Images\GenOnePokemon\80.png" />
+    <Resource Include="Images\GenOnePokemon\81.png" />
+    <Resource Include="Images\GenOnePokemon\82.png" />
+    <Resource Include="Images\GenOnePokemon\83.png" />
+    <Resource Include="Images\GenOnePokemon\84.png" />
+    <Resource Include="Images\GenOnePokemon\85.png" />
+    <Resource Include="Images\GenOnePokemon\86.png" />
+    <Resource Include="Images\GenOnePokemon\87.png" />
+    <Resource Include="Images\GenOnePokemon\88.png" />
+    <Resource Include="Images\GenOnePokemon\89.png" />
+    <Resource Include="Images\GenOnePokemon\9.png" />
+    <Resource Include="Images\GenOnePokemon\90.png" />
+    <Resource Include="Images\GenOnePokemon\91.png" />
+    <Resource Include="Images\GenOnePokemon\92.png" />
+    <Resource Include="Images\GenOnePokemon\93.png" />
+    <Resource Include="Images\GenOnePokemon\94.png" />
+    <Resource Include="Images\GenOnePokemon\95.png" />
+    <Resource Include="Images\GenOnePokemon\96.png" />
+    <Resource Include="Images\GenOnePokemon\97.png" />
+    <Resource Include="Images\GenOnePokemon\98.png" />
+    <Resource Include="Images\GenOnePokemon\99.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\TallGrass.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\road.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

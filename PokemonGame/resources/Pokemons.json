@@ -1,0 +1,1585 @@
+{
+  "Starters": [
+    {
+      "Number": 1,
+      "Level": 1,
+      "Name": "Bulbasaur",
+      "type1": "Grass",
+      "type2": "Poison",
+      "Ability1": "Overgrow",
+      "Ability2": "None",
+      "HiddenAbility": "Chlorophyll",
+      "HP": 45,
+      "Attack": 49,
+      "Defense": 49,
+      "SpAtk": 65,
+      "SpDef": 65,
+      "Speed": 45,
+      "CatchRate": 45,
+      "BaseFriendship": 50,
+      "baseExp": 64,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 4,
+          "Move": "Growl"
+        },
+        {
+          "Level": 7,
+          "Move": "Leech Seed"
+        },
+        {
+          "Level": 10,
+          "Move": "Vine Whip"
+        },
+        {
+          "Level": 15,
+          "Move": "Poison Powder"
+        },
+        {
+          "Level": 15,
+          "Move": "Sleep Powder"
+        },
+        {
+          "Level": 20,
+          "Move": "Razor Leaf"
+        },
+        {
+          "Level": 25,
+          "Move": "Sweet Scent"
+        },
+        {
+          "Level": 32,
+          "Move": "Growth"
+        },
+        {
+          "Level": 39,
+          "Move": "Synthesis"
+        },
+        {
+          "Level": 46,
+          "Move": "Solar Beam"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 16,
+          "Evolution": 2
+        }
+      ]
+    },
+    {
+      "Number": 2,
+      "Level": 16,
+      "Name": "Ivysaur",
+      "type1": "Grass",
+      "type2": "Poison",
+      "Ability1": "Overgrow",
+      "Ability2": "None",
+      "HiddenAbility": "Chlorophyll",
+      "HP": 60,
+      "Attack": 62,
+      "Defense": 63,
+      "SpAtk": 80,
+      "SpDef": 80,
+      "Speed": 60,
+      "CatchRate": 45,
+      "BaseFriendship": 50,
+      "baseExp": 142,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 1,
+          "Move": "Growl"
+        },
+        {
+          "Level": 1,
+          "Move": "Leech Seed"
+        },
+        {
+          "Level": 1,
+          "Move": "Vine Whip"
+        },
+        {
+          "Level": 15,
+          "Move": "Poison Powder"
+        },
+        {
+          "Level": 15,
+          "Move": "Sleep Powder"
+        },
+        {
+          "Level": 20,
+          "Move": "Razor Leaf"
+        },
+        {
+          "Level": 25,
+          "Move": "Sweet Scent"
+        },
+        {
+          "Level": 30,
+          "Move": "Growth"
+        },
+        {
+          "Level": 35,
+          "Move": "Synthesis"
+        },
+        {
+          "Level": 40,
+          "Move": "Worry Seed"
+        },
+        {
+          "Level": 45,
+          "Move": "Power Whip"
+        },
+        {
+          "Level": 50,
+          "Move": "Solar Beam"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 32,
+          "Evolution": 3
+        }
+      ]
+    },
+    {
+      "Number": 3,
+      "Level": 32,
+      "Name": "Venusaur",
+      "type1": "Grass",
+      "type2": "Poison",
+      "Ability1": "Overgrow",
+      "Ability2": "None",
+      "HiddenAbility": "Chlorophyll",
+      "HP": 80,
+      "Attack": 82,
+      "Defense": 83,
+      "SpAtk": 100,
+      "SpDef": 100,
+      "Speed": 80,
+      "CatchRate": 45,
+      "BaseFriendship": 50,
+      "baseExp": 236,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 1,
+          "Move": "Growl"
+        },
+        {
+          "Level": 1,
+          "Move": "Leech Seed"
+        },
+        {
+          "Level": 1,
+          "Move": "Vine Whip"
+        },
+        {
+          "Level": 15,
+          "Move": "Poison Powder"
+        },
+        {
+          "Level": 15,
+          "Move": "Sleep Powder"
+        },
+        {
+          "Level": 20,
+          "Move": "Razor Leaf"
+        },
+        {
+          "Level": 25,
+          "Move": "Sweet Scent"
+        },
+        {
+          "Level": 30,
+          "Move": "Growth"
+        },
+        {
+          "Level": 35,
+          "Move": "Synthesis"
+        },
+        {
+          "Level": 40,
+          "Move": "Worry Seed"
+        },
+        {
+          "Level": 45,
+          "Move": "Power Whip"
+        },
+        {
+          "Level": 50,
+          "Move": "Solar Beam"
+        },
+        {
+          "Level": 55,
+          "Move": "Petal Blizzard"
+        },
+        {
+          "Level": 60,
+          "Move": "Earthquake"
+        }
+      ],
+      "Evolution": []
+    },
+    {
+      "Number": 4,
+      "Level": 1,
+      "Name": "Charmander",
+      "type1": "Fire",
+      "type2": "None",
+      "Ability1": "Blaze",
+      "Ability2": "None",
+      "HiddenAbility": "Solar Power",
+      "HP": 39,
+      "Attack": 52,
+      "Defense": 43,
+      "SpAtk": 60,
+      "SpDef": 50,
+      "Speed": 65,
+      "CatchRate": 45,
+      "BaseFriendship": 70,
+      "baseExp": 62,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Scratch"
+        },
+        {
+          "Level": 1,
+          "Move": "Growl"
+        },
+        {
+          "Level": 4,
+          "Move": "Ember"
+        },
+        {
+          "Level": 8,
+          "Move": "Smokescreen"
+        },
+        {
+          "Level": 12,
+          "Move": "Dragon Breath"
+        },
+        {
+          "Level": 17,
+          "Move": "Fire Fang"
+        },
+        {
+          "Level": 20,
+          "Move": "Slash"
+        },
+        {
+          "Level": 24,
+          "Move": "Flamethrower"
+        },
+        {
+          "Level": 28,
+          "Move": "Scary Face"
+        },
+        {
+          "Level": 32,
+          "Move": "Fire Spin"
+        },
+        {
+          "Level": 36,
+          "Move": "Inferno"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 16,
+          "Evolution": 5
+        }
+      ]
+    },
+    {
+      "Number": 5,
+      "Level": 16,
+      "Name": "Charmeleon",
+      "type1": "Fire",
+      "type2": "None",
+      "Ability1": "Blaze",
+      "Ability2": "None",
+      "HiddenAbility": "Solar Power",
+      "HP": 58,
+      "Attack": 64,
+      "Defense": 58,
+      "SpAtk": 80,
+      "SpDef": 65,
+      "Speed": 80,
+      "CatchRate": 45,
+      "BaseFriendship": 70,
+      "baseExp": 142,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Scratch"
+        },
+        {
+          "Level": 1,
+          "Move": "Growl"
+        },
+        {
+          "Level": 4,
+          "Move": "Ember"
+        },
+        {
+          "Level": 8,
+          "Move": "Smokescreen"
+        },
+        {
+          "Level": 12,
+          "Move": "Dragon Breath"
+        },
+        {
+          "Level": 17,
+          "Move": "Fire Fang"
+        },
+        {
+          "Level": 20,
+          "Move": "Slash"
+        },
+        {
+          "Level": 24,
+          "Move": "Flamethrower"
+        },
+        {
+          "Level": 28,
+          "Move": "Scary Face"
+        },
+        {
+          "Level": 32,
+          "Move": "Fire Spin"
+        },
+        {
+          "Level": 36,
+          "Move": "Inferno"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 36,
+          "Evolution": 6
+        }
+      ]
+    },
+    {
+      "Number": 6,
+      "Level": 36,
+      "Name": "Charizard",
+      "type1": "Fire",
+      "type2": "Flying",
+      "Ability1": "Blaze",
+      "Ability2": "None",
+      "HiddenAbility": "Solar Power",
+      "HP": 78,
+      "Attack": 84,
+      "Defense": 78,
+      "SpAtk": 109,
+      "SpDef": 85,
+      "Speed": 100,
+      "CatchRate": 45,
+      "BaseFriendship": 70,
+      "baseExp": 240,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Scratch"
+        },
+        {
+          "Level": 1,
+          "Move": "Growl"
+        },
+        {
+          "Level": 4,
+          "Move": "Ember"
+        },
+        {
+          "Level": 8,
+          "Move": "Smokescreen"
+        },
+        {
+          "Level": 12,
+          "Move": "Dragon Breath"
+        },
+        {
+          "Level": 17,
+          "Move": "Fire Fang"
+        },
+        {
+          "Level": 20,
+          "Move": "Slash"
+        },
+        {
+          "Level": 24,
+          "Move": "Flamethrower"
+        },
+        {
+          "Level": 28,
+          "Move": "Scary Face"
+        },
+        {
+          "Level": 32,
+          "Move": "Fire Spin"
+        },
+        {
+          "Level": 36,
+          "Move": "Inferno"
+        },
+        {
+          "Level": 41,
+          "Move": "Heat Wave"
+        },
+        {
+          "Level": 47,
+          "Move": "Flare Blitz"
+        }
+      ],
+      "Evolution": []
+    },
+    {
+      "Number": 7,
+      "Level": 1,
+      "Name": "Squirtle",
+      "type1": "Water",
+      "type2": "None",
+      "Ability1": "Torrent",
+      "Ability2": "None",
+      "HiddenAbility": "Rain Dish",
+      "HP": 44,
+      "Attack": 48,
+      "Defense": 65,
+      "SpAtk": 50,
+      "SpDef": 64,
+      "Speed": 43,
+      "CatchRate": 45,
+      "BaseFriendship": 70,
+      "baseExp": 63,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 4,
+          "Move": "Tail Whip"
+        },
+        {
+          "Level": 7,
+          "Move": "Water Gun"
+        },
+        {
+          "Level": 10,
+          "Move": "Withdraw"
+        },
+        {
+          "Level": 13,
+          "Move": "Bubble"
+        },
+        {
+          "Level": 16,
+          "Move": "Bite"
+        },
+        {
+          "Level": 19,
+          "Move": "Rapid Spin"
+        },
+        {
+          "Level": 22,
+          "Move": "Protect"
+        },
+        {
+          "Level": 25,
+          "Move": "Water Pulse"
+        },
+        {
+          "Level": 28,
+          "Move": "Aqua Tail"
+        },
+        {
+          "Level": 31,
+          "Move": "Skull Bash"
+        },
+        {
+          "Level": 34,
+          "Move": "Iron Defense"
+        },
+        {
+          "Level": 37,
+          "Move": "Rain Dance"
+        },
+        {
+          "Level": 40,
+          "Move": "Hydro Pump"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 16,
+          "Evolution": 8
+        }
+      ]
+    },
+    {
+      "Number": 8,
+      "Level": 16,
+      "Name": "Wartortle",
+      "type1": "Water",
+      "type2": "None",
+      "Ability1": "Torrent",
+      "Ability2": "None",
+      "HiddenAbility": "Rain Dish",
+      "HP": 59,
+      "Attack": 63,
+      "Defense": 80,
+      "SpAtk": 65,
+      "SpDef": 80,
+      "Speed": 58,
+      "CatchRate": 45,
+      "BaseFriendship": 70,
+      "baseExp": 142,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 4,
+          "Move": "Tail Whip"
+        },
+        {
+          "Level": 7,
+          "Move": "Water Gun"
+        },
+        {
+          "Level": 10,
+          "Move": "Withdraw"
+        },
+        {
+          "Level": 13,
+          "Move": "Bubble"
+        },
+        {
+          "Level": 16,
+          "Move": "Bite"
+        },
+        {
+          "Level": 20,
+          "Move": "Rapid Spin"
+        },
+        {
+          "Level": 24,
+          "Move": "Protect"
+        },
+        {
+          "Level": 28,
+          "Move": "Water Pulse"
+        },
+        {
+          "Level": 32,
+          "Move": "Aqua Tail"
+        },
+        {
+          "Level": 36,
+          "Move": "Skull Bash"
+        },
+        {
+          "Level": 40,
+          "Move": "Iron Defense"
+        },
+        {
+          "Level": 44,
+          "Move": "Rain Dance"
+        },
+        {
+          "Level": 48,
+          "Move": "Hydro Pump"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 36,
+          "Evolution": 9
+        }
+      ]
+    },
+    {
+      "Number": 9,
+      "Level": 36,
+      "Name": "Blastoise",
+      "type1": "Water",
+      "type2": "None",
+      "Ability1": "Torrent",
+      "Ability2": "None",
+      "HiddenAbility": "Rain Dish",
+      "HP": 79,
+      "Attack": 83,
+      "Defense": 100,
+      "SpAtk": 85,
+      "SpDef": 105,
+      "Speed": 78,
+      "CatchRate": 45,
+      "BaseFriendship": 70,
+      "baseExp": 239,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 87.5,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 4,
+          "Move": "Tail Whip"
+        },
+        {
+          "Level": 7,
+          "Move": "Water Gun"
+        },
+        {
+          "Level": 10,
+          "Move": "Withdraw"
+        },
+        {
+          "Level": 13,
+          "Move": "Bubble"
+        },
+        {
+          "Level": 16,
+          "Move": "Bite"
+        },
+        {
+          "Level": 20,
+          "Move": "Rapid Spin"
+        },
+        {
+          "Level": 24,
+          "Move": "Protect"
+        },
+        {
+          "Level": 28,
+          "Move": "Water Pulse"
+        },
+        {
+          "Level": 32,
+          "Move": "Aqua Tail"
+        },
+        {
+          "Level": 36,
+          "Move": "Skull Bash"
+        },
+        {
+          "Level": 40,
+          "Move": "Iron Defense"
+        },
+        {
+          "Level": 44,
+          "Move": "Rain Dance"
+        },
+        {
+          "Level": 48,
+          "Move": "Hydro Pump"
+        }
+      ],
+      "Evolution": []
+    }
+  ],
+  "pokemons": [
+    {
+      "Number": 10,
+      "Level": 1,
+      "Name": "Caterpie",
+      "type1": "Bug",
+      "type2": "None",
+      "Ability1": "Shield Dust",
+      "Ability2": "None",
+      "HiddenAbility": "Run Away",
+      "HP": 45,
+      "Attack": 30,
+      "Defense": 35,
+      "SpAtk": 20,
+      "SpDef": 20,
+      "Speed": 45,
+      "CatchRate": 255,
+      "BaseFriendship": 70,
+      "baseExp": 39,
+      "GrowthRate": "Medium Fast",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 1,
+          "Move": "String Shot"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 7,
+          "Evolution": 11
+        }
+      ]
+    },
+    {
+      "Number": 11,
+      "Level": 7,
+      "Name": "Metapod",
+      "type1": "Bug",
+      "type2": "None",
+      "Ability1": "Shed Skin",
+      "Ability2": "None",
+      "HiddenAbility": "None",
+      "HP": 50,
+      "Attack": 20,
+      "Defense": 55,
+      "SpAtk": 25,
+      "SpDef": 25,
+      "Speed": 30,
+      "CatchRate": 120,
+      "BaseFriendship": 70,
+      "baseExp": 72,
+      "GrowthRate": "Medium Fast",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Harden"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 10,
+          "Evolution": 12
+        }
+      ]
+    },
+    {
+      "Number": 12,
+      "Level": 10,
+      "Name": "Butterfree",
+      "type1": "Bug",
+      "type2": "Flying",
+      "Ability1": "Compound Eyes",
+      "Ability2": "None",
+      "HiddenAbility": "Tinted Lens",
+      "HP": 60,
+      "Attack": 45,
+      "Defense": 50,
+      "SpAtk": 90,
+      "SpDef": 80,
+      "Speed": 70,
+      "CatchRate": 45,
+      "BaseFriendship": 70,
+      "baseExp": 178,
+      "GrowthRate": "Medium Fast",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Harden"
+        },
+        {
+          "Level": 1,
+          "Move": "Gust"
+        },
+        {
+          "Level": 1,
+          "Move": "Confusion"
+        },
+        {
+          "Level": 12,
+          "Move": "Poison Powder"
+        },
+        {
+          "Level": 12,
+          "Move": "Stun Spore"
+        },
+        {
+          "Level": 12,
+          "Move": "Sleep Powder"
+        },
+        {
+          "Level": 16,
+          "Move": "Psybeam"
+        },
+        {
+          "Level": 18,
+          "Move": "Silver Wind"
+        },
+        {
+          "Level": 22,
+          "Move": "Whirlwind"
+        },
+        {
+          "Level": 24,
+          "Move": "Gust"
+        },
+        {
+          "Level": 28,
+          "Move": "Safeguard"
+        },
+        {
+          "Level": 30,
+          "Move": "Tailwind"
+        },
+        {
+          "Level": 34,
+          "Move": "Bug Buzz"
+        },
+        {
+          "Level": 36,
+          "Move": "Rage Powder"
+        },
+        {
+          "Level": 40,
+          "Move": "Quiver Dance"
+        }
+      ],
+      "Evolution": []
+    },
+    {
+      "Number": 16,
+      "Level": 1,
+      "Name": "Pidgey",
+      "type1": "Normal",
+      "type2": "Flying",
+      "Ability1": "Keen Eye",
+      "Ability2": "Tangled Feet",
+      "HiddenAbility": "Big Pecks",
+      "HP": 40,
+      "Attack": 45,
+      "Defense": 40,
+      "SpAtk": 35,
+      "SpDef": 35,
+      "Speed": 56,
+      "CatchRate": 255,
+      "BaseFriendship": 50,
+      "baseExp": 50,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 5,
+          "Move": "Sand Attack"
+        },
+        {
+          "Level": 9,
+          "Move": "Gust"
+        },
+        {
+          "Level": 13,
+          "Move": "Quick Attack"
+        },
+        {
+          "Level": 17,
+          "Move": "Whirlwind"
+        },
+        {
+          "Level": 21,
+          "Move": "Twister"
+        },
+        {
+          "Level": 25,
+          "Move": "Feather Dance"
+        },
+        {
+          "Level": 29,
+          "Move": "Agility"
+        },
+        {
+          "Level": 33,
+          "Move": "Wing Attack"
+        },
+        {
+          "Level": 37,
+          "Move": "Roost"
+        },
+        {
+          "Level": 41,
+          "Move": "Tailwind"
+        },
+        {
+          "Level": 45,
+          "Move": "Mirror Move"
+        },
+        {
+          "Level": 49,
+          "Move": "Air Slash"
+        },
+        {
+          "Level": 53,
+          "Move": "Hurricane"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 18,
+          "Evolution": 17
+        }
+      ]
+    },
+    {
+      "Number": 17,
+      "Level": 18,
+      "Name": "Pidgeotto",
+      "type1": "Normal",
+      "type2": "Flying",
+      "Ability1": "Keen Eye",
+      "Ability2": "Tangled Feet",
+      "HiddenAbility": "Big Pecks",
+      "HP": 63,
+      "Attack": 60,
+      "Defense": 55,
+      "SpAtk": 50,
+      "SpDef": 50,
+      "Speed": 71,
+      "CatchRate": 120,
+      "BaseFriendship": 50,
+      "baseExp": 122,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 1,
+          "Move": "Sand Attack"
+        },
+        {
+          "Level": 5,
+          "Move": "Gust"
+        },
+        {
+          "Level": 13,
+          "Move": "Quick Attack"
+        },
+        {
+          "Level": 17,
+          "Move": "Whirlwind"
+        },
+        {
+          "Level": 22,
+          "Move": "Twister"
+        },
+        {
+          "Level": 27,
+          "Move": "Feather Dance"
+        },
+        {
+          "Level": 32,
+          "Move": "Agility"
+        },
+        {
+          "Level": 37,
+          "Move": "Wing Attack"
+        },
+        {
+          "Level": 42,
+          "Move": "Roost"
+        },
+        {
+          "Level": 47,
+          "Move": "Tailwind"
+        },
+        {
+          "Level": 52,
+          "Move": "Mirror Move"
+        },
+        {
+          "Level": 57,
+          "Move": "Air Slash"
+        },
+        {
+          "Level": 62,
+          "Move": "Hurricane"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 36,
+          "Evolution": 18
+        }
+      ]
+    },
+    {
+      "Number": 18,
+      "Level": 36,
+      "Name": "Pidgeot",
+      "type1": "Normal",
+      "type2": "Flying",
+      "Ability1": "Keen Eye",
+      "Ability2": "Tangled Feet",
+      "HiddenAbility": "Big Pecks",
+      "HP": 83,
+      "Attack": 80,
+      "Defense": 75,
+      "SpAtk": 70,
+      "SpDef": 70,
+      "Speed": 101,
+      "CatchRate": 45,
+      "BaseFriendship": 50,
+      "baseExp": 216,
+      "GrowthRate": "Medium Slow",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 1,
+          "Move": "Sand Attack"
+        },
+        {
+          "Level": 1,
+          "Move": "Gust"
+        },
+        {
+          "Level": 13,
+          "Move": "Quick Attack"
+        },
+        {
+          "Level": 17,
+          "Move": "Whirlwind"
+        },
+        {
+          "Level": 22,
+          "Move": "Twister"
+        },
+        {
+          "Level": 27,
+          "Move": "Feather Dance"
+        },
+        {
+          "Level": 32,
+          "Move": "Agility"
+        },
+        {
+          "Level": 38,
+          "Move": "Wing Attack"
+        },
+        {
+          "Level": 44,
+          "Move": "Roost"
+        },
+        {
+          "Level": 50,
+          "Move": "Tailwind"
+        },
+        {
+          "Level": 56,
+          "Move": "Mirror Move"
+        },
+        {
+          "Level": 62,
+          "Move": "Air Slash"
+        },
+        {
+          "Level": 68,
+          "Move": "Hurricane"
+        }
+      ],
+      "Evolution": []
+    },
+
+    {
+      "Number": 19,
+      "Level": 1,
+      "Name": "Rattata",
+      "type1": "Normal",
+      "type2": "None",
+      "Ability1": "Run Away",
+      "Ability2": "Guts",
+      "HiddenAbility": "Hustle",
+      "HP": 30,
+      "Attack": 56,
+      "Defense": 35,
+      "SpAtk": 25,
+      "SpDef": 35,
+      "Speed": 72,
+      "CatchRate": 255,
+      "BaseFriendship": 50,
+      "baseExp": 51,
+      "GrowthRate": "Medium Fast",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 1,
+          "Move": "Tail Whip"
+        },
+        {
+          "Level": 4,
+          "Move": "Quick Attack"
+        },
+        {
+          "Level": 7,
+          "Move": "Focus Energy"
+        },
+        {
+          "Level": 10,
+          "Move": "Bite"
+        },
+        {
+          "Level": 13,
+          "Move": "Pursuit"
+        },
+        {
+          "Level": 16,
+          "Move": "Hyper Fang"
+        },
+        {
+          "Level": 19,
+          "Move": "Assurance"
+        },
+        {
+          "Level": 22,
+          "Move": "Crunch"
+        },
+        {
+          "Level": 25,
+          "Move": "Sucker Punch"
+        },
+        {
+          "Level": 28,
+          "Move": "Double-Edge"
+        },
+        {
+          "Level": 31,
+          "Move": "Endeavor"
+        },
+        {
+          "Level": 34,
+          "Move": "Super Fang"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": 20,
+          "Evolution": 20
+        }
+      ]
+    },
+    {
+      "Number": 20,
+      "Level": 20,
+      "Name": "Raticate",
+      "type1": "Normal",
+      "type2": "None",
+      "Ability1": "Run Away",
+      "Ability2": "Guts",
+      "HiddenAbility": "Hustle",
+      "HP": 55,
+      "Attack": 81,
+      "Defense": 60,
+      "SpAtk": 50,
+      "SpDef": 70,
+      "Speed": 97,
+      "CatchRate": 127,
+      "BaseFriendship": 50,
+      "baseExp": 145,
+      "GrowthRate": "Medium Fast",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Tackle"
+        },
+        {
+          "Level": 1,
+          "Move": "Tail Whip"
+        },
+        {
+          "Level": 1,
+          "Move": "Quick Attack"
+        },
+        {
+          "Level": 1,
+          "Move": "Focus Energy"
+        },
+        {
+          "Level": 10,
+          "Move": "Bite"
+        },
+        {
+          "Level": 13,
+          "Move": "Pursuit"
+        },
+        {
+          "Level": 16,
+          "Move": "Hyper Fang"
+        },
+        {
+          "Level": 19,
+          "Move": "Assurance"
+        },
+        {
+          "Level": 24,
+          "Move": "Crunch"
+        },
+        {
+          "Level": 29,
+          "Move": "Sucker Punch"
+        },
+        {
+          "Level": 34,
+          "Move": "Double-Edge"
+        },
+        {
+          "Level": 39,
+          "Move": "Endeavor"
+        },
+        {
+          "Level": 44,
+          "Move": "Super Fang"
+        }
+      ],
+      "Evolution": []
+    },
+    {
+      "Number": 25,
+      "Level": 1,
+      "Name": "Pikachu",
+      "type1": "Electric",
+      "type2": "None",
+      "Ability1": "Static",
+      "Ability2": "None",
+      "HiddenAbility": "Lightning Rod",
+      "HP": 35,
+      "Attack": 55,
+      "Defense": 40,
+      "SpAtk": 50,
+      "SpDef": 50,
+      "Speed": 90,
+      "CatchRate": 190,
+      "BaseFriendship": 70,
+      "baseExp": 112,
+      "GrowthRate": "Medium Fast",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Thunder Shock"
+        },
+        {
+          "Level": 1,
+          "Move": "Tail Whip"
+        },
+        {
+          "Level": 5,
+          "Move": "Growl"
+        },
+        {
+          "Level": 10,
+          "Move": "Play Nice"
+        },
+        {
+          "Level": 13,
+          "Move": "Quick Attack"
+        },
+        {
+          "Level": 18,
+          "Move": "Electro Ball"
+        },
+        {
+          "Level": 21,
+          "Move": "Double Team"
+        },
+        {
+          "Level": 23,
+          "Move": "Spark"
+        },
+        {
+          "Level": 26,
+          "Move": "Nuzzle"
+        },
+        {
+          "Level": 29,
+          "Move": "Discharge"
+        },
+        {
+          "Level": 34,
+          "Move": "Slam"
+        },
+        {
+          "Level": 37,
+          "Move": "Thunderbolt"
+        },
+        {
+          "Level": 42,
+          "Move": "Feint"
+        },
+        {
+          "Level": 45,
+          "Move": "Agility"
+        },
+        {
+          "Level": 50,
+          "Move": "Wild Charge"
+        },
+        {
+          "Level": 53,
+          "Move": "Light Screen"
+        },
+        {
+          "Level": 58,
+          "Move": "Thunder"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": -1,
+          "Evolution": 26
+        } // Evolution via Thunder Stone
+      ]
+    },
+    {
+      "Number": 26,
+      "Level": -1,
+      "Name": "Raichu",
+      "type1": "Electric",
+      "type2": "None",
+      "Ability1": "Static",
+      "Ability2": "None",
+      "HiddenAbility": "Lightning Rod",
+      "HP": 60,
+      "Attack": 90,
+      "Defense": 55,
+      "SpAtk": 90,
+      "SpDef": 80,
+      "Speed": 110,
+      "CatchRate": 75,
+      "BaseFriendship": 70,
+      "baseExp": 218,
+      "GrowthRate": "Medium Fast",
+      "MaleGenderPercent": 50,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Thunder Shock"
+        },
+        {
+          "Level": 1,
+          "Move": "Tail Whip"
+        },
+        {
+          "Level": 1,
+          "Move": "Quick Attack"
+        },
+        {
+          "Level": 1,
+          "Move": "Thunderbolt"
+        }
+      ],
+      "Evolution": []
+    },
+    {
+      "Number": 58,
+      "Level": 1,
+      "Name": "Growlithe",
+      "type1": "Fire",
+      "type2": "None",
+      "Ability1": "Intimidate",
+      "Ability2": "Flash Fire",
+      "HiddenAbility": "Justified",
+      "HP": 55,
+      "Attack": 70,
+      "Defense": 45,
+      "SpAtk": 70,
+      "SpDef": 50,
+      "Speed": 60,
+      "CatchRate": 190,
+      "BaseFriendship": 70,
+      "baseExp": 70,
+      "GrowthRate": "Slow",
+      "MaleGenderPercent": 75,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Bite"
+        },
+        {
+          "Level": 1,
+          "Move": "Roar"
+        },
+        {
+          "Level": 6,
+          "Move": "Ember"
+        },
+        {
+          "Level": 8,
+          "Move": "Leer"
+        },
+        {
+          "Level": 10,
+          "Move": "Odor Sleuth"
+        },
+        {
+          "Level": 12,
+          "Move": "Helping Hand"
+        },
+        {
+          "Level": 17,
+          "Move": "Flame Wheel"
+        },
+        {
+          "Level": 19,
+          "Move": "Reversal"
+        },
+        {
+          "Level": 21,
+          "Move": "Fire Fang"
+        },
+        {
+          "Level": 23,
+          "Move": "Take Down"
+        },
+        {
+          "Level": 28,
+          "Move": "Flame Burst"
+        },
+        {
+          "Level": 30,
+          "Move": "Agility"
+        },
+        {
+          "Level": 32,
+          "Move": "Retaliate"
+        },
+        {
+          "Level": 34,
+          "Move": "Flamethrower"
+        },
+        {
+          "Level": 39,
+          "Move": "Crunch"
+        },
+        {
+          "Level": 41,
+          "Move": "Heat Wave"
+        },
+        {
+          "Level": 43,
+          "Move": "Outrage"
+        },
+        {
+          "Level": 45,
+          "Move": "Flare Blitz"
+        }
+      ],
+      "Evolution": [
+        {
+          "Level": -1,
+          "Evolution": 59
+        } // Evolution via Fire Stone
+      ]
+    },
+    {
+      "Number": 59,
+      "Level": -1,
+      "Name": "Arcanine",
+      "type1": "Fire",
+      "type2": "None",
+      "Ability1": "Intimidate",
+      "Ability2": "Flash Fire",
+      "HiddenAbility": "Justified",
+      "HP": 90,
+      "Attack": 110,
+      "Defense": 80,
+      "SpAtk": 100,
+      "SpDef": 80,
+      "Speed": 95,
+      "CatchRate": 75,
+      "BaseFriendship": 70,
+      "baseExp": 194,
+      "GrowthRate": "Slow",
+      "MaleGenderPercent": 75,
+      "Moves": [
+        {
+          "Level": 1,
+          "Move": "Extreme Speed"
+        },
+        {
+          "Level": 1,
+          "Move": "Thunder Fang"
+        },
+        {
+          "Level": 1,
+          "Move": "Bite"
+        },
+        {
+          "Level": 1,
+          "Move": "Roar"
+        },
+        {
+          "Level": 1,
+          "Move": "Ember"
+        },
+        {
+          "Level": 1,
+          "Move": "Leer"
+        },
+        {
+          "Level": 1,
+          "Move": "Flamethrower"
+        },
+        {
+          "Level": 1,
+          "Move": "Flare Blitz"
+        },
+        {
+          "Level": 1,
+          "Move": "Crunch"
+        },
+        {
+          "Level": 1,
+          "Move": "Heat Wave"
+        }
+      ],
+      "Evolution": []
+    }
+
+
+  ]
+}
+   
+
+  
