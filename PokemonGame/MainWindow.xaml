@@ -6,21 +6,83 @@
     xmlns:local="clr-namespace:PokemonGame"
     xmlns:local1="clr-namespace:PokemonGame.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:PokemonGame.ViewModel"
     Title="MainWindow"
     Width="800"
-    Height="800"
+    Height="500"
+    d:DataContext="{d:DesignInstance Type=vm:GameViewModel}"
     mc:Ignorable="d">
     <Grid>
-        <Canvas
-            Name="GameCanvas"
-            Width="800"
-            Height="800" />
+        <Canvas HorizontalAlignment="Center">
+            <ItemsControl
+                x:Name="TileGrid"
+                ItemsSource="{Binding UiTiles}"
+                RenderTransformOrigin="0,0">
+                <ItemsControl.RenderTransform>
+                    <TranslateTransform x:Name="MapTransform" />
+                </ItemsControl.RenderTransform>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ItemsControl ItemsSource="{Binding}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Width="32"
+                                        Height="32"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="Button_Click">
+                                        <Image
+                                            Width="32"
+                                            Height="32"
+                                            Source="{Binding}" />
+                                    </Button>
+                                </DataTemplate>
 
-        <local1:PokemonStatsView
-            Width="500"
-            Height="400"
-            Margin="10,10,0,0"
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Canvas>
+        <StackPanel
+            Width="90"
+            Height="100"
+            Margin="10"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top" />
+            Orientation="Vertical">
+            <Button
+                Width="50"
+                Click="LeftButton_Click"
+                Content="←" />
+            <Button
+                Width="50"
+                Click="DownButton_Click"
+                Content="↓" />
+            <Button
+                Width="50"
+                Click="RightButton_Click"
+                Content="→" />
+            <Button
+                Width="50"
+                Click="UpButton_Click"
+                Content="↑" />
+
+        </StackPanel>
+        <Frame
+            x:Name="MainFrame"
+            Grid.Row="1"
+            Grid.Column="0" />
     </Grid>
 </Window>

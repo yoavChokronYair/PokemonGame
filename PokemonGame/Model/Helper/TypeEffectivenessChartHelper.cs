@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using PokemonGame.Constants;
 
-namespace PokemonGame.Model
+namespace PokemonGame.Model.Helper
 {
-    public static class TypeEffectivenessChart
+    public static class TypeEffectivenessChartHelper
     {
         private static readonly Dictionary<(PokemonType, PokemonType), double> _chart =
             new Dictionary<(PokemonType, PokemonType), double>()

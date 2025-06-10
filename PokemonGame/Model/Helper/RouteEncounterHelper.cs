@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemonGame.Model
+namespace PokemonGame.Model.Helper
 {
-    public class RouteEncounterChooser
+    public class RouteEncounterHelper
     {
         private readonly Random rng = new Random();
 
         public RouteDataList RouteDataList { get; set; }
 
-        public RouteEncounterChooser(RouteDataList routeDataList)
+        public RouteEncounterHelper(RouteDataList routeDataList)
         {
             RouteDataList = routeDataList;
         }

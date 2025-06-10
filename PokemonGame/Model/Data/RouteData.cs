@@ -12,11 +12,13 @@ namespace PokemonGame.Model.Data
         public int MinLevel { get; set; }
         public int MaxLevel { get; set; }
         public double Rarity { get; set; } // e.g., 0.5 for 50%
+
     }
 
     public class RouteData
     {
         public string Name { get; set; } // e.g., "Route 1"
+        public int RouteEncounterRate;
         public List<Encounter> Encounters { get; set; } = new List<Encounter>();
     }
 

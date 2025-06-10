@@ -1,6 +1,6 @@
 ﻿using PokemonGame.Enums;
 
-namespace PokemonGame.Model
+namespace PokemonGame.Model.Map
 {
     public struct Tile
     {
