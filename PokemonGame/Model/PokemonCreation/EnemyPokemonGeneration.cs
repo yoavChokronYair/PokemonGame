@@ -11,7 +11,7 @@ namespace PokemonGame.Model.PokemonCreation
     public class EnemyPokemonGeneration : IPokemon
     {
         // Basic Info
-        public string Species { get; private set; }
+        public string Species { get; set; }
         public string Nickname { get; set; }
         public int Level { get; set; }
         public int ID { get; set; }
@@ -19,14 +19,14 @@ namespace PokemonGame.Model.PokemonCreation
 
         // HP
         public int MaxHP { get; set; }
-        public double CurrentHp { get; set; }
+        public int CurrentHp { get; set; }
 
         // Stats
-        public IStatValues IVs { get; private set; }
-        public IStatValues EVs { get; private set; }
+        public IStatValues IVs { get; set; }
+        public IStatValues EVs { get; set; }
 
         // Moves
-        public Dictionary<MoveData,int> Moves { get; private set; }
+        public Dictionary<MoveData,int> Moves { get; set; }
 
         // Gender & Shiny
         public bool IsMale { get; set; }
@@ -36,11 +36,15 @@ namespace PokemonGame.Model.PokemonCreation
         public BitmapImage Sprite { get; set; }
         public BitmapImage Image { get; set; }
 
+
         // Other Attributes
-        public NatureType nature { get; set; }
-        public int AbilityIndex { get; private set; }
-        public AbilityType Ability { get; private set; }
-        public PokemonType[] Types { get; } = new PokemonType[2];
+        public NatureType Nature { get; set; }
+        public int AbilityIndex { get; set; }
+        public AbilityType Ability { get;  set; }
+        public PokemonType[] Types { get; set;}
+        public bool IsFainted { get; set; }
+        public StatusType StatusType { get; set; }
+
 
         // Constructors
         //constractor to create enemy pokemon from the wild
@@ -109,6 +113,8 @@ namespace PokemonGame.Model.PokemonCreation
             AbilityIndex = randomHelper.GetAbilityNumber();
             Types[0] = pokemon.Type1;
             Types[1] = pokemon.Type2;
+            IsFainted = false;
+            StatusType = StatusType.None;
         }
     }
 }

@@ -118,17 +118,22 @@
     </ApplicationDefinition>
     <Compile Include="Constants\TypeEffectivenessChartConstants.cs" />
     <Compile Include="Enums\AbillityType.cs" />
+    <Compile Include="Enums\BotLevel.cs" />
     <Compile Include="Enums\GrowthRateType.cs" />
     <Compile Include="Enums\NatureType.cs" />
     <Compile Include="Enums\StatusType.cs" />
-    <Compile Include="Interface\IBattleParticipant.cs" />
+    <Compile Include="Interface\IBotBattle.cs" />
     <Compile Include="Interface\ICatchable.cs" />
     <Compile Include="Interface\IEvolvable.cs" />
     <Compile Include="Interface\Ipokemon.cs" />
     <Compile Include="Interface\IStatusAffectable.cs" />
+    <Compile Include="Interface\ITrainer.cs" />
     <Compile Include="Interface\ITyeable.cs" />
+    <Compile Include="Model\BattleSystem\Bot\RivalBot.cs" />
+    <Compile Include="Model\BattleSystem\Bot\WildPokemonBattleSystem.cs" />
     <Compile Include="Model\Data\CaughtPokemonData.cs" />
     <Compile Include="Model\Data\MoveData.cs" />
+    <Compile Include="Model\Data\NpcData\RivalData.cs" />
     <Compile Include="Model\Data\PlayerData.cs" />
     <Compile Include="Model\Data\RouteData.cs" />
     <Compile Include="Model\Helper\BattleCaculaterHelper.cs" />
@@ -249,6 +254,7 @@
     </None>
     <None Include="resources\CaughtPokemons.json" />
     <None Include="resources\Moves.json" />
+    <None Include="resources\Npc\Rivals.json" />
     <None Include="resources\Players.json" />
     <None Include="resources\Routes.json" />
     <Resource Include="resources\Maps.Json">
@@ -444,7 +450,6 @@
     <Resource Include="Images\background.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\BattleSystem\Bot\" />
     <Folder Include="Model\BattleSystem\Player\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

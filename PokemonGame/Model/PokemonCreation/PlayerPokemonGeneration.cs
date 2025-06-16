@@ -12,7 +12,7 @@ namespace PokemonGame.Model.PokemonCreation
         // === Identity & Metadata ===
         public int ID { get; }
         public int PokedexID { get; set; }
-        public string Species { get; private set; }
+        public string Species { get; set; }
         public string Nickname { get; set; }
 
         // === Appearance ===
@@ -22,7 +22,7 @@ namespace PokemonGame.Model.PokemonCreation
         public bool IsMale { get; set; }
 
         // === Typing & Traits ===
-        public PokemonType[] Types { get; } = new PokemonType[2];
+        public PokemonType[] Types { get; set; } = new PokemonType[2];
         public NatureType Nature { get; set; }
         public AbilityType Ability { get; set; } // Placeholder for ability implementation
         public GrowthRateType GrowthRate { get; set; } // Placeholder for enum use
@@ -31,19 +31,19 @@ namespace PokemonGame.Model.PokemonCreation
         // === Stats ===
         public int Level { get; set; }
         public int MaxHP { get; set; }
-        public double CurrentHp { get; set; }
-        public IStatValues IVs { get; private set; }
-        public IStatValues EVs { get; private set; }
+        public int CurrentHp { get; set; }
+        public IStatValues IVs { get; set; }
+        public IStatValues EVs { get; set; }
 
         // === Combat Data ===
-        public Dictionary<MoveData,int> Moves { get; private set; }
+        public Dictionary<MoveData,int> Moves { get; set; }
         public int PokemonXP { get; set; }
         public StatusType StatusType { get; set; }
         public bool IsFainted { get; set; }
 
         // === Constructors ===
         //for all pokemons that are created by catching them
-        public PlayerPokemonGeneration(EnemyPokemonGeneration wildPokemon, string nickname, double currentHP, StatusType pokemonStatus)
+        public PlayerPokemonGeneration(EnemyPokemonGeneration wildPokemon, string nickname, int currentHP, StatusType pokemonStatus)
         {
             this.ID = wildPokemon.ID;
             this.PokedexID = wildPokemon.PokedexID;
@@ -57,7 +57,7 @@ namespace PokemonGame.Model.PokemonCreation
             
             this.Types[0] = wildPokemon.Types[0];
             this.Types[1] = wildPokemon.Types[1];
-            this.Nature = wildPokemon.nature;
+            this.Nature = wildPokemon.Nature;
             
             this.Ability = wildPokemon.Ability;
             this.GrowthRate = GrowthRateType.MediumFast; // Assumed default

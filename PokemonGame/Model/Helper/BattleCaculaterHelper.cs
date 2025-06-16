@@ -4,15 +4,12 @@ using PokemonGame.Model.Data;
 using PokemonGame.Model.PokemonCreation;
 using System;
 using System.Linq;
-
 namespace PokemonGame.Model.Helper
 {
-    public class BattleCaculater
-    {
+  
         public static class BattleCalculator
         {
             private static readonly Random _rand = new Random();
-
             // Result of move execution
             public class MoveResult
             {
@@ -21,7 +18,6 @@ namespace PokemonGame.Model.Helper
                 public bool IsStatusMove { get; set; } = false;
                 public string StatusEffect { get; set; } = null; // You can expand this for status names
             }
-
             public static MoveResult ExecuteMove(EnemyPokemonGeneration defender, PlayerPokemonGeneration attacker, MoveData move)
             {
                 var result = new MoveResult();
@@ -144,7 +140,7 @@ namespace PokemonGame.Model.Helper
             public static int GetEffectiveSpDefense(EnemyPokemonGeneration defender)
             {
                 int baseSpDef = defender.IVs.SpecialDefense;
-                double natureMod = NatureHelper.GetNatureModifiers(defender.nature).spDef;
+                double natureMod = NatureHelper.GetNatureModifiers(defender.Nature).spDef;
                 double otherModifiers = 1.0; // Add buffs/debuffs here if needed
 
                 double effectiveSpDef = baseSpDef * natureMod * otherModifiers;
@@ -153,7 +149,7 @@ namespace PokemonGame.Model.Helper
             public static int GetEffectivePhysicalDefense(EnemyPokemonGeneration defender)
             {
                 int baseDef = defender.IVs.Defense;
-                double natureMod = NatureHelper.GetNatureModifiers(defender.nature).def;
+                double natureMod = NatureHelper.GetNatureModifiers(defender.Nature).def;
                 double otherModifiers = 1.0; // Add buffs/debuffs here if needed
 
                 double effectiveDef = baseDef * natureMod * otherModifiers;
@@ -161,4 +157,4 @@ namespace PokemonGame.Model.Helper
             }
         }
     }
-}
+
