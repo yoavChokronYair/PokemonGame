@@ -1,10 +1,10 @@
 ﻿<Page
-    x:Class="PokemonGame.Views.WildPokemonBattle"
+    x:Class="PokemonGame.Views.Pages.WildPokemonBattle"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:PokemonBattle="clr-namespace:PokemonGame.Views.PokemonBattle"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:PokemonGame.Views"
+    xmlns:local="clr-namespace:PokemonGame.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:PokemonGame.ViewModel"
     Title="WildPokemonBattle"
@@ -36,6 +36,7 @@
                 Grid.RowSpan="6"
                 Grid.Column="0"
                 Grid.ColumnSpan="100"
+                RenderOptions.BitmapScalingMode="NearestNeighbor"
                 Source="/Images/BattleBackground.png"
                 Stretch="Fill" />
             <Image
@@ -44,27 +45,39 @@
                 Grid.ColumnSpan="100"
                 Source="/Images/TextBackground.png"
                 Stretch="Fill" />
-            <Image
+            <PokemonBattle:BattleMenu
+                x:Name="BattleMenuControl"
                 Grid.Row="6"
-                Grid.Column="3"
+                Grid.Column="0"
                 Grid.ColumnSpan="100"
-                Source="/Images/BattleMenu.png"
-                Stretch="Fill" />
+                CurrentPP="{Binding CurrentPP}"
+                Focusable="True"
+                MaxPP="{Binding MaxPP}"
+                Move1="{Binding Moves[0].ename}"
+                Move2="{Binding Moves[1].ename}"
+                Move3="{Binding Moves[2].ename}"
+                Move4="{Binding Moves[3].ename}"
+                Type="{Binding Type}" />
             <PokemonBattle:OpponentPokemon
+                x:Name="Op"
                 Grid.Row="1"
                 Grid.RowSpan="2"
                 Grid.Column="1"
                 CurrentHp="{Binding RivalCurrentHp}"
-                GenderSymbol="male"
-                LevelText="{Binding RivalLevel}"
-                MaxHp="{Binding Rival.HP}"
-                NameText="{Binding RivalName}" />
-            <Image
+                GenderSymbol="{Binding Gender}"
+                LevelText="{Binding Rival.Level}"
+                MaxHp="{Binding Rival.MaxHP}"
+                NameText="{Binding Rival.Species}" />
+            <PokemonBattle:PlayersPokemon
                 Grid.Row="4"
                 Grid.RowSpan="1"
                 Grid.Column="3"
-                Source="/Images/TeamPokemon.png"
-                Stretch="Fill" />
+                CurrentHp="{Binding TeamCurrentHp}"
+                GenderSymbol="{Binding Gender}"
+                LevelText="{Binding Team.Level}"
+                MaxHp="{Binding Team.MaxHP}"
+                NameText="{Binding Team.Species}" />
+
             <Image
                 x:Name="WildPokemonImageTeam"
                 Grid.Row="3"

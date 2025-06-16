@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokemonGame.Model.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -15,7 +16,7 @@ namespace PokemonGame.Interface
         int MaxHP { get; set; }
         IStatValues IVs { get; }
         IStatValues EVs { get; }
-        List<IMove> Moves { get; }
+        Dictionary<MoveData, int> Moves { get; }
         int ID { get;} // Unique PokedexID for the Pokemon instance
         int PokedexID { get; set; } // Unique PokedexID for the Pokemon instance
         bool IsMale { get; set; } // Indicates if the

@@ -11,6 +11,9 @@
     Width="800"
     Height="500"
     d:DataContext="{d:DesignInstance Type=vm:GameViewModel}"
+    KeyDown="Window_KeyDown"
+    KeyUp="Window_KeyUp"
+    Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid>
         <Canvas HorizontalAlignment="Center">

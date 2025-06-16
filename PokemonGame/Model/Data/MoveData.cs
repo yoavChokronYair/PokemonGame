@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokemonGame.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace PokemonGame.Model.Data
 {
-    public class MoveData
+    public class MoveData 
     {
         public string ename { get; set; } // maps to "ename"
         public int Power { get; set; }
         public int PP { get; set; }
-        public string Type { get; set; }
+        public PokemonType Type { get; set; }
         public int Accuracy { get; set; }
         public string Category { get; set; } // original value like "物理"
 

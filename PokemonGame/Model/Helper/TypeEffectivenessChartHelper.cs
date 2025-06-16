@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Enums;
 using System.Collections.Generic;
 using PokemonGame.Constants;
+using System;
 
 namespace PokemonGame.Model.Helper
 {
@@ -125,7 +126,7 @@ namespace PokemonGame.Model.Helper
                 : TypeEffectivenessChartConstants.normal;
         }
 
-        public static double GetTotalEffectiveness(PokemonType attackType, List<PokemonType> defenderTypes)
+        public static double GetTotalEffectiveness(PokemonType attackType, PokemonType[] defenderTypes)
         {
             double total = 1.0;
             foreach (var defender in defenderTypes)

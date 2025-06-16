@@ -5,64 +5,82 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame.Views.PokemonBattle"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="100"
-    d:DesignWidth="325"
+    xmlns:viewmodel="clr-namespace:PokemonGame.ViewModel"
+    d:DesignHeight="128"
+    d:DesignWidth="360"
     mc:Ignorable="d">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20*" />
-            <ColumnDefinition Width="106*" />
-            <ColumnDefinition Width="110*" />
-            <ColumnDefinition Width="30*" />
-            <ColumnDefinition Width="18*" />
-            <ColumnDefinition Width="41*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="45" />
-            <RowDefinition Height="12" />
-            <RowDefinition Height="12" />
-            <RowDefinition />
+        <Viewbox Stretch="Uniform">
+            <Image
+                Width="360"
+                Height="128"
+                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                Source="/Images/RivalPokemon.png"
+                Stretch="Fill" />
+        </Viewbox>
+        <Viewbox Stretch="Uniform">
+            <Canvas Width="360" Height="128">
+                <Viewbox
+                    Canvas.Left="32"
+                    Canvas.Top="24"
+                    Stretch="Uniform">
 
-        </Grid.RowDefinitions>
-        <Image
-            Grid.Row="0"
-            Grid.RowSpan="4"
-            Grid.Column="0"
-            Grid.ColumnSpan="6"
-            Source="/Images/RivalPokemon.png"
-            Stretch="Fill" />
-        <ProgressBar
-            Grid.Row="2"
-            Grid.Column="2"
-            Grid.ColumnSpan="3"
-            Height="10"
-            BorderBrush="#4a4858"
-            Foreground="Green"
-            Maximum="{Binding MaxHP}"
-            Minimum="0"
-            Value="{Binding CurrentHP}" />
+                    <StackPanel Height="32" Orientation="Horizontal">
+                        <Viewbox Stretch="Uniform">
 
-        <StackPanel
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Orientation="Horizontal">
-            <TextBlock
-                Margin="5,0,0,0"
-                VerticalAlignment="Center"
-                FontSize="16"
-                FontWeight="Bold"
-                Text="{Binding NameText, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-            <TextBlock
-                Margin="5,0,0,0"
-                VerticalAlignment="Center"
-                FontSize="16"
-                Text="{Binding GenderSymbol, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-        </StackPanel>
-        <TextBlock
-            Grid.Column="4"
-            VerticalAlignment="Bottom"
-            FontSize="18"
-            Text="{Binding LevelText, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            <TextBlock
+                                Height="32"
+                                FontFamily="pack://application:,,,/Fonts/#Pokemon Classic"
+                                FontSize="22"
+                                Text="{Binding NameText, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                TextOptions.TextRenderingMode="Aliased" />
+                        </Viewbox>
 
+                        <Viewbox Stretch="Uniform">
+                            <TextBlock
+                                Height="32"
+                                FontSize="22"
+                                Text="{Binding GenderSymbol, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                TextOptions.TextRenderingMode="Aliased" />
+                        </Viewbox>
+                    </StackPanel>
+
+                </Viewbox>
+                <Viewbox
+                    Canvas.Left="290"
+                    Canvas.Top="10"
+                    Width="32"
+                    Height="50"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Stretch="Uniform">
+
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        FontFamily="pack://application:,,,/Fonts/#Pokemon Classic"
+                        FontSize="16"
+                        Text="{Binding LevelText, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        TextOptions.TextRenderingMode="Aliased" />
+                </Viewbox>
+                <Viewbox
+                    Canvas.Left="140"
+                    Canvas.Top="75"
+                    Width="173"
+                    Height="15"
+                    Stretch="Uniform">
+                    <local:HPBar
+                        x:Name="MyHPBarOp"
+                        Width="173"
+                        Height="15"
+                        AnimationDuration="0:0:0.2"
+                        BarHeight="15"
+                        BarWidth="173"
+                        HealthPercent="{Binding HealthPercent, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Loaded="MyHPBar_Loaded" />
+
+                </Viewbox>
+            </Canvas>
+        </Viewbox>
     </Grid>
 </UserControl>

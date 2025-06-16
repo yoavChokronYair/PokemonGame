@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PokemonGame.Enums;
+using PokemonGame.Model.Manager;
 
 namespace PokemonGame.Model.Data
 {
@@ -36,6 +37,14 @@ namespace PokemonGame.Model.Data
     {
         public int Level { get; set; }
         public string Move { get; set; }
+        public MoveData Moves
+        {
+            get
+            {
+                return GameDataManager.Instance.MoveData.Moves
+                    .FirstOrDefault(m => m.ename == Move);
+            }
+        }
     }
     public class EvolutionData
     {
