@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using PokemonGame.Enums;
 using PokemonGame.Interface;
@@ -9,7 +8,7 @@ using PokemonGame.Model.Helper;
 
 namespace PokemonGame.Model.PokemonCreation
 {
-    public class WildPokemonGenartion : IPokemon
+    public class EnemyPokemonGeneration : IPokemon
     {
         // Basic Info
         public string Species { get; private set; }
@@ -43,8 +42,9 @@ namespace PokemonGame.Model.PokemonCreation
         public AbilityType Ability { get; private set; }
         public PokemonType[] Types { get; } = new PokemonType[2];
 
-        // Constructor
-        public WildPokemonGenartion(Encounter species, PokemonData pokemon)
+        // Constructors
+        //constractor to create enemy pokemon from the wild
+        public EnemyPokemonGeneration(Encounter species, PokemonData pokemon)
         {
             // Generate IDs
             var pid = RandomPokemonIDHelper.GeneratePID();

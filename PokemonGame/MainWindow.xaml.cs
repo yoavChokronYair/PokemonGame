@@ -2,6 +2,7 @@
 using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Manager;
+using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
 using PokemonGame.Views.Pages;
 using System;
@@ -24,6 +25,16 @@ namespace PokemonGame
 
             GameDataManager.Instance.LoadAllData();
             InitializeComponent();
+            int count = 0;     
+            foreach (var pokemon in GameDataManager.Instance.CaughtPokemonData.CaughtPokemons)
+            {
+                if(count < 6)
+                {
+                    PlayerPokemonGeneration playerPokemonGeneration = new PlayerPokemonGeneration(pokemon);
+                    PlayerPokemonManager.Instance.AddPokemonToTeam(playerPokemonGeneration,count);
+                    count++;
+                }
+            }
             this.DataContext = new GameViewModel(GameDataManager.Instance.MapData.maps[0]);
             _viewModel = new GameViewModel(GameDataManager.Instance.MapData.maps[0]);
             RouteEncounterHelper routeEncounterViewModel = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
@@ -130,7 +141,7 @@ namespace PokemonGame
 
         private async void DownButton_Click(object sender, RoutedEventArgs e)
         {
-            await ScrollDownAsync();
+            GameDataManager.Instance.SaveAllData();
         }
 
         private async void LeftButton_Click(object sender, RoutedEventArgs e)
@@ -196,6 +207,7 @@ namespace PokemonGame
         {
             Keyboard.Focus(this);
         }
+
     }
 }
 

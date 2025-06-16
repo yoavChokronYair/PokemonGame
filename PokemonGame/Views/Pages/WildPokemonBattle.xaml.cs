@@ -1,12 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Helper;
+﻿using PokemonGame.Model.Data;
 using PokemonGame.Model.Manager;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using static PokemonGame.Model.Helper.BattleCaculater;
@@ -22,7 +19,7 @@ namespace PokemonGame.Views.Pages
         // Fields
         // ----------------------------
         private readonly WildPokemonBattleViewModel _viewModel;
-        private readonly WildPokemonGenartion _wildPokemon;
+        private readonly EnemyPokemonGeneration _wildPokemon;
         private readonly PlayerPokemonGeneration _playerPokemon;
 
         // ----------------------------
@@ -33,29 +30,24 @@ namespace PokemonGame.Views.Pages
             InitializeComponent();
 
             // Generate wild Pokémon data
-            _wildPokemon = new WildPokemonGenartion(
+            _wildPokemon = new EnemyPokemonGeneration(
                 encounter,
                 GameDataManager.Instance.PokemonData.AllPokemons.FirstOrDefault(p => p.Name == encounter.Pokemon)
             );
 
             // Load wild Pokémon images
-            SetPokemonImages(_wildPokemon.PokedexID);
 
             // Get base data for wild Pokémon
             var basePokemon = GameDataManager.Instance.PokemonData.AllPokemons
                 .FirstOrDefault(p => p.Number == _wildPokemon.PokedexID);
 
             // Generate player's Pokémon with half HP for battle
-            _playerPokemon = new PlayerPokemonGeneration(
-                _wildPokemon,
-                basePokemon.Name,
-                _wildPokemon.MaxHP / 2,
-                Enums.StatusType.None
-            );
+            _playerPokemon = PlayerPokemonManager.Instance._playerPokemonTeam[0];
 
             // Initialize ViewModel and bind to DataContext
             _viewModel = new WildPokemonBattleViewModel(_playerPokemon, _wildPokemon);
             DataContext = _viewModel;
+            SetPokemonImages(_wildPokemon.PokedexID);
 
             // Subscribe to move click event
             BattleMenuControl.MoveClicked += OnMoveClicked;
@@ -69,7 +61,7 @@ namespace PokemonGame.Views.Pages
             var uri = new Uri($"pack://application:,,,/Images/GenOnePokemon/{pokedexId}.png");
             var image = new BitmapImage(uri);
             WildPokemonImage.Source = image;
-            WildPokemonImageTeam.Source = image;
+            WildPokemonImageTeam.Source = _playerPokemon.Image;
         }
 
         // ----------------------------
@@ -77,7 +69,6 @@ namespace PokemonGame.Views.Pages
         // ----------------------------
         private void OnMoveClicked(object sender, string moveName)
         {
-           
             int currentIndex = 0;
             int index = -1;
             MoveData move = null;

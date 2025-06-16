@@ -14,6 +14,8 @@ namespace PokemonGame.Model.Manager
         public PokemonDataList PokemonData { get; private set; } // Public property to access PokemonData
         public RouteDataList RouteData { get; private set; } // Public property to access RouteData
         public MoveDataList MoveData { get; private set; } // Public property to access MoveData
+        public CaughtPokemonDataList CaughtPokemonData { get; set; }//public property to access CaughtPokemonData
+        public PlayerDataList PlayerData { get; private set; }
         private GameDataManager() { } // Private constructor
 
         private static GameDataManager instance;
@@ -26,12 +28,18 @@ namespace PokemonGame.Model.Manager
                 return instance;
             }
         }
+        public void SaveAllData()
+        {
+            SaveJson(PokemonData, "CaughtPokemons.json");
+        }
         public void LoadAllData()
         {
             MapData = LoadJson<MapDataList>("Maps.json");
             PokemonData = LoadJson<PokemonDataList>("Pokemons.json");
             RouteData = LoadJson<RouteDataList>("Routes.json");
             MoveData = LoadJson<MoveDataList>("Moves.json");
+            CaughtPokemonData = LoadJson<CaughtPokemonDataList>("CaughtPokemons.json");
+            PlayerData = LoadJson<PlayerDataList>("Players.json");
         }
 
         private T LoadJson<T>(string filePath)
@@ -50,8 +58,23 @@ namespace PokemonGame.Model.Manager
 
             return list;
         }
+        private void SaveJson<T>(T data, string filePath)
+        {
+            string projectRoot = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
+            string fullFilePath = Path.Combine(projectRoot, "Resources", filePath);
+
+            var settings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> { new StringEnumConverter() },
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(data, settings);
+            File.WriteAllText(fullFilePath, json);
+        }
 
     }
-    
+
 
 }

@@ -22,7 +22,7 @@ namespace PokemonGame.Model.Helper
                 public string StatusEffect { get; set; } = null; // You can expand this for status names
             }
 
-            public static MoveResult ExecuteMove(WildPokemonGenartion defender, PlayerPokemonGeneration attacker, MoveData move)
+            public static MoveResult ExecuteMove(EnemyPokemonGeneration defender, PlayerPokemonGeneration attacker, MoveData move)
             {
                 var result = new MoveResult();
 
@@ -55,7 +55,7 @@ namespace PokemonGame.Model.Helper
                 return result;
             }
 
-            private static int CalculateDamage(WildPokemonGenartion defender, PlayerPokemonGeneration attacker, MoveData move)
+            private static int CalculateDamage(EnemyPokemonGeneration defender, PlayerPokemonGeneration attacker, MoveData move)
             {
                 int level = attacker.Level;
                 int power = move.Power;
@@ -131,7 +131,7 @@ namespace PokemonGame.Model.Helper
             }
 
 
-            public static int GetEffectiveDefense(string moveCategory, WildPokemonGenartion defender)
+            public static int GetEffectiveDefense(string moveCategory, EnemyPokemonGeneration defender)
             {
                 if (moveCategory == "Physical")
                     return GetEffectivePhysicalDefense(defender);
@@ -141,7 +141,7 @@ namespace PokemonGame.Model.Helper
                     throw new ArgumentException("Invalid move category");
             }
 
-            public static int GetEffectiveSpDefense(WildPokemonGenartion defender)
+            public static int GetEffectiveSpDefense(EnemyPokemonGeneration defender)
             {
                 int baseSpDef = defender.IVs.SpecialDefense;
                 double natureMod = NatureHelper.GetNatureModifiers(defender.nature).spDef;
@@ -150,7 +150,7 @@ namespace PokemonGame.Model.Helper
                 double effectiveSpDef = baseSpDef * natureMod * otherModifiers;
                 return (int)Math.Floor(effectiveSpDef);
             }
-            public static int GetEffectivePhysicalDefense(WildPokemonGenartion defender)
+            public static int GetEffectivePhysicalDefense(EnemyPokemonGeneration defender)
             {
                 int baseDef = defender.IVs.Defense;
                 double natureMod = NatureHelper.GetNatureModifiers(defender.nature).def;

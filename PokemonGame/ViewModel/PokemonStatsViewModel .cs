@@ -41,7 +41,7 @@ namespace PokemonGame.ViewModel
         public BitmapImage TeamSprite { get; set; }
 
 
-        public PokemonStatsViewModel(PokemonData Rival,PokemonData Team,WildPokemonGenartion TeamEncounter,WildPokemonGenartion RivalEncounter)
+        public PokemonStatsViewModel(PokemonData Rival,PokemonData Team,EnemyPokemonGeneration TeamEncounter,EnemyPokemonGeneration RivalEncounter)
         {
           
             RivalName = Rival.Name.ToString();

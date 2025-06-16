@@ -26,13 +26,17 @@ namespace PokemonGame.Model.Manager
         }
 
         // === Internal Pokémon Collection ===
-        private List<PlayerPokemonGeneration> _playerPokemons;
-        private PlayerPokemonGeneration[] PlayerPokemonTeam = new PlayerPokemonGeneration[6];
+        public List<PlayerPokemonGeneration> _playerPokemons;
+        public PlayerPokemonGeneration[] _playerPokemonTeam = new PlayerPokemonGeneration[6];
 
         // === Add Pokémon ===
-        public void AddPokemon(PlayerPokemonGeneration pokemon)
+        public void AddPokemonToBox(PlayerPokemonGeneration pokemon)
         {
             _playerPokemons.Add(pokemon);
+        }
+        public void AddPokemonToTeam(PlayerPokemonGeneration pokemon,int index)
+        {
+            _playerPokemonTeam[index] = pokemon;
         }
 
         // === Remove by ID ===
@@ -56,7 +60,7 @@ namespace PokemonGame.Model.Manager
         // === Get First Healthy Pokémon ===
         public PlayerPokemonGeneration GetFirstAvailable()
         {
-            return PlayerPokemonTeam.FirstOrDefault(p => !p.IsFainted);
+            return _playerPokemonTeam.FirstOrDefault(p => !p.IsFainted);
         }
 
         // === Get All Healthy Pokémon ===
@@ -66,17 +70,17 @@ namespace PokemonGame.Model.Manager
         }
         public void AddPokemonToPartyAfterCatching(PlayerPokemonGeneration pokemon)
         {
-            int currentCount = PlayerPokemonTeam.Count(p => p != null);
+            int currentCount = _playerPokemonTeam.Count(p => p != null);
 
             if (currentCount<= 6) { 
             
-                PlayerPokemonTeam[currentCount-1] = pokemon;
+                _playerPokemonTeam[currentCount-1] = pokemon;
             };
         }
         // === Heal All ===
         public void HealAll()
         {
-            foreach (var poke in PlayerPokemonTeam)
+            foreach (var poke in _playerPokemonTeam)
             {
                 poke.CurrentHp = poke.MaxHP;
                 poke.StatusType = StatusType.None;
@@ -87,7 +91,7 @@ namespace PokemonGame.Model.Manager
         // === Party Wipe Check ===
         public bool AreAllFainted()
         {
-            return PlayerPokemonTeam.All(p => p.IsFainted);
+            return _playerPokemonTeam.All(p => p.IsFainted);
         }
 
         // === Sort by Level ===

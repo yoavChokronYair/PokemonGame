@@ -9,7 +9,7 @@ namespace PokemonGame.ViewModel
     public class WildPokemonBattleViewModel : INotifyPropertyChanged
     {
         // Constructor
-        public WildPokemonBattleViewModel(PlayerPokemonGeneration team, WildPokemonGenartion rival)
+        public WildPokemonBattleViewModel(PlayerPokemonGeneration team, EnemyPokemonGeneration rival)
         {
             this.Team = team;
             this.Rival = rival;
@@ -36,8 +36,8 @@ namespace PokemonGame.ViewModel
             }
         }
 
-        private WildPokemonGenartion rival;
-        public WildPokemonGenartion Rival
+        private EnemyPokemonGeneration rival;
+        public EnemyPokemonGeneration Rival
         {
             get => rival;
             set

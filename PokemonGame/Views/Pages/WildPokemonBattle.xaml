@@ -36,6 +36,7 @@
                 Grid.RowSpan="6"
                 Grid.Column="0"
                 Grid.ColumnSpan="100"
+                Focusable="False"
                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                 Source="/Images/BattleBackground.png"
                 Stretch="Fill" />
