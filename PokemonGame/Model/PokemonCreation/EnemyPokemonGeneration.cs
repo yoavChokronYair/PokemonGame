@@ -44,6 +44,7 @@ namespace PokemonGame.Model.PokemonCreation
         public PokemonType[] Types { get; set;}
         public bool IsFainted { get; set; }
         public StatusType StatusType { get; set; }
+        public int CatchRate { get; set; }
 
 
         // Constructors
@@ -111,10 +112,12 @@ namespace PokemonGame.Model.PokemonCreation
             
             // Abilities & Types
             AbilityIndex = randomHelper.GetAbilityNumber();
+            Types = new PokemonType[2];
             Types[0] = pokemon.Type1;
             Types[1] = pokemon.Type2;
             IsFainted = false;
             StatusType = StatusType.None;
+            this.CatchRate = pokemon.CatchRate;
         }
     }
 }

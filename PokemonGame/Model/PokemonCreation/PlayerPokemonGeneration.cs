@@ -40,6 +40,7 @@ namespace PokemonGame.Model.PokemonCreation
         public int PokemonXP { get; set; }
         public StatusType StatusType { get; set; }
         public bool IsFainted { get; set; }
+        public int CatchRate {  get; set; }
 
         // === Constructors ===
         //for all pokemons that are created by catching them

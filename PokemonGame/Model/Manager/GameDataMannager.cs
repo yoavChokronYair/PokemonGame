@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.Items;
 using PokemonGame.Model.Data.NpcData;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace PokemonGame.Model.Manager
         public CaughtPokemonDataList CaughtPokemonData { get; set; }//public property to access CaughtPokemonData
         public PlayerDataList PlayerData { get; set; }
         public RivalDataList RivalData {  get; set; }
+        public PokeBallDataList PokeballData { get; set; }
         private GameDataManager() { } // Private constructor
 
         private static GameDataManager instance;
@@ -43,6 +45,7 @@ namespace PokemonGame.Model.Manager
             CaughtPokemonData = LoadJson<CaughtPokemonDataList>("CaughtPokemons.json");
             PlayerData = LoadJson<PlayerDataList>("Players.json");
             RivalData = LoadJson<RivalDataList>("Npc/Rivals.json");
+            PokeballData = LoadJson<PokeBallDataList>("Items/Pokeballs.json");
         }
 
         private T LoadJson<T>(string filePath)

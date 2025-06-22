@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PokemonGame.Views.PokemonBattle
+namespace PokemonGame.Views.UserControls.PokemonBattle
 {
     public partial class OpponentPokemon : UserControl, INotifyPropertyChanged
     {

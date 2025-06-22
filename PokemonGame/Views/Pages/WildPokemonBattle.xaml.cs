@@ -1,12 +1,14 @@
 ﻿using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
 using PokemonGame.Model.Manager;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
 using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using static PokemonGame.Model.Helper.BattleCaculater;
+
 
 namespace PokemonGame.Views.Pages
 {
@@ -95,6 +97,14 @@ namespace PokemonGame.Views.Pages
             _viewModel.RivalCurrentHp = Math.Max(0, newHp);
 
             // Optional: refresh UI if needed
+        }
+
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (BattleCalculator.IsCaught(_wildPokemon, GameDataManager.Instance.PokeballData.Pokeballs[0]))
+            {
+                MessageBox.Show("caught");
+            }
         }
     }
 }

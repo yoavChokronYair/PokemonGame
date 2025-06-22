@@ -34,10 +34,10 @@ namespace PokemonGame.Interface
          int CurrentHp { get; set; }
          IStatValues IVs { get;  set; }
          IStatValues EVs { get; set; }
+         int CatchRate { get; set; }
 
          // === Combat Data ===
          Dictionary<MoveData, int> Moves { get; set; }
-         int PokemonXP { get; set; }
          StatusType StatusType { get; set; }
          bool IsFainted { get; set; }
     }

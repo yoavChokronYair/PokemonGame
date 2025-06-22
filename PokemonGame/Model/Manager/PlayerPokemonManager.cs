@@ -49,8 +49,9 @@ namespace PokemonGame.Model.Manager
                 return true;
             }
             return false;
-        }
 
+        }
+       
         // === Get by ID ===
         public PlayerPokemonGeneration GetPokemonById(int id)
         {
