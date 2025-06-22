@@ -18,10 +18,10 @@ namespace PokemonGame.Views.Pages
     /// <summary>
     /// Interaction logic for NewGame.xaml
     /// </summary>
-    public partial class NewGame : Page
+    public partial class NewGameView : Page
     {
         //ToDo:create real login format like in the game
-        public NewGame()
+        public NewGameView()
         {
             InitializeComponent();
         }

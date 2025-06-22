@@ -1,23 +1,23 @@
-﻿
+﻿using PokemonGame.Enums;
 using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
-using System.Collections.Generic;
 
 namespace PokemonGame.Interface
 {
-    internal interface IBotBattle
+    public interface IBotBattle
     {
-        void updateData();
-        int ActivePokemonHp{ get; }
-        List<EnemyPokemonGeneration> RivalTeam { get; }
-        EnemyPokemonGeneration ActivePokemon { get; }
-        List<bool> IsFainted { get; }
+        int _ActivePokemonHp{ get; set; }
+        EnemyPokemonGeneration _ActivePokemon { get; set; }
+        int UpdateData(PlayerPokemonGeneration playerPokemon, BattleCalculator.MoveResult moveResult,int currentHp);
+        bool HasProirerty();
         void ChooseNextPokemon();          // Called when a Pokémon faints
-        MoveData ChooseMove(); // Called to select a move during battle
-        void OnBattleEnd(bool won);
-        void HealPokemon(string item);
+        bool ShouldSwitchPokemon();
         void SwitchPokemon();
-        bool ShouldSwitchPokemon(PlayerPokemonGeneration playerPokemon);
-        bool HasProirerty(PlayerPokemonGeneration playerPokemonGenaration);
+        MoveData ChooseMove(); // Called to select a move during battle
+        int HealPokemon(string item);
+        (double, StatusType) ExecuteMove();
+        void ReceiveDamage();
+        int EndTurn();
     }
 }

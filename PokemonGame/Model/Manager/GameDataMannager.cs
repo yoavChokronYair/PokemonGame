@@ -38,12 +38,12 @@ namespace PokemonGame.Model.Manager
         }
         public void LoadAllData()
         {
-            MapData = LoadJson<MapDataList>("Maps.json");
+            MapData = LoadJson<MapDataList>("Maps/Maps.json");
             PokemonData = LoadJson<PokemonDataList>("Pokemons.json");
-            RouteData = LoadJson<RouteDataList>("Routes.json");
+            RouteData = LoadJson<RouteDataList>("Maps/Routes.json");
             MoveData = LoadJson<MoveDataList>("Moves.json");
-            CaughtPokemonData = LoadJson<CaughtPokemonDataList>("CaughtPokemons.json");
-            PlayerData = LoadJson<PlayerDataList>("Players.json");
+            CaughtPokemonData = LoadJson<CaughtPokemonDataList>("Player/CaughtPokemons.json");
+            PlayerData = LoadJson<PlayerDataList>("Player/Players.json");
             RivalData = LoadJson<RivalDataList>("Npc/Rivals.json");
             PokeballData = LoadJson<PokeBallDataList>("Items/Pokeballs.json");
         }

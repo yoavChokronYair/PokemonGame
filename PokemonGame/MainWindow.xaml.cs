@@ -4,8 +4,8 @@ using PokemonGame.Model.Helper;
 using PokemonGame.Model.Manager;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
-using PokemonGame.Views.Pages;
 using System;
+using PokemonGame.Views.Pages; 
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,7 +44,7 @@ namespace PokemonGame
 
         private async Task ScrollDownAsync()
         {
-            const int tileSize = 32;
+            const int tileSize = 30;
             const int step = 24;     // pixels per frame
             const int delay = 1;    // milliseconds per frame
 
@@ -67,7 +67,7 @@ namespace PokemonGame
 
         private async Task ScrollUpAsync()
         {
-            const int tileSize = 32;
+            const int tileSize = 30;
             const int step = 24;
             const int delay = 1;
 
@@ -90,7 +90,7 @@ namespace PokemonGame
 
         private async Task ScrollLeftAsync()
         {
-            const int tileSize = 32;
+            const int tileSize = 30;
             const int step = 24;
             const int delay = 1;
 
@@ -113,7 +113,7 @@ namespace PokemonGame
 
         private async Task ScrollRightAsync()
         {
-            const int tileSize = 32;
+            const int tileSize = 30;
             const int step = 24;
             const int delay = 1;
 
@@ -134,25 +134,6 @@ namespace PokemonGame
             MapTransform.X = 0;
         }
 
-        private async void UpButton_Click(object sender, RoutedEventArgs e)
-        {
-            await ScrollUpAsync();
-        }
-
-        private async void DownButton_Click(object sender, RoutedEventArgs e)
-        {
-            GameDataManager.Instance.SaveAllData();
-        }
-
-        private async void LeftButton_Click(object sender, RoutedEventArgs e)
-        {
-            await ScrollLeftAsync();
-        }
-
-        private async void RightButton_Click(object sender, RoutedEventArgs e)
-        {
-            await ScrollRightAsync();
-        }
         private async void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -191,7 +172,7 @@ namespace PokemonGame
                         {
                             // Navigate to the battle view with the encounter
                             Encounter encounter = routeEncounterViewModel.GetRandomEncounter("Route 1", "grass");
-                            MainFrame.Navigate(new WildPokemonBattle(encounter));
+                            MainFrame.Navigate(new WildPokemonBattleView(encounter));
                         }
                     }
                 }

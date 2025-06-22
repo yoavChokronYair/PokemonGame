@@ -1,29 +1,34 @@
-﻿using PokemonGame.Model.Data;
+﻿using PokemonGame.Model.BattleSystem.Bot;
+using PokemonGame.Model.BattleSystem.Player;
+using PokemonGame.Model.Data;
 using PokemonGame.Model.PokemonCreation;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
 namespace PokemonGame.ViewModel
 {
-    public class WildPokemonBattleViewModel : INotifyPropertyChanged
+    public class WildPokemonBattleViewModel :ViewModelBase
     {
-        // Constructor
-        public WildPokemonBattleViewModel(PlayerPokemonGeneration team, EnemyPokemonGeneration rival)
+        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival)
         {
-            this.Team = team;
-            this.Rival = rival;
-            this.Gender = rival.IsMale ? "♂" : "♀";
-            this.TeamCurrentHp = team.CurrentHp;
-            this.RivalCurrentHp = rival.CurrentHp;
-            this.Moves = team.Moves.Keys.ToList();
-            this.Type = "None";
+            Team = team;
+            Rival = rival;
+            Gender = team._ActivePokemon.IsMale ? "♂" : "♀";
+            TeamCurrentHp = team._ActivePokemonHp;
+            RivalCurrentHp = rival._ActivePokemonHp;
+            MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
+            .Select(kvp => new MoveViewModel
+            {
+                Name = kvp.Key.ename,
+                MaxPP = kvp.Value,
+                CurrentPP = kvp.Value,
+                Type = kvp.Key.Type.ToString()
+            }));
         }
-
-        // Properties
-
-        private PlayerPokemonGeneration team;
-        public PlayerPokemonGeneration Team
+        private PlayerPokemonBot team;
+        public PlayerPokemonBot Team
         {
             get => team;
             set
@@ -35,9 +40,8 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
-
-        private EnemyPokemonGeneration rival;
-        public EnemyPokemonGeneration Rival
+        private WildPokemonBot rival;
+        public WildPokemonBot Rival
         {
             get => rival;
             set
@@ -49,7 +53,6 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
-
         private string gender;
         public string Gender
         {
@@ -91,62 +94,20 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
-        private List<MoveData> moves;
-        public List<MoveData> Moves
-        {
-            get => moves;
-            set
-            {
-                if (moves != value)
-                {
-                    moves = value;
-                    OnPropertyChanged(nameof(Moves));
-                }
-            }
-        }
-        private int currentPP;
-        public int CurrentPP
-        {
-            get => currentPP;
-            set
-            {
-                if (currentPP != value)
-                {
-                    currentPP = value;
-                    OnPropertyChanged(nameof(CurrentPP));
-                }
-            }
-        }
-        private int maxPP;
-        public int MaxPP
-        {
-            get => maxPP;
-            set
-            {
-                if (maxPP != value)
-                {
-                    maxPP = value;
-                    OnPropertyChanged(nameof(maxPP));
-                }
-            }
-        }
-        private string type;
-        public string Type
-        {
-            get => type;
-            set
-            {
-                if (type != value)
-                {
-                    type = value;
-                    OnPropertyChanged(nameof(type));
-                }
-            }
-        }
-        // INotifyPropertyChanged implementation
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        private ObservableCollection<MoveViewModel> moveList { get; set; }
+        public ObservableCollection<MoveViewModel> MoveList
+        {
+            get => moveList;
+            set
+            {
+                if (moveList != value)
+                {
+                    moveList = value;
+                    OnPropertyChanged(nameof(MoveList));
+                
+                }
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Interface;
+using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.Data;
 using PokemonGame.Model.Data.Items;
 using PokemonGame.Model.PokemonCreation;
@@ -10,36 +11,36 @@ namespace PokemonGame.Model.Helper
     public static class BattleCalculator
     {
         private static readonly Random _rand = new Random();
+        public static MoveResult result = new MoveResult();
         // Result of move execution
         public class MoveResult
         {
             public int Damage { get; set; }
             public bool IsSwitch { get; set; } = false;
-            public bool IsStatusMove { get; set; } = false;
-            public string StatusEffect { get; set; } = null; // You can expand this for status names
+            public StatusType StatusEffect { get; set; } = StatusType.None; // You can expand this for status names
         }
         public static MoveResult ExecuteMove(IPokemon defender, IPokemon attacker, MoveData move)
         {
-            var result = new MoveResult();
 
             switch (move.CategoryEn)
             {
                 case "Physical":
                 case "Special":
-                    result.Damage = CalculateDamage(defender, attacker, move);
+                    CalculateDamage(defender, attacker, move);
+                    result.StatusEffect = StatusType.None;
+                    result.IsSwitch = false;
                     break;
 
                 case "Status":
                     result.Damage = 0;
-                    result.IsStatusMove = true;
-                    // TODO: Implement status effect application here, example:
-                    // result.StatusEffect = move.StatusEffectName;
+                    result.StatusEffect = GetStatusFromPokemon(move);
+                    result.IsSwitch = false;
                     break;
 
                 case "Switch":
                     result.Damage = 0;
                     result.IsSwitch = true;
-                    // TODO: Implement switch logic outside this method
+                    result.StatusEffect = StatusType.None;
                     break;
 
                 default:
@@ -50,8 +51,28 @@ namespace PokemonGame.Model.Helper
 
             return result;
         }
+        public static StatusType GetStatusFromPokemon(MoveData move)
+        {
+            //ToDo:Make sure every move activets in the same turn
+            if(move.ename == "Will‑O‑Wisp") {
+                return StatusType.Burn;
+            }
+            if(move.ename == "Poison Powder" || move.ename == "Toxic" || move.ename == "Poison Gas")
+            {
+                return StatusType.Poison;
+            }
+            if (move.ename == "Hypnosis" || move.ename == "Sleep Powder" || move.ename == "Spore" || move.ename == "Yawn")
+            {
+                return StatusType.Sleep;
+            }
+            if (move.ename == "Stun Spore" || move.ename == "Thunder Wave" || move.ename == "Body Slam" || move.ename == "static")
+            {
+                return StatusType.Paralysis;
+            }
+            return StatusType.None;           
+        }
 
-        private static int CalculateDamage(IPokemon defender, IPokemon attacker, MoveData move)
+        private static void CalculateDamage(IPokemon defender, IPokemon attacker, MoveData move)
         {
             int level = attacker.Level;
             int power = move.Power;
@@ -79,13 +100,14 @@ namespace PokemonGame.Model.Helper
 
             // Calculate total damage
             double totalDamage = baseDamage * effectiveness * stab * crit * random;
-
-            return Math.Max(1, (int)Math.Floor(totalDamage)); // minimum damage is 1
+            result.Damage = Math.Max(1, (int)Math.Floor(totalDamage));
         }
 
         // Other methods unchanged:
-        public static bool DoesMoveHit(IMove move)
+        public static bool DoesMoveHit(MoveData move)
         {
+            if(result.StatusEffect == StatusType.Sleep || result.StatusEffect == StatusType.Freeze) return false;
+            
             return _rand.Next(0, 100) < move.Accuracy;
         }
 
@@ -155,11 +177,30 @@ namespace PokemonGame.Model.Helper
             double effectiveDef = baseDef * natureMod * otherModifiers;
             return (int)Math.Floor(effectiveDef);
         }
-        public static bool IsCaught(IPokemon pokemon,PokeballData pokeball)
+        public static double GetStatusBonus(IPokemon pokemon)
         {
-            //ToDO:add a status condition
-            int statusBonus = 1;
-            double a = ((3 * pokemon.MaxHP - 2 * pokemon.CurrentHp) * pokemon.CatchRate * pokeball.CatchRateModifier) / (3 * pokemon.MaxHP);
+            switch (pokemon.StatusType)
+            {
+                case StatusType.Sleep:
+                     return 2.5;    
+                case StatusType.Freeze:
+                     return 2.5;
+                case StatusType.Paralysis:
+                    return 1.5;
+                case StatusType.Burn:
+                    return 1.5;
+                case StatusType.Poison:
+                    return 1.5;
+                default:
+                    return 1;
+            }
+        }
+        public static bool IsCaught(WildPokemonBot pokemonBot,PokeballData pokeball)
+        {
+            IPokemon pokemon = pokemonBot._ActivePokemon;
+            int hp = pokemonBot._ActivePokemonHp;
+            double statusBonus = GetStatusBonus(pokemon);
+            double a = ((3 * pokemon.MaxHP - 2 * hp) * pokemon.CatchRate * pokeball.CatchRateModifier) / (3 * pokemon.MaxHP);
             a *= statusBonus;
 
             // Auto-catch if a >= 255

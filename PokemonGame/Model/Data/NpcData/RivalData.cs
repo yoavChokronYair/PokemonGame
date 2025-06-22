@@ -1,16 +1,8 @@
-﻿using System;
+﻿using PokemonGame.Model.PokemonCreation;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonGame.Model.Data.NpcData
 {
-    public class RivalDataList
-    {
-        public List<RivalData> Rival { get; set; }
-    }
-
     public class RivalData
     {
         public string Id { get; set; }
@@ -20,11 +12,10 @@ namespace PokemonGame.Model.Data.NpcData
         public string BattleTheme { get; set; }
         public string MapLocation { get; set; }
         public Dialogue Dialogue { get; set; }
-        public List<CaughtPokemonData> Team { get; set; }
+        public List<EnemyPokemonGeneration> Team { get; set; }
         public Reward Rewards { get; set; }
         public bool RematchAvailable { get; set; }
     }
-
     public class Dialogue
     {
         public string PreBattle { get; set; }
@@ -36,6 +27,10 @@ namespace PokemonGame.Model.Data.NpcData
         public int Money { get; set; }
         public List<string> Items { get; set; }
         public string UnlockEvent { get; set; }
+    }
+    public class RivalDataList
+    {
+        public List<RivalData> Rival { get; set; }
     }
 
 }

@@ -8,10 +8,9 @@
         Freeze,     // FRZ
         Paralysis,  // PAR
         Poison,     // PSN
-        BadPoison,  // TOX
         Sleep,      // SLP
-        Faint,      // FAINTED (optional, not a status in battle but useful in logic)
-
+        
+        //ToDo:replace to a different place
         // Volatile status conditions (can stack with primary)
         Confusion,
         Infatuation,

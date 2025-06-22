@@ -5,11 +5,6 @@ using System.Collections.Generic;
 
 namespace PokemonGame.Model.Data
 {
-    public class CaughtPokemonDataList
-    {
-        public List<CaughtPokemonData> CaughtPokemons { get; set; }
-    }
-
     public class CaughtPokemonData
     {
         public string SpriteFileName { get; set; }  // e.g. "pikachu.png"
@@ -35,6 +30,8 @@ namespace PokemonGame.Model.Data
         public GrowthRateType GrowthRate { get; set; } // Placeholder for enum use
         public int Friendship { get; set; } // Base 0, can be used for evolution mechanics
     }
-  
-
+    public class CaughtPokemonDataList
+    {
+        public List<CaughtPokemonData> CaughtPokemons { get; set; }
+    }
 }

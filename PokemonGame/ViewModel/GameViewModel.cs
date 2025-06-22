@@ -20,11 +20,11 @@ namespace PokemonGame.ViewModel
 
         public Dictionary<TileType, ImageSource> TileImages = new Dictionary<TileType, ImageSource>
         {
-            { TileType.Grass, new BitmapImage(new Uri("pack://application:,,,/images/TallGrass.png")) },
-            { TileType.Building, new BitmapImage(new Uri("pack://application:,,,/images/road.png")) },
-            { TileType.Fence, new BitmapImage(new Uri("pack://application:,,,/images/road.png")) },
-            { TileType.Path, new BitmapImage(new Uri("pack://application:,,,/images/road.png")) },
-            { TileType.Tree, new BitmapImage(new Uri("pack://application:,,,/images/road.png")) },
+            { TileType.Grass, new BitmapImage(new Uri("pack://application:,,,/Images/TallGrass.png")) },
+            { TileType.Building, new BitmapImage(new Uri("pack://application:,,,/Images/tile_0.png")) },
+            { TileType.Fence, new BitmapImage(new Uri("pack://application:,,,/Images/tile_0.png")) },
+            { TileType.Path, new BitmapImage(new Uri("pack://application:,,,/Images/tile_0.png")) },
+            { TileType.Tree, new BitmapImage(new Uri("pack://application:,,,/Images/tile_0.png")) },
         };
 
 

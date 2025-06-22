@@ -20,8 +20,6 @@ namespace PokemonGame.Interface
         bool CanRematch { get; } // If trainer can be re-battled
         bool IsDeafeted { get; } // Gym Leader, Rival, Elite Four, etc.\
         bool IsHidden {  get; }
-       
-
         // Location Info
         string EncounterLocation { get; } // Route, Gym, Cave, etc.
         bool IsBattleMandatory { get; } // Must fight to progress

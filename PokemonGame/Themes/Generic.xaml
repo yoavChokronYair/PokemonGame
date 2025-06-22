@@ -1,0 +1,198 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:PokemonGame.Views.Controls">
+
+    <Style TargetType="{x:Type local:BoardBackground}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:BoardBackground}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="28" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="28" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="28" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="28" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Top Left Corner  -->
+                        <Image Grid.Row="0" Grid.Column="0">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/TopLeft.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/TopLeft.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/TopLeft.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Top Middle  -->
+                        <Image
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Stretch="Fill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/TopMiddle.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/TopMiddle.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/TopMiddle.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Top Right Corner  -->
+                        <Image Grid.Row="0" Grid.Column="2">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/TopRight.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/TopRight.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/TopRight.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Middle Left  -->
+                        <Image
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Stretch="Fill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/MiddleLeft.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/MiddleLeft.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/MiddleLeft.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Center  -->
+                        <Image
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Stretch="Fill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/Middle.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/Middle.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/Middle.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Middle Right  -->
+                        <Image
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Stretch="Fill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/MiddleRight.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/MiddleRight.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/MiddleRight.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Bottom Left Corner  -->
+                        <Image Grid.Row="2" Grid.Column="0">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/BottomLeft.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/BottomLeft.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/BottomLeft.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Bottom Middle  -->
+                        <Image
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Stretch="Fill">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/BottomMiddle.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/BottomMiddle.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/BottomMiddle.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  Bottom Right Corner  -->
+                        <Image Grid.Row="2" Grid.Column="2">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Source" Value="/Images/Backgrounds/White/BottomRight.png" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Blue">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Blue/BottomRight.png" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BackgroundType, RelativeSource={RelativeSource TemplatedParent}}" Value="Red">
+                                            <Setter Property="Source" Value="/Images/Backgrounds/Red/BottomRight.png" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <!--  ContentPresenter for inner content  -->
+                        <ContentPresenter Grid.Row="1" Grid.Column="1" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

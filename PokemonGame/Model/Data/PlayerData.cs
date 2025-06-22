@@ -1,12 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+
 namespace PokemonGame.Model.Data
 {
-    public class PlayerDataList
-    {
-        public List<PlayerData> Players { get; set; }
-    }
 
     public class PlayerData
     {
@@ -53,13 +49,16 @@ namespace PokemonGame.Model.Data
     public class MapState
     {
         public bool CutTreeCleared { get; set; }
-        // Add other flags for different maps here as needed
     }
 
     public class TimeStateData
     {
         public DateTime CurrentTime { get; set; }
         public string TimeOfDay { get; set; }
+    }
+    public class PlayerDataList
+    {
+        public List<PlayerData> Players { get; set; }
     }
 
 }

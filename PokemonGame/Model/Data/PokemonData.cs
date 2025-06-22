@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using PokemonGame.Enums;
 using PokemonGame.Model.Manager;
@@ -15,20 +14,17 @@ namespace PokemonGame.Model.Data
         public string Ability1 { get; set; }
         public string Ability2 { get; set; }
         public string HiddenAbility { get; set; }
-
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
         public int SpAtk { get; set; }
         public int SpDef { get; set; }
         public int Speed { get; set; }
-
         public int CatchRate { get; set; }
         public int BaseFriendship { get; set; }
         public int BaseExp { get; set; }
         public string GrowthRate { get; set; }
         public double MaleGenderPercent { get; set; }
-
         public List<LevelUpMove> Moves { get; set; } = new List<LevelUpMove>();
         public List<EvolutionData> Evolution { get; set; } = new List<EvolutionData>();
 
@@ -55,7 +51,6 @@ namespace PokemonGame.Model.Data
     {
         public List<PokemonData> Starters { get; set; } = new List<PokemonData>();
         public List<PokemonData> Pokemons { get; set; } = new List<PokemonData>();
-
         public List<PokemonData> AllPokemons
         {
             get
