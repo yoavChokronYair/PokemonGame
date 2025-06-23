@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PokemonGame.ViewModel;
+using PokemonGame.ViewModel.BattleMenu;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -14,6 +16,15 @@ namespace PokemonGame
     /// </summary>
     public partial class App : Application
     {
-        
+        private readonly NavigationStore navigationStore;
+        public App()
+        {
+            navigationStore = new NavigationStore();
+        }
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            navigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(navigationStore);
+            base.OnStartup(e);
+        }
     }
 }

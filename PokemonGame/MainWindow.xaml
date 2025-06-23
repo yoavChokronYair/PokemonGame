@@ -5,8 +5,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame"
     xmlns:local1="clr-namespace:PokemonGame.Views"
+    xmlns:local2="clr-namespace:PokemonGame.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:PokemonGame.ViewModel"
+    xmlns:vm1="clr-namespace:PokemonGame.ViewModel.BattleMenu"
     Title="MainWindow"
     Width="900"
     Height="600"
@@ -16,6 +18,7 @@
     Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid>
+        
         <Viewbox Stretch="Uniform">
             <Canvas
                 Width="900"
@@ -24,7 +27,6 @@
                 <ItemsControl
                     x:Name="TileGrid"
                     ItemsSource="{Binding UiTiles}"
-                    
                     RenderTransformOrigin="0,0">
                     <ItemsControl.RenderTransform>
                         <TranslateTransform x:Name="MapTransform" />
@@ -52,10 +54,10 @@
                                             BorderThickness="0"
                                             Click="Button_Click">
                                             <Image
-                                                Stretch="Fill"
                                                 Width="30"
                                                 Height="30"
-                                                Source="{Binding}" />
+                                                Source="{Binding}"
+                                                Stretch="Fill" />
                                         </Button>
                                     </DataTemplate>
 

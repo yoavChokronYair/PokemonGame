@@ -1,31 +1,49 @@
-﻿using PokemonGame.Model.BattleSystem.Bot;
+﻿using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
 using PokemonGame.Model.Data;
 using PokemonGame.Model.PokemonCreation;
-using System.Collections.Generic;
+using PokemonGame.ViewModel.BattleMenu;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 
 namespace PokemonGame.ViewModel
 {
-    public class WildPokemonBattleViewModel :ViewModelBase
+    public class WildPokemonBattleViewModel : ViewModelBase
     {
-        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival)
+        // Existing battle properties
+        private readonly NavigationStore _NavigationStore;
+        public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
+        public PokemonBattleMenuViewModel _PokemonBattleMenuViewModel;
+        public ICommand KeyPressedCommand { get; }
+
+        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigationStore)
         {
+            _PokemonBattleMenuViewModel = new PokemonBattleMenuViewModel(navigationStore);
             Team = team;
             Rival = rival;
             Gender = team._ActivePokemon.IsMale ? "♂" : "♀";
             TeamCurrentHp = team._ActivePokemonHp;
             RivalCurrentHp = rival._ActivePokemonHp;
             MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
-            .Select(kvp => new MoveViewModel
-            {
-                Name = kvp.Key.ename,
-                MaxPP = kvp.Value,
-                CurrentPP = kvp.Value,
-                Type = kvp.Key.Type.ToString()
-            }));
+                .Select(kvp => new MoveViewModel
+                {
+                    Name = kvp.Key.ename,
+                    MaxPP = kvp.Value,
+                    CurrentPP = kvp.Value,
+                    Type = kvp.Key.Type.ToString()
+                }));
+            this._NavigationStore = navigationStore;
+            _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+            
+
+        }
+        
+        private void OnCurrentViewModelChanged()
+        {
+            OnPropertyChanged(nameof(CurrentViewModel));
         }
         private PlayerPokemonBot team;
         public PlayerPokemonBot Team
@@ -40,6 +58,7 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
+
         private WildPokemonBot rival;
         public WildPokemonBot Rival
         {
@@ -53,6 +72,7 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
+
         private string gender;
         public string Gender
         {
@@ -95,7 +115,7 @@ namespace PokemonGame.ViewModel
             }
         }
 
-        private ObservableCollection<MoveViewModel> moveList { get; set; }
+        private ObservableCollection<MoveViewModel> moveList;
         public ObservableCollection<MoveViewModel> MoveList
         {
             get => moveList;
@@ -105,9 +125,12 @@ namespace PokemonGame.ViewModel
                 {
                     moveList = value;
                     OnPropertyChanged(nameof(MoveList));
-                
                 }
             }
         }
+
+
+    
+
     }
 }
