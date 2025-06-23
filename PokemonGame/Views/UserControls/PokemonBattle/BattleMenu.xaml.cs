@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokemonGame.Views.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -91,6 +92,14 @@ namespace PokemonGame.Views.UserControls.PokemonBattle
         public static readonly DependencyProperty TypeProperty =
             DependencyProperty.Register(nameof(Type), typeof(string), typeof(BattleMenu), new PropertyMetadata("None"));
 
+        public BackgroundType BackgroundType
+        {
+            get => (BackgroundType)GetValue(BackgroundTypeProperty);
+            set => SetValue(BackgroundTypeProperty, value);
+        }
+
+        public static readonly DependencyProperty BackgroundTypeProperty =
+            DependencyProperty.Register("BackgroundType", typeof(BackgroundType), typeof(BattleMenu), new PropertyMetadata(BackgroundType.White));
 
     }
 }

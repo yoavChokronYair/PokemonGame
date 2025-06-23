@@ -12,92 +12,175 @@
     Background="Black"
     mc:Ignorable="d">
     <Grid>
-        <Viewbox Stretch="Uniform">
-            <StackPanel Orientation="Horizontal">
-                <Viewbox Stretch="Uniform">
-                    <controls:BoardBackground
-                        Width="600"
-                        Height="150"
-                        BackgroundType="White">
-                        <UniformGrid>
-                            <TextBlock
-                                Name="FirstMove"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Cursor="Hand"
-                                Text="{Binding Move1, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="600*" />
+            <ColumnDefinition Width="300*" />
+        </Grid.ColumnDefinitions>
+        <Viewbox Grid.Column="0" Stretch="Uniform">
+            <controls:BoardBackground
+                Width="600"
+                Height="150"
+                BackgroundType="{Binding BackgroundType, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <UniformGrid>
+                    <Button
+                        Name="FirstMove"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Content="{Binding Move1, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="White" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="White" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Width="150"
+                                    Height="40"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="20">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
 
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Cursor="Hand"
-                                Text="{Binding Move2, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <Button
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Content="{Binding Move2, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="White" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="White" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Width="150"
+                                    Height="40"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="20">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
 
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Cursor="Hand"
-                                Text="{Binding Move3, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    </Button>
 
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Cursor="Hand"
-                                
-                                Text="{Binding Move4, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                        </UniformGrid>
-                    </controls:BoardBackground>
-                </Viewbox>
-                <Viewbox Stretch="Uniform">
-                    <controls:BoardBackground
-                        Width="300"
-                        Height="150"
-                        BackgroundType="White" />
+                    <Button
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Content="{Binding Move3, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="White" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="White" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Width="150"
+                                    Height="40"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="20">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
 
-                </Viewbox>
-            </StackPanel>
+                    <Button
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Content="{Binding Move4, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="White" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="White" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Width="150"
+                                    Height="40"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="20">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </UniformGrid>
+            </controls:BoardBackground>
         </Viewbox>
-        <Viewbox
-            Grid.Row="1"
-            Grid.RowSpan="2"
-            Grid.Column="3"
-            Stretch="Uniform">
-            <Canvas Width="280" Height="120">
-                <TextBlock
-                    Name="currentPP"
-                    Canvas.Left="146"
-                    Canvas.Top="19"
-                    Width="42"
-                    Height="31"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    FontFamily="pack://application:,,,/Fonts/#Pokemon Classic"
-                    Text="{Binding CurrentPP, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        <Viewbox Grid.Column="1" Stretch="Uniform">
+            <controls:BoardBackground
+                Width="300"
+                Height="150"
+                BackgroundType="{Binding BackgroundType, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Width="125"
+                            Height="50"
+                            FontSize="18"
+                            Text="PP" />
+                        <TextBlock
+                            Name="currentPP"
+                            Height="50"
+                            FontSize="18"
+                            Text="{Binding CurrentPP, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <TextBlock FontSize="18" Text="/" />
+                        <TextBlock
+                            Name="maxPP"
+                            Height="50"
+                            FontSize="18"
+                            Text="{Binding MaxPP, RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-                <TextBlock
-                    Name="maxPP"
-                    Canvas.Left="211"
-                    Canvas.Top="20"
-                    Width="42"
-                    Height="31"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    FontFamily="pack://application:,,,/Fonts/#Pokemon Classic"
-                    Text="{Binding MaxPP, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="18" Text="TYPE/" />
+                        <TextBlock
+                            Name="type"
+                            FontSize="18"
+                            Text="{Binding Type, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    </StackPanel>
+                </StackPanel>
+            </controls:BoardBackground>
 
-                <TextBlock
-                    Name="type"
-                    Canvas.Left="118"
-                    Canvas.Top="78"
-                    Width="100"
-                    Height="30"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    FontFamily="pack://application:,,,/Fonts/#Pokemon Classic"
-                    Text="{Binding Type, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-
-            </Canvas>
         </Viewbox>
-
     </Grid>
 </UserControl>

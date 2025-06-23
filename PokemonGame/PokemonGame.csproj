@@ -174,23 +174,8 @@
     <Compile Include="Views\Pages\NewGameView.xaml.cs">
       <DependentUpon>NewGameView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PokemonBattle\PokemonBattleMenu.xaml.cs">
+    <Compile Include="Views\UserControls\PokemonBattle\PokemonBattleMenu.xaml.cs">
       <DependentUpon>PokemonBattleMenu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PokemonBattle\BattleMenu.xaml.cs">
-      <DependentUpon>BattleMenu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PokemonBattle\HPBar.xaml.cs">
-      <DependentUpon>HPBar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PokemonBattle\OpponentPokemon.xaml.cs">
-      <DependentUpon>OpponentPokemon.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PokemonBattle\PlayersPokemon.xaml.cs">
-      <DependentUpon>PlayersPokemon.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\WildPokemonBattleView.xaml.cs">
-      <DependentUpon>WildPokemonBattleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\PokemonBattle\BattleMenu.xaml.cs">
       <DependentUpon>BattleMenu.xaml</DependentUpon>
@@ -203,6 +188,9 @@
     </Compile>
     <Compile Include="Views\UserControls\PokemonBattle\PlayersPokemon.xaml.cs">
       <DependentUpon>PlayersPokemon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\WildPokemonBattleView.xaml.cs">
+      <DependentUpon>WildPokemonBattleView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -233,45 +221,29 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PokemonBattle\PokemonBattleMenu.xaml">
+    <Page Include="Views\UserControls\PokemonBattle\PokemonBattleMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PokemonBattle\BattleMenu.xaml">
+    <Page Include="Views\UserControls\PokemonBattle\BattleMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PokemonBattle\HPBar.xaml">
+    <Page Include="Views\UserControls\PokemonBattle\HPBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PokemonBattle\OpponentPokemon.xaml">
+    <Page Include="Views\UserControls\PokemonBattle\OpponentPokemon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PokemonBattle\PlayersPokemon.xaml">
+    <Page Include="Views\UserControls\PokemonBattle\PlayersPokemon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\WildPokemonBattleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\UserControls\PokemonBattle\BattleMenu.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\UserControls\PokemonBattle\HPBar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\UserControls\PokemonBattle\OpponentPokemon.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\UserControls\PokemonBattle\PlayersPokemon.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
