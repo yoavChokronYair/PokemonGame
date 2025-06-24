@@ -12,7 +12,7 @@ namespace PokemonGame.Model.BattleSystem.Bot
     {
         private int _activePokemonIndex = 0; // Tracks which Pokémon is currently active in battle
         private PlayerPokemonGeneration _PlayerPokemon {get; set;}
-        private  BattleCalculator.MoveResult _playerMove { get; set;}
+        private  IMoveResult _playerMove { get; set;}
         private Dictionary<EnemyPokemonGeneration,(bool,int)> _RivalTeam  { get; set; }
         //iBotBattle                             
         public int _ActivePokemonHp { get; set; }
@@ -43,7 +43,7 @@ namespace PokemonGame.Model.BattleSystem.Bot
             _ActivePokemon = rivalTeam[0];
             _ActivePokemonHp = _ActivePokemon.MaxHP;
         }
-        public int UpdateData(PlayerPokemonGeneration playerPokemon,BattleCalculator.MoveResult playermove,int currentHp)
+        public int UpdateData(PlayerPokemonGeneration playerPokemon,IMoveResult playermove,int currentHp)
         {
             _PlayerPokemon = playerPokemon;
             _playerMove = playermove;
@@ -109,12 +109,12 @@ namespace PokemonGame.Model.BattleSystem.Bot
         {
             return _ActivePokemonHp;
         }
-        public (double,StatusType) ExecuteMove()
+        public MoveResult ExecuteMove()
         {
             if (!_RivalTeam[_ActivePokemon].Item1)
             { 
                 MoveData Movedata = ChooseMove();
-                BattleCalculator.MoveResult moveResult = BattleCalculator.ExecuteMove(_PlayerPokemon, _ActivePokemon, Movedata);
+                MoveResult moveResult = BattleCalculator.ExecuteMove(_PlayerPokemon, _ActivePokemon, Movedata);
                 if (BattleCalculator.DoesMoveHit(Movedata))
                 {
                     _ActivePokemon.Moves[Movedata] -= 1;
@@ -122,10 +122,11 @@ namespace PokemonGame.Model.BattleSystem.Bot
                     {
                         SwitchPokemon();
                     }
-                    return (moveResult.Damage,moveResult.StatusEffect);
+                    return moveResult;
                 }
             }
-            return (0,StatusType.None);
+            
+            return null;
         }
         public void ReceiveDamage()
         {

@@ -29,7 +29,14 @@ namespace PokemonGame.Views.UserControls.PokemonBattle
 
         public static readonly DependencyProperty Move4Property =
             DependencyProperty.Register(nameof(Move4), typeof(string), typeof(BattleMenu), new PropertyMetadata("-"));
+        public static readonly DependencyProperty CommandProperty =
+             DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(BattleMenu));
 
+        public ICommand Command
+        {
+            get => (ICommand)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
+        }
         public string Move1
         {
             get => (string)GetValue(Move1Property);
@@ -101,5 +108,10 @@ namespace PokemonGame.Views.UserControls.PokemonBattle
         public static readonly DependencyProperty BackgroundTypeProperty =
             DependencyProperty.Register("BackgroundType", typeof(BackgroundType), typeof(BattleMenu), new PropertyMetadata(BackgroundType.White));
 
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Keyboard.Focus(this);
+        }
     }
 }

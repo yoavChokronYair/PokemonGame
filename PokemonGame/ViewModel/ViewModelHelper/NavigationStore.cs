@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemonGame.ViewModel
+namespace PokemonGame.ViewModel.ViewModelHelper
 {
     public class NavigationStore
     {

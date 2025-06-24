@@ -9,14 +9,14 @@ namespace PokemonGame.Interface
     {
         int _ActivePokemonHp{ get; set; }
         EnemyPokemonGeneration _ActivePokemon { get; set; }
-        int UpdateData(PlayerPokemonGeneration playerPokemon, BattleCalculator.MoveResult moveResult,int currentHp);
+        int UpdateData(PlayerPokemonGeneration playerPokemon, IMoveResult moveResult,int currentHp);
         bool HasProirerty();
         void ChooseNextPokemon();          // Called when a Pokémon faints
         bool ShouldSwitchPokemon();
         void SwitchPokemon();
         MoveData ChooseMove(); // Called to select a move during battle
         int HealPokemon(string item);
-        (double, StatusType) ExecuteMove();
+        MoveResult ExecuteMove();
         void ReceiveDamage();
         int EndTurn();
     }

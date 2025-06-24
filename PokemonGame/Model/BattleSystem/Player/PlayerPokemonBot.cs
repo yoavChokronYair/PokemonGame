@@ -16,7 +16,7 @@ namespace PokemonGame.Model.BattleSystem.Player
         //ToDo:fix healing After adding items
         private int _activePokemonIndex = 0; // Tracks which Pokémon is currently active in battle
         private EnemyPokemonGeneration _RivalPokemon { get; set; }
-        private BattleCalculator.MoveResult _playerMove { get; set; }
+        private MoveResult _playerMove { get; set; }
         private Dictionary<PlayerPokemonGeneration, (bool, int)> _Team { get; set; }
         //iBotBattle                             
         public int _ActivePokemonHp { get; set; }
@@ -42,8 +42,12 @@ namespace PokemonGame.Model.BattleSystem.Player
         private void ReceiveDamage()
         {
             _ActivePokemonHp -= _playerMove.Damage; // Simple damage logic
+            if (_ActivePokemon.StatusType != StatusType.None)
+            {
+                _ActivePokemon.StatusType = _playerMove.StatusEffect;
+            }
         }
-        public int UpdateData(EnemyPokemonGeneration playerPokemon, BattleCalculator.MoveResult Rivalmove, int currentHp)
+        public int UpdateData(EnemyPokemonGeneration playerPokemon, MoveResult Rivalmove, int currentHp)
         {
             this._RivalPokemon = playerPokemon;
             this._playerMove = Rivalmove;
@@ -79,22 +83,21 @@ namespace PokemonGame.Model.BattleSystem.Player
         {
             return _ActivePokemonHp;
         }
-        public (double, StatusType) ExecuteMove(MoveData moveData)
+        public MoveResult ExecuteMove(MoveData moveData)
         {
             if (!_Team[_ActivePokemon].Item1)
             {
-                BattleCalculator.MoveResult moveResult = BattleCalculator.ExecuteMove(_RivalPokemon, _ActivePokemon, moveData);
+                MoveResult moveResult = BattleCalculator.ExecuteMove(_RivalPokemon, _ActivePokemon, moveData);
                 if (BattleCalculator.DoesMoveHit(moveData))
                 {
-                    _ActivePokemon.Moves[moveData] -= 1;
                     if (moveResult.IsSwitch)
                     {
 
                     }
-                    return (moveResult.Damage, moveResult.StatusEffect);
+                    return moveResult;
                 }
             }
-            return (0, StatusType.None);
+            return new MoveResult() ;
         }
         public int EndTurn()
         {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PokemonGame.Enums;
+using PokemonGame.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,5 +37,7 @@ namespace PokemonGame.ViewModel
             get => type;
             set { if (type != value) { type = value; OnPropertyChanged(nameof(Type)); } }
         }
+
+        
     }
 }

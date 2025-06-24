@@ -16,15 +16,6 @@ namespace PokemonGame
     /// </summary>
     public partial class App : Application
     {
-        private readonly NavigationStore navigationStore;
-        public App()
-        {
-            navigationStore = new NavigationStore();
-        }
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            navigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(navigationStore);
-            base.OnStartup(e);
-        }
+        
     }
 }

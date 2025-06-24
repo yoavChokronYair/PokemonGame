@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using PokemonGame.ViewModel.ViewModelHelper;
 using System;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace PokemonGame.ViewModel.BattleMenu
@@ -9,20 +11,22 @@ namespace PokemonGame.ViewModel.BattleMenu
         private readonly NavigationStore _NavigationStore;
         public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
         public ICommand KeyPressedCommand { get; }
-        public PokemonBattleMenuViewModel(NavigationStore navigationStore)
+        public readonly ObservableCollection<MoveViewModel> moveList;
+        WildPokemonBattleViewModel WildPokemonBattleViewModel;
+        public PokemonBattleMenuViewModel(NavigationStore navigationStore, WildPokemonBattleViewModel wildPokemonBattleViewModel)
         {
-           
+            this.WildPokemonBattleViewModel = wildPokemonBattleViewModel;
+            this.moveList = wildPokemonBattleViewModel.MoveList;
             KeyPressedCommand = new RelayCommand<KeyEventArgs>(OnKeyPressed);
-            
+            foreach (var move in wildPokemonBattleViewModel.MoveList)
+            {
+                move.Name = string.Join(" ", move.Name.Replace(">", "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            }
             UpdateMenuTexts();
             this._NavigationStore = navigationStore;
-            _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
         }
-        private void OnCurrentViewModelChanged()
-        {
-            OnPropertyChanged(nameof(CurrentViewModel));
-        }
+       
         private readonly string[,] baseMenuTexts = new string[,]
         {
             { "FIGHT", "BAG" },
@@ -101,7 +105,8 @@ namespace PokemonGame.ViewModel.BattleMenu
                         selectedCol++;
                     break;
                 case System.Windows.Input.Key.Enter:
-                    _NavigationStore.CurrentViewModel = new MoveViewModel();
+                    if(FightText.Contains(">"))
+                        _NavigationStore.CurrentViewModel = new PokemonBattleMovesetMenuViewModel(_NavigationStore,WildPokemonBattleViewModel);
                     break;
             }
             UpdateMenuTexts();
@@ -113,7 +118,6 @@ namespace PokemonGame.ViewModel.BattleMenu
             BagText = (selectedRow == 0 && selectedCol == 1) ? $"> {baseMenuTexts[0, 1]}" : baseMenuTexts[0, 1];
             PokemonText = (selectedRow == 1 && selectedCol == 0) ? $"> {baseMenuTexts[1, 0]}" : baseMenuTexts[1, 0];
             RunText = (selectedRow == 1 && selectedCol == 1) ? $"> {baseMenuTexts[1, 1]}" : baseMenuTexts[1, 1];
-
             // Reset all visibilities
 
         }

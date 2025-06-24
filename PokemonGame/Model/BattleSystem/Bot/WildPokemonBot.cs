@@ -11,7 +11,7 @@ namespace PokemonGame.Model.BattleSystem.Bot
     public class WildPokemonBot : IBotBattle
     {
         private PlayerPokemonGeneration PlayerPokemon { get; set; }
-        private BattleCalculator.MoveResult playerMove;
+        private IMoveResult playerMove;
         //iBotBattle                             
         public int _ActivePokemonHp { get; set; }
         public EnemyPokemonGeneration _ActivePokemon { get; set; }
@@ -22,14 +22,11 @@ namespace PokemonGame.Model.BattleSystem.Bot
             _ActivePokemon = pokemon;
             _ActivePokemonHp = _ActivePokemon.MaxHP;
         }
-        public int UpdateData(PlayerPokemonGeneration playerPokemon, BattleCalculator.MoveResult playermove, int currentHp)
+        public int UpdateData(PlayerPokemonGeneration playerPokemon, IMoveResult playermove, int currentHp)
         {
             this.PlayerPokemon = playerPokemon;
             this.playerMove = playermove;
-            if (_ActivePokemon.StatusType == StatusType.None)
-            {
-                _ActivePokemon.StatusType = playerMove.StatusEffect;
-            }
+           
             if (!HasProirerty())
             {
                 ReceiveDamage();
@@ -66,16 +63,18 @@ namespace PokemonGame.Model.BattleSystem.Bot
             }
             if (availableMoves.Count == 0)
                 return null;
-            return availableMoves.OrderBy(m => m.Power).FirstOrDefault();
+            availableMoves = availableMoves.OrderBy(m => m.Power).ToList();
+            availableMoves.Reverse();
+            return availableMoves.FirstOrDefault();
         }
         public int HealPokemon(string item)
         {
             return _ActivePokemonHp;
         }
-        public (double, StatusType) ExecuteMove()
+        public MoveResult ExecuteMove()
         {
             MoveData Movedata = ChooseMove();
-            BattleCalculator.MoveResult moveResult = BattleCalculator.ExecuteMove(PlayerPokemon, _ActivePokemon, Movedata);
+            MoveResult moveResult = BattleCalculator.ExecuteMove(PlayerPokemon, _ActivePokemon, Movedata);
             if (BattleCalculator.DoesMoveHit(Movedata))
             {
                 _ActivePokemon.Moves[Movedata] -= 1;
@@ -83,13 +82,20 @@ namespace PokemonGame.Model.BattleSystem.Bot
                 {
                     SwitchPokemon();
                 }
-                return (moveResult.Damage, moveResult.StatusEffect);
-            }   
-            return (0, StatusType.None);
+                return moveResult;
+            }
+            moveResult.Damage = 0;
+            moveResult.IsSwitch = false;
+            moveResult.StatusEffect = StatusType.None;
+            return moveResult;
         }
         public void ReceiveDamage()
         {
             _ActivePokemonHp -= playerMove.Damage; // Simple damage logic
+            if (_ActivePokemon.StatusType != StatusType.None)
+            {
+                _ActivePokemon.StatusType = playerMove.StatusEffect;
+            }
         }
         public int EndTurn()
         {

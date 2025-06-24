@@ -7,6 +7,7 @@ using PokemonGame.Model.Manager;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
 using PokemonGame.ViewModel.BattleMenu;
+using PokemonGame.ViewModel.ViewModelHelper;
 using PokemonGame.Views.UserControls.PokemonBattle;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace PokemonGame.Views.Pages
                 GameDataManager.Instance.PokemonData.AllPokemons.FirstOrDefault(p => p.Name == encounter.Pokemon)
             );
             _navigationStore = new NavigationStore();
-            _navigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_navigationStore);
+           
             var basePokemon = GameDataManager.Instance.PokemonData.AllPokemons
                 .FirstOrDefault(p => p.Number == wildPokemon.PokedexID);
             PlayerPokemonGeneration playerPokemon = PlayerPokemonManager.Instance._playerPokemonTeam[0];
@@ -50,13 +51,14 @@ namespace PokemonGame.Views.Pages
             DataContext = _viewModel;
             SetPokemonImages(wildPokemon.PokedexID);
         }
-      
+       
         private void SetPokemonImages(int pokedexId)
         {
             var uri = new Uri($"pack://application:,,,/Images/GenOnePokemon/{pokedexId}.png");
             var image = new BitmapImage(uri);
             WildPokemonImage.Source = image;
             WildPokemonImageTeam.Source = _playerPokemon._ActivePokemon.Image;
+           
         }
 
         private void Page_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

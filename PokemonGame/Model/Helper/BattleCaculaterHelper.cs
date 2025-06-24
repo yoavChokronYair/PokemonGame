@@ -8,17 +8,24 @@ using System;
 using System.Linq;
 namespace PokemonGame.Model.Helper
 {
+    public class MoveResult:IMoveResult
+    {
+        public MoveResult()
+        {
+            Damage = 0;
+            IsSwitch = false;
+            StatusEffect = StatusType.None;
+        }
+
+        public int Damage { get; set; }
+        public bool IsSwitch { get; set; } 
+        public StatusType StatusEffect { get; set; }// You can expand this for status names
+    }
     public static class BattleCalculator
     {
         private static readonly Random _rand = new Random();
         public static MoveResult result = new MoveResult();
         // Result of move execution
-        public class MoveResult
-        {
-            public int Damage { get; set; }
-            public bool IsSwitch { get; set; } = false;
-            public StatusType StatusEffect { get; set; } = StatusType.None; // You can expand this for status names
-        }
         public static MoveResult ExecuteMove(IPokemon defender, IPokemon attacker, MoveData move)
         {
 
@@ -100,7 +107,7 @@ namespace PokemonGame.Model.Helper
 
             // Calculate total damage
             double totalDamage = baseDamage * effectiveness * stab * crit * random;
-            result.Damage = Math.Max(1, (int)Math.Floor(totalDamage));
+            result.Damage = (int)totalDamage;
         }
 
         // Other methods unchanged:

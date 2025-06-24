@@ -1,9 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Enums;
+using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
 using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel.BattleMenu;
+using PokemonGame.ViewModel.ViewModelHelper;
+using PokemonGame.Views.UserControls.PokemonBattle;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -11,38 +16,64 @@ using System.Windows.Input;
 
 namespace PokemonGame.ViewModel
 {
+    public class MoveResults : IMoveResult
+    {
+        public MoveResults(int damage,bool isSwitch,StatusType statusType)
+        {
+            Damage = damage;
+            IsSwitch = isSwitch;
+            StatusEffect = statusType;
+        }
+
+        public int Damage { get; set; }
+        public bool IsSwitch { get; set; }
+        public StatusType StatusEffect { get; set; }// You can expand this for status names
+    }
     public class WildPokemonBattleViewModel : ViewModelBase
     {
         // Existing battle properties
         private readonly NavigationStore _NavigationStore;
         public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
-        public PokemonBattleMenuViewModel _PokemonBattleMenuViewModel;
         public ICommand KeyPressedCommand { get; }
 
         public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigationStore)
         {
-            _PokemonBattleMenuViewModel = new PokemonBattleMenuViewModel(navigationStore);
+            MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
+                .Select(kvp => new MoveViewModel
+                {
+                    Name = kvp.Key.ename.Replace(">", ""), // Remove all '>' characters
+                    MaxPP = kvp.Value,
+                    CurrentPP = kvp.Value,
+                    Type = kvp.Key.Type.ToString()
+                }));
+            _NavigationStore = navigationStore;
+            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(navigationStore,this);
             Team = team;
             Rival = rival;
             Gender = team._ActivePokemon.IsMale ? "♂" : "♀";
             TeamCurrentHp = team._ActivePokemonHp;
             RivalCurrentHp = rival._ActivePokemonHp;
-            MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
-                .Select(kvp => new MoveViewModel
-                {
-                    Name = kvp.Key.ename,
-                    MaxPP = kvp.Value,
-                    CurrentPP = kvp.Value,
-                    Type = kvp.Key.Type.ToString()
-                }));
-            this._NavigationStore = navigationStore;
             _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
             
 
         }
-        
+
+        public void MakeMove(string move)
+        {
+            PlayerPokemonGeneration player = Team._ActivePokemon;
+            EnemyPokemonGeneration enemy = Rival._ActivePokemon;
+            MoveData moveData = player.Moves.Keys.FirstOrDefault(m => m.ename == move);
+            MoveResult moveResult = Team.ExecuteMove(moveData);
+            MoveResults teamMove = new MoveResults(moveResult.Damage,moveResult.IsSwitch,moveResult.StatusEffect);
+            MoveResult  RivalMove = Rival.ExecuteMove();
+            RivalCurrentHp = Rival.UpdateData(player, teamMove, (int)rivalCurrentHp);
+            TeamCurrentHp = Team.UpdateData(enemy,RivalMove,(int)teamCurrentHp);
+            RivalCurrentHp = Rival.EndTurn();
+            TeamCurrentHp = Team.EndTurn();
+        }
         private void OnCurrentViewModelChanged()
         {
+            
             OnPropertyChanged(nameof(CurrentViewModel));
         }
         private PlayerPokemonBot team;

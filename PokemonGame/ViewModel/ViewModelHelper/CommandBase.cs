@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModel
+namespace PokemonGame.ViewModel.ViewModelHelper
 {
     public abstract class CommandBase:ICommand
     {

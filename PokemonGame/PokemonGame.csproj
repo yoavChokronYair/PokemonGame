@@ -125,6 +125,7 @@
     <Compile Include="Interface\IBotBattle.cs" />
     <Compile Include="Interface\ICatchable.cs" />
     <Compile Include="Interface\IEvolvable.cs" />
+    <Compile Include="Interface\IMoveResult.cs" />
     <Compile Include="Interface\Ipokemon.cs" />
     <Compile Include="Interface\IStatusAffectable.cs" />
     <Compile Include="Interface\ITrainer.cs" />
@@ -157,19 +158,17 @@
     <Compile Include="Model\Data\MapData.cs" />
     <Compile Include="Model\Data\PokemonData.cs" />
     <Compile Include="ViewModel\BattleMenu\PokemonBattleMenuViewModel .cs" />
-    <Compile Include="ViewModel\CommandBase.cs" />
+    <Compile Include="ViewModel\BattleMenu\PokemonBattleMovesetMenuViewModel.cs" />
+    <Compile Include="ViewModel\ViewModelHelper\CommandBase.cs" />
     <Compile Include="ViewModel\GameViewModel.cs" />
-    <Compile Include="ViewModel\KeyDownToCommandBehavior.cs" />
+    <Compile Include="ViewModel\ViewModelHelper\KeyDownToCommandBehavior.cs" />
     <Compile Include="ViewModel\MoveViewModel.cs" />
-    <Compile Include="ViewModel\NavigationStore.cs" />
+    <Compile Include="ViewModel\ViewModelHelper\NavigationStore.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="ViewModel\WildPokemonBattleViewModel.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\ItemsUserControl.xaml.cs">
       <DependentUpon>ItemsUserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\BattleMenuPage.xaml.cs">
-      <DependentUpon>BattleMenuPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\NewGameView.xaml.cs">
       <DependentUpon>NewGameView.xaml</DependentUpon>
@@ -210,10 +209,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ItemsUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Pages\BattleMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

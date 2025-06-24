@@ -16,7 +16,7 @@
     Background="White"
     KeyDown="Page_KeyDown"
     mc:Ignorable="d">
-    
+
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vm1:PokemonBattleMenuViewModel}">
@@ -32,8 +32,20 @@
                     PokemonText="{Binding PokemonText}"
                     RunText="{Binding RunText}" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:MoveViewModel}">
-                <PokemonBattle:BattleMenu Width="900" Height="150" />
+            <DataTemplate DataType="{x:Type vm1:PokemonBattleMovesetMenuViewModel}">
+                <PokemonBattle:BattleMenu
+                    Width="900"
+                    Height="150"
+                    Command= "{Binding KeyPressedCommand}"
+                    CurrentPP="{Binding MoveList[0].CurrentPP}"
+                    Focusable="True"
+                    IsTabStop="True"
+                    MaxPP="{Binding MoveList[0].MaxPP}"
+                    Move1="{Binding MoveList[0].Name}"
+                    Move2="{Binding MoveList[1].Name}"
+                    Move3="{Binding MoveList[2].Name}"
+                    Move4="{Binding MoveList[3].Name}"
+                    Type="{Binding MoveList[0].Type}" />
             </DataTemplate>
         </Grid.Resources>
 
