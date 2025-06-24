@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Enums;
+﻿using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
@@ -8,10 +7,9 @@ using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel.BattleMenu;
 using PokemonGame.ViewModel.ViewModelHelper;
-using PokemonGame.Views.UserControls.PokemonBattle;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace PokemonGame.ViewModel

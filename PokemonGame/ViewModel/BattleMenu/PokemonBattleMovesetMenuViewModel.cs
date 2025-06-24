@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace PokemonGame.ViewModel.BattleMenu
@@ -64,50 +65,47 @@ namespace PokemonGame.ViewModel.BattleMenu
 
         private void OnKeyPressed(KeyEventArgs e)
         {
-            int maxRow = baseMenuTexts.GetLength(0) - 1;
-            int maxCol = baseMenuTexts.GetLength(1) - 1;
 
             int newRow = selectedRow;
             int newCol = selectedCol;
 
-            int targetIndex = newRow * (maxCol + 1) + newCol;
+            int targetIndex = newRow * (1 + 1) + newCol;
             
 
             switch (e.Key)
             {
                 case System.Windows.Input.Key.Up:
-                    if (selectedRow > 0)
-                        newRow--;
+                    if (selectedRow == 1)
+                        newRow = 0;
                     break;
                 case System.Windows.Input.Key.Down:
-                    if (selectedRow < maxRow)
-                        newRow++;
+                    if (selectedRow == 0)
+                        newRow = 1;
                     break;
                 case System.Windows.Input.Key.Left:
-                    if (selectedCol > 0)
-                        newCol--;
+                    if (selectedCol == 1)
+                        newCol = 0;
                     break;
                 case System.Windows.Input.Key.Right:
-                    if (selectedCol < maxCol)
-                        newCol++;
+                    if (selectedCol == 0)
+                        newCol = 1;
                     break;
                 case System.Windows.Input.Key.Escape:
                     _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView);
                     return;
-                case System.Windows.Input.Key.Enter:
-                    
-                        if (baseMenuTexts[newRow, newCol] == "-")
-                        {
-                            selectedRow = newRow;
-                            selectedCol = newCol;
-                            return;
-                        }
-                        wildPokemonBattleView.MakeMove(baseMenuTexts[newRow,newCol]);
-                        foreach (var move in wildPokemonBattleView.MoveList)
-                        {
-                            move.Name = string.Join(" ", move.Name.Replace(">", "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-                        }
-                        _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView);
+                case System.Windows.Input.Key.Enter:    
+                    if (baseMenuTexts[newRow, newCol] == "-")
+                    {
+                        selectedRow = newRow;
+                        selectedCol = newCol;
+                        return;
+                    }
+                     wildPokemonBattleView.MakeMove(baseMenuTexts[newRow,newCol]);
+                    foreach (var move in wildPokemonBattleView.MoveList)
+                    {
+                        move.Name = string.Join(" ", move.Name.Replace(">", "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    }
+                    _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView);
 
                     
                     break;
@@ -115,10 +113,10 @@ namespace PokemonGame.ViewModel.BattleMenu
             }
             if (baseMenuTexts[newRow, newCol] == "-")
             {
-                selectedRow = newRow;
-                selectedCol = newCol;
                 return;
             }
+            selectedRow = newRow;
+            selectedCol = newCol;
             // Prevent movement if the target move is "-"
             UpdateMenuTexts();
         }

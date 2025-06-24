@@ -1,20 +1,14 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Model.BattleSystem.Bot;
+﻿using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
 using PokemonGame.Model.Data;
-using PokemonGame.Model.Helper;
 using PokemonGame.Model.Manager;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
-using PokemonGame.ViewModel.BattleMenu;
 using PokemonGame.ViewModel.ViewModelHelper;
-using PokemonGame.Views.UserControls.PokemonBattle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -74,7 +68,6 @@ namespace PokemonGame.Views.Pages
                 return;
             }
         }
-
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             Keyboard.Focus(this); 

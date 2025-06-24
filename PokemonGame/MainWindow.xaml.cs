@@ -18,8 +18,6 @@ namespace PokemonGame
     public partial class MainWindow : Window
     {
         private readonly GameViewModel _viewModel;
-
-
         public MainWindow()
         {
 
