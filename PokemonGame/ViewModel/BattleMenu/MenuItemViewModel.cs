@@ -19,7 +19,6 @@ namespace PokemonGame.ViewModel.BattleMenu
                 }
             }
         }
-
         public string FormattedLabel => IsSelected ? $"> {Label}" : Label;
 
         public MenuItemViewModel(string label)

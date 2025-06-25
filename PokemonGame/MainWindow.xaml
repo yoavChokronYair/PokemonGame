@@ -12,62 +12,13 @@
     Title="MainWindow"
     Width="900"
     Height="600"
-    d:DataContext="{d:DesignInstance Type=vm:GameViewModel}"
     KeyDown="Window_KeyDown"
     KeyUp="Window_KeyUp"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
-    <Grid>
-        
-        <Viewbox Stretch="Uniform">
-            <Canvas
-                Width="900"
-                Height="600"
-                HorizontalAlignment="Center">
-                <ItemsControl
-                    x:Name="TileGrid"
-                    ItemsSource="{Binding UiTiles}"
-                    RenderTransformOrigin="0,0">
-                    <ItemsControl.RenderTransform>
-                        <TranslateTransform x:Name="MapTransform" />
-                    </ItemsControl.RenderTransform>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ItemsControl ItemsSource="{Binding}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button
-                                            Width="32"
-                                            Height="32"
-                                            Padding="0"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Click="Button_Click">
-                                            <Image
-                                                Width="30"
-                                                Height="30"
-                                                Source="{Binding}"
-                                                Stretch="Fill" />
-                                        </Button>
-                                    </DataTemplate>
+    <Grid ShowGridLines="False">
 
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Canvas>
-        </Viewbox>
+
         <Frame
             x:Name="MainFrame"
             Grid.Row="1"

@@ -17,7 +17,7 @@
     KeyDown="Page_KeyDown"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid ShowGridLines="False">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vm1:PokemonBattleMenuViewModel}">
                 <PokemonBattle:PokemonBattleMenu
@@ -109,9 +109,6 @@
                 MaxHp="{Binding Team._ActivePokemon.MaxHP}"
                 NameText="{Binding Team._ActivePokemon.Species}" />
         </Viewbox>
-
-
-
         <Image
             x:Name="WildPokemonImage"
             Grid.Row="1"

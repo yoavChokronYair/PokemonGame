@@ -32,11 +32,12 @@ namespace PokemonGame
             RouteEncounterHelper routeEncounterViewModel = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
 
             Encounter encounter = routeEncounterViewModel.GetRandomEncounter("Route 1", "grass");
-            MainFrame.Navigate(new WildPokemonBattleView(encounter));
+            //MainFrame.Navigate(new WildPokemonBattleView(encounter));
+            MainFrame.Navigate(new NewGameView());
         }
 
 
-        private async void Window_KeyDown(object sender, KeyEventArgs e)
+        private  void Window_KeyDown(object sender, KeyEventArgs e)
         {
            
         }
