@@ -23,8 +23,6 @@ namespace PokemonGame.Views.Pages
         private readonly WildPokemonBot _wildPokemon;
         private readonly PlayerPokemonBot _playerPokemon;
         private readonly NavigationStore _navigationStore;
-
-
         public WildPokemonBattleView(Encounter encounter)
         {
             InitializeComponent();

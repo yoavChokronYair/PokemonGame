@@ -100,7 +100,6 @@ namespace PokemonGame.Model.PokemonCreation
                     }
                 }
             }
-
             // Gender & Shiny
             IsMale = randomHelper.IsMaleByFemalePercent(species.Rarity);
             IsShiny = randomHelper.IsShiny();

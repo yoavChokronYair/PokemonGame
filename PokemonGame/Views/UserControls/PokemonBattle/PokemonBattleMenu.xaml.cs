@@ -1,7 +1,4 @@
-﻿using System.Web.UI;
-using System.Windows;
-using System.Windows.Controls;
-
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace PokemonGame.Views.UserControls.PokemonBattle
@@ -16,14 +13,23 @@ namespace PokemonGame.Views.UserControls.PokemonBattle
             InitializeComponent();
             
         }
-        public static readonly DependencyProperty CommandProperty =
-    DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(PokemonBattleMenu));
-
-        public ICommand Command
+        public static readonly DependencyProperty DirectionCommandProperty =
+           DependencyProperty.Register(nameof(DirectionCommand), typeof(ICommand), typeof(PokemonBattleMenu));
+        public ICommand DirectionCommand
         {
-            get => (ICommand)GetValue(CommandProperty);
-            set => SetValue(CommandProperty, value);
+            get => (ICommand)GetValue(DirectionCommandProperty);
+            set => SetValue(DirectionCommandProperty, value);
         }
+
+        public static readonly DependencyProperty ConfirmMoveCommandProperty =
+            DependencyProperty.Register(nameof(ConfirmMoveCommand), typeof(ICommand), typeof(PokemonBattleMenu));
+
+        public ICommand ConfirmMoveCommand
+        {
+            get => (ICommand)GetValue(ConfirmMoveCommandProperty);
+            set => SetValue(ConfirmMoveCommandProperty, value);
+        }
+
         public static readonly DependencyProperty FightTextProperty =
     DependencyProperty.Register(nameof(FightText), typeof(string), typeof(PokemonBattleMenu), new PropertyMetadata("FIGHT"));
 

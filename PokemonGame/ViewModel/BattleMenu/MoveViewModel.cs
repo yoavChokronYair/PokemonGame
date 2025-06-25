@@ -1,21 +1,24 @@
-﻿using PokemonGame.Enums;
-using PokemonGame.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PokemonGame.ViewModel.ViewModelHelper;
 
-namespace PokemonGame.ViewModel
+namespace PokemonGame.ViewModel.BattleMenu
 {
     public class MoveViewModel : ViewModelBase
     {
-        private string name;
-        public string Name
+        private string baseName;
+        public string BaseName
         {
-            get => name;
-            set { if (name != value) { name = value; OnPropertyChanged(nameof(Name)); } }
+            get => baseName;
+            set { if (baseName != value) { baseName = value; OnPropertyChanged(nameof(BaseName)); OnPropertyChanged(nameof(DisplayName)); } }
         }
+
+        private bool isSelected;
+        public bool IsSelected
+        {
+            get => isSelected;
+            set { if (isSelected != value) { isSelected = value; OnPropertyChanged(nameof(IsSelected)); OnPropertyChanged(nameof(DisplayName)); } }
+        }
+
+        public string DisplayName => IsSelected ? $"> {BaseName}" : BaseName;
 
         private int maxPP;
         public int MaxPP

@@ -157,14 +157,13 @@
     <Compile Include="Enums\PokemonType.cs" />
     <Compile Include="Model\Data\MapData.cs" />
     <Compile Include="Model\Data\PokemonData.cs" />
+    <Compile Include="ViewModel\BattleMenu\MenuItemViewModel.cs" />
     <Compile Include="ViewModel\BattleMenu\PokemonBattleMenuViewModel .cs" />
+    <Compile Include="ViewModel\BattleMenu\MenuSelectionViewModel.cs" />
     <Compile Include="ViewModel\BattleMenu\PokemonBattleMovesetMenuViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelHelper\CommandBase.cs" />
-    <Compile Include="ViewModel\GameViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelHelper\KeyDownToCommandBehavior.cs" />
-    <Compile Include="ViewModel\MoveViewModel.cs" />
+    <Compile Include="ViewModel\BattleMenu\MoveViewModel.cs" />
     <Compile Include="ViewModel\ViewModelHelper\NavigationStore.cs" />
-    <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="ViewModel\ViewModelHelper\ViewModelBase.cs" />
     <Compile Include="ViewModel\WildPokemonBattleViewModel.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\ItemsUserControl.xaml.cs">
@@ -176,8 +175,8 @@
     <Compile Include="Views\UserControls\PokemonBattle\PokemonBattleMenu.xaml.cs">
       <DependentUpon>PokemonBattleMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UserControls\PokemonBattle\BattleMenu.xaml.cs">
-      <DependentUpon>BattleMenu.xaml</DependentUpon>
+    <Compile Include="Views\UserControls\PokemonBattle\BattleMenuMoveset.xaml.cs">
+      <DependentUpon>BattleMenuMoveset.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\PokemonBattle\HPBar.xaml.cs">
       <DependentUpon>HPBar.xaml</DependentUpon>
@@ -220,7 +219,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UserControls\PokemonBattle\BattleMenu.xaml">
+    <Page Include="Views\UserControls\PokemonBattle\BattleMenuMoveset.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
