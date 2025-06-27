@@ -17,6 +17,9 @@
     Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid ShowGridLines="False">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <UniformGrid x:Name="MapGrid" />
+        </ScrollViewer>
 
 
         <Frame

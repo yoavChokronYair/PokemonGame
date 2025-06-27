@@ -2,10 +2,9 @@
 {
     public enum TileType
     {
-        Grass = 'c',
-        Path = 'p',
-        Building = 'b',
-        Tree = 't',
-        Fence = 'f'
+        Empty,
+        Path,
+        Grass,
+        Water,
     }
 }

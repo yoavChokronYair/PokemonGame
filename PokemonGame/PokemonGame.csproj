@@ -145,7 +145,7 @@
     <Compile Include="Interface\IStatValues.cs" />
     <Compile Include="Model\Helper\RandomHelper.cs" />
     <Compile Include="Model\Manager\PlayerPokemonManager.cs" />
-    <Compile Include="Model\Map\MapGenaration.cs" />
+    <Compile Include="Model\Map\GameMap.cs" />
     <Compile Include="Model\Helper\NatureHelper.cs" />
     <Compile Include="Model\PokemonCreation\StatValues.cs" />
     <Compile Include="Model\PokemonCreation\PlayerPokemonGeneration.cs" />
