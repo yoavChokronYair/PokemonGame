@@ -119,6 +119,7 @@
     <Compile Include="Constants\TypeEffectivenessChartConstants.cs" />
     <Compile Include="Enums\AbillityType.cs" />
     <Compile Include="Enums\BotLevel.cs" />
+    <Compile Include="Enums\Direction.cs" />
     <Compile Include="Enums\GrowthRateType.cs" />
     <Compile Include="Enums\NatureType.cs" />
     <Compile Include="Enums\StatusType.cs" />
@@ -162,12 +163,17 @@
     <Compile Include="ViewModel\BattleMenu\MenuSelectionViewModel.cs" />
     <Compile Include="ViewModel\BattleMenu\PokemonBattleMovesetMenuViewModel.cs" />
     <Compile Include="ViewModel\BattleMenu\MoveViewModel.cs" />
+    <Compile Include="ViewModel\MapViewModel.cs" />
+    <Compile Include="ViewModel\TileViewModel.cs" />
     <Compile Include="ViewModel\ViewModelHelper\NavigationStore.cs" />
     <Compile Include="ViewModel\ViewModelHelper\ViewModelBase.cs" />
     <Compile Include="ViewModel\WildPokemonBattleViewModel.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\ItemsUserControl.xaml.cs">
       <DependentUpon>ItemsUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\MapViewPage.xaml.cs">
+      <DependentUpon>MapViewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\NewGameView.xaml.cs">
       <DependentUpon>NewGameView.xaml</DependentUpon>
@@ -208,6 +214,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ItemsUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\MapViewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -537,4 +547,9 @@
     <Error Condition="!Exists('..\packages\CommunityToolkit.Mvvm.8.4.0\build\CommunityToolkit.Mvvm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CommunityToolkit.Mvvm.8.4.0\build\CommunityToolkit.Mvvm.targets'))" />
   </Target>
   <Import Project="..\packages\CommunityToolkit.Mvvm.8.4.0\build\CommunityToolkit.Mvvm.targets" Condition="Exists('..\packages\CommunityToolkit.Mvvm.8.4.0\build\CommunityToolkit.Mvvm.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties resources_4maps_4maps_1json__JsonSchema="`" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

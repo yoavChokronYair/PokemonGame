@@ -12,14 +12,11 @@
     Title="MainWindow"
     Width="900"
     Height="600"
-    KeyDown="Window_KeyDown"
     KeyUp="Window_KeyUp"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid ShowGridLines="False">
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <UniformGrid x:Name="MapGrid" />
-        </ScrollViewer>
+        
 
 
         <Frame

@@ -1,14 +1,13 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PokemonGame.Model.Map
 {
     public struct GameMap
     {
         public TileType[][] Tiles { get; set; } // Indexed as Tiles[y][x]
+        public string Name { get; set; }
         public static GameMap GenerateGameMapFromRegions(MapData def)
         {
             // Start with an "empty" map
@@ -19,7 +18,6 @@ namespace PokemonGame.Model.Map
                 for (int x = 0; x < def.Width; x++)
                     tiles[y][x] = TileType.Empty;
             }
-
             // Fill in regions
             foreach (var region in def.Regions)
             {
@@ -40,8 +38,7 @@ namespace PokemonGame.Model.Map
                     }
                 }
             }
-
-            return new GameMap { Tiles = tiles };
+            return new GameMap { Tiles = tiles, Name = def.Name };
         }
 
 

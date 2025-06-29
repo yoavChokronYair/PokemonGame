@@ -1,9 +1,9 @@
 ﻿{
   "maps": [
     {
-      
-      "width": 10,
-      "height": 10,
+      "Name": "Route 1",
+      "width": 19,
+      "height": 15,
       "regions": [
         {
           "name": "Path",
@@ -19,8 +19,65 @@
           "width": 3,
           "height": 3
         }
-      ]
+      ],
+      "LeftMap": "Route 2",
+      "RightMap": "Route 3",
+      "UpMap": "None",
+      "DownMap": "None"
+
+    },
+    {
+      "Name": "Route 2",
+      "width": 19,
+      "height": 15,
+      "regions": [
+        {
+          "name": "Path",
+          "startX": 2,
+          "startY": 0,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "name": "Grass",
+          "startX": 0,
+          "startY": 6,
+          "width": 3,
+          "height": 3
+        }
+      ],
+
+      "LeftMap": "None",
+      "RightMap": "Route 1",
+      "UpMap": "None",
+      "DownMap": "None"
+
+    },
+    {
+      "Name": "Route 3",
+      "width": 19,
+      "height": 15,
+      "regions": [
+        {
+          "name": "Path",
+          "startX": 2,
+          "startY": 0,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "name": "Grass",
+          "startX": 0,
+          "startY": 6,
+          "width": 3,
+          "height": 3
+        }
+      ],
       
+      "LeftMap": "Route 1",
+      "RightMap": "None",
+      "UpMap": "None",
+      "DownMap": "None"
     }
   ]
 }
