@@ -24,9 +24,7 @@ namespace PokemonGame
 
     public partial class MainWindow : Window
     {
-        private GameMap currentGameMap;
-        private MapData currentMapData;
-        Encounter encounter;
+        
         public MainWindow()
         {
 
@@ -44,12 +42,9 @@ namespace PokemonGame
             }
             // Navigate to the battle view with the encounter
             RouteEncounterHelper routeEncounterViewModel = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
-
-             encounter = routeEncounterViewModel.GetRandomEncounter("Route 1", "grass");
+            this.DataContext = new MainWindowViewModel();
             //MainFrame.Navigate(new WildPokemonBattleView(encounter));
             //MainFrame.Navigate(new NewGameView());
-            MainFrame.Navigate(new MapViewPage());
-            GameMap gameMap = GameMap.GenerateGameMapFromRegions(GameDataManager.Instance.MapData.maps[0]);
         }
     
 

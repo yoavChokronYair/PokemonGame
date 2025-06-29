@@ -66,6 +66,10 @@ namespace PokemonGame.ViewModel.BattleMenu
             {
                 _NavigationStore.CurrentViewModel = new PokemonBattleMovesetMenuViewModel(_NavigationStore, WildPokemonBattleViewModel);
             }
+            if (selected == "RUN")
+            {
+                WildPokemonBattleViewModel._PageNavigation.CurrentViewModel = WildPokemonBattleViewModel.mainWindow;
+            }
         }
 
         private void UpdateSelection()

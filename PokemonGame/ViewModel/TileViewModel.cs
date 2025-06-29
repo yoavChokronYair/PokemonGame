@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using static PokemonGame.Model.Map.GameMap;
 
 namespace PokemonGame.ViewModel
 {
@@ -92,7 +93,16 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
-
+        public void UpdateFrom(TileRenderInfo info)
+        {
+            Width = info.Width;
+            Height = info.Height;
+            X1 = info.X1;
+            Y1 = info.Y1;
+            X2 = info.X2;
+            Y2 = info.Y2;
+            Color = info.Color;
+        }
 
 
     }

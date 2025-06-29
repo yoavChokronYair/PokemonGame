@@ -7,14 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:PokemonGame.ViewModel"
     Title="MapViewPage"
-    Focusable="True"
-    
     d:DataContext="{d:DesignInstance Type=vm:MapViewModel}"
     d:DesignHeight="600"
     d:DesignWidth="900"
+    Background="White"
+    Focusable="True"
     KeyDown="Page_KeyDown"
     Loaded="Page_Loaded"
-    Background="White"
     mc:Ignorable="d">
     <Page.InputBindings>
         <KeyBinding
@@ -36,36 +35,38 @@
 
     </Page.InputBindings>
     <Grid>
-        <ItemsControl ItemsSource="{Binding TileList}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Columns="{Binding Columns}" Rows="{Binding Rows}" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+        <Viewbox Stretch="Uniform">
+            <ItemsControl ItemsSource="{Binding TileList}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding Columns}" Rows="{Binding Rows}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Rectangle
-                            Width="{Binding Width}"
-                            Height="{Binding Height}"
-                            Fill="{Binding Color}"
-                            Stroke="Black"
-                            StrokeThickness="1" />
-                        <Canvas Width="{Binding Width}" Height="{Binding Height}">
-                            <Line
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+
+                            <Rectangle
+                                Width="{Binding Width}"
+                                Height="{Binding Height}"
+                                Fill="{Binding Color}"
                                 Stroke="Black"
-                                StrokeThickness="1"
-                                X1="{Binding X1}"
-                                X2="{Binding X2}"
-                                Y1="{Binding Y1}"
-                                Y2="{Binding Y2}" />
-                        </Canvas>
-                    </Grid>
-
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                                StrokeThickness="1" />
+                            <Canvas Width="{Binding Width}" Height="{Binding Height}">
+                                <Line
+                                    Stroke="Black"
+                                    StrokeThickness="1"
+                                    X1="{Binding X1}"
+                                    X2="{Binding X2}"
+                                    Y1="{Binding Y1}"
+                                    Y2="{Binding Y2}" />
+                            </Canvas>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Viewbox>
 
     </Grid>
 </Page>

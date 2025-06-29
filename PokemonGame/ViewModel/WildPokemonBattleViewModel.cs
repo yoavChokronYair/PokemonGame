@@ -28,9 +28,16 @@ namespace PokemonGame.ViewModel
     {
         // Existing battle properties
         private readonly NavigationStore _NavigationStore;
+        public readonly NavigationStore _PageNavigation;
+        public ViewModelBase PageCurrentViewModel => _PageNavigation.CurrentViewModel;
+
         public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
-        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigationStore)
+        public MapViewModel mainWindow;
+        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigationStore,MapViewModel mapViewModel)
         {
+            mainWindow = mapViewModel;
+            _PageNavigation = navigationStore;
+            _PageNavigation.CurrentViewModel = navigationStore.CurrentViewModel;
             MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
                 .Select(kvp => new MoveViewModel
                 {
@@ -39,8 +46,8 @@ namespace PokemonGame.ViewModel
                     CurrentPP = kvp.Value,
                     Type = kvp.Key.Type.ToString()
                 })); 
-            _NavigationStore = navigationStore;
-            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(navigationStore,this);
+            _NavigationStore = new NavigationStore();
+            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore,this);
             Team = team;
             Rival = rival;
             Gender = team._ActivePokemon.IsMale ? "♂" : "♀";

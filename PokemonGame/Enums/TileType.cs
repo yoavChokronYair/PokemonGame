@@ -6,5 +6,6 @@
         Path,
         Grass,
         Water,
+        Black 
     }
 }

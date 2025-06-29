@@ -10,11 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 namespace PokemonGame.Views.Pages
 {
     /// <summary>
@@ -25,8 +20,8 @@ namespace PokemonGame.Views.Pages
         public MapViewPage()
         {
             InitializeComponent();
-            MapViewModel map = new MapViewModel(GameDataManager.Instance.MapData.maps[0]);
-            this.DataContext = map;
+            
+
         }
 
         private void Page_KeyDown(object sender, KeyEventArgs e)

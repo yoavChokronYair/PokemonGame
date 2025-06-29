@@ -12,16 +12,24 @@
     Title="MainWindow"
     Width="900"
     Height="600"
+    d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
     KeyUp="Window_KeyUp"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid ShowGridLines="False">
-        
 
-
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type vm:WildPokemonBattleViewModel}">
+                <local2:WildPokemonBattleView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:MapViewModel}">
+                <local2:MapViewPage />
+            </DataTemplate>
+        </Grid.Resources>
         <Frame
-            x:Name="MainFrame"
-            Grid.Row="1"
-            Grid.Column="0" />
+        Grid.Row="5"
+        Grid.ColumnSpan="2"
+        NavigationUIVisibility="Hidden"
+        Content="{Binding CurrentViewModel}" />  
     </Grid>
 </Window>

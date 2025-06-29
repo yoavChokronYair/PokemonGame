@@ -13,6 +13,7 @@ namespace PokemonGame.Model.Data
         public string LeftMap {  get; set; }
         public string RightMap {  get; set; }
         public string UpMap {  get; set; }
+        public string DownMap { get; set; }
     }
     public class MapDataList
     {

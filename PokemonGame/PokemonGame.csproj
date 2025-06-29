@@ -163,6 +163,7 @@
     <Compile Include="ViewModel\BattleMenu\MenuSelectionViewModel.cs" />
     <Compile Include="ViewModel\BattleMenu\PokemonBattleMovesetMenuViewModel.cs" />
     <Compile Include="ViewModel\BattleMenu\MoveViewModel.cs" />
+    <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />
     <Compile Include="ViewModel\TileViewModel.cs" />
     <Compile Include="ViewModel\ViewModelHelper\NavigationStore.cs" />
@@ -251,7 +252,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\Map\Tile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
