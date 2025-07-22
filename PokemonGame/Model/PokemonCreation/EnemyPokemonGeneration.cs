@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Media.Imaging;
-using PokemonGame.Enums;
+﻿using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Manager;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonGame.Model.PokemonCreation
 {
@@ -33,8 +34,8 @@ namespace PokemonGame.Model.PokemonCreation
         public bool IsShiny { get; set; }
 
         // Images
-        public BitmapImage Sprite { get; set; }
-        public BitmapImage Image { get; set; }
+        public string Sprite { get; set; }
+        public string Image { get; set; }
 
 
         // Other Attributes
@@ -106,8 +107,8 @@ namespace PokemonGame.Model.PokemonCreation
 
             // Images
             string uri = $"pack://application:,,,/Images/GenOnePokemon/{PokedexID}.png";
-            Sprite = new BitmapImage(new Uri(uri));
-            Image = new BitmapImage(new Uri(uri));
+            Sprite = uri;
+            Image = uri;
             
             // Abilities & Types
             AbilityIndex = randomHelper.GetAbilityNumber();
@@ -118,5 +119,61 @@ namespace PokemonGame.Model.PokemonCreation
             StatusType = StatusType.None;
             this.CatchRate = pokemon.CatchRate;
         }
+        public EnemyPokemonGeneration(
+    int pokedexID,
+    string pokemonName,
+    int level,
+    int currentHP,
+    int maxHP,
+    bool isShiny,
+    bool isMale,
+    NatureType nature,
+    AbilityType ability,
+    PokemonType[] types,
+    IStatValues ivs,
+    IStatValues evs,
+    List<string> moveNames,
+    StatusType status,
+    string spriteFileName,
+    string imageFileName
+)
+        {
+            ID = RandomPokemonIDHelper.GenerateRandomSID();
+            PokedexID = pokedexID;
+            Species = pokemonName;
+            Nickname = Species;
+            Level = level;
+            CurrentHp = currentHP;
+            MaxHP = maxHP;
+            IsShiny = isShiny;
+            IsMale = isMale;
+            Nature = nature;
+            Ability = ability;
+            Types = types;
+            IVs = ivs;
+            EVs = evs;
+            StatusType = status;
+            IsFainted = false;
+
+            // Image URIs
+            Sprite = $"pack://application:,,,/Images/GenOnePokemon/{spriteFileName}";
+            Image = $"pack://application:,,,/Images/GenOnePokemon/{imageFileName}";
+
+            // Generate Moves dictionary
+            Moves = new Dictionary<MoveData, int>();
+            foreach (string moveName in moveNames)
+            {
+                MoveData move = GameDataManager.Instance.MoveData.Moves.FirstOrDefault(m => m.ename.Equals(moveName, StringComparison.OrdinalIgnoreCase));
+                if (move != null && !Moves.ContainsKey(move))
+                {
+                    Moves.Add(move, move.PP);
+                }
+            }
+
+            // Retrieve catch rate if needed
+            var pokemonData = GameDataManager.Instance.PokemonData.AllPokemons.FirstOrDefault(p => p.Number == pokedexID);
+            CatchRate = pokemonData?.CatchRate ?? 150;
+        }
+
     }
 }

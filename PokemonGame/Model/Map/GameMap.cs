@@ -1,5 +1,7 @@
-﻿using PokemonGame.Enums;
+﻿using MaterialDesignColors.Recommended;
+using PokemonGame.Enums;
 using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.NpcData;
 using PokemonGame.Model.Manager;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,9 @@ namespace PokemonGame.Model.Map
 {
     public class GameMap
     {
+        public TileType[,,] MultiLayerTiles; // [layer, y, x]
+
+
         public MapData currentMapData;
         public TileType[][] Tiles { get; set; }
         public string Name { get; set; }
@@ -24,19 +29,25 @@ namespace PokemonGame.Model.Map
             GenerateGameMapFromRegions(def, visited);
         }
 
-        public void GenerateGameMapFromRegions(MapData def, HashSet<string> visited)
+        public void GenerateGameMapFromRegions(MapData def, HashSet<string> visited, int trainerVision = 8)
         {
             if (visited.Contains(def.Name)) return;
             visited.Add(def.Name);
 
-            var tiles = new TileType[def.Height][];
+            // 2 layers: [0] = base layer (terrain), [1] = overlay (trainers, vision, etc.)
+            var tiles = new TileType[2, def.Height, def.Width];
+
+            // Initialize base layer to Empty
             for (int y = 0; y < def.Height; y++)
             {
-                tiles[y] = new TileType[def.Width];
                 for (int x = 0; x < def.Width; x++)
-                    tiles[y][x] = TileType.Empty;
+                {
+                    tiles[0, y, x] = TileType.Empty;
+                    tiles[1, y, x] = TileType.None; // Optional: define `None` for no overlay
+                }
             }
 
+            // Populate terrain tiles into base layer
             foreach (var region in def.Regions)
             {
                 if (!Enum.TryParse<TileType>(region.Name, true, out var type))
@@ -50,15 +61,48 @@ namespace PokemonGame.Model.Map
                         int tileY = region.StartY + y;
 
                         if (tileX >= 0 && tileX < def.Width && tileY >= 0 && tileY < def.Height)
-                            tiles[tileY][tileX] = type;
+                            tiles[0, tileY, tileX] = type;
                     }
                 }
             }
 
-            Tiles = tiles;
+            // Place trainer tile and vision in overlay layer
+            var trainer = GameDataManager.Instance.TrainerData.trainers.FirstOrDefault(t => t.Route == def.Name);
+            if (trainer != null &&
+                trainer.StartX >= 0 && trainer.StartX < def.Width &&
+                trainer.StartY >= 0 && trainer.StartY < def.Height)
+            {
+                tiles[1, trainer.StartY, trainer.StartX] = TileType.Trainer;
+
+                // Trainer vision (assumes facing Up only currently)
+                for (int i = 1; i <= trainerVision; i++)
+                {
+                    int visionX = trainer.StartX;
+                    int visionY = trainer.StartY;
+
+                    switch (Direction.Up) // Replace with: trainer.Direction
+                    {
+                        case Direction.Up:
+                            visionY = trainer.StartY - i;
+                            break;
+                            // Add other directions as needed
+                    }
+
+                    if (visionX < 0 || visionX >= def.Width || visionY < 0 || visionY >= def.Height)
+                        break;
+
+                    // Only overwrite empty overlays
+                    if (tiles[1, visionY, visionX] == TileType.None)
+                        tiles[1, visionY, visionX] = TileType.TrainerVision;
+                }
+            }
+
+            // Save map
+            MultiLayerTiles = tiles; // Replace 'Tiles' with 'MultiLayerTiles' (you’ll need to define this in your class)
             Name = def.Name;
             currentMapData = def;
 
+            // Generate neighbors
             neighborMaps.Clear();
 
             void TryAddNeighbor(string direction, string mapName)
@@ -77,12 +121,17 @@ namespace PokemonGame.Model.Map
             TryAddNeighbor("Down", def.DownMap);
         }
 
-
-
         public TileType GetTileAt(int x, int y)
         {
             if (x >= 0 && x < currentMapData.Width && y >= 0 && y < currentMapData.Height)
-                return Tiles[y][x];
+            {
+                var overlay = MultiLayerTiles[1, y, x];
+                if (overlay != TileType.None)
+                    return overlay;
+
+                return MultiLayerTiles[0, y, x];
+            }
+
             return TileType.Empty;
         }
 
@@ -105,6 +154,7 @@ namespace PokemonGame.Model.Map
                 default: return false;
             }
 
+            // Handle cross-map movement
             if (HandleMapBoundary(ref newX, ref newY, newDirection))
             {
                 x = newX;
@@ -115,6 +165,13 @@ namespace PokemonGame.Model.Map
 
             if (IsWithinBounds(newX, newY))
             {
+                TileType overlay = MultiLayerTiles[1, newY, newX];
+                TileType baseTile = MultiLayerTiles[0, newY, newX];
+                TileType tileToUse = overlay != TileType.None ? overlay : baseTile;
+
+                if (GetBrushForTile(tileToUse) == Brushes.Yellow)
+                    return false;
+
                 x = newX;
                 y = newY;
                 direction = newDirection;
@@ -129,10 +186,26 @@ namespace PokemonGame.Model.Map
             string targetMapName = null;
             int newX = x, newY = y;
 
-            if (x < 0) { targetMapName = currentMapData.LeftMap; newX = Tiles[0].Length - 1; }
-            else if (x >= currentMapData.Width) { targetMapName = currentMapData.RightMap; newX = 0; }
-            else if (y < 0) { targetMapName = currentMapData.UpMap; newY = Tiles.Length - 1; }
-            else if (y >= currentMapData.Height) { targetMapName = currentMapData.DownMap; newY = 0; }
+            if (x < 0)
+            {
+                targetMapName = currentMapData.LeftMap;
+                newX = currentMapData.Width - 1;
+            }
+            else if (x >= currentMapData.Width)
+            {
+                targetMapName = currentMapData.RightMap;
+                newX = 0;
+            }
+            else if (y < 0)
+            {
+                targetMapName = currentMapData.UpMap;
+                newY = currentMapData.Height - 1;
+            }
+            else if (y >= currentMapData.Height)
+            {
+                targetMapName = currentMapData.DownMap;
+                newY = 0;
+            }
 
             if (string.IsNullOrEmpty(targetMapName)) return false;
 
@@ -140,7 +213,7 @@ namespace PokemonGame.Model.Map
             if (newMapData != null)
             {
                 var visited = new HashSet<string>();
-                GenerateGameMapFromRegions(newMapData,visited);
+                GenerateGameMapFromRegions(newMapData, visited);
                 x = newX;
                 y = newY;
                 return true;
@@ -151,11 +224,13 @@ namespace PokemonGame.Model.Map
 
         private bool IsWithinBounds(int x, int y)
         {
-            return x >= 0 && x < currentMapData.Width && y >= 0 && y < currentMapData.Height;
+            return x >= 0 && x < currentMapData.Width &&
+                   y >= 0 && y < currentMapData.Height;
         }
-
-        public List<TileRenderInfo> GetViewportTiles(int centerX, int centerY, int viewWidth, int viewHeight, Direction playerDirection, int tileWidth, int tileHeight)
+        public List<TileRenderInfo> GetViewportTiles(int centerX,int centerY,int viewWidth,int viewHeight,Direction playerDirection,Direction enemyDirection,int tileWidth,int tileHeight)
         {
+            UpdateTrainerVisionOverlay(enemyDirection);
+
             var tiles = new List<TileRenderInfo>();
             int halfWidth = viewWidth / 2;
             int halfHeight = viewHeight / 2;
@@ -182,45 +257,242 @@ namespace PokemonGame.Model.Map
 
                     if (mapX == centerX && mapY == centerY)
                     {
-                        info.Color = Brushes.Red;
-                        info.X1 = tileWidth / 2;
-                        info.Y1 = tileHeight / 2;
-
-                        switch (playerDirection)
-                        {
-                            case Direction.Up: info.X2 = info.X1; info.Y2 = 0; break;
-                            case Direction.Down: info.X2 = info.X1; info.Y2 = tileHeight; break;
-                            case Direction.Left: info.X2 = 0; info.Y2 = info.Y1; break;
-                            case Direction.Right: info.X2 = tileWidth; info.Y2 = info.Y1; break;
-                        }
+                        SetPlayerTileRenderInfo(info, playerDirection, tileWidth, tileHeight);
                     }
 
                     tiles.Add(info);
                 }
             }
 
+            UpdateTrainerTile(tiles, centerX, centerY, viewWidth, viewHeight, enemyDirection, tileWidth, tileHeight);
+            HighlightTrainerDirectionLine(tiles, centerX, centerY, viewWidth, viewHeight, enemyDirection, tileWidth, tileHeight);
+
             return tiles;
         }
-        private TileType GetTileWithNeighborFallback(int x, int y)
+
+        public void UpdateTrainerTile(List<TileRenderInfo> tiles,int centerX,int centerY,int viewWidth,int viewHeight,Direction enemyDirection,int tileWidth,int tileHeight)
         {
-            if (IsWithinBounds(x, y))
-                return Tiles[y][x];
+            TrainerData trainer = GameDataManager.Instance.TrainerData.trainers
+                .FirstOrDefault(m => m.Route == Name);
 
-            if (x < 0 && neighborMaps.TryGetValue("Left", out var leftMap) && y >= 0 && y < currentMapData.Height)
-                return leftMap.GetTileAt(leftMap.currentMapData.Width + x, y);
+            if (trainer == null) return;
 
-            if (x >= currentMapData.Width && neighborMaps.TryGetValue("Right", out var rightMap) && y >= 0 && y < currentMapData.Height)
-                return rightMap.GetTileAt(x - currentMapData.Width, y);
+            int halfWidth = viewWidth / 2;
+            int halfHeight = viewHeight / 2;
 
-            if (y < 0 && neighborMaps.TryGetValue("Up", out var upMap) && x >= 0 && x < currentMapData.Width)
-                return upMap.GetTileAt(x, upMap.currentMapData.Height + y);
+            int trainerRelativeX = trainer.StartX - (centerX - halfWidth);
+            int trainerRelativeY = trainer.StartY - (centerY - halfHeight);
 
-            if (y >= currentMapData.Height && neighborMaps.TryGetValue("Down", out var downMap) && x >= 0 && x < currentMapData.Width)
-                return downMap.GetTileAt(x, y - currentMapData.Height);
+            if (trainerRelativeX < 0 || trainerRelativeX >= viewWidth ||
+                trainerRelativeY < 0 || trainerRelativeY >= viewHeight)
+                return;
 
-            return TileType.Black; // Black tile when there's no neighbor
+            int index = trainerRelativeY * viewWidth + trainerRelativeX;
+            if (index < 0 || index >= tiles.Count) return;
+
+            var info = tiles[index];
+
+            TileType trainerTileType = TileType.Trainer;
+            info.Color = GetBrushForTile(trainerTileType);
+            info.X1 = tileWidth / 2;
+            info.Y1 += tileHeight / 2;
+
+            switch (enemyDirection)
+            {
+                case Direction.Up:
+                    info.X2 = info.X1;
+                    info.Y2 = 0;
+                    break;
+                case Direction.Down:
+                    info.X2 = info.X1;
+                    info.Y2 = tileHeight;
+                    break;
+                case Direction.Left:
+                    info.X2 = 0;
+                    info.Y2 = info.Y1;
+                    break;
+                case Direction.Right:
+                    info.X2 = tileWidth;
+                    info.Y2 = info.Y1;
+                    break;
+            }
         }
 
+        private void HighlightTrainerDirectionLine(List<TileRenderInfo> tiles,int centerX,int centerY,int viewWidth,int viewHeight,Direction enemyDirection,int tileWidth,int tileHeight)
+        {
+            TrainerData trainer = GameDataManager.Instance.TrainerData.trainers
+                .FirstOrDefault(m => m.Route == Name);
+
+            if (trainer == null) return;
+
+            int halfWidth = viewWidth / 2;
+            int halfHeight = viewHeight / 2;
+
+            int trainerRelativeX = trainer.StartX - (centerX - halfWidth);
+            int trainerRelativeY = trainer.StartY - (centerY - halfHeight);
+
+            for (int i = 1; i <= 8; i++)
+            {
+                int x = trainerRelativeX;
+                int y = trainerRelativeY;
+
+                switch (enemyDirection)
+                {
+                    case Direction.Up:
+                        y -= i;
+                        break;
+                    case Direction.Down:
+                        y += i;
+                        break;
+                    case Direction.Left:
+                        x -= i;
+                        break;
+                    case Direction.Right:
+                        x += i;
+                        break;
+                }
+
+                if (x < 0 || x >= viewWidth || y < 0 || y >= viewHeight)
+                    break;
+
+                int index = y * viewWidth + x;
+                if (index >= 0 && index < tiles.Count)
+                {
+                    // Draw based on the overlay tile
+                    int mapX = centerX - halfWidth + x;
+                    int mapY = centerY - halfHeight + y;
+
+                    if (mapX >= 0 && mapX < currentMapData.Width &&
+                        mapY >= 0 && mapY < currentMapData.Height)
+                    {
+                        var overlay = MultiLayerTiles[1, mapY, mapX];
+                        if (overlay == TileType.TrainerVision)
+                        {
+                            tiles[index].Color = GetBrushForTile(TileType.TrainerVision);
+                        }
+                    }
+                }
+            }
+        }
+        public void UpdateTrainerVisionOverlay(Direction direction, int trainerVision = 8)
+        {
+            // Clear old trainer vision
+            for (int y = 0; y < currentMapData.Height; y++)
+            {
+                for (int x = 0; x < currentMapData.Width; x++)
+                {
+                    if (MultiLayerTiles[1, y, x] == TileType.TrainerVision)
+                    {
+                        MultiLayerTiles[1, y, x] = TileType.None;
+                    }
+                }
+            }
+
+            // Find the trainer
+            TrainerData trainer = GameDataManager.Instance.TrainerData.trainers
+                .FirstOrDefault(m => m.Route == Name);
+            if (trainer == null) return;
+
+            int startX = trainer.StartX;
+            int startY = trainer.StartY;
+
+            for (int i = 1; i <= trainerVision; i++)
+            {
+                int x = startX;
+                int y = startY;
+
+                switch (direction)
+                {
+                    case Direction.Up: y -= i; break;
+                    case Direction.Down: y += i; break;
+                    case Direction.Left: x -= i; break;
+                    case Direction.Right: x += i; break;
+                }
+
+                if (x < 0 || x >= currentMapData.Width || y < 0 || y >= currentMapData.Height)
+                    break;
+
+                MultiLayerTiles[1, y, x] = TileType.TrainerVision;
+            }
+        }
+
+        private void SetPlayerTileRenderInfo(TileRenderInfo info, Direction playerDirection, int tileWidth, int tileHeight)
+        {
+            info.Color = Brushes.Red;
+            info.X1 = tileWidth / 2;
+            info.Y1 = tileHeight / 2;
+
+            switch (playerDirection)
+            {
+                case Direction.Up:
+                    info.X2 = info.X1;
+                    info.Y2 = 0;
+                    break;
+                case Direction.Down:
+                    info.X2 = info.X1;
+                    info.Y2 = tileHeight;
+                    break;
+                case Direction.Left:
+                    info.X2 = 0;
+                    info.Y2 = info.Y1;
+                    break;
+                case Direction.Right:
+                    info.X2 = tileWidth;
+                    info.Y2 = info.Y1;
+                    break;
+            }
+        }
+
+        public TileType GetTileWithNeighborFallback(int x, int y)
+        {
+            // If inside current map bounds, return current map tile (overlay if exists)
+            if (x >= 0 && x < currentMapData.Width && y >= 0 && y < currentMapData.Height)
+            {
+                var overlay = MultiLayerTiles[1, y, x];
+                if (overlay != TileType.None)
+                    return overlay;
+
+                return MultiLayerTiles[0, y, x];
+            }
+
+            // Otherwise, check neighbors depending on which boundary is crossed
+            if (x < 0 && neighborMaps.TryGetValue("Left", out var leftMap))
+            {
+                // Translate x,y to left map's local coords
+                int neighborX = leftMap.currentMapData.Width + x; // since x<0, adding width shifts inside neighbor map
+                int neighborY = y;
+                if (neighborX >= 0 && neighborX < leftMap.currentMapData.Width &&
+                    neighborY >= 0 && neighborY < leftMap.currentMapData.Height)
+                    return leftMap.GetTileWithNeighborFallback(neighborX, neighborY);
+            }
+            else if (x >= currentMapData.Width && neighborMaps.TryGetValue("Right", out var rightMap))
+            {
+                int neighborX = x - currentMapData.Width;
+                int neighborY = y;
+                if (neighborX >= 0 && neighborX < rightMap.currentMapData.Width &&
+                    neighborY >= 0 && neighborY < rightMap.currentMapData.Height)
+                    return rightMap.GetTileWithNeighborFallback(neighborX, neighborY);
+            }
+            else if (y < 0 && neighborMaps.TryGetValue("Up", out var upMap))
+            {
+                int neighborX = x;
+                int neighborY = upMap.currentMapData.Height + y;
+                if (neighborX >= 0 && neighborX < upMap.currentMapData.Width &&
+                    neighborY >= 0 && neighborY < upMap.currentMapData.Height)
+                    return upMap.GetTileWithNeighborFallback(neighborX, neighborY);
+            }
+            else if (y >= currentMapData.Height && neighborMaps.TryGetValue("Down", out var downMap))
+            {
+                int neighborX = x;
+                int neighborY = y - currentMapData.Height;
+                if (neighborX >= 0 && neighborX < downMap.currentMapData.Width &&
+                    neighborY >= 0 && neighborY < downMap.currentMapData.Height)
+                    return downMap.GetTileWithNeighborFallback(neighborX, neighborY);
+            }
+
+            // If no neighbor or outside bounds in neighbor map, return black tile (or Empty)
+            return TileType.Black;
+        }
 
         public Brush GetBrushForTile(TileType type)
         {
@@ -231,6 +503,8 @@ namespace PokemonGame.Model.Map
                 case TileType.Water: return Brushes.Blue;
                 case TileType.Empty: return Brushes.White;
                 case TileType.Black: return Brushes.Black;
+                case TileType.Trainer: return Brushes.Yellow;
+                case TileType.TrainerVision:return Brushes.Pink;
                 default: return Brushes.Red;
             }
         }

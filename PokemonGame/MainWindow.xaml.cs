@@ -8,6 +8,7 @@ using PokemonGame.Model.Manager;
 using PokemonGame.Model.Map;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
+using PokemonGame.ViewModel.Map;
 using PokemonGame.Views.Pages; 
 using System.Windows;
 using System.Windows.Controls;

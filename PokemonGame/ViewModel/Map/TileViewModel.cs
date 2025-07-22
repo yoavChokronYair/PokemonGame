@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using static PokemonGame.Model.Map.GameMap;
 
-namespace PokemonGame.ViewModel
+namespace PokemonGame.ViewModel.Map
 {
     public class TileViewModel:ViewModelBase
     {

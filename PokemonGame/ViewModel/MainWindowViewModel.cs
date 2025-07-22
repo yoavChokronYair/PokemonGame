@@ -2,6 +2,7 @@
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Manager;
 using PokemonGame.ViewModel.BattleMenu;
+using PokemonGame.ViewModel.Map;
 using PokemonGame.ViewModel.ViewModelHelper;
 using System;
 using System.Collections.Generic;

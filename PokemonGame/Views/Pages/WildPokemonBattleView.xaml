@@ -95,6 +95,7 @@
             Grid.RowSpan="2"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
+            Source="{Binding ImagePathRival}"
             Visibility="Visible" />
         <Viewbox
             Grid.Row="3"
@@ -116,6 +117,7 @@
             Grid.Column="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
+            Source="{Binding ImagePathTeam}"
             Visibility="Visible" />
 
         <Viewbox

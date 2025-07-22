@@ -1,5 +1,4 @@
-﻿using PokemonGame.Enums;
-using PokemonGame.Model.Data;
+﻿using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 
@@ -11,7 +10,7 @@ namespace PokemonGame.Interface
         EnemyPokemonGeneration _ActivePokemon { get; set; }
         int UpdateData(PlayerPokemonGeneration playerPokemon, IMoveResult moveResult,int currentHp);
         bool HasProirerty();
-        void ChooseNextPokemon();          // Called when a Pokémon faints
+        void ChooseNextPokemon(); // Called when a Pokémon faints
         bool ShouldSwitchPokemon();
         void SwitchPokemon();
         MoveData ChooseMove(); // Called to select a move during battle

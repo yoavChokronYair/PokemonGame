@@ -1,4 +1,5 @@
 ﻿using PokemonGame.ViewModel.ViewModelHelper;
+
 namespace PokemonGame.ViewModel.BattleMenu
 {
     public class MenuItemViewModel : ViewModelBase

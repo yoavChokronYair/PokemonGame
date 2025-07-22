@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using PokemonGame.ViewModel.Map;
 using PokemonGame.ViewModel.ViewModelHelper;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace PokemonGame.ViewModel.BattleMenu
@@ -10,7 +12,6 @@ namespace PokemonGame.ViewModel.BattleMenu
     public class PokemonBattleMovesetMenuViewModel : ViewModelBase
     {
         private readonly NavigationStore _NavigationStore;
-        public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
         public ICommand KeyPressedCommand { get; }
         public WildPokemonBattleViewModel wildPokemonBattleView { get; }
         public ObservableCollection<MoveViewModel> MoveList { get; }
@@ -33,7 +34,7 @@ namespace PokemonGame.ViewModel.BattleMenu
             UpdateSelectedMove();
 
             DirectionCommand = new RelayCommand<string>(OnDirectionInput);
-            ConfirmMoveCommand = new RelayCommand(OnConfirmMove);
+            ConfirmMoveCommand = new AsyncRelayCommand(OnConfirmMove);
             CancelCommand = new RelayCommand(OnCancel);
             Move = MoveList[0];
         }
@@ -87,19 +88,24 @@ namespace PokemonGame.ViewModel.BattleMenu
             UpdateSelectedMove();
         }
 
-        private void OnConfirmMove()
+        private async Task OnConfirmMove()
         {
             int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
             var selectedMove = MoveList[index];
             if (selectedMove.BaseName == "-") return;
+            
+            await wildPokemonBattleView.MakeMove(selectedMove.BaseName);
+            if(wildPokemonBattleView._PageNavigationStore.CurrentViewModel != wildPokemonBattleView._mainWindow)
+            {
+                
+                _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
+            }
 
-            wildPokemonBattleView.MakeMove(selectedMove.BaseName);
-            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView);
         }
 
         private void OnCancel()
         {
-            _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView));
+            _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
         }
     }
 }

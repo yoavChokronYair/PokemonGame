@@ -18,24 +18,12 @@ namespace PokemonGame.Views.Pages
     /// Interaction logic for WildPokemonBattle.xaml
     /// </summary>
     public partial class WildPokemonBattleView : System.Windows.Controls.Page
-    {
-        private readonly PlayerPokemonBot _playerPokemon;
-        
+    {        
         public WildPokemonBattleView()
         {
             InitializeComponent();
             
         }
-       
-        private void SetPokemonImages(int pokedexId)
-        {
-            var uri = new Uri($"pack://application:,,,/Images/GenOnePokemon/{pokedexId}.png");
-            var image = new BitmapImage(uri);
-            WildPokemonImage.Source = image;
-            WildPokemonImageTeam.Source = _playerPokemon._ActivePokemon.Image;
-           
-        }
-
         private void Page_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Tab ||

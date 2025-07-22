@@ -20,6 +20,7 @@ namespace PokemonGame.Model.Manager
         public PlayerDataList PlayerData { get; set; }
         public RivalDataList RivalData {  get; set; }
         public PokeBallDataList PokeballData { get; set; }
+        public TrainerDataList TrainerData { get; set; }
         private GameDataManager() { } // Private constructor
 
         private static GameDataManager instance;
@@ -46,6 +47,7 @@ namespace PokemonGame.Model.Manager
             PlayerData = LoadJson<PlayerDataList>("Player/Players.json");
             RivalData = LoadJson<RivalDataList>("Npc/Rivals.json");
             PokeballData = LoadJson<PokeBallDataList>("Items/Pokeballs.json");
+            TrainerData = LoadJson<TrainerDataList>("Npc/Trainers.json");
         }
 
         private T LoadJson<T>(string filePath)

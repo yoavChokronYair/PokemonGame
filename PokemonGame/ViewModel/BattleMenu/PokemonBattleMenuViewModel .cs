@@ -9,7 +9,7 @@ namespace PokemonGame.ViewModel.BattleMenu
     public class PokemonBattleMenuViewModel : ViewModelBase
     {
         private readonly NavigationStore _NavigationStore;
-        public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
+
 
         public ObservableCollection<MenuItemViewModel> MenuItems { get; }
         public MenuSelectionViewModel MenuSelection { get; }
@@ -17,7 +17,7 @@ namespace PokemonGame.ViewModel.BattleMenu
         public ICommand DirectionCommand { get; }
         public ICommand ConfirmCommand { get; }
 
-        public PokemonBattleMenuViewModel(NavigationStore navigationStore, WildPokemonBattleViewModel wildPokemonBattleViewModel)
+        public PokemonBattleMenuViewModel(NavigationStore navigationStore,NavigationStore navigation, WildPokemonBattleViewModel wildPokemonBattleViewModel)
         {
             _NavigationStore = navigationStore;
             MenuSelection = new MenuSelectionViewModel();
@@ -37,7 +37,7 @@ namespace PokemonGame.ViewModel.BattleMenu
             UpdateSelection();
         }
 
-        private readonly WildPokemonBattleViewModel WildPokemonBattleViewModel;
+        private WildPokemonBattleViewModel WildPokemonBattleViewModel;
 
         private void OnDirectionInput(string direction)
         {
@@ -68,7 +68,7 @@ namespace PokemonGame.ViewModel.BattleMenu
             }
             if (selected == "RUN")
             {
-                WildPokemonBattleViewModel._PageNavigation.CurrentViewModel = WildPokemonBattleViewModel.mainWindow;
+               WildPokemonBattleViewModel._PageNavigationStore.CurrentViewModel = WildPokemonBattleViewModel._mainWindow;
             }
         }
 

@@ -138,6 +138,7 @@
     <Compile Include="Model\Data\Items\PokeballData.cs" />
     <Compile Include="Model\Data\MoveData.cs" />
     <Compile Include="Model\Data\NpcData\RivalData.cs" />
+    <Compile Include="Model\Data\NpcData\TrainerData.cs" />
     <Compile Include="Model\Data\PlayerData.cs" />
     <Compile Include="Model\Data\RouteData.cs" />
     <Compile Include="Model\Helper\BattleCaculaterHelper.cs" />
@@ -164,8 +165,8 @@
     <Compile Include="ViewModel\BattleMenu\PokemonBattleMovesetMenuViewModel.cs" />
     <Compile Include="ViewModel\BattleMenu\MoveViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="ViewModel\MapViewModel.cs" />
-    <Compile Include="ViewModel\TileViewModel.cs" />
+    <Compile Include="ViewModel\Map\MapViewModel.cs" />
+    <Compile Include="ViewModel\Map\TileViewModel.cs" />
     <Compile Include="ViewModel\ViewModelHelper\NavigationStore.cs" />
     <Compile Include="ViewModel\ViewModelHelper\ViewModelBase.cs" />
     <Compile Include="ViewModel\WildPokemonBattleViewModel.cs" />
@@ -275,6 +276,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="resources\Npc\Trainers.json" />
     <None Include="resources\Player\CaughtPokemons.json" />
     <None Include="resources\Items\Pokeballs.json" />
     <None Include="resources\Moves.json" />

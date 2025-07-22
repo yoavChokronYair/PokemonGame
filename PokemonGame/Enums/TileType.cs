@@ -6,6 +6,9 @@
         Path,
         Grass,
         Water,
-        Black 
+        Black,
+        Trainer,
+        TrainerVision,
+        None = -1
     }
 }

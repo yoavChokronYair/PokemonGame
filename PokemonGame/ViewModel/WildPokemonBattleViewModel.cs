@@ -6,9 +6,11 @@ using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel.BattleMenu;
+using PokemonGame.ViewModel.Map;
 using PokemonGame.ViewModel.ViewModelHelper;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PokemonGame.ViewModel
 {
@@ -28,16 +30,15 @@ namespace PokemonGame.ViewModel
     {
         // Existing battle properties
         private readonly NavigationStore _NavigationStore;
-        public readonly NavigationStore _PageNavigation;
-        public ViewModelBase PageCurrentViewModel => _PageNavigation.CurrentViewModel;
-
+        public readonly NavigationStore _PageNavigationStore;
         public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
-        public MapViewModel mainWindow;
-        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigationStore,MapViewModel mapViewModel)
+        public MapViewModel _mainWindow;
+        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigation,MapViewModel mainWindow)
         {
-            mainWindow = mapViewModel;
-            _PageNavigation = navigationStore;
-            _PageNavigation.CurrentViewModel = navigationStore.CurrentViewModel;
+            _mainWindow = mainWindow;
+            ImagePathRival = rival._ActivePokemon.Image;
+            ImagePathTeam = team._ActivePokemon.Image;
+            _PageNavigationStore = navigation;
             MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
                 .Select(kvp => new MoveViewModel
                 {
@@ -47,7 +48,7 @@ namespace PokemonGame.ViewModel
                     Type = kvp.Key.Type.ToString()
                 })); 
             _NavigationStore = new NavigationStore();
-            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore,this);
+            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore,navigation,this);
             Team = team;
             Rival = rival;
             Gender = team._ActivePokemon.IsMale ? "♂" : "♀";
@@ -55,7 +56,7 @@ namespace PokemonGame.ViewModel
             RivalCurrentHp = rival._ActivePokemonHp;
             _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
         }
-        public void MakeMove(string move)
+        public async Task MakeMove(string move)
         {
             PlayerPokemonGeneration player = Team._ActivePokemon;
             EnemyPokemonGeneration enemy = Rival._ActivePokemon;
@@ -67,6 +68,12 @@ namespace PokemonGame.ViewModel
             TeamCurrentHp = Team.UpdateData(enemy,RivalMove,(int)teamCurrentHp);
             RivalCurrentHp = Rival.EndTurn();
             TeamCurrentHp = Team.EndTurn();
+            if (RivalCurrentHp <= 0)
+            {
+                await Task.Delay(1000); // Adjust delay time as needed (milliseconds)
+
+                _PageNavigationStore.CurrentViewModel = _mainWindow;
+            }
             
         }
         private void OnCurrentViewModelChanged()
@@ -115,6 +122,32 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
+        private string imagePathRival;
+        public string ImagePathRival
+        {
+            get => imagePathRival;
+            set
+            {
+                if (imagePathRival != value)
+                {
+                    imagePathRival = value;
+                    OnPropertyChanged(nameof(ImagePathRival));
+                }
+            }
+        }
+        private string imagePathTeam;
+        public string ImagePathTeam
+        {
+            get => imagePathTeam;
+            set
+            {
+                if (imagePathTeam != value)
+                {
+                    imagePathTeam = value;
+                    OnPropertyChanged(nameof(ImagePathTeam));
+                }
+            }
+        }
 
         private double teamCurrentHp;
         public double TeamCurrentHp
@@ -157,9 +190,5 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
-
-
-    
-
     }
 }

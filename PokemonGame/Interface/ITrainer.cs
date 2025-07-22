@@ -25,7 +25,7 @@ namespace PokemonGame.Interface
         bool IsBattleMandatory { get; } // Must fight to progress
 
         // Optional Extras
-        string MusicTheme { get; } // Trainer-specific music
+        string MusicTheme { get; } // TrainerData-specific music
         string SpriteAssetKey { get; } // For trainer's sprite
 
         // Items or Rewards

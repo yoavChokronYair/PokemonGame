@@ -16,8 +16,8 @@ namespace PokemonGame.Model.PokemonCreation
         public string Nickname { get; set; }
 
         // === Appearance ===
-        public BitmapImage Sprite { get; set; }
-        public BitmapImage Image { get; set; }
+        public string Sprite { get; set; }
+        public string Image { get; set; }
         public bool IsShiny { get; set; }
         public bool IsMale { get; set; }
 
@@ -85,8 +85,8 @@ namespace PokemonGame.Model.PokemonCreation
             this.Nickname = caughtPokemonData.Nickname;
 
             string uri = $"pack://application:,,,/Images/GenOnePokemon/{this.PokedexID}.png";
-            Sprite = new BitmapImage(new Uri(uri));
-            Image = new BitmapImage(new Uri(uri));
+            Sprite = uri;
+            Image = uri;
             this.IsShiny = caughtPokemonData.IsShiny;
             this.IsMale = caughtPokemonData.IsMale;
 

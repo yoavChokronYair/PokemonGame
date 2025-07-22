@@ -73,7 +73,7 @@
                         x:Name="MyHPBarOp"
                         Width="173"
                         Height="15"
-                        AnimationDuration="0:0:0.2"
+                        AnimationDuration="0:0:1"
                         BarHeight="15"
                         BarWidth="173"
                         HealthPercent="{Binding HealthPercent, RelativeSource={RelativeSource AncestorType=UserControl}}"
