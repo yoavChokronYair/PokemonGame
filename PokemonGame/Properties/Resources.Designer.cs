@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PokemonGame.Properties
+namespace PokemonGameModel.Properties
 {
 
 

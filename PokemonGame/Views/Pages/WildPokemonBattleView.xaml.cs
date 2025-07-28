@@ -1,10 +1,10 @@
-﻿using PokemonGame.Model.BattleSystem.Bot;
-using PokemonGame.Model.BattleSystem.Player;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Manager;
-using PokemonGame.Model.PokemonCreation;
-using PokemonGame.ViewModel;
-using PokemonGame.ViewModel.ViewModelHelper;
+﻿using PokemonGameModel.Model.BattleSystem.Bot;
+using PokemonGameModel.Model.BattleSystem.Player;
+using PokemonGameModel.Model.Data;
+using PokemonGameModel.Model.Manager;
+using PokemonGameModel.Model.PokemonCreation;
+using PokemonGameModel.ViewModel;
+using PokemonGameModel.ViewModel.ViewModelHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace PokemonGame.Views.Pages
+namespace PokemonGameModel.Views.Pages
 {
     /// <summary>
     /// Interaction logic for WildPokemonBattle.xaml

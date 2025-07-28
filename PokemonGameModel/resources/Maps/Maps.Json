@@ -1,0 +1,135 @@
+﻿{
+  "maps": [
+    {
+      "Name": "Route 1",
+      "width": 19,
+      "height": 15,
+      "regions": [
+        {
+          "Title": "Path",
+          "ID": null,
+          "startX": 2,
+          "startY": 0,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "Title": "Grass",
+          "ID": null,
+          "startX": 0,
+          "startY": 6,
+          "width": 3,
+          "height": 3
+        },
+        {
+          "Title": "Trainer",
+          "ID": "npc_007",
+          "startX": 5,
+          "startY": 6,
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "Encounters": [
+        {
+          "Pokemon": "Pidgey",
+          "MinLevel": 2,
+          "MaxLevel": 5,
+          "Rarity": 0.5
+        },
+        {
+          "Pokemon": "Rattata",
+          "MinLevel": 2,
+          "MaxLevel": 4,
+          "Rarity": 0.5
+        }
+      ],
+      "LeftMap": "Route 2",
+      "RightMap": "Route 3",
+      "UpMap": "None",
+      "DownMap": "None"
+
+    },
+    {
+      "Name": "Route 2",
+      "width": 19,
+      "height": 15,
+      "regions": [
+        {
+          "name": "Path",
+          "startX": 2,
+          "startY": 0,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "name": "Grass",
+          "startX": 0,
+          "startY": 6,
+          "width": 3,
+          "height": 3
+
+        }
+
+      ],
+      "Encounters": [
+        {
+          "Pokemon": "Pidgey",
+          "MinLevel": 2,
+          "MaxLevel": 5,
+          "Rarity": 0.5
+        },
+        {
+          "Pokemon": "Rattata",
+          "MinLevel": 2,
+          "MaxLevel": 4,
+          "Rarity": 0.5
+        }
+      ],
+      "LeftMap": "None",
+      "RightMap": "Route 1",
+      "UpMap": "None",
+      "DownMap": "None"
+
+    },
+    {
+      "Name": "Route 3",
+      "width": 19,
+      "height": 15,
+      "regions": [
+        {
+          "name": "Path",
+          "startX": 2,
+          "startY": 0,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "name": "Grass",
+          "startX": 0,
+          "startY": 6,
+          "width": 3,
+          "height": 3
+        }
+      ],
+      "Encounters": [
+        {
+          "Pokemon": "Pidgey",
+          "MinLevel": 2,
+          "MaxLevel": 5,
+          "Rarity": 0.5
+        },
+        {
+          "Pokemon": "Rattata",
+          "MinLevel": 2,
+          "MaxLevel": 4,
+          "Rarity": 0.5
+        }
+      ],
+      "LeftMap": "Route 1",
+      "RightMap": "None",
+      "UpMap": "None",
+      "DownMap": "None"
+    }
+  ]
+}

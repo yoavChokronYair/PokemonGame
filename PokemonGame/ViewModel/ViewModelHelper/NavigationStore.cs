@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PokemonGame.ViewModel.ViewModelHelper
+namespace PokemonGameModel.ViewModel.ViewModelHelper
 {
     public class NavigationStore
     {

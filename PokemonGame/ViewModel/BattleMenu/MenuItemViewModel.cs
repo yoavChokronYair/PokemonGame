@@ -1,6 +1,6 @@
-﻿using PokemonGame.ViewModel.ViewModelHelper;
+﻿using PokemonGameModel.ViewModel.ViewModelHelper;
 
-namespace PokemonGame.ViewModel.BattleMenu
+namespace PokemonGameModel.ViewModel.BattleMenu
 {
     public class MenuItemViewModel : ViewModelBase
     {

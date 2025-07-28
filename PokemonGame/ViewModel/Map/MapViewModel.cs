@@ -1,25 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Enums;
-using PokemonGame.Model.BattleSystem.Bot;
-using PokemonGame.Model.BattleSystem.Player;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Data.NpcData;
-using PokemonGame.Model.Helper;
-using PokemonGame.Model.Manager;
-using PokemonGame.Model.Map;
-using PokemonGame.Model.PokemonCreation;
-using PokemonGame.ViewModel.ViewModelHelper;
+using PokemonGameModel.Enums;
+using PokemonGameModel.Model.Data.MapData;
+using PokemonGameModel.Model.Map;
+using PokemonGameModel.ViewModel.ViewModelHelper;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
-using static PokemonGame.Model.Map.GameMap;
 
-namespace PokemonGame.ViewModel.Map
+
+namespace PokemonGameModel.ViewModel.Map
 {
     public class MapViewModel : ViewModelBase
     {
@@ -41,8 +33,6 @@ namespace PokemonGame.ViewModel.Map
         public MapData MapData { get; }
 
         public ICommand DirectionCommand { get; }
-
-
         private int playerX = 0;
         public int PlayerX
         {
@@ -170,47 +160,7 @@ namespace PokemonGame.ViewModel.Map
         }
 
         private async Task HandleEncounterAsync()
-        {
-            var tile = CurrentGameMap.GetTileAt(PlayerX, PlayerY);
-            if (tile == TileType.Grass)
-            {
-                var routeHelper = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
-                var encounter = routeHelper.GetRandomEncounter(GameDataManager.Instance.RouteData.AllRoutes[0].Name, "Grass");
-
-                if (!RandomHelper.ShouldTriggerEncounter(encounter.Rarity))
-                    return;
-
-                var enemyPokemon = new EnemyPokemonGeneration(
-                    encounter,
-                    GameDataManager.Instance.PokemonData.AllPokemons.FirstOrDefault(p => p.Name == encounter.Pokemon)
-                );
-
-                var playerPokemon = PlayerPokemonManager.Instance._playerPokemonTeam[0];
-                var wildBot = new WildPokemonBot(enemyPokemon, playerPokemon);
-                var playerBot = new PlayerPokemonBot(new List<PlayerPokemonGeneration> { playerPokemon }, wildBot._ActivePokemon);
-
-                _navigationStore.CurrentViewModel = new WildPokemonBattleViewModel(playerBot, wildBot, _navigationStore, this);
-            }
-            if(tile == TileType.TrainerVision)
-            {
-                var routeHelper = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
-                var encounter = routeHelper.GetRandomEncounter(GameDataManager.Instance.RouteData.AllRoutes[0].Name, "Grass");
-
-                if (!RandomHelper.ShouldTriggerEncounter(encounter.Rarity))
-                    return;
-
-                var enemyPokemon = new EnemyPokemonGeneration(
-                    encounter,
-                    GameDataManager.Instance.PokemonData.AllPokemons.FirstOrDefault(p => p.Name == encounter.Pokemon)
-                );
-
-                var playerPokemon = PlayerPokemonManager.Instance._playerPokemonTeam[0];
-                var wildBot = new WildPokemonBot(enemyPokemon, playerPokemon);
-                var playerBot = new PlayerPokemonBot(new List<PlayerPokemonGeneration> { playerPokemon }, wildBot._ActivePokemon);
-
-                _navigationStore.CurrentViewModel = new WildPokemonBattleViewModel(playerBot, wildBot, _navigationStore, this);
-            }
-
+        { 
             
         }
 

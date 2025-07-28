@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace PokemonGame.Views.Controls
+namespace PokemonGameModel.Views.Controls
 {
     public enum BackgroundType
     {

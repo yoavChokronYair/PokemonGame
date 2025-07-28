@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PokemonGame.Views.UserControls.PokemonBattle
+namespace PokemonGameModel.Views.UserControls.PokemonBattle
 {
     /// <summary>
     /// Interaction logic for HPBar.xaml

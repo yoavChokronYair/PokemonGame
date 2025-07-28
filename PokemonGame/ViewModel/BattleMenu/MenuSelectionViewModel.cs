@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace PokemonGame.ViewModel.BattleMenu
+namespace PokemonGameModel.ViewModel.BattleMenu
 {
     public class MenuSelectionViewModel : ObservableObject
     {

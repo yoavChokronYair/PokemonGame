@@ -1,21 +1,21 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using PokemonGame.Enums;
-using PokemonGame.Interface;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Helper;
-using PokemonGame.Model.Manager;
-using PokemonGame.Model.Map;
-using PokemonGame.Model.PokemonCreation;
-using PokemonGame.ViewModel;
-using PokemonGame.ViewModel.Map;
-using PokemonGame.Views.Pages; 
+using PokemonGameModel.Enums;
+using PokemonGameModel.Interface;
+using PokemonGameModel.Model.Data;
+using PokemonGameModel.Model.Helper;
+using PokemonGameModel.Model.Manager;
+using PokemonGameModel.Model.Map;
+using PokemonGameModel.Model.PokemonCreation;
+using PokemonGameModel.ViewModel;
+using PokemonGameModel.ViewModel.Map;
+using PokemonGameModel.Views.Pages; 
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-namespace PokemonGame
+namespace PokemonGameModel
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

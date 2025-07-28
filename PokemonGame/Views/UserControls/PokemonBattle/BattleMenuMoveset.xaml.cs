@@ -1,11 +1,11 @@
-﻿using PokemonGame.Views.Controls;
+﻿using PokemonGameModel.Views.Controls;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 
-namespace PokemonGame.Views.UserControls.PokemonBattle
+namespace PokemonGameModel.Views.UserControls.PokemonBattle
 {
     /// <summary>
     /// Interaction logic for BattleMenu.xaml

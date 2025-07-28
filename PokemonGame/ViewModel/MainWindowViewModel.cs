@@ -1,16 +1,16 @@
-﻿using PokemonGame.Model.Data;
-using PokemonGame.Model.Helper;
-using PokemonGame.Model.Manager;
-using PokemonGame.ViewModel.BattleMenu;
-using PokemonGame.ViewModel.Map;
-using PokemonGame.ViewModel.ViewModelHelper;
+﻿using PokemonGameModel.Model.Data;
+using PokemonGameModel.Model.Helper;
+using PokemonGameModel.Model.Manager;
+using PokemonGameModel.ViewModel.BattleMenu;
+using PokemonGameModel.ViewModel.Map;
+using PokemonGameModel.ViewModel.ViewModelHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemonGame.ViewModel
+namespace PokemonGameModel.ViewModel
 {
     public class MainWindowViewModel:ViewModelBase
     {

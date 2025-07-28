@@ -1,4 +1,4 @@
-﻿using PokemonGame.ViewModel.ViewModelHelper;
+﻿using PokemonGameModel.ViewModel.ViewModelHelper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using static PokemonGame.Model.Map.GameMap;
+using static PokemonGameModel.Model.Map.GameMap;
 
-namespace PokemonGame.ViewModel.Map
+namespace PokemonGameModel.ViewModel.Map
 {
     public class TileViewModel:ViewModelBase
     {
@@ -33,8 +33,8 @@ namespace PokemonGame.ViewModel.Map
             set { _height = value; OnPropertyChanged(nameof(Height)); }
         }
 
-        private Brush _color;
-        public Brush Color
+        private string _color;
+        public string Color
         {
             get => _color;
             set { _color = value; OnPropertyChanged(nameof(Color)); }
