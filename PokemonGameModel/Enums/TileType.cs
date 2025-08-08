@@ -16,6 +16,7 @@
         None = 0,
         Event = 1,
         Interactable = 2,
+        OutOfBounds = 0,
 
     }
 }

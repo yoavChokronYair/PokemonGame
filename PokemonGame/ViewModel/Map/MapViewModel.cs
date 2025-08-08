@@ -12,14 +12,11 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-
 namespace PokemonGameModel.ViewModel.Map
 {
     public class MapViewModel : ViewModelBase
     {
         // Constants
-
-        int count = 0;
         private const int ViewWidth = 19;
         private const int ViewHeight = 15;
         private const int ScreenWidth = 900;
@@ -27,15 +24,21 @@ namespace PokemonGameModel.ViewModel.Map
 
         // Fields
         private readonly NavigationStore _navigationStore;
+        private readonly DispatcherTimer enemyDirectionTimer;
+
         private Direction playerDirection = Direction.Down;
+        private Direction enemyDirection = Direction.Up;
+
+        private PlayerOnMap player; // NEW — handles player position & movement
 
         // Public Properties
         public MainWindowViewModel MainWindowViewModel { get; }
         public GameMap CurrentGameMap { get; }
-        public MapData MapData { get; }
+        public MapData MapData => player.CurrentMap; // NEW — pulled from PlayerOnMap
 
         public ICommand DirectionCommand { get; }
-        private int playerX = 0;
+
+        private int playerX;
         public int PlayerX
         {
             get => playerX;
@@ -45,10 +48,10 @@ namespace PokemonGameModel.ViewModel.Map
                 {
                     playerX = value;
                     OnPropertyChanged(nameof(PlayerX));
-
                 }
             }
         }
+
         private int playerY;
         public int PlayerY
         {
@@ -62,6 +65,7 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
+
         private int rows;
         public int Rows
         {
@@ -75,6 +79,7 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
+
         private int columns;
         public int Columns
         {
@@ -88,6 +93,7 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
+
         private ObservableCollection<TileViewModel> tileList;
         public ObservableCollection<TileViewModel> TileList
         {
@@ -101,8 +107,6 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
-        private Direction enemyDirection = Direction.Up;
-        private List<MapData> maps;
 
         public Direction EnemyDirection
         {
@@ -117,42 +121,35 @@ namespace PokemonGameModel.ViewModel.Map
             }
         }
 
-        private readonly DispatcherTimer enemyDirectionTimer;
         // Constructor
         public MapViewModel(MapDataList mapData, NavigationStore navigationStore, MainWindowViewModel mainWindow)
         {
-            
             _navigationStore = navigationStore;
             MainWindowViewModel = mainWindow;
 
             DirectionCommand = new AsyncRelayCommand<string>(OnDirectionInput);
 
             TileList = new ObservableCollection<TileViewModel>();
-            CurrentGameMap = new GameMap(mapData);
+            CurrentGameMap = GameMap.GetInstance(mapData);
+
+            // Start player in first map, position (5,5)
+            var startingMap = GameMap.Instance._data.Keys.First();
+            int startIndex = 5 * startingMap.Width + 5;
+            player = new PlayerOnMap(startingMap, startIndex);
 
             InitializeView();
 
-            // Setup timer to update enemy direction every 5 seconds
             enemyDirectionTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5)
             };
-           
             enemyDirectionTimer.Start();
-        }
-
-        public MapViewModel(List<MapData> maps, NavigationStore navigationStore, MainWindowViewModel mainWindowViewModel)
-        {
-            this.maps = maps;
-            _navigationStore = navigationStore;
-            MainWindowViewModel = mainWindowViewModel;
-            GameMap map = new GameMap(GameDataManager.Instance.MapData); 
         }
 
         private void InitializeView()
         {
-            PlayerX = 5;
-            PlayerY = 5;
+            PlayerX = player.CurrentLocation % player.CurrentMap.Width;
+            PlayerY = player.CurrentLocation / player.CurrentMap.Width;
             Rows = ViewHeight;
             Columns = ViewWidth;
 
@@ -161,17 +158,36 @@ namespace PokemonGameModel.ViewModel.Map
 
         private async Task OnDirectionInput(string input)
         {
-           // if (CurrentGameMap.TryMove(input, ref playerX, ref playerY, ref playerDirection))
-            //{
-                //await Task.Delay(100); // Small delay
+            switch (input.ToLower())
+            {
+                case "left":
+                    player.MoveByXY(-1, 0);
+                    playerDirection = Direction.Left;
+                    break;
+                case "right":
+                    player.MoveByXY(1, 0);
+                    playerDirection = Direction.Right;
+                    break;
+                case "up":
+                    player.MoveByXY(0, -1);
+                    playerDirection = Direction.Up;
+                    break;
+                case "down":
+                    player.MoveByXY(0, 1);
+                    playerDirection = Direction.Down;
+                    break;
+            }
 
-              //  await HandleEncounterAsync();
-            //}
+            PlayerX = player.CurrentLocation % player.CurrentMap.Width;
+            PlayerY = player.CurrentLocation / player.CurrentMap.Width;
+
+            InitializeTiles(); // Refresh the visible area
+            await HandleEncounterAsync();
         }
 
         private async Task HandleEncounterAsync()
-        { 
-            
+        {
+            // Placeholder for encounter logic
         }
 
         private void InitializeTiles()
@@ -179,16 +195,17 @@ namespace PokemonGameModel.ViewModel.Map
             TileList.Clear();
             int tilePixelWidth = ScreenWidth / Columns;
             int tilePixelHeight = ScreenHeight / Rows;
+            var l = GameMap.Instance.ConvertToColor(MapData);
 
             for (int i = 0; i < ViewWidth * ViewHeight; i++)
             {
                 TileList.Add(new TileViewModel
                 {
                     Width = tilePixelWidth,
-                    Height = tilePixelHeight
+                    Height = tilePixelHeight,
+                    Color = l[i]
                 });
             }
         }
-       
     }
 }

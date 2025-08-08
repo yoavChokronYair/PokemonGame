@@ -67,7 +67,7 @@
         "unlock_event": "unlock_route_5"
       },
       "rematch_available": true,
-      "FirstDirection": "Up",
+      "FirstDirection": "Right",
       "SecondDirection": "Down"
     }
   ]
