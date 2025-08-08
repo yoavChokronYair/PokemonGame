@@ -42,7 +42,6 @@ namespace PokemonGameModel
                 }
             }
             // Navigate to the battle view with the encounter
-            RouteEncounterHelper routeEncounterViewModel = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
             this.DataContext = new MainWindowViewModel();
             //MainFrame.Navigate(new WildPokemonBattleView(encounter));
             //MainFrame.Navigate(new NewGameView());

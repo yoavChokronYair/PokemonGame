@@ -1,4 +1,5 @@
-﻿using PokemonGameModel.Model.Map;
+﻿using PokemonGameModel.Enums;
+using PokemonGameModel.Model.Map;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +23,7 @@ namespace PokemonGameModel.Model.Data.MapData
     }
     public class MapRegion
     {
-        public string? Name { get; set; }
+        public TileTypeFirstLayer Title { get; set; }
         public string? ID { get; set; }
         public int StartX { get; set; }
         public int StartY { get; set; }

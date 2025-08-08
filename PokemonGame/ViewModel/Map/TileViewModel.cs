@@ -93,16 +93,7 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
-        public void UpdateFrom(TileRenderInfo info)
-        {
-            Width = info.Width;
-            Height = info.Height;
-            X1 = info.X1;
-            Y1 = info.Y1;
-            X2 = info.X2;
-            Y2 = info.Y2;
-            Color = info.Color;
-        }
+      
 
 
     }

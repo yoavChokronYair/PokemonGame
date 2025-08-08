@@ -1,6 +1,6 @@
 ﻿namespace PokemonGameModel.Enums
 {
-    public enum TileType
+    public enum TileTypeFirstLayer
     {
         Empty,
         Path,
@@ -8,7 +8,14 @@
         Water,
         Black,
         Trainer,
-        TrainerVision,
-        None = -1
+        
+    }
+    public enum TileTypeSecondLayer
+    {
+        player = -1,
+        None = 0,
+        Event = 1,
+        Interactable = 2,
+
     }
 }

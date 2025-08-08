@@ -43,8 +43,8 @@ namespace PokemonGameModel.Model.Manager
             MoveData = LoadJson<MoveDataList>("Moves.json");
             CaughtPokemonData = LoadJson<CaughtPokemonDataList>("Player/CaughtPokemons.json");
             PlayerData = LoadJson<PlayerDataList>("Player/Players.json");
-            var rivalList = LoadJson<RivalDataList>("Npc/Rivals.json");
-            RivalData = rivalList.Rival.ToDictionary(rival => rival, rival => true);
+            RivalDataList rivalList = LoadJson<RivalDataList>("Npc/Rivals.json");
+            RivalData = rivalList.Rivals.ToDictionary(rival => rival, rival => true);
             PokeballData = LoadJson<PokeBallDataList>("Items/Pokeballs.json");
             TrainerData = LoadJson<TrainerDataList>("Npc/Trainers.json");
         }

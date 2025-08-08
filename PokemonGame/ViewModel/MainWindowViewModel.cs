@@ -20,9 +20,8 @@ namespace PokemonGameModel.ViewModel
         public MainWindowViewModel()
         {
             _NavigationStore = new NavigationStore();
-            RouteEncounterHelper routeEncounterViewModel = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
             
-            _NavigationStore.CurrentViewModel = new MapViewModel(GameDataManager.Instance.MapData.maps[0],_NavigationStore,this);
+            _NavigationStore.CurrentViewModel = new MapViewModel(GameDataManager.Instance.MapData.maps,_NavigationStore,this);
             _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
         }

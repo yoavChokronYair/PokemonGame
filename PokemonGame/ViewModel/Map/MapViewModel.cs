@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PokemonGameModel.Enums;
 using PokemonGameModel.Model.Data.MapData;
+using PokemonGameModel.Model.Manager;
 using PokemonGameModel.Model.Map;
 using PokemonGameModel.ViewModel.ViewModelHelper;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -100,6 +102,8 @@ namespace PokemonGameModel.ViewModel.Map
             }
         }
         private Direction enemyDirection = Direction.Up;
+        private List<MapData> maps;
+
         public Direction EnemyDirection
         {
             get => enemyDirection;
@@ -115,9 +119,9 @@ namespace PokemonGameModel.ViewModel.Map
 
         private readonly DispatcherTimer enemyDirectionTimer;
         // Constructor
-        public MapViewModel(MapData mapData, NavigationStore navigationStore, MainWindowViewModel mainWindow)
+        public MapViewModel(MapDataList mapData, NavigationStore navigationStore, MainWindowViewModel mainWindow)
         {
-            MapData = mapData;
+            
             _navigationStore = navigationStore;
             MainWindowViewModel = mainWindow;
 
@@ -133,8 +137,16 @@ namespace PokemonGameModel.ViewModel.Map
             {
                 Interval = TimeSpan.FromSeconds(5)
             };
-            enemyDirectionTimer.Tick += EnemyDirectionTimer_Tick;
+           
             enemyDirectionTimer.Start();
+        }
+
+        public MapViewModel(List<MapData> maps, NavigationStore navigationStore, MainWindowViewModel mainWindowViewModel)
+        {
+            this.maps = maps;
+            _navigationStore = navigationStore;
+            MainWindowViewModel = mainWindowViewModel;
+            GameMap map = new GameMap(GameDataManager.Instance.MapData); 
         }
 
         private void InitializeView()
@@ -145,18 +157,16 @@ namespace PokemonGameModel.ViewModel.Map
             Columns = ViewWidth;
 
             InitializeTiles();
-            LoadTiles();
         }
 
         private async Task OnDirectionInput(string input)
         {
-            if (CurrentGameMap.TryMove(input, ref playerX, ref playerY, ref playerDirection))
-            {
-                LoadTiles();
-                await Task.Delay(100); // Small delay
+           // if (CurrentGameMap.TryMove(input, ref playerX, ref playerY, ref playerDirection))
+            //{
+                //await Task.Delay(100); // Small delay
 
-                await HandleEncounterAsync();
-            }
+              //  await HandleEncounterAsync();
+            //}
         }
 
         private async Task HandleEncounterAsync()
@@ -179,43 +189,6 @@ namespace PokemonGameModel.ViewModel.Map
                 });
             }
         }
-        private void EnemyDirectionTimer_Tick(object sender, EventArgs e)
-        {
-            if(count % 2 == 0)
-            {
-                enemyDirection = Direction.Down;
-                count++;
-            }
-            else
-            {
-                count++;
-                enemyDirection = Direction.Up;
-            }
-                LoadTiles();
-        }
-        private void LoadTiles()
-        {
-            int tilePixelWidth = ScreenWidth / Columns;
-            int tilePixelHeight = ScreenHeight / Rows;
-
-            var tiles = CurrentGameMap.GetViewportTiles(
-                PlayerX,
-                PlayerY,
-                ViewWidth,
-                ViewHeight,
-                playerDirection,
-                enemyDirection,
-                tilePixelWidth,
-                tilePixelHeight
-            );
-
-
-            for (int i = 0; i < tiles.Count && i < TileList.Count; i++)
-            {
-                TileList[i].UpdateFrom(tiles[i]);
-            }
-        }
-
-    
+       
     }
 }

@@ -38,7 +38,7 @@ namespace PokemonGameModel.Model.Data.NpcData
     }
     public class RivalDataList
     {
-        public List<RivalData> Rival { get; set; }
+        public List<RivalData> Rivals { get; set; }
     }
 
 }
