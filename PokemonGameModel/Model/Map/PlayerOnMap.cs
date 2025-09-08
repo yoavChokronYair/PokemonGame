@@ -102,6 +102,7 @@ namespace PokemonGameModel.Model.Map
                 SetPlayerTile(_currentLocation);
                 //ToDo: set event
             }
+            
         }
 
         /// <summary>
