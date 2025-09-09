@@ -75,7 +75,7 @@ namespace PokemonGameModel.Model.BattleSystem.Bot
         {
             MoveData Movedata = ChooseMove();
             MoveResult moveResult = BattleCalculator.ExecuteMove(PlayerPokemon, _ActivePokemon, Movedata);
-            if (BattleCalculator.DoesMoveHit(Movedata))
+            if (BattleCalculator.DoesMoveHit(Movedata, StatusType.None))
             {
                 _ActivePokemon.Moves[Movedata] -= 1;
                 if (moveResult.IsSwitch)

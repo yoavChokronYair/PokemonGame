@@ -4,13 +4,13 @@ using System;
 
 namespace PokemonGameModel.Model.Helper
 {
-    internal class RandomPokemonIDHelper
+    internal class RNGHelper
     {
         public uint PID { get; }
         public ushort TrainerID { get; }
         public ushort SecretID { get; }
 
-        public RandomPokemonIDHelper(uint pid, ushort tid, ushort sid)
+        public RNGHelper(uint pid, ushort tid, ushort sid)
         {
             PID = pid;
             TrainerID = tid;
@@ -94,16 +94,38 @@ namespace PokemonGameModel.Model.Helper
             // Ability 1 if PID is even, Ability 2 if PID is odd
             return (PID & 1) == 0 ? 1 : 2;
         }
+        // ----------------------------
+        // Gender check
+        // ----------------------------
+        public bool IsFemale(double femaleRatio)
+        {
+            // Genderless
+            if (femaleRatio < 0) return false;
+
+            // PID determines gender
+            int genderThreshold = (int)(femaleRatio * 256);
+            int pidLowByte = (int)(PID & 0xFF); // lowest 8 bits of PID
+
+            return pidLowByte < genderThreshold;
+        }
+        // ----------------------------
+        // Nature based on PID
+        // ----------------------------
+        public NatureType GetNature()
+        {
+            int natureIndex = (int)(PID % 25);
+            return (NatureType)natureIndex;
+        }
 
         // ----------------------------
         // Full Pokémon Identity Generator
         // ----------------------------
-        public static RandomPokemonIDHelper GenerateRandomPokemonIdentity()
+        public static RNGHelper GenerateRandomPokemonIdentity()
         {
             ushort tid = GenerateRandomTID();
             ushort sid = GenerateRandomSID();
             uint pid = GeneratePID();
-            return new RandomPokemonIDHelper(pid, tid, sid);
+            return new RNGHelper(pid, tid, sid);
         }
         //encounters
         public Encounter? GetRandomEncounter(string routeName, string environment, List<Encounter> Encounters)

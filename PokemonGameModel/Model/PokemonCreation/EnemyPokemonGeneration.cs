@@ -53,13 +53,11 @@ namespace PokemonGameModel.Model.PokemonCreation
         public EnemyPokemonGeneration(Encounter species, PokemonData pokemon)
         {
             // Generate IDs
-            var pid = RNGHelper.GeneratePID();
-            ushort trainerID = 12345;
-            ushort secretID = RNGHelper.GenerateRandomSID();
-            var randomHelper = new RNGHelper(pid, trainerID, secretID);
+            
+            var randomHelper = RNGHelper.GenerateRandomPokemonIdentity();
 
             // Identification
-            ID = secretID;
+            ID = randomHelper.SecretID;
             PokedexID = pokemon.Number;
             Species = pokemon.Name;
             Nickname = Species;
@@ -102,7 +100,7 @@ namespace PokemonGameModel.Model.PokemonCreation
                 }
             }
             // Gender & Shiny
-            IsMale = randomHelper.IsMaleByFemalePercent(species.Rarity);
+            IsMale = randomHelper.IsFemale(species.Rarity);
             IsShiny = randomHelper.IsShiny();
 
             // Images
