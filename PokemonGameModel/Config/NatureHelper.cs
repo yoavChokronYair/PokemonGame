@@ -1,11 +1,5 @@
 ﻿using PokemonGameModel.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PokemonGameModel.Model.Helper
+namespace PokemonGameModel.Constants
 {
     public static class NatureHelper
     {

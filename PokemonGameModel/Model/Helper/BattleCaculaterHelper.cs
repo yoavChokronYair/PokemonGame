@@ -1,239 +1,205 @@
-﻿using PokemonGameModel.Enums;
+﻿using PokemonGameModel.Constants;
+using PokemonGameModel.Enums;
 using PokemonGameModel.Interface;
 using PokemonGameModel.Model.BattleSystem.Bot;
 using PokemonGameModel.Model.Data;
 using PokemonGameModel.Model.Data.Items;
 using PokemonGameModel.Model.PokemonCreation;
 using System;
-using System.Linq;
+
 namespace PokemonGameModel.Model.Helper
 {
-    public class MoveResult:IMoveResult
+    public class MoveResult : IMoveResult
     {
+        public int Damage { get; set; }
+        public bool IsSwitch { get; set; }
+        public StatusType StatusEffect { get; set; }
+
         public MoveResult()
         {
             Damage = 0;
             IsSwitch = false;
             StatusEffect = StatusType.None;
         }
-
-        public int Damage { get; set; }
-        public bool IsSwitch { get; set; } 
-        public StatusType StatusEffect { get; set; }// You can expand this for status names
     }
+
     public static class BattleCalculator
     {
         private static readonly Random _rand = new Random();
-        public static MoveResult result = new MoveResult();
-        // Result of move execution
+
+        // ----------------------------
+        // Move execution
+        // ----------------------------
         public static MoveResult ExecuteMove(IPokemon defender, IPokemon attacker, MoveData move)
         {
+            var result = new MoveResult();
 
             switch (move.CategoryEn)
             {
                 case "Physical":
                 case "Special":
-                    CalculateDamage(defender, attacker, move);
-                    result.StatusEffect = StatusType.None;
-                    result.IsSwitch = false;
+                    result.Damage = CalculateDamage(defender, attacker, move);
                     break;
 
                 case "Status":
-                    result.Damage = 0;
-                    result.StatusEffect = GetStatusFromPokemon(move);
-                    result.IsSwitch = false;
+                    result.StatusEffect = GetStatusFromMove(move);
                     break;
 
                 case "Switch":
-                    result.Damage = 0;
                     result.IsSwitch = true;
-                    result.StatusEffect = StatusType.None;
                     break;
 
                 default:
-                    // Unknown category, no effect
-                    result.Damage = 0;
-                    break;
+                    break; // Unknown category, no effect
             }
 
             return result;
         }
-        public static StatusType GetStatusFromPokemon(MoveData move)
+
+        // ----------------------------
+        // Status determination
+        // ----------------------------
+        public static StatusType GetStatusFromMove(MoveData move)
         {
-            //ToDo:Make sure every move activets in the same turn
-            if(move.ename == "Will‑O‑Wisp") {
-                return StatusType.Burn;
-            }
-            if(move.ename == "Poison Powder" || move.ename == "Toxic" || move.ename == "Poison Gas")
+            return move.ename switch
             {
-                return StatusType.Poison;
-            }
-            if (move.ename == "Hypnosis" || move.ename == "Sleep Powder" || move.ename == "Spore" || move.ename == "Yawn")
-            {
-                return StatusType.Sleep;
-            }
-            if (move.ename == "Stun Spore" || move.ename == "Thunder Wave" || move.ename == "Body Slam" || move.ename == "static")
-            {
-                return StatusType.Paralysis;
-            }
-            return StatusType.None;           
+                "Will‑O‑Wisp" => StatusType.Burn,
+                "Poison Powder" or "Toxic" or "Poison Gas" => StatusType.Poison,
+                "Hypnosis" or "Sleep Powder" or "Spore" or "Yawn" => StatusType.Sleep,
+                "Stun Spore" or "Thunder Wave" or "Body Slam" or "static" => StatusType.Paralysis,
+                _ => StatusType.None
+            };
         }
 
-        private static void CalculateDamage(IPokemon defender, IPokemon attacker, MoveData move)
+        // ----------------------------
+        // Damage calculation
+        // ----------------------------
+        private static int CalculateDamage(IPokemon defender, IPokemon attacker, MoveData move)
         {
             int level = attacker.Level;
             int power = move.Power;
             PokemonType moveType = move.Type;
 
-            // Determine attack and defense stats based on move category
             int attackStat = GetEffectiveAttack(move.CategoryEn, attacker);
             int defenseStat = GetEffectiveDefense(move.CategoryEn, defender);
 
-            // Base damage formula
             double baseDamage = (((2 * level / 5.0 + 2) * power * attackStat / defenseStat) / 50.0) + 2;
 
-            // Type effectiveness
             double effectiveness = TypeEffectivenessChartHelper.GetTotalEffectiveness(moveType, defender.Types);
-
-            // STAB (Same Type Attack Bonus)
-            bool hasSTAB = attacker.Types.Contains(moveType);
-            double stab = hasSTAB ? 1.5 : 1.0;
-
-            // Critical hit multiplier
+            double stab = attacker.Types.Contains(moveType) ? 1.5 : 1.0;
             double crit = IsCriticalHit() ? 1.5 : 1.0;
+            double randomFactor = _rand.Next(85, 101) / 100.0;
 
-            // Random factor (85–100%)
-            double random = _rand.Next(85, 101) / 100.0;
-
-            // Calculate total damage
-            double totalDamage = baseDamage * effectiveness * stab * crit * random;
-            result.Damage = (int)totalDamage;
+            double totalDamage = baseDamage * effectiveness * stab * crit * randomFactor;
+            return Math.Max(0, (int)Math.Floor(totalDamage));
         }
 
-        // Other methods unchanged:
-        public static bool DoesMoveHit(MoveData move)
+        // ----------------------------
+        // Hit & critical checks
+        // ----------------------------
+        public static bool DoesMoveHit(MoveData move, StatusType attackerStatus)
         {
-            if(result.StatusEffect == StatusType.Sleep || result.StatusEffect == StatusType.Freeze) return false;
-            
-            return _rand.Next(0, 100) < move.Accuracy;
+            if (attackerStatus == StatusType.Sleep || attackerStatus == StatusType.Freeze)
+                return false;
+
+            return _rand.NextDouble() < move.Accuracy / 100.0;
         }
 
-        public static bool IsCriticalHit()
-        {
-            return _rand.Next(0, 100) < 6; // 6% chance
-        }
+        public static bool IsCriticalHit() => _rand.NextDouble() < 0.06; // 6% chance
 
-        public static int GetEffectiveAttack(string moveCategory, IPokemon attacker)
-        {
-            if (moveCategory == "Physical")
-                return GetEffectivePhysicalAttack(attacker);
-            else if (moveCategory == "Special")
-                return GetEffectiveSpAttack(attacker);
-            else
-                throw new ArgumentException("Invalid move category");
-        }
-
-        public static int GetEffectivePhysicalAttack(IPokemon attacker)
-        {
-            // Example: get base attack + modifiers like nature, buffs, etc.
-            int baseAttack = attacker.IVs.Attack;
-            double natureMod = NatureHelper.GetNatureModifiers(attacker.Nature).atk;
-            double otherModifiers = 1.0; // Add buffs/debuffs here
-
-            double effectiveAttack = baseAttack * natureMod * otherModifiers;
-            return (int)Math.Floor(effectiveAttack);
-        }
-
-        public static int GetEffectiveSpAttack(IPokemon attacker)
-        {
-            // Example: get base special attack + modifiers
-            int baseSpAttack = attacker.IVs.SpecialAttack;
-            double natureMod = NatureHelper.GetNatureModifiers(attacker.Nature).spAtk;
-            double otherModifiers = 1.0; // Add buffs/debuffs here
-
-            double effectiveSpAttack = baseSpAttack * natureMod * otherModifiers;
-            return (int)Math.Floor(effectiveSpAttack);
-        }
-
-
-        public static int GetEffectiveDefense(string moveCategory, IPokemon defender)
-        {
-            if (moveCategory == "Physical")
-                return GetEffectivePhysicalDefense(defender);
-            else if (moveCategory == "Special")
-                return GetEffectiveSpDefense(defender);
-            else
-                throw new ArgumentException("Invalid move category");
-        }
-
-        public static int GetEffectiveSpDefense(IPokemon defender)
-        {
-            int baseSpDef = defender.IVs.SpecialDefense;
-            double natureMod = NatureHelper.GetNatureModifiers(defender.Nature).spDef;
-            double otherModifiers = 1.0; // Add buffs/debuffs here if needed
-
-            double effectiveSpDef = baseSpDef * natureMod * otherModifiers;
-            return (int)Math.Floor(effectiveSpDef);
-        }
-        public static int GetEffectivePhysicalDefense(IPokemon defender)
-        {
-            int baseDef = defender.IVs.Defense;
-            double natureMod = NatureHelper.GetNatureModifiers(defender.Nature).def;
-            double otherModifiers = 1.0; // Add buffs/debuffs here if needed
-
-            double effectiveDef = baseDef * natureMod * otherModifiers;
-            return (int)Math.Floor(effectiveDef);
-        }
-        public static double GetStatusBonus(IPokemon pokemon)
-        {
-            switch (pokemon.StatusType)
+        // ----------------------------
+        // Effective stat calculations
+        // ----------------------------
+        public static int GetEffectiveAttack(string moveCategory, IPokemon attacker) =>
+            moveCategory switch
             {
-                case StatusType.Sleep:
-                     return 2.5;    
-                case StatusType.Freeze:
-                     return 2.5;
-                case StatusType.Paralysis:
-                    return 1.5;
-                case StatusType.Burn:
-                    return 1.5;
-                case StatusType.Poison:
-                    return 1.5;
-                default:
-                    return 1;
-            }
+                "Physical" => GetEffectivePhysicalAttack(attacker),
+                "Special" => GetEffectiveSpecialAttack(attacker),
+                _ => throw new ArgumentException("Invalid move category")
+            };
+
+        public static int GetEffectiveDefense(string moveCategory, IPokemon defender) =>
+            moveCategory switch
+            {
+                "Physical" => GetEffectivePhysicalDefense(defender),
+                "Special" => GetEffectiveSpecialDefense(defender),
+                _ => throw new ArgumentException("Invalid move category")
+            };
+
+        private static int GetEffectivePhysicalAttack(IPokemon attacker)
+        {
+            double baseAttack = attacker.IVs.Attack;
+            double modifier = NatureHelper.GetNatureModifiers(attacker.Nature).atk;
+            return (int)Math.Floor(baseAttack * modifier);
         }
-        public static bool IsCaught(WildPokemonBot pokemonBot,PokeballData pokeball)
+
+        private static int GetEffectiveSpecialAttack(IPokemon attacker)
+        {
+            double baseSpAttack = attacker.IVs.SpecialAttack;
+            double modifier = NatureHelper.GetNatureModifiers(attacker.Nature).spAtk;
+            return (int)Math.Floor(baseSpAttack * modifier);
+        }
+
+        private static int GetEffectivePhysicalDefense(IPokemon defender)
+        {
+            double baseDef = defender.IVs.Defense;
+            double modifier = NatureHelper.GetNatureModifiers(defender.Nature).def;
+            return (int)Math.Floor(baseDef * modifier);
+        }
+
+        private static int GetEffectiveSpecialDefense(IPokemon defender)
+        {
+            double baseSpDef = defender.IVs.SpecialDefense;
+            double modifier = NatureHelper.GetNatureModifiers(defender.Nature).spDef;
+            return (int)Math.Floor(baseSpDef * modifier);
+        }
+
+        // ----------------------------
+        // Status bonus for catching
+        // ----------------------------
+        private static double GetStatusBonus(IPokemon pokemon) =>
+            pokemon.StatusType switch
+            {
+                StatusType.Sleep => 2.5,
+                StatusType.Freeze => 2.5,
+                StatusType.Paralysis => 1.5,
+                StatusType.Burn => 1.5,
+                StatusType.Poison => 1.5,
+                _ => 1.0
+            };
+
+        // ----------------------------
+        // Catch probability
+        // ----------------------------
+        /// <summary>
+        /// Simulates the 4-shake catch check for a Pokémon.
+        /// Returns 0 if successfully caught, or the shake number (1-4) that failed.
+        /// </summary>
+        public static int ShakeCheck(WildPokemonBot pokemonBot, PokeballData pokeball)
         {
             IPokemon pokemon = pokemonBot._ActivePokemon;
             int hp = pokemonBot._ActivePokemonHp;
+
             double statusBonus = GetStatusBonus(pokemon);
-            double a = ((3 * pokemon.MaxHP - 2 * hp) * pokemon.CatchRate * pokeball.CatchRateModifier) / (3 * pokemon.MaxHP);
+            double a = ((3.0 * pokemon.MaxHP - 2.0 * hp) * pokemon.CatchRate * pokeball.CatchRateModifier) / (3.0 * pokemon.MaxHP);
             a *= statusBonus;
 
             // Auto-catch if a >= 255
             if (a >= 255)
-            {
-                return true;
-            }
+                return 0; // success
 
-            // Step 2: Calculate shake probability using b
-            double catchRateFactor = 16711680.0 / a;
-            double b = 1048560.0 / Math.Sqrt(Math.Sqrt(catchRateFactor));
+            double b = 16711680.0 / a;
+            double shakeThreshold = 1048560.0 / Math.Sqrt(Math.Sqrt(b));
 
-            Random rng = new Random();
-
-            // Shake checks (4 times)
+            // Perform 4 shake checks
             for (int i = 0; i < 4; i++)
             {
-                int roll = rng.Next(0, 65536); // 0–65535
-                if (roll >= b)
-                {
-                    return false; // Broke free
-                }
+                if (_rand.Next(0, 65536) >= shakeThreshold)
+                    return i + 1; // shake failed at this number (1–4)
             }
 
-            return true; // All 4 shakes passed — caught!
+            return 0; // caught successfully
         }
+
     }
 }
-

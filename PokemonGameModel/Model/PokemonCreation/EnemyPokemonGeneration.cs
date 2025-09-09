@@ -53,10 +53,10 @@ namespace PokemonGameModel.Model.PokemonCreation
         public EnemyPokemonGeneration(Encounter species, PokemonData pokemon)
         {
             // Generate IDs
-            var pid = RandomPokemonIDHelper.GeneratePID();
+            var pid = RNGHelper.GeneratePID();
             ushort trainerID = 12345;
-            ushort secretID = RandomPokemonIDHelper.GenerateRandomSID();
-            var randomHelper = new RandomPokemonIDHelper(pid, trainerID, secretID);
+            ushort secretID = RNGHelper.GenerateRandomSID();
+            var randomHelper = new RNGHelper(pid, trainerID, secretID);
 
             // Identification
             ID = secretID;
