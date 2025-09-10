@@ -36,5 +36,6 @@ namespace PokemonGameModel.Model.Data.MapData
         public int MinLevel { get; set; }
         public int MaxLevel { get; set; }
         public double Rarity;
+        public string? Environment {  get; set; }
     }
 }

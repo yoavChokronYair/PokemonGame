@@ -1,22 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonGameModel.Model.Helper
 {
     public static class RandomHelper
     {
         private static readonly Random _rng = new Random();
-
         private static readonly object _lock = new object();
 
+        // ----------------------------
+        // Basic RNG
+        // ----------------------------
         public static int Next(int minValue, int maxValue)
         {
             lock (_lock)
             {
                 return _rng.Next(minValue, maxValue);
+            }
+        }
+
+        public static double NextDouble()
+        {
+            lock (_lock)
+            {
+                return _rng.NextDouble();
             }
         }
 
@@ -27,26 +33,18 @@ namespace PokemonGameModel.Model.Helper
                 return _rng.NextDouble() < probabilityTrue;
             }
         }
-        public static bool ShouldTriggerEncounter(double baseEncounterRate, double encounterModifier = 1.0)
+
+        public static void NextBytes(byte[] buffer)
         {
-            baseEncounterRate = (int)(baseEncounterRate * 256.0);
-
-            // Clamp base rate to valid range
-            baseEncounterRate = Clamp(baseEncounterRate, 0, 255);
-
-            // Apply modifier from items, abilities, etc.
-            int effectiveRate = (int)(baseEncounterRate * encounterModifier);
-
-            // Clamp effective rate to [0, 255]
-            effectiveRate = Clamp(effectiveRate, 0, 255);
-
-            // Generate a random number between 0 and 255
-            int roll = Next(0, 256);
-
-            // Encounter occurs if roll is less than the effective rate
-            return roll < effectiveRate;
+            lock (_lock)
+            {
+                _rng.NextBytes(buffer);
+            }
         }
-        //this is bullshit
+
+        // ----------------------------
+        // Utility Math
+        // ----------------------------
         public static int Clamp(int value, int min, int max)
         {
             if (value < min) return min;
@@ -59,6 +57,26 @@ namespace PokemonGameModel.Model.Helper
             if (value < min) return min;
             if (value > max) return max;
             return value;
+        }
+
+        public static float Clamp(float value, float min, float max)
+        {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
+        }
+
+        public static int Range(int minInclusive, int maxExclusive)
+        {
+            return Next(minInclusive, maxExclusive);
+        }
+
+        public static T Choose<T>(T[] items)
+        {
+            if (items == null || items.Length == 0)
+                throw new ArgumentException("Array cannot be null or empty.", nameof(items));
+
+            return items[Next(0, items.Length)];
         }
     }
 }

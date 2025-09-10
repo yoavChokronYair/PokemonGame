@@ -88,7 +88,7 @@ namespace PokemonGameModel.Model.BattleSystem.Player
             if (!_Team[_ActivePokemon].Item1)
             {
                 MoveResult moveResult = BattleCalculator.ExecuteMove(_RivalPokemon, _ActivePokemon, moveData);
-                if (BattleCalculator.DoesMoveHit(moveData))
+                if (BattleCalculator.DoesMoveHit(moveData, StatusType.None))
                 {
                     if (moveResult.IsSwitch)
                     {
