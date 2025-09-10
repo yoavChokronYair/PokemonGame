@@ -8,7 +8,11 @@
         Water,
         Black,
         Trainer,
-        
+        House,
+        Lab,
+        Fence,
+        Building,
+
     }
     public enum TileTypeSecondLayer
     {
@@ -17,6 +21,7 @@
         Event = 1,
         Interactable = 2,
         OutOfBounds = 0,
+        hill = 3,
 
     }
 }

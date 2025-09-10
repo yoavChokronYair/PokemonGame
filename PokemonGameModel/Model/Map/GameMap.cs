@@ -1,7 +1,6 @@
 ﻿using PokemonGameModel.Enums;
 using PokemonGameModel.Model.Data.MapData;
 using PokemonGameModel.Model.Manager;
-using System.ComponentModel;
 
 namespace PokemonGameModel.Model.Map
 {
@@ -10,28 +9,18 @@ namespace PokemonGameModel.Model.Map
         private static GameMap? _instance;
         private static readonly object _lock = new object();
 
-        public readonly Dictionary<MapData, List<string?>> _data = new Dictionary<MapData, List<string?>>();
-        public readonly Dictionary<MapData, List<(TileTypeFirstLayer, TileTypeSecondLayer)>> mapTiles = new Dictionary<MapData, List<(TileTypeFirstLayer, TileTypeSecondLayer)>>();
-        public List<(TileTypeFirstLayer, TileTypeSecondLayer)> _tiles = new List<(TileTypeFirstLayer, TileTypeSecondLayer)>();
-        public readonly Dictionary<MapData, List<(TileTypeFirstLayer, TileTypeSecondLayer)>> baseMapTiles
-   = new Dictionary<MapData, List<(TileTypeFirstLayer, TileTypeSecondLayer)>>();
-        // Private constructor so no one can "new" it directly
+        public Dictionary<string, MapNode> MapNodes { get; } = new();
+        public List<(TileTypeFirstLayer, TileTypeSecondLayer)> WorldTiles { get; private set; } = new();
+        public int WorldWidth { get; private set; }
+        public int WorldHeight { get; private set; }
+
         private GameMap(MapDataList def)
         {
-            foreach (MapData map in def.maps)
-            {
-                List<string?> l = new List<string?>() { map.UpMap, map.DownMap, map.LeftMap, map.RightMap };
-                _data.Add(map, l);
-                GenerateGameMapFromRegions(map);
-                mapTiles.Add(map, _tiles);
-                baseMapTiles.Add(map, new List<(TileTypeFirstLayer, TileTypeSecondLayer)>(_tiles)); // clean copy
-                _tiles = new List<(TileTypeFirstLayer, TileTypeSecondLayer)>();
-            }
+            BuildGraph(def);
+            ComputeOffsets();
+            BuildWorldTiles();
         }
 
-        /// <summary>
-        /// Initialize the singleton with data (only first call will take effect)
-        /// </summary>
         public static GameMap GetInstance(MapDataList def)
         {
             if (_instance == null)
@@ -45,9 +34,6 @@ namespace PokemonGameModel.Model.Map
             return _instance;
         }
 
-        /// <summary>
-        /// Get the already created instance (throws if not yet initialized)
-        /// </summary>
         public static GameMap Instance
         {
             get
@@ -58,120 +44,117 @@ namespace PokemonGameModel.Model.Map
             }
         }
 
-        public void GenerateGameMapFromRegions(MapData def)
+        private void BuildGraph(MapDataList def)
         {
-            // Initialize all tiles
-            for (int y = 0; y < def.Height; y++)
+            // Create nodes
+            foreach (var map in def.maps)
             {
-                for (int x = 0; x < def.Width; x++)
+                MapNodes[map.Name] = new MapNode(map);
+            }
+
+            // Assign neighbors by name
+            foreach (var map in def.maps)
+            {
+                var node = MapNodes[map.Name];
+                if (!string.IsNullOrEmpty(map.LeftMap) && MapNodes.ContainsKey(map.LeftMap))
+                    node.Neighbors[Direction.Left] = MapNodes[map.LeftMap];
+                if (!string.IsNullOrEmpty(map.RightMap) && MapNodes.ContainsKey(map.RightMap))
+                    node.Neighbors[Direction.Right] = MapNodes[map.RightMap];
+                if (!string.IsNullOrEmpty(map.UpMap) && MapNodes.ContainsKey(map.UpMap))
+                    node.Neighbors[Direction.Up] = MapNodes[map.UpMap];
+                if (!string.IsNullOrEmpty(map.DownMap) && MapNodes.ContainsKey(map.DownMap))
+                    node.Neighbors[Direction.Down] = MapNodes[map.DownMap];
+            }
+        }
+
+        private void ComputeOffsets()
+        {
+            // BFS from central start map
+            var visited = new HashSet<MapNode>();
+            var queue = new Queue<MapNode>();
+            var startNode = MapNodes.Values.First(); // pick first map as origin
+            startNode.Offset = (0, 0);
+            queue.Enqueue(startNode);
+
+            while (queue.Count > 0)
+            {
+                var node = queue.Dequeue();
+                if (!visited.Add(node)) continue;
+                var (ox, oy) = node.Offset.Value;
+
+                foreach (var kvp in node.Neighbors)
                 {
-                    _tiles.Add((TileTypeFirstLayer.Empty, TileTypeSecondLayer.None));
+                    var dir = kvp.Key;
+                    var neighbor = kvp.Value;
+
+                    if (neighbor.Offset != null) continue;
+
+                    // Assign offset relative to current map
+                    switch (dir)
+                    {
+                        case Direction.Left:
+                            neighbor.Offset = (ox - neighbor.Map.Width, oy);
+                            break;
+                        case Direction.Right:
+                            neighbor.Offset = (ox + node.Map.Width, oy);
+                            break;
+                        case Direction.Up:
+                            neighbor.Offset = (ox, oy - neighbor.Map.Height);
+                            break;
+                        case Direction.Down:
+                            neighbor.Offset = (ox, oy + node.Map.Height);
+                            break;
+                    }
+
+                    queue.Enqueue(neighbor);
                 }
             }
-            // Fill terrain tiles
-            foreach (var region in def.Regions)
+        }
+
+        private void BuildWorldTiles()
+        {
+            // Calculate min/max for world size
+            int minX = MapNodes.Values.Min(n => n.Offset!.Value.X);
+            int minY = MapNodes.Values.Min(n => n.Offset!.Value.Y);
+            int maxX = MapNodes.Values.Max(n => n.Offset!.Value.X + n.Map.Width);
+            int maxY = MapNodes.Values.Max(n => n.Offset!.Value.Y + n.Map.Height);
+
+            WorldWidth = maxX - minX;
+            WorldHeight = maxY - minY;
+
+            WorldTiles = Enumerable.Repeat((TileTypeFirstLayer.Empty, TileTypeSecondLayer.None),
+                                           WorldWidth * WorldHeight).ToList();
+
+            foreach (var node in MapNodes.Values)
             {
-                for (int y = 0; y < region.Height; y++)
+                var ox = node.Offset!.Value.X - minX;
+                var oy = node.Offset!.Value.Y - minY;
+
+                foreach (var region in node.Map.Regions)
                 {
-                    for (int x = 0; x < region.Width; x++)
+                    for (int y = 0; y < region.Height; y++)
                     {
-                        int tileX = region.StartX + x;
-                        int tileY = region.StartY + y;
-
-                        if (tileX >= 0 && tileX < def.Width && tileY >= 0 && tileY < def.Height)
-                            _tiles[tileY * def.Width + tileX] = (region.Title, _tiles[tileY * def.Width + tileX].Item2);
-
-                        if (_tiles[tileY * def.Width + tileX].Item1 == TileTypeFirstLayer.Trainer)
+                        for (int x = 0; x < region.Width; x++)
                         {
-                            _tiles[tileY * def.Width + tileX] = (_tiles[tileY * def.Width + tileX].Item1, TileTypeSecondLayer.Interactable);
-                            Direction? direction = GameDataManager.Instance.TrainerData.trainers.FirstOrDefault(m => m.Id == region.ID)?.FirstDirection;
-                            SetTrainerVision(direction, tileX, tileY, def);
+                            int worldX = ox + region.StartX + x;
+                            int worldY = oy + region.StartY + y;
+                            int index = worldY * WorldWidth + worldX;
+                            if (index >= 0 && index < WorldTiles.Count)
+                                WorldTiles[index] = (region.Title, TileTypeSecondLayer.None);
                         }
                     }
                 }
             }
         }
-
-        public void SetTrainerVision(Direction? direction, int startX, int startY, MapData def)
-        {
-            if (direction == null)
-                return;
-
-            int dx = 0, dy = 0;
-
-            switch (direction)
-            {
-                case Direction.Left:
-                    dx = -1;
-                    break;
-                case Direction.Right:
-                    dx = 1;
-                    break;
-                case Direction.Up:
-                    dy = -1;
-                    break;
-                case Direction.Down:
-                    dy = 1;
-                    break;
-                default:
-                    return;
-            }
-
-            for (int step = 1; step <= 8; step++)
-            {
-                int x = startX + dx * step;
-                int y = startY + dy * step;
-
-                int index = y * def.Width + x;
-
-                if (x < 0 || y < 0 || x >= def.Width || y >= def.Height || index < 0)
-                    break;
-
-                _tiles[index] = (_tiles[index].Item1, TileTypeSecondLayer.Event);
-            }
-        }
-        public List<string> ConvertToColor(MapData map)
-        {
-            List<string> l = new List<string>();
-            var tiles = mapTiles[map];
-
-            foreach (var tile in tiles)
-            {
-                // Player takes priority — overrides base color
-                if (tile.Item2 == TileTypeSecondLayer.player)
-                {
-                    l.Add("Red");
-                    continue;
-                }
-
-                // Base color mapping for first layer
-                switch (tile.Item1)
-                {
-                    case TileTypeFirstLayer.Empty:
-                        l.Add("White");
-                        break;
-                    case TileTypeFirstLayer.Path:
-                        l.Add("Gray");
-                        break;
-                    case TileTypeFirstLayer.Grass:
-                        l.Add("Green");
-                        break;
-                    case TileTypeFirstLayer.Water:
-                        l.Add("Blue");
-                        break;
-                    case TileTypeFirstLayer.Black:
-                        l.Add("Black");
-                        break;
-                    case TileTypeFirstLayer.Trainer:
-                        l.Add("Yellow");
-                        break;
-                    default:
-                        l.Add("Magenta"); // fallback color if unknown
-                        break;
-                }
-            }
-
-            return l;
-        }
     }
+
+    public class MapNode
+    {
+        public MapData Map { get; }
+        public Dictionary<Direction, MapNode> Neighbors { get; } = new();
+        public (int X, int Y)? Offset { get; set; }
+
+        public MapNode(MapData map) => Map = map;
+    }
+
 }

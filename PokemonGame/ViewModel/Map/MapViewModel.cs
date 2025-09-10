@@ -5,7 +5,6 @@ using PokemonGameModel.Model.Manager;
 using PokemonGameModel.Model.Map;
 using PokemonGameModel.ViewModel.ViewModelHelper;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,12 +28,11 @@ namespace PokemonGameModel.ViewModel.Map
         private Direction playerDirection = Direction.Down;
         private Direction enemyDirection = Direction.Up;
 
-        private PlayerOnMap player; // NEW — handles player position & movement
+        private PlayerOnMap player;
 
         // Public Properties
         public MainWindowViewModel MainWindowViewModel { get; }
         public GameMap CurrentGameMap { get; }
-        public MapData MapData => player.CurrentMap; // NEW — pulled from PlayerOnMap
 
         public ICommand DirectionCommand { get; }
 
@@ -132,10 +130,8 @@ namespace PokemonGameModel.ViewModel.Map
             TileList = new ObservableCollection<TileViewModel>();
             CurrentGameMap = GameMap.GetInstance(mapData);
 
-            // Start player in first map, position (5,5)
-            var startingMap = GameMap.Instance._data.Keys.First();
-            int startIndex = 5 * startingMap.Width + 5;
-            player = new PlayerOnMap(startingMap, startIndex);
+            // Start player in world coordinates (5,5)
+            player = new PlayerOnMap(5, 5);
 
             InitializeView();
 
@@ -148,8 +144,8 @@ namespace PokemonGameModel.ViewModel.Map
 
         private void InitializeView()
         {
-            PlayerX = player.CurrentLocation % player.CurrentMap.Width;
-            PlayerY = player.CurrentLocation / player.CurrentMap.Width;
+            PlayerX = player.WorldX;
+            PlayerY = player.WorldY;
             Rows = ViewHeight;
             Columns = ViewWidth;
 
@@ -161,33 +157,33 @@ namespace PokemonGameModel.ViewModel.Map
             switch (input.ToLower())
             {
                 case "left":
-                    player.MoveByXY(-1, 0);
                     playerDirection = Direction.Left;
+                    player.Move(-1, 0,playerDirection);
                     break;
                 case "right":
-                    player.MoveByXY(1, 0);
                     playerDirection = Direction.Right;
+                    player.Move(1, 0, playerDirection);
                     break;
                 case "up":
-                    player.MoveByXY(0, -1);
                     playerDirection = Direction.Up;
+                    player.Move(0, -1, playerDirection);
                     break;
                 case "down":
-                    player.MoveByXY(0, 1);
                     playerDirection = Direction.Down;
+                    player.Move(0, 1, playerDirection);
                     break;
             }
 
-            PlayerX = player.CurrentLocation % player.CurrentMap.Width;
-            PlayerY = player.CurrentLocation / player.CurrentMap.Width;
+            PlayerX = player.WorldX;
+            PlayerY = player.WorldY;
 
-            InitializeTiles(); // Refresh the visible area
+            InitializeTiles(); // Refresh visible area
             await HandleEncounterAsync();
         }
 
         private async Task HandleEncounterAsync()
         {
-            // Placeholder for encounter logic
+            // TODO: encounter logic
         }
 
         private void InitializeTiles()
@@ -195,16 +191,51 @@ namespace PokemonGameModel.ViewModel.Map
             TileList.Clear();
             int tilePixelWidth = ScreenWidth / Columns;
             int tilePixelHeight = ScreenHeight / Rows;
-            var l = GameMap.Instance.ConvertToColor(MapData);
 
-            for (int i = 0; i < ViewWidth * ViewHeight; i++)
+            int halfWidth = ViewWidth / 2;
+            int halfHeight = ViewHeight / 2;
+
+            int startX = Math.Max(0, player.WorldX - halfWidth);
+            int startY = Math.Max(0, player.WorldY - halfHeight);
+
+            for (int y = 0; y < ViewHeight; y++)
             {
-                TileList.Add(new TileViewModel
+                for (int x = 0; x < ViewWidth; x++)
                 {
-                    Width = tilePixelWidth,
-                    Height = tilePixelHeight,
-                    Color = l[i]
-                });
+                    int worldX = startX + x;
+                    int worldY = startY + y;
+
+                    string color = "Black"; // fallback
+                    if (worldX >= 0 && worldX < CurrentGameMap.WorldWidth &&
+                        worldY >= 0 && worldY < CurrentGameMap.WorldHeight)
+                    {
+                        int index = worldY * CurrentGameMap.WorldWidth + worldX;
+                        var tile = CurrentGameMap.WorldTiles[index];
+
+                        if (tile.Item2 == TileTypeSecondLayer.player)
+                            color = "Red";
+                        else
+                        {
+                            switch (tile.Item1)
+                            {
+                                case TileTypeFirstLayer.Empty: color = "White"; break;
+                                case TileTypeFirstLayer.Path: color = "Gray"; break;
+                                case TileTypeFirstLayer.Grass: color = "Green"; break;
+                                case TileTypeFirstLayer.Water: color = "Blue"; break;
+                                case TileTypeFirstLayer.Black: color = "Black"; break;
+                                case TileTypeFirstLayer.Trainer: color = "Yellow"; break;
+                                default: color = "Magenta"; break;
+                            }
+                        }
+                    }
+
+                    TileList.Add(new TileViewModel
+                    {
+                        Width = tilePixelWidth,
+                        Height = tilePixelHeight,
+                        Color = color
+                    });
+                }
             }
         }
     }
