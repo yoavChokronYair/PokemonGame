@@ -1,4 +1,5 @@
-﻿using PokemonGameModel.Enums;
+﻿using PokemonGame.ViewModel.Map;
+using PokemonGameModel.Enums;
 using PokemonGameModel.Interface;
 using PokemonGameModel.Model.BattleSystem.Bot;
 using PokemonGameModel.Model.BattleSystem.Player;
@@ -6,7 +7,6 @@ using PokemonGameModel.Model.Data;
 using PokemonGameModel.Model.Helper;
 using PokemonGameModel.Model.PokemonCreation;
 using PokemonGameModel.ViewModel.BattleMenu;
-using PokemonGameModel.ViewModel.Map;
 using PokemonGameModel.ViewModel.ViewModelHelper;
 using System.Collections.ObjectModel;
 using System.Linq;

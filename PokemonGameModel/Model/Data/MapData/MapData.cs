@@ -1,5 +1,4 @@
 ﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Model.Map;
 using System.Collections.Generic;
 using System.Linq;
 

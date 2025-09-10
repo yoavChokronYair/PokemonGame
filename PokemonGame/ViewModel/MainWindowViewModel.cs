@@ -1,14 +1,8 @@
-﻿using PokemonGameModel.Model.Data;
+﻿using PokemonGame.ViewModel.Map;
+using PokemonGameModel.Model.Data;
 using PokemonGameModel.Model.Helper;
 using PokemonGameModel.Model.Manager;
-using PokemonGameModel.ViewModel.BattleMenu;
-using PokemonGameModel.ViewModel.Map;
 using PokemonGameModel.ViewModel.ViewModelHelper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonGameModel.ViewModel
 {
@@ -21,7 +15,7 @@ namespace PokemonGameModel.ViewModel
         {
             _NavigationStore = new NavigationStore();
             
-            _NavigationStore.CurrentViewModel = new MapViewModel(GameDataManager.Instance.MapData,_NavigationStore,this);
+            _NavigationStore.CurrentViewModel = new MapViewModel(GameDataManager.Instance.MapData.maps[0],_NavigationStore,this);
             _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
         }

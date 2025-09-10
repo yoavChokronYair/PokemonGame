@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using static PokemonGameModel.Model.Map.GameMap;
+using static PokemonGame.Model.Map.GameMap;
 
-namespace PokemonGameModel.ViewModel.Map
+namespace PokemonGame.ViewModel.Map
 {
-    public class TileViewModel:ViewModelBase
+    public class TileViewModel : ViewModelBase
     {
         private double _width;
         public double Width
         {
             get => _width;
-            set 
+            set
             {
-                _width = value; 
+                _width = value;
                 OnPropertyChanged(nameof(Width));
             }
         }
@@ -93,7 +93,16 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
-      
+        public void UpdateFrom(TileRenderInfo info)
+        {
+            Width = info.Width;
+            Height = info.Height;
+            X1 = info.X1;
+            Y1 = info.Y1;
+            X2 = info.X2;
+            Y2 = info.Y2;
+            Color = info.Color;
+        }
 
 
     }

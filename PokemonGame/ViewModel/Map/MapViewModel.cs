@@ -1,21 +1,33 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PokemonGameModel.Enums;
-using PokemonGameModel.Model.Data.MapData;
+using PokemonGameModel.Model.BattleSystem.Bot;
+using PokemonGameModel.Model.BattleSystem.Player;
+using PokemonGameModel.Model.Data;
+using PokemonGameModel.Model.Data.NpcData;
+using PokemonGameModel.Model.Helper;
 using PokemonGameModel.Model.Manager;
-using PokemonGameModel.Model.Map;
+using PokemonGame.Model.Map;
+using PokemonGameModel.Model.PokemonCreation;
 using PokemonGameModel.ViewModel.ViewModelHelper;
+using PokemonGameModel.Model.Data.MapData;
+using PokemonGameModel.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+using static PokemonGame.Model.Map.GameMap;
 
-namespace PokemonGameModel.ViewModel.Map
+namespace PokemonGame.ViewModel.Map
 {
     public class MapViewModel : ViewModelBase
     {
         // Constants
+
+        int count = 0;
         private const int ViewWidth = 19;
         private const int ViewHeight = 15;
         private const int ScreenWidth = 900;
@@ -23,20 +35,17 @@ namespace PokemonGameModel.ViewModel.Map
 
         // Fields
         private readonly NavigationStore _navigationStore;
-        private readonly DispatcherTimer enemyDirectionTimer;
-
         private Direction playerDirection = Direction.Down;
-        private Direction enemyDirection = Direction.Up;
-
-        private PlayerOnMap player;
 
         // Public Properties
         public MainWindowViewModel MainWindowViewModel { get; }
         public GameMap CurrentGameMap { get; }
+        public MapData MapData { get; }
 
         public ICommand DirectionCommand { get; }
 
-        private int playerX;
+
+        private int playerX = 0;
         public int PlayerX
         {
             get => playerX;
@@ -46,10 +55,10 @@ namespace PokemonGameModel.ViewModel.Map
                 {
                     playerX = value;
                     OnPropertyChanged(nameof(PlayerX));
+
                 }
             }
         }
-
         private int playerY;
         public int PlayerY
         {
@@ -63,7 +72,6 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
-
         private int rows;
         public int Rows
         {
@@ -77,7 +85,6 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
-
         private int columns;
         public int Columns
         {
@@ -91,7 +98,6 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
-
         private ObservableCollection<TileViewModel> tileList;
         public ObservableCollection<TileViewModel> TileList
         {
@@ -105,7 +111,7 @@ namespace PokemonGameModel.ViewModel.Map
                 }
             }
         }
-
+        private Direction enemyDirection = Direction.Up;
         public Direction EnemyDirection
         {
             get => enemyDirection;
@@ -119,72 +125,96 @@ namespace PokemonGameModel.ViewModel.Map
             }
         }
 
+        private readonly DispatcherTimer enemyDirectionTimer;
         // Constructor
-        public MapViewModel(MapDataList mapData, NavigationStore navigationStore, MainWindowViewModel mainWindow)
+        public MapViewModel(MapData mapData, NavigationStore navigationStore, MainWindowViewModel mainWindow)
         {
+            MapData = mapData;
             _navigationStore = navigationStore;
             MainWindowViewModel = mainWindow;
 
             DirectionCommand = new AsyncRelayCommand<string>(OnDirectionInput);
 
             TileList = new ObservableCollection<TileViewModel>();
-            CurrentGameMap = GameMap.GetInstance(mapData);
-
-            // Start player in world coordinates (5,5)
-            player = new PlayerOnMap(5, 5);
+            CurrentGameMap = new GameMap(mapData);
 
             InitializeView();
 
+            // Setup timer to update enemy direction every 5 seconds
             enemyDirectionTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5)
             };
+            enemyDirectionTimer.Tick += EnemyDirectionTimer_Tick;
             enemyDirectionTimer.Start();
         }
 
         private void InitializeView()
         {
-            PlayerX = player.WorldX;
-            PlayerY = player.WorldY;
+            PlayerX = 5;
+            PlayerY = 5;
             Rows = ViewHeight;
             Columns = ViewWidth;
 
             InitializeTiles();
+            LoadTiles();
         }
 
         private async Task OnDirectionInput(string input)
         {
-            switch (input.ToLower())
+            if (CurrentGameMap.TryMove(input, ref playerX, ref playerY, ref playerDirection))
             {
-                case "left":
-                    playerDirection = Direction.Left;
-                    player.Move(-1, 0,playerDirection);
-                    break;
-                case "right":
-                    playerDirection = Direction.Right;
-                    player.Move(1, 0, playerDirection);
-                    break;
-                case "up":
-                    playerDirection = Direction.Up;
-                    player.Move(0, -1, playerDirection);
-                    break;
-                case "down":
-                    playerDirection = Direction.Down;
-                    player.Move(0, 1, playerDirection);
-                    break;
+                LoadTiles();
+                await Task.Delay(100); // Small delay
+
+             //   await HandleEncounterAsync();
             }
-
-            PlayerX = player.WorldX;
-            PlayerY = player.WorldY;
-
-            InitializeTiles(); // Refresh visible area
-            await HandleEncounterAsync();
         }
 
-        private async Task HandleEncounterAsync()
-        {
-            // TODO: encounter logic
-        }
+        //private async Task HandleEncounterAsync()
+        //{
+        //    var tile = CurrentGameMap.GetTileAt(PlayerX, PlayerY);
+        //    if (tile == TileTypeFirstLayer.Grass)
+        //    {
+        //       // var routeHelper = new rnghelper (GameDataManager.Instance.RouteData);
+        //       // var encounter = routeHelper.GetRandomEncounter(GameDataManager.Instance.RouteData.AllRoutes[0].Name, "Grass");
+
+        //        if (!RandomHelper.ShouldTriggerEncounter(encounter.Rarity))
+        //            return;
+
+        //        var enemyPokemon = new EnemyPokemonGeneration(
+        //            encounter,
+        //            GameDataManager.Instance.PokemonData.AllPokemons.FirstOrDefault(p => p.Name == encounter.Pokemon)
+        //        );
+
+        //        var playerPokemon = PlayerPokemonManager.Instance._playerPokemonTeam[0];
+        //        var wildBot = new WildPokemonBot(enemyPokemon, playerPokemon);
+        //        var playerBot = new PlayerPokemonBot(new List<PlayerPokemonGeneration> { playerPokemon }, wildBot._ActivePokemon);
+
+        //        _navigationStore.CurrentViewModel = new WildPokemonBattleViewModel(playerBot, wildBot, _navigationStore, this);
+        //    }
+        //    if (tile == TileType.TrainerVision)
+        //    {
+        //        var routeHelper = new RouteEncounterHelper(GameDataManager.Instance.RouteData);
+        //        var encounter = routeHelper.GetRandomEncounter(GameDataManager.Instance.RouteData.AllRoutes[0].Name, "Grass");
+
+        //        if (!RandomHelper.ShouldTriggerEncounter(encounter.Rarity))
+        //            return;
+
+        //        var enemyPokemon = new EnemyPokemonGeneration(
+        //            encounter,
+        //            GameDataManager.Instance.PokemonData.AllPokemons.FirstOrDefault(p => p.Name == encounter.Pokemon)
+        //        );
+
+        //        var playerPokemon = PlayerPokemonManager.Instance._playerPokemonTeam[0];
+        //        var wildBot = new WildPokemonBot(enemyPokemon, playerPokemon);
+        //        var playerBot = new PlayerPokemonBot(new List<PlayerPokemonGeneration> { playerPokemon }, wildBot._ActivePokemon);
+
+        //        _navigationStore.CurrentViewModel = new WildPokemonBattleViewModel(playerBot, wildBot, _navigationStore, this);
+        //    }
+
+
+        ////}
 
         private void InitializeTiles()
         {
@@ -192,51 +222,52 @@ namespace PokemonGameModel.ViewModel.Map
             int tilePixelWidth = ScreenWidth / Columns;
             int tilePixelHeight = ScreenHeight / Rows;
 
-            int halfWidth = ViewWidth / 2;
-            int halfHeight = ViewHeight / 2;
-
-            int startX = Math.Max(0, player.WorldX - halfWidth);
-            int startY = Math.Max(0, player.WorldY - halfHeight);
-
-            for (int y = 0; y < ViewHeight; y++)
+            for (int i = 0; i < ViewWidth * ViewHeight; i++)
             {
-                for (int x = 0; x < ViewWidth; x++)
+                TileList.Add(new TileViewModel
                 {
-                    int worldX = startX + x;
-                    int worldY = startY + y;
-
-                    string color = "Black"; // fallback
-                    if (worldX >= 0 && worldX < CurrentGameMap.WorldWidth &&
-                        worldY >= 0 && worldY < CurrentGameMap.WorldHeight)
-                    {
-                        int index = worldY * CurrentGameMap.WorldWidth + worldX;
-                        var tile = CurrentGameMap.WorldTiles[index];
-
-                        if (tile.Item2 == TileTypeSecondLayer.player)
-                            color = "Red";
-                        else
-                        {
-                            switch (tile.Item1)
-                            {
-                                case TileTypeFirstLayer.Empty: color = "White"; break;
-                                case TileTypeFirstLayer.Path: color = "Gray"; break;
-                                case TileTypeFirstLayer.Grass: color = "Green"; break;
-                                case TileTypeFirstLayer.Water: color = "Blue"; break;
-                                case TileTypeFirstLayer.Black: color = "Black"; break;
-                                case TileTypeFirstLayer.Trainer: color = "Yellow"; break;
-                                default: color = "Magenta"; break;
-                            }
-                        }
-                    }
-
-                    TileList.Add(new TileViewModel
-                    {
-                        Width = tilePixelWidth,
-                        Height = tilePixelHeight,
-                        Color = color
-                    });
-                }
+                    Width = tilePixelWidth,
+                    Height = tilePixelHeight
+                });
             }
         }
+        private void EnemyDirectionTimer_Tick(object sender, EventArgs e)
+        {
+            if (count % 2 == 0)
+            {
+                enemyDirection = Direction.Down;
+                count++;
+            }
+            else
+            {
+                count++;
+                enemyDirection = Direction.Up;
+            }
+            LoadTiles();
+        }
+        private void LoadTiles()
+        {
+            int tilePixelWidth = ScreenWidth / Columns;
+            int tilePixelHeight = ScreenHeight / Rows;
+
+            var tiles = CurrentGameMap.GetViewportTiles(
+                PlayerX,
+                PlayerY,
+                ViewWidth,
+                ViewHeight,
+                playerDirection,
+                enemyDirection,
+                tilePixelWidth,
+                tilePixelHeight
+            );
+
+
+            for (int i = 0; i < tiles.Count && i < TileList.Count; i++)
+            {
+                TileList[i].UpdateFrom(tiles[i]);
+            }
+        }
+
+
     }
 }

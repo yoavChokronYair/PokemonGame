@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGameModel.ViewModel.Map;
 using PokemonGameModel.ViewModel.ViewModelHelper;
 using System;
 using System.Collections.ObjectModel;
