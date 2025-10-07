@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace PokemonGameModel.Model.Map
 {
@@ -12,8 +13,10 @@ namespace PokemonGameModel.Model.Map
     {
         private readonly HashSet<(TownMapData, TownMapData)> connectedPairs = new();
         private readonly TownMapData[,] townMaps;
+        private readonly TownMapDataList towns;
         public TownMap(TownMapDataList towns)
         {
+            this.towns = towns;
             this.townMaps = new TownMapData[4, 4];
             ArrayHelper.SetCenter2DArray(townMaps, towns.maps[0]);
             foreach (TownMapData town in towns.maps)
@@ -23,42 +26,42 @@ namespace PokemonGameModel.Model.Map
         }
         public void CreateTownConnections(TownMapData town)
         {
-            Direction direction = Direction.Left;
+            if (town.connections == null)
+                return;
+
             var townPos = ArrayHelper.FindIn2DArrayIndex(townMaps, t => t == town);
+            if (townPos == null)
+                return; // Skip if this town isn't placed yet
+
             int row = townPos.Value.Row;
             int col = townPos.Value.Col;
-            foreach (var neighbor in town.connections)
+
+            Direction direction = Direction.Left;
+
+            foreach (var neighborName in town.connections)
             {
-                
-                TownMapData? neighborMap = GetMapFromName(neighbor);
-                // Check both directions (A→B or B→A)
-                if (neighborMap == null)
+                if (string.IsNullOrEmpty(neighborName))
                 {
+                    direction = (Direction)((int)direction + 1);
                     continue;
                 }
 
-                if (connectedPairs.Contains((neighborMap, town)) || connectedPairs.Contains((town, neighborMap)))
+                TownMapData? neighborMap = (TownMapData?)towns.maps.FirstOrDefault(t => t.Name == neighborName);
+
+                if (connectedPairs.Contains((town, neighborMap)) || connectedPairs.Contains((neighborMap, town)))
                 {
+                    direction = (Direction)((int)direction + 1);
                     continue;
                 }
 
-                int newRow = row;
-                int newCol = col;
+                int newRow = row, newCol = col;
 
                 switch (direction)
                 {
-                    case Direction.Left:
-                        newCol = col - 1;
-                        break;
-                    case Direction.Right:
-                        newCol = col + 1;
-                        break;
-                    case Direction.Up:
-                        newRow = row - 1;
-                        break;
-                    case Direction.Down:
-                        newRow = row + 1;
-                        break;
+                    case Direction.Left: newCol = col - 1; break;
+                    case Direction.Right: newCol = col + 1; break;
+                    case Direction.Up: newRow = row - 1; break;
+                    case Direction.Down: newRow = row + 1; break;
                 }
 
                 if (newRow >= 0 && newRow < townMaps.GetLength(0) &&
@@ -67,32 +70,10 @@ namespace PokemonGameModel.Model.Map
                 {
                     townMaps[newRow, newCol] = neighborMap;
                 }
+
                 direction = (Direction)((int)direction + 1);
                 connectedPairs.Add((town, neighborMap));
             }
         }
-        private TownMapData? GetMapFromName(string name)
-        {
-            return ArrayHelper.FindIn2DArray(townMaps,t => t.Name == name);
-        }
-        public void PrintTownMap()
-        {
-            int rows = townMaps.GetLength(0);
-            int cols = townMaps.GetLength(1);
-
-            for (int r = 0; r < rows; r++)
-            {
-                for (int c = 0; c < cols; c++)
-                {
-                    if (townMaps[r, c] != null)
-                        Console.Write($"{townMaps[r, c].Name![0]} "); // print first letter
-                    else
-                        Console.Write(". ");
-                }
-                Console.WriteLine();
-            }
-        }
-
-
     }
 }
