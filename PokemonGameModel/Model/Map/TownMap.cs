@@ -75,6 +75,24 @@ namespace PokemonGameModel.Model.Map
         {
             return ArrayHelper.FindIn2DArray(townMaps,t => t.Name == name);
         }
+        public void PrintTownMap()
+        {
+            int rows = townMaps.GetLength(0);
+            int cols = townMaps.GetLength(1);
+
+            for (int r = 0; r < rows; r++)
+            {
+                for (int c = 0; c < cols; c++)
+                {
+                    if (townMaps[r, c] != null)
+                        Console.Write($"{townMaps[r, c].Name![0]} "); // print first letter
+                    else
+                        Console.Write(". ");
+                }
+                Console.WriteLine();
+            }
+        }
+
 
     }
 }
