@@ -1,6 +1,6 @@
-﻿using PokemonGameModel.Enums;
+﻿using PokemonGame.Enums;
 
-namespace PokemonGameModel.Constants
+namespace PokemonGame.Constants
 {
     public static class TypeEffectivenessChartHelper
     {

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PokemonGameModel.Views.Pages
+namespace PokemonGame.Views.Pages
 {
     /// <summary>
     /// Interaction logic for NewGame.xaml

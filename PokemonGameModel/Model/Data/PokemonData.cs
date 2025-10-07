@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PokemonGameModel.Enums;
-using PokemonGameModel.Model.Manager;
+using PokemonGame.Enums;
+using PokemonGame.Model.Manager;
 
-namespace PokemonGameModel.Model.Data
+namespace PokemonGame.Model.Data
 {
     public class PokemonData
     {

@@ -1,9 +1,10 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Model.Data.MapData;
+﻿using PokemonGame.Enums;
+using PokemonGame.Model.Data.MapData;
 using System;
 
-namespace PokemonGameModel.Model.Helper
+namespace PokemonGame.Model.Helper
 {
+    //class helper for RNG game specific calculations
     internal class RNGHelper
     {
         public uint PID { get; }

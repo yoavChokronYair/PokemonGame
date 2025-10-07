@@ -1,6 +1,6 @@
-﻿using PokemonGameModel.Enums;
+﻿using PokemonGame.Enums;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface IMove
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PokemonGameModel.Model.Data.Player
+namespace PokemonGame.Model.Data.Player
 {
 
     public class PlayerData

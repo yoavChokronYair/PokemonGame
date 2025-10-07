@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PokemonGameModel.Model.Data.Items
+namespace PokemonGame.Model.Data.Items
 {
     public class PokeballData
     {

@@ -1,4 +1,4 @@
-﻿namespace PokemonGameModel.Enums
+﻿namespace PokemonGame.Enums
 {
     public enum TileTypeFirstLayer
     {

@@ -1,6 +1,6 @@
-﻿using PokemonGameModel.Model.PokemonCreation;
+﻿using PokemonGame.Model.PokemonCreation;
 
-namespace PokemonGameModel.Model.Data.NpcData
+namespace PokemonGame.Model.Data.NpcData
 {
     public class RivalData
     {

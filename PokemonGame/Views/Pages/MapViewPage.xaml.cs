@@ -1,5 +1,5 @@
-﻿using PokemonGameModel.Model.Manager;
-using PokemonGameModel.ViewModel;
+﻿using PokemonGame.Model.Manager;
+using PokemonGame.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-namespace PokemonGameModel.Views.Pages
+namespace PokemonGame.Views.Pages
 {
     /// <summary>
     /// Interaction logic for MapViewPage.xaml

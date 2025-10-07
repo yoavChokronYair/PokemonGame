@@ -1,8 +1,8 @@
-﻿using PokemonGameModel.Constants;
-using PokemonGameModel.Enums;
-using PokemonGameModel.Interface;
+﻿using PokemonGame.Constants;
+using PokemonGame.Enums;
+using PokemonGame.Interface;
 
-namespace PokemonGameModel.Model.Helper
+namespace PokemonGame.Model.Helper
 {
     public class PokemonStatCalculatorHelper : IStatValues
     {

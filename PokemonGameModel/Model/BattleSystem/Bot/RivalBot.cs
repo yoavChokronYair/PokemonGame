@@ -1,10 +1,10 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Interface;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Helper;
-using PokemonGameModel.Model.PokemonCreation;
+﻿using PokemonGame.Enums;
+using PokemonGame.Interface;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
+using PokemonGame.Model.PokemonCreation;
 
-namespace PokemonGameModel.Model.BattleSystem.Bot
+namespace PokemonGame.Model.BattleSystem.Bot
 {
     public class RivalBot : IBotBattle, ITrainer
     {

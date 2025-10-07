@@ -1,13 +1,13 @@
-﻿using PokemonGameModel.Constants;
-using PokemonGameModel.Enums;
-using PokemonGameModel.Interface;
-using PokemonGameModel.Model.BattleSystem.Bot;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Data.Items;
-using PokemonGameModel.Model.PokemonCreation;
+﻿using PokemonGame.Constants;
+using PokemonGame.Enums;
+using PokemonGame.Interface;
+using PokemonGame.Model.BattleSystem.Bot;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.Items;
+using PokemonGame.Model.PokemonCreation;
 using System;
 
-namespace PokemonGameModel.Model.Helper
+namespace PokemonGame.Model.Helper
 {
     public class MoveResult : IMoveResult
     {

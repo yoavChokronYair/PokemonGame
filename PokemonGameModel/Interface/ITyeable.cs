@@ -1,7 +1,7 @@
-﻿using PokemonGameModel.Enums;
+﻿using PokemonGame.Enums;
 using System.Collections.Generic;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface ITypeable
     {

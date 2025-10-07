@@ -1,8 +1,8 @@
-﻿using PokemonGameModel.Model.PokemonCreation;
-using PokemonGameModel.Enums;
+﻿using PokemonGame.Model.PokemonCreation;
+using PokemonGame.Enums;
 
 
-namespace PokemonGameModel.Model.Manager
+namespace PokemonGame.Model.Manager
 {
     public class PlayerPokemonManager
     {

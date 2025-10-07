@@ -1,8 +1,8 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Model.Data;
+﻿using PokemonGame.Enums;
+using PokemonGame.Model.Data;
 using System.Collections.Generic;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface IPokemon
     {

@@ -1,14 +1,14 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Data.Items;
-using PokemonGameModel.Model.Data.MapData;
-using PokemonGameModel.Model.Data.NpcData;
-using PokemonGameModel.Model.Data.Player;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.Items;
+using PokemonGame.Model.Data.MapData;
+using PokemonGame.Model.Data.NpcData;
+using PokemonGame.Model.Data.Player;
 
 
-namespace PokemonGameModel.Model.Manager
+namespace PokemonGame.Model.Manager
 {
     public class GameDataManager
     {

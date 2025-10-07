@@ -1,9 +1,9 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Model.PokemonCreation;
+﻿using PokemonGame.Enums;
+using PokemonGame.Model.PokemonCreation;
 using System;
 using System.Collections.Generic;
 
-namespace PokemonGameModel.Model.Data.Player
+namespace PokemonGame.Model.Data.Player
 {
     public class CaughtPokemonData
     {

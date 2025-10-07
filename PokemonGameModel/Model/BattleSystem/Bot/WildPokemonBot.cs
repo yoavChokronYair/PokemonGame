@@ -1,12 +1,12 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Interface;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Helper;
-using PokemonGameModel.Model.PokemonCreation;
+﻿using PokemonGame.Enums;
+using PokemonGame.Interface;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
+using PokemonGame.Model.PokemonCreation;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PokemonGameModel.Model.BattleSystem.Bot
+namespace PokemonGame.Model.BattleSystem.Bot
 {
     public class WildPokemonBot : IBotBattle
     {

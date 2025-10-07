@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace PokemonGameModel.ViewModel.ViewModelHelper
+namespace PokemonGame.ViewModel.ViewModelHelper
 {
     public  class ViewModelBase:INotifyPropertyChanged
     {

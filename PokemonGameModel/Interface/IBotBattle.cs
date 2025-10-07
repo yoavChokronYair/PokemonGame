@@ -1,8 +1,8 @@
-﻿using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Helper;
-using PokemonGameModel.Model.PokemonCreation;
+﻿using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
+using PokemonGame.Model.PokemonCreation;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface IBotBattle
     {

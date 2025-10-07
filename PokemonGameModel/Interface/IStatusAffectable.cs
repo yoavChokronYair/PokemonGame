@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PokemonGameModel.Enums;
+using PokemonGame.Enums;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface IStatusAffectable
     {

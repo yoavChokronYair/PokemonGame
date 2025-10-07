@@ -1,5 +1,5 @@
-﻿using PokemonGameModel.Enums;
-namespace PokemonGameModel.Constants
+﻿using PokemonGame.Enums;
+namespace PokemonGame.Constants
 {
     public static class NatureHelper
     {

@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGameModel.ViewModel.ViewModelHelper;
+using PokemonGame.ViewModel.ViewModelHelper;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PokemonGameModel.ViewModel.BattleMenu
+namespace PokemonGame.ViewModel.BattleMenu
 {
     public class PokemonBattleMovesetMenuViewModel : ViewModelBase
     {

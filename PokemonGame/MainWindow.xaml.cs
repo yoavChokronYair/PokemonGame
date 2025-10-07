@@ -1,11 +1,11 @@
-﻿using PokemonGameModel.Model.Manager;
-using PokemonGameModel.Model.PokemonCreation;
-using PokemonGameModel.ViewModel;
+﻿using PokemonGame.Model.Manager;
+using PokemonGame.Model.PokemonCreation;
+using PokemonGame.ViewModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-namespace PokemonGameModel
+namespace PokemonGame
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

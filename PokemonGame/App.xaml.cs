@@ -1,5 +1,5 @@
-﻿using PokemonGameModel.ViewModel;
-using PokemonGameModel.ViewModel.BattleMenu;
+﻿using PokemonGame.ViewModel;
+using PokemonGame.ViewModel.BattleMenu;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace PokemonGameModel
+namespace PokemonGame
 {
     /// <summary>
     /// Interaction logic for App.xaml

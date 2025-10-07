@@ -1,9 +1,9 @@
-﻿using PokemonGameModel.Model.Data.MapData;
+﻿using PokemonGame.Model.Data.MapData;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface IMapEvent
     {

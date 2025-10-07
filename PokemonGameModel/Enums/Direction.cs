@@ -1,10 +1,10 @@
-﻿namespace PokemonGameModel.Enums
+﻿namespace PokemonGame.Enums
 {
     public enum Direction
     {
-        Up,
-        Down,
         Left,
-        Right
+        Up,
+        Right,
+        Down
     }
 }

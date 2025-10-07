@@ -1,9 +1,9 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Interface;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Data.Player;
+﻿using PokemonGame.Enums;
+using PokemonGame.Interface;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.Player;
 
-namespace PokemonGameModel.Model.PokemonCreation
+namespace PokemonGame.Model.PokemonCreation
 {
     public class PlayerPokemonGeneration : IPokemon
     {

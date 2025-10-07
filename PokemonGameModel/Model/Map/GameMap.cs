@@ -1,9 +1,8 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Data.MapData;
-using PokemonGameModel.Model.Data.NpcData;
-using PokemonGameModel.Model.Manager;
-using System.Windows.Media;
+﻿using PokemonGame.Enums;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.MapData;
+using PokemonGame.Model.Data.NpcData;
+using PokemonGame.Model.Manager;
 
 namespace PokemonGame.Model.Map
 {
@@ -458,20 +457,7 @@ namespace PokemonGame.Model.Map
             return TileTypeFirstLayer.Black;
         }
 
-        public Brush GetBrushForTile(TileTypeFirstLayer type)
-        {
-            switch (type)
-            {
-                case TileTypeFirstLayer.Path: return Brushes.Gray;
-                case TileTypeFirstLayer.Grass: return Brushes.Green;
-                case TileTypeFirstLayer.Water: return Brushes.Blue;
-                case TileTypeFirstLayer.Empty: return Brushes.White;
-                case TileTypeFirstLayer.Black: return Brushes.Black;
-                case TileTypeFirstLayer.Trainer: return Brushes.Yellow;
-                case TileTypeFirstLayer.Interactable: return Brushes.Pink;
-                default: return Brushes.Red;
-            }
-        }
+   
 
         public class TileRenderInfo
         {

@@ -1,11 +1,11 @@
-﻿using PokemonGameModel.Enums;
+﻿using PokemonGame.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface IMoveResult
     {

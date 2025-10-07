@@ -1,8 +1,8 @@
-﻿using PokemonGameModel.Enums;
+﻿using PokemonGame.Enums;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PokemonGameModel.Model.Data.MapData
+namespace PokemonGame.Model.Data.MapData
 {
     public class MapData
     {

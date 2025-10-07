@@ -1,10 +1,10 @@
 ﻿using PokemonGame.ViewModel.Map;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Helper;
-using PokemonGameModel.Model.Manager;
-using PokemonGameModel.ViewModel.ViewModelHelper;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
+using PokemonGame.Model.Manager;
+using PokemonGame.ViewModel.ViewModelHelper;
 
-namespace PokemonGameModel.ViewModel
+namespace PokemonGame.ViewModel
 {
     public class MainWindowViewModel:ViewModelBase
     {

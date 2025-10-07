@@ -1,6 +1,6 @@
-﻿using PokemonGameModel.Interface;
+﻿using PokemonGame.Interface;
 
-namespace PokemonGameModel.Model.PokemonCreation
+namespace PokemonGame.Model.PokemonCreation
 {
     public class StatValues:IStatValues
     {

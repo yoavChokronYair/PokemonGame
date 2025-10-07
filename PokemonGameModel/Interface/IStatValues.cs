@@ -1,4 +1,4 @@
-﻿namespace PokemonGameModel.Interface
+﻿namespace PokemonGame.Interface
 {
     public interface IStatValues
     {

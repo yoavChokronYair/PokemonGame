@@ -1,13 +1,13 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Interface;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Data.MapData;
-using PokemonGameModel.Model.Helper;
-using PokemonGameModel.Model.Manager;
+﻿using PokemonGame.Enums;
+using PokemonGame.Interface;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.MapData;
+using PokemonGame.Model.Helper;
+using PokemonGame.Model.Manager;
 
 
 
-namespace PokemonGameModel.Model.PokemonCreation
+namespace PokemonGame.Model.PokemonCreation
 {
     public class EnemyPokemonGeneration : IPokemon
     {

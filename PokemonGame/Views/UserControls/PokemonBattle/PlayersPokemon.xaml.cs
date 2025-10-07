@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PokemonGameModel.Views.UserControls.PokemonBattle
+namespace PokemonGame.Views.UserControls.PokemonBattle
 {
     /// <summary>
     /// Interaction logic for PlayersPokemon.xaml

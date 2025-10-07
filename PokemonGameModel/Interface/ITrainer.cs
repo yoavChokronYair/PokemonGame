@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface ITrainer
     {

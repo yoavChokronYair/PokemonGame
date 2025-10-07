@@ -1,5 +1,5 @@
-﻿using PokemonGameModel.Enums;
-namespace PokemonGameModel.Model.Data.NpcData
+﻿using PokemonGame.Enums;
+namespace PokemonGame.Model.Data.NpcData
 {
     public class TrainerData
     {

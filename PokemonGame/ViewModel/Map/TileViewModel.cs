@@ -1,14 +1,4 @@
-﻿using PokemonGameModel.ViewModel.ViewModelHelper;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
+﻿using PokemonGame.ViewModel.ViewModelHelper;
 using static PokemonGame.Model.Map.GameMap;
 
 namespace PokemonGame.ViewModel.Map

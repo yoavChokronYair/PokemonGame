@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemonGameModel.Interface
+namespace PokemonGame.Interface
 {
     public interface ICatchable
     {

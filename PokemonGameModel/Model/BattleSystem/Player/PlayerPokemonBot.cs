@@ -1,7 +1,7 @@
-﻿using PokemonGameModel.Enums;
-using PokemonGameModel.Model.Data;
-using PokemonGameModel.Model.Helper;
-using PokemonGameModel.Model.PokemonCreation;
+﻿using PokemonGame.Enums;
+using PokemonGame.Model.Data;
+using PokemonGame.Model.Helper;
+using PokemonGame.Model.PokemonCreation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemonGameModel.Model.BattleSystem.Player
+namespace PokemonGame.Model.BattleSystem.Player
 {
     public class PlayerPokemonBot
     {
