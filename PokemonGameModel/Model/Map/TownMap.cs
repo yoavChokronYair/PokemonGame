@@ -14,7 +14,7 @@ namespace PokemonGameModel.Model.Map
         private readonly HashSet<(TownMapData, TownMapData)> connectedPairs = new();
         private readonly TownMapData[,] townMaps;
         private readonly TownMapDataList towns;
-        private readonly Dictionary<TownMapData, int[,]> townMapTiles = new Dictionary<TownMapData, int[,]>();
+        private readonly Dictionary<TownMapData, Tile[,]> townMapTiles = new Dictionary<TownMapData, Tile[,]>();
         public TownMap(TownMapDataList towns)
         {
             this.towns = towns;
@@ -27,47 +27,43 @@ namespace PokemonGameModel.Model.Map
             }
         }
 
-        private int[,] CreateTownTiles(TownMapData townData)
+        private Tile[,] CreateTownTiles(TownMapData townData)
         {
-            int[,] mapTiles = new int[townData.Width, townData.Height];
+            Tile[,] mapTiles = new Tile[townData.Width, townData.Height];
+
             for (int x = 0; x < townData.Width; x++)
             {
                 for (int y = 0; y < townData.Height; y++)
                 {
-                        mapTiles[x, y] = -1;
-
+                    Tile tile = new Tile();
+                    tile.BackgroundID = townData.pathID;
+                    tile.type = TileType.None;
+                    mapTiles[x, y] = tile;
                 }
             }
+            // Fill regions with their IDs
             if (townData.Regions != null)
             {
                 foreach (var region in townData.Regions)
                 {
-                    for(int x = region.StartX; x< region.StartX + region.Width; x++)
+                    int maxX = region.StartX + region.Width;
+                    int maxY = region.StartY + region.Height;
+
+                    for (int x = region.StartX; x < maxX; x++)
                     {
-                        for (int y = region.StartY; y < region.Height + region.StartY; y++)
+                        for (int y = region.StartY; y < maxY; y++)
                         {
-                            mapTiles[x, y] = region.ID;
+                            Tile tile = new Tile();
+                            tile.BackgroundID = region.ID;
+                            tile.type = region.TileType;
+                            mapTiles[x, y] = tile;
                         }
-
-                    }
-                
-                }
-            }
-
-            for (int x = 0; x < townData.Width; x++)
-            {
-                for (int y = 0; y < townData.Height; y++)
-                {
-                    if (mapTiles[x, y] == -1)
-                    {
-
-                        mapTiles[x, y] = townData.pathID;
-
                     }
                 }
             }
             return mapTiles;
         }
+
 
         public void CreateTownConnections(TownMapData town)
         {
@@ -122,4 +118,13 @@ namespace PokemonGameModel.Model.Map
         }
 
     }
+
+    public class Tile
+    {
+        public int BackgroundID;
+        public int? LowerOverlayID; // drawn under player
+        public int? UpperOverlayID; // drawn over player
+        public TileType type;
+    }
+
 }

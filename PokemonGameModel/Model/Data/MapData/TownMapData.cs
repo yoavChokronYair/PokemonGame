@@ -21,6 +21,7 @@ namespace PokemonGameModel.Model.Data.MapData
     }
     public class MapRegion
     {
+        public TileType TileType { get; set; }
         public int ID { get; set; }
         public int StartX { get; set; }
         public int StartY { get; set; }

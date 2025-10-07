@@ -22,7 +22,7 @@ namespace PokemonGame.Model.Data.MapData
     }
     public class MapRegion
     {
-        public TileTypeFirstLayer Title { get; set; }
+        public TileType Title { get; set; }
         public string? ID { get; set; }
         public int StartX { get; set; }
         public int StartY { get; set; }

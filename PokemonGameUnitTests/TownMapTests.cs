@@ -1,4 +1,5 @@
-﻿using PokemonGameModel.Model.Data.MapData;
+﻿using PokemonGame.Enums;
+using PokemonGameModel.Model.Data.MapData;
 using PokemonGameModel.Model.Map;
 using System;
 using System.Collections.Generic;
@@ -60,9 +61,9 @@ namespace PokemonGameUnitTests
                 Height = 4,
                 pathID = 99,
                 Regions = new System.Collections.Generic.List<MapRegion>
-                {
-                    new MapRegion { ID = 2, StartX = 2, StartY = 0, Width = 2, Height = 2 },
-                    new MapRegion { ID = 3, StartX = 0, StartY = 2, Width = 2, Height = 2 },
+                 {
+                    new MapRegion { TileType = TileType.Event,ID = 2, StartX = 2, StartY = 0, Width = 2, Height = 2 },
+                    new MapRegion { TileType = TileType.Interactable,ID = 3, StartX = 0, StartY = 2, Width = 2, Height = 2 },
                 }
             };
 
@@ -73,7 +74,7 @@ namespace PokemonGameUnitTests
 
             // Access the private dictionary via reflection
             var field = typeof(TownMap).GetField("townMapTiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var townMapTiles = (System.Collections.Generic.Dictionary<TownMapData, int[,]>)field!.GetValue(map)!;
+            var townMapTiles = (System.Collections.Generic.Dictionary<TownMapData, Tile[,]>)field!.GetValue(map)!;
 
             var tiles = townMapTiles[pallet];
 
@@ -82,15 +83,16 @@ namespace PokemonGameUnitTests
             {
                 for (int y = 0; y < pallet.Height; y++)
                 {
-                    int tile = tiles[x, y];
+                    int tileValue = tiles[x, y].BackgroundID;
+
                     bool isRegion = pallet.Regions.Exists(r =>
                         x >= r.StartX && x < r.StartX + r.Width &&
                         y >= r.StartY && y < r.StartY + r.Height &&
-                        tile == r.ID);
+                        tileValue == r.ID);
 
-                    bool isPathID = tile == pallet.pathID;
+                    bool isPathID = tileValue == pallet.pathID;
 
-                    Assert.True(isRegion || isPathID, $"Tile at ({x},{y}) not filled correctly. Value={tile}");
+                    Assert.True(isRegion || isPathID, $"Tile at ({x},{y}) not filled correctly. Value={tileValue}");
                 }
             }
 
@@ -99,7 +101,16 @@ namespace PokemonGameUnitTests
             {
                 string line = "";
                 for (int x = 0; x < pallet.Width; x++)
-                    line += tiles[x, y] + " ";
+                {
+                    line += tiles[x, y].type switch
+                    {
+                        TileType.None => ".",
+                        TileType.Event => "E",
+                        TileType.Interactable => "I",
+                        _ => "?"
+                    };
+                    line += tiles[x, y].BackgroundID + " ";
+                }
                 _output.WriteLine(line);
             }
         }

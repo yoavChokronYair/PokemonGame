@@ -1,22 +1,12 @@
 ﻿namespace PokemonGame.Enums
 {
-    public enum TileTypeFirstLayer
+    public enum TileType
     {
-        Empty,
-        Path,
-        Grass,
-        Water,
-        Black,
-        Trainer,
-        House,
-        Lab,
-        Fence,
-        Building,
-        player = -1,
+       
+        OutOfBounds = -1,
         None = 0,
         Event = 1,
-        Interactable = -2,
-        OutOfBounds = 0,
+        Interactable = 2,
         hill = 3,
     }
   
