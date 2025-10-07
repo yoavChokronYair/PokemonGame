@@ -129,37 +129,7 @@ namespace PokemonGame.Model.Helper
             return new RNGHelper(pid, tid, sid);
         }
         //encounters
-        public Encounter? GetRandomEncounter(string routeName, string environment, List<Encounter> Encounters)
-        {
-            if (Encounters == null || Encounters.Count == 0)
-                return null;
-
-            // Filter by environment if necessary
-            var filtered = Encounters
-                .Where(e => e.Environment.Equals(environment, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (filtered.Count == 0)
-                return null;
-
-            // Weighted random selection
-            double totalRarity = filtered.Sum(e => e.Rarity);
-            if (totalRarity <= 0)
-                return null;
-
-            double roll = RandomHelper.NextDouble() * totalRarity;
-            double cumulative = 0.0;
-
-            foreach (var spawn in filtered)
-            {
-                cumulative += spawn.Rarity;
-                if (roll <= cumulative)
-                    return spawn;
-            }
-
-            // fallback
-            return filtered.Last();
-        }
+      
 
     }
 }

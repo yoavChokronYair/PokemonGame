@@ -12,7 +12,6 @@ namespace PokemonGame.Model.Manager
 {
     public class GameDataManager
     {
-        public MapDataList MapData { get; private set; } // Public property to access MapData
         public PokemonDataList PokemonData { get; private set; } // Public property to access PokemonData
         public MoveDataList MoveData { get; private set; } // Public property to access MoveData
         public CaughtPokemonDataList CaughtPokemonData { get; set; }//public property to access CaughtPokemonData
@@ -38,7 +37,6 @@ namespace PokemonGame.Model.Manager
         }
         public void LoadAllData()
         {
-            MapData = LoadJson<MapDataList>("Maps/Maps.json");
             PokemonData = LoadJson<PokemonDataList>("Pokemons.json");
             MoveData = LoadJson<MoveDataList>("Moves.json");
             CaughtPokemonData = LoadJson<CaughtPokemonDataList>("Player/CaughtPokemons.json");

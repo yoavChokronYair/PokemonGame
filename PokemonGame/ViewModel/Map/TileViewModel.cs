@@ -1,5 +1,4 @@
 ﻿using PokemonGame.ViewModel.ViewModelHelper;
-using static PokemonGame.Model.Map.GameMap;
 
 namespace PokemonGame.ViewModel.Map
 {

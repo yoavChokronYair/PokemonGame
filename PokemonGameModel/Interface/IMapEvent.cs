@@ -7,7 +7,6 @@ namespace PokemonGame.Interface
 {
     public interface IMapEvent
     {
-        void Trigger(MapData currentMap, int tileIndex);
     }
 
 }
