@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 
 
-namespace PokemonGameUnitTests
+namespace PokemonGameUnitTests.Map
 {
     public class TownMapTest
     {
@@ -60,21 +60,21 @@ namespace PokemonGameUnitTests
                 Width = 4,
                 Height = 4,
                 pathID = 99,
-                Regions = new System.Collections.Generic.List<MapRegion>
+                Regions = new List<MapRegion>
                  {
                     new MapRegion { TileType = TileType.Event,ID = 2, StartX = 2, StartY = 0, Width = 2, Height = 2 },
                     new MapRegion { TileType = TileType.Interactable,ID = 3, StartX = 0, StartY = 2, Width = 2, Height = 2 },
                 }
             };
 
-            var list = new TownMapDataList { maps = new System.Collections.Generic.List<TownMapData> { pallet } };
+            var list = new TownMapDataList { maps = new List<TownMapData> { pallet } };
 
             // Act: create TownMap
             var map = new TownMap(list);
 
             // Access the private dictionary via reflection
             var field = typeof(TownMap).GetField("townMapTiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var townMapTiles = (System.Collections.Generic.Dictionary<TownMapData, Tile[,]>)field!.GetValue(map)!;
+            var townMapTiles = (Dictionary<TownMapData, Tile[,]>)field!.GetValue(map)!;
 
             var tiles = townMapTiles[pallet];
 
