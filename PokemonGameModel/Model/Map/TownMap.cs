@@ -14,6 +14,7 @@ namespace PokemonGameModel.Model.Map
         private readonly HashSet<(TownMapData, TownMapData)> connectedPairs = new();
         private readonly TownMapData[,] townMaps;
         private readonly TownMapDataList towns;
+        private readonly Dictionary<TownMapData, int[,]> townMapTiles = new Dictionary<TownMapData, int[,]>();
         public TownMap(TownMapDataList towns)
         {
             this.towns = towns;
@@ -22,8 +23,52 @@ namespace PokemonGameModel.Model.Map
             foreach (TownMapData town in towns.maps)
             {
                 CreateTownConnections(town);
+                townMapTiles.Add(town, CreateTownTiles(town));
             }
         }
+
+        private int[,] CreateTownTiles(TownMapData townData)
+        {
+            int[,] mapTiles = new int[townData.Width, townData.Height];
+            for (int x = 0; x < townData.Width; x++)
+            {
+                for (int y = 0; y < townData.Height; y++)
+                {
+                        mapTiles[x, y] = -1;
+
+                }
+            }
+            if (townData.Regions != null)
+            {
+                foreach (var region in townData.Regions)
+                {
+                    for(int x = region.StartX; x< region.StartX + region.Width; x++)
+                    {
+                        for (int y = region.StartY; y < region.Height + region.StartY; y++)
+                        {
+                            mapTiles[x, y] = region.ID;
+                        }
+
+                    }
+                
+                }
+            }
+
+            for (int x = 0; x < townData.Width; x++)
+            {
+                for (int y = 0; y < townData.Height; y++)
+                {
+                    if (mapTiles[x, y] == -1)
+                    {
+
+                        mapTiles[x, y] = townData.pathID;
+
+                    }
+                }
+            }
+            return mapTiles;
+        }
+
         public void CreateTownConnections(TownMapData town)
         {
             if (town.connections == null)
@@ -75,5 +120,6 @@ namespace PokemonGameModel.Model.Map
                 connectedPairs.Add((town, neighborMap));
             }
         }
+
     }
 }
