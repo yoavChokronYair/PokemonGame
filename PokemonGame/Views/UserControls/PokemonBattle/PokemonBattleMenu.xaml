@@ -15,11 +15,26 @@
     Focusable="True"
     Loaded="UserControl_Loaded"
     mc:Ignorable="d">
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="PreviewKeyDown">
-            <i:InvokeCommandAction Command="{Binding Command, RelativeSource={RelativeSource AncestorType=UserControl}}" PassEventArgsToCommand="True" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
+    <UserControl.InputBindings>
+        <KeyBinding
+            Key="Up"
+            Command="{Binding DirectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            CommandParameter="Up" />
+        <KeyBinding
+            Key="Down"
+            Command="{Binding DirectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            CommandParameter="Down" />
+        <KeyBinding
+            Key="Left"
+            Command="{Binding DirectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            CommandParameter="Left" />
+        <KeyBinding
+            Key="Right"
+            Command="{Binding DirectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            CommandParameter="Right" />
+        <KeyBinding Key="Enter" Command="{Binding ConfirmMoveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+
+    </UserControl.InputBindings>
 
     <Grid>
         <Grid.ColumnDefinitions>

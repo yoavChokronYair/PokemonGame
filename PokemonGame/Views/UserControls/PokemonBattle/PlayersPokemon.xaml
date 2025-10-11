@@ -73,7 +73,7 @@
                         x:Name="MyHPBar"
                         Width="167"
                         Height="10"
-                        AnimationDuration="0:0:0.2"
+                        AnimationDuration="0:0:1"
                         BarHeight="10"
                         BarWidth="167" />
 

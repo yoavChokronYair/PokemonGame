@@ -17,35 +17,38 @@
     KeyDown="Page_KeyDown"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid ShowGridLines="False">
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vm1:PokemonBattleMenuViewModel}">
                 <PokemonBattle:PokemonBattleMenu
                     Width="900"
                     Height="150"
                     Background="White"
-                    BagText="{Binding BagText}"
-                    Command="{Binding KeyPressedCommand}"
-                    FightText="{Binding FightText}"
+                    BagText="{Binding MenuItems[1].FormattedLabel}"
+                    ConfirmMoveCommand="{Binding ConfirmCommand}"
+                    DirectionCommand="{Binding DirectionCommand}"
+                    FightText="{Binding MenuItems[0].FormattedLabel}"
                     Focusable="True"
                     IsTabStop="True"
-                    PokemonText="{Binding PokemonText}"
-                    RunText="{Binding RunText}" />
+                    PokemonText="{Binding MenuItems[2].FormattedLabel}"
+                    RunText="{Binding MenuItems[3].FormattedLabel}" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm1:PokemonBattleMovesetMenuViewModel}">
-                <PokemonBattle:BattleMenu
+                <PokemonBattle:BattleMenuMoveset
                     Width="900"
                     Height="150"
-                    Command= "{Binding KeyPressedCommand}"
-                    CurrentPP="{Binding MoveList[0].CurrentPP}"
+                    CancelCommand="{Binding CancelCommand}"
+                    ConfirmMoveCommand="{Binding ConfirmMoveCommand}"
+                    CurrentPP="{Binding Move.CurrentPP}"
+                    DirectionCommand="{Binding DirectionCommand}"
                     Focusable="True"
                     IsTabStop="True"
-                    MaxPP="{Binding MoveList[0].MaxPP}"
-                    Move1="{Binding MoveList[0].Name}"
-                    Move2="{Binding MoveList[1].Name}"
-                    Move3="{Binding MoveList[2].Name}"
-                    Move4="{Binding MoveList[3].Name}"
-                    Type="{Binding MoveList[0].Type}" />
+                    MaxPP="{Binding Move.MaxPP}"
+                    Move1="{Binding MoveList[0].DisplayName}"
+                    Move2="{Binding MoveList[1].DisplayName}"
+                    Move3="{Binding MoveList[2].DisplayName}"
+                    Move4="{Binding MoveList[3].DisplayName}"
+                    Type="{Binding Move.Type}" />
             </DataTemplate>
         </Grid.Resources>
 
@@ -92,6 +95,7 @@
             Grid.RowSpan="2"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
+            Source="{Binding ImagePathRival}"
             Visibility="Visible" />
         <Viewbox
             Grid.Row="3"
@@ -106,9 +110,6 @@
                 MaxHp="{Binding Team._ActivePokemon.MaxHP}"
                 NameText="{Binding Team._ActivePokemon.Species}" />
         </Viewbox>
-
-
-
         <Image
             x:Name="WildPokemonImage"
             Grid.Row="1"
@@ -116,6 +117,7 @@
             Grid.Column="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
+            Source="{Binding ImagePathTeam}"
             Visibility="Visible" />
 
         <Viewbox

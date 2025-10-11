@@ -9,117 +9,78 @@ namespace PokemonGame.ViewModel.BattleMenu
     public class PokemonBattleMenuViewModel : ViewModelBase
     {
         private readonly NavigationStore _NavigationStore;
-        public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
-        public ICommand KeyPressedCommand { get; }
-        public readonly ObservableCollection<MoveViewModel> moveList;
-        WildPokemonBattleViewModel WildPokemonBattleViewModel;
-        public PokemonBattleMenuViewModel(NavigationStore navigationStore, WildPokemonBattleViewModel wildPokemonBattleViewModel)
-        {
-            this.WildPokemonBattleViewModel = wildPokemonBattleViewModel;
-            this.moveList = wildPokemonBattleViewModel.MoveList;
-            KeyPressedCommand = new RelayCommand<KeyEventArgs>(OnKeyPressed);
-            foreach (var move in wildPokemonBattleViewModel.MoveList)
-            {
-                move.Name = string.Join(" ", move.Name.Replace(">", "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            }
-            UpdateMenuTexts();
-            this._NavigationStore = navigationStore;
 
-        }
-       
-        private readonly string[,] baseMenuTexts = new string[,]
+
+        public ObservableCollection<MenuItemViewModel> MenuItems { get; }
+        public MenuSelectionViewModel MenuSelection { get; }
+
+        public ICommand DirectionCommand { get; }
+        public ICommand ConfirmCommand { get; }
+
+        public PokemonBattleMenuViewModel(NavigationStore navigationStore,NavigationStore navigation, WildPokemonBattleViewModel wildPokemonBattleViewModel)
         {
-            { "FIGHT", "BAG" },
-            { "POKeMON", "RUN" }
+            _NavigationStore = navigationStore;
+            MenuSelection = new MenuSelectionViewModel();
+            WildPokemonBattleViewModel = wildPokemonBattleViewModel;
+
+            MenuItems = new ObservableCollection<MenuItemViewModel>
+        {
+            new MenuItemViewModel("FIGHT"),
+            new MenuItemViewModel("BAG"),
+            new MenuItemViewModel("POKeMON"),
+            new MenuItemViewModel("RUN")
         };
 
-        private int selectedRow = 0;
-        private int selectedCol = 0;
+            DirectionCommand = new RelayCommand<string>(OnDirectionInput);
+            ConfirmCommand = new RelayCommand(OnConfirm);
 
-        private string _fightText;
-        public string FightText
+            UpdateSelection();
+        }
+
+        private WildPokemonBattleViewModel WildPokemonBattleViewModel;
+
+        private void OnDirectionInput(string direction)
         {
-            get => _fightText;
-            private set
+            int row = MenuSelection.SelectedRow;
+            int col = MenuSelection.SelectedCol;
+
+            switch (direction)
             {
-                _fightText = value;
-                OnPropertyChanged(nameof(FightText));
+                case "Up": if (row > 0) row--; break;
+                case "Down": if (row < 1) row++; break;
+                case "Left": if (col > 0) col--; break;
+                case "Right": if (col < 1) col++; break;
+            }
+
+            MenuSelection.SelectedRow = row;
+            MenuSelection.SelectedCol = col;
+            UpdateSelection();
+        }
+
+        private void OnConfirm()
+        {
+            int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
+            string selected = MenuItems[index].Label;
+
+            if (selected == "FIGHT")
+            {
+                _NavigationStore.CurrentViewModel = new PokemonBattleMovesetMenuViewModel(_NavigationStore, WildPokemonBattleViewModel);
+            }
+            if (selected == "RUN")
+            {
+               WildPokemonBattleViewModel._PageNavigationStore.CurrentViewModel = WildPokemonBattleViewModel._mainWindow;
             }
         }
 
-        private string _bagText;
-        public string BagText
+        private void UpdateSelection()
         {
-            get => _bagText;
-            private set
+            for (int i = 0; i < MenuItems.Count; i++)
             {
-                _bagText = value;
-                OnPropertyChanged(nameof(BagText));
+                int row = i / 2;
+                int col = i % 2;
+                MenuItems[i].IsSelected = row == MenuSelection.SelectedRow && col == MenuSelection.SelectedCol;
             }
-        }
-
-        private string _pokemonText;
-        public string PokemonText
-        {
-            get => _pokemonText;
-            private set
-            {
-                _pokemonText = value;
-                OnPropertyChanged(nameof(PokemonText));
-            }
-        }
-
-        private string _runText;
-        public string RunText
-        {
-            get => _runText;
-            private set
-            {
-                _runText = value;
-                OnPropertyChanged(nameof(RunText));
-            }
-        }
-
-
-        private void OnKeyPressed(KeyEventArgs e)
-        {
-            int maxRow = baseMenuTexts.GetLength(0) - 1;
-            int maxCol = baseMenuTexts.GetLength(1) - 1;
-
-            switch (e.Key)
-            {
-                case System.Windows.Input.Key.Up:
-                    if (selectedRow > 0)
-                        selectedRow--;
-                    break;
-                case System.Windows.Input.Key.Down:
-                    if (selectedRow < maxRow)
-                        selectedRow++;
-                    break;
-                case System.Windows.Input.Key.Left:
-                    if (selectedCol > 0)
-                        selectedCol--;
-                    break;
-                case System.Windows.Input.Key.Right:
-                    if (selectedCol < maxCol)
-                        selectedCol++;
-                    break;
-                case System.Windows.Input.Key.Enter:
-                    if(FightText.Contains(">"))
-                        _NavigationStore.CurrentViewModel = new PokemonBattleMovesetMenuViewModel(_NavigationStore,WildPokemonBattleViewModel);
-                    break;
-            }
-            UpdateMenuTexts();
-        }
-
-        private void UpdateMenuTexts()
-        {
-            FightText = (selectedRow == 0 && selectedCol == 0) ? $"> {baseMenuTexts[0, 0]}" : baseMenuTexts[0, 0];
-            BagText = (selectedRow == 0 && selectedCol == 1) ? $"> {baseMenuTexts[0, 1]}" : baseMenuTexts[0, 1];
-            PokemonText = (selectedRow == 1 && selectedCol == 0) ? $"> {baseMenuTexts[1, 0]}" : baseMenuTexts[1, 0];
-            RunText = (selectedRow == 1 && selectedCol == 1) ? $"> {baseMenuTexts[1, 1]}" : baseMenuTexts[1, 1];
-            // Reset all visibilities
-
         }
     }
+
 }

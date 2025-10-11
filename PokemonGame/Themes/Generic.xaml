@@ -7,7 +7,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BoardBackground}">
-                    <Grid>
+                    <Grid
+                        Background="Transparent"
+                        ShowGridLines="False"
+                        SnapsToDevicePixels="True"
+                        UseLayoutRounding="True">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="28" />
                             <RowDefinition Height="*" />

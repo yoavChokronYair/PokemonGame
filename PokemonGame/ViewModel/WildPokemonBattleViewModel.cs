@@ -1,4 +1,5 @@
-﻿using PokemonGame.Enums;
+﻿using PokemonGame.ViewModel.Map;
+using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
@@ -10,7 +11,6 @@ using PokemonGame.ViewModel.ViewModelHelper;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace PokemonGame.ViewModel
 {
@@ -22,41 +22,41 @@ namespace PokemonGame.ViewModel
             IsSwitch = isSwitch;
             StatusEffect = statusType;
         }
-
         public int Damage { get; set; }
         public bool IsSwitch { get; set; }
-        public StatusType StatusEffect { get; set; }// You can expand this for status names
+        public StatusType StatusEffect { get; set; }
     }
     public class WildPokemonBattleViewModel : ViewModelBase
     {
         // Existing battle properties
         private readonly NavigationStore _NavigationStore;
+        public readonly NavigationStore _PageNavigationStore;
         public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
-        public ICommand KeyPressedCommand { get; }
-
-        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigationStore)
+        public MapViewModel _mainWindow;
+        public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigation,MapViewModel mainWindow)
         {
+            _mainWindow = mainWindow;
+            ImagePathRival = rival._ActivePokemon.Image;
+            ImagePathTeam = team._ActivePokemon.Image;
+            _PageNavigationStore = navigation;
             MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
                 .Select(kvp => new MoveViewModel
                 {
-                    Name = kvp.Key.ename.Replace(">", ""), // Remove all '>' characters
+                    BaseName = kvp.Key.ename.Replace(">", ""), // Remove all '>' characters
                     MaxPP = kvp.Value,
                     CurrentPP = kvp.Value,
                     Type = kvp.Key.Type.ToString()
-                }));
-            _NavigationStore = navigationStore;
-            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(navigationStore,this);
+                })); 
+            _NavigationStore = new NavigationStore();
+            _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore,navigation,this);
             Team = team;
             Rival = rival;
             Gender = team._ActivePokemon.IsMale ? "♂" : "♀";
             TeamCurrentHp = team._ActivePokemonHp;
             RivalCurrentHp = rival._ActivePokemonHp;
             _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
-            
-
         }
-
-        public void MakeMove(string move)
+        public async Task MakeMove(string move)
         {
             PlayerPokemonGeneration player = Team._ActivePokemon;
             EnemyPokemonGeneration enemy = Rival._ActivePokemon;
@@ -68,12 +68,19 @@ namespace PokemonGame.ViewModel
             TeamCurrentHp = Team.UpdateData(enemy,RivalMove,(int)teamCurrentHp);
             RivalCurrentHp = Rival.EndTurn();
             TeamCurrentHp = Team.EndTurn();
+            if (RivalCurrentHp <= 0)
+            {
+                await Task.Delay(1000); // Adjust delay time as needed (milliseconds)
+
+                _PageNavigationStore.CurrentViewModel = _mainWindow;
+            }
+            
         }
         private void OnCurrentViewModelChanged()
-        {
-            
+        {   
             OnPropertyChanged(nameof(CurrentViewModel));
         }
+        //binding
         private PlayerPokemonBot team;
         public PlayerPokemonBot Team
         {
@@ -112,6 +119,32 @@ namespace PokemonGame.ViewModel
                 {
                     gender = value;
                     OnPropertyChanged(nameof(Gender));
+                }
+            }
+        }
+        private string imagePathRival;
+        public string ImagePathRival
+        {
+            get => imagePathRival;
+            set
+            {
+                if (imagePathRival != value)
+                {
+                    imagePathRival = value;
+                    OnPropertyChanged(nameof(ImagePathRival));
+                }
+            }
+        }
+        private string imagePathTeam;
+        public string ImagePathTeam
+        {
+            get => imagePathTeam;
+            set
+            {
+                if (imagePathTeam != value)
+                {
+                    imagePathTeam = value;
+                    OnPropertyChanged(nameof(ImagePathTeam));
                 }
             }
         }
@@ -157,9 +190,5 @@ namespace PokemonGame.ViewModel
                 }
             }
         }
-
-
-    
-
     }
 }

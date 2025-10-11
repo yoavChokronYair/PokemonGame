@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PokemonGame.ViewModel.ViewModelHelper;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace PokemonGame.ViewModel.BattleMenu
@@ -11,142 +11,100 @@ namespace PokemonGame.ViewModel.BattleMenu
     public class PokemonBattleMovesetMenuViewModel : ViewModelBase
     {
         private readonly NavigationStore _NavigationStore;
-        public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
         public ICommand KeyPressedCommand { get; }
         public WildPokemonBattleViewModel wildPokemonBattleView { get; }
+        public ObservableCollection<MoveViewModel> MoveList { get; }
+        public MenuSelectionViewModel MenuSelection { get; }
+
+        public ICommand DirectionCommand { get; }
+        public ICommand ConfirmMoveCommand { get; }
+        public ICommand CancelCommand { get; }
         public PokemonBattleMovesetMenuViewModel(NavigationStore navigationStore, WildPokemonBattleViewModel wildPokemonBattleView)
         {
+            _NavigationStore = navigationStore;
+            _NavigationStore.CurrentViewModel = this;
             this.wildPokemonBattleView = wildPokemonBattleView;
-            foreach (var move in wildPokemonBattleView.MoveList)
-            {
-                move.Name = string.Join(" ", move.Name.Replace(">", "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            }
-            this.MoveList = wildPokemonBattleView.MoveList;
 
-            KeyPressedCommand = new RelayCommand<KeyEventArgs>(OnKeyPressed);
-            var names = MoveList.Select(x => x.Name).ToList();
-            while (names.Count < 4)
-            {
-                names.Add("-");
-            }
-            baseMenuTexts = new string[,]
-            {
-                { names[0], names[1] },
-                { names[2], names[3] }
-            };
-            originalMoveNames = MoveList.Select(x => x.Name).ToList();
-            UpdateMenuTexts();
-            this._NavigationStore = navigationStore;
+            MoveList = new ObservableCollection<MoveViewModel>(wildPokemonBattleView.MoveList);
+            while (MoveList.Count < 4)
+                MoveList.Add(new MoveViewModel { BaseName = "-", CurrentPP = 0 });
 
+            MenuSelection = new MenuSelectionViewModel();
+            UpdateSelectedMove();
+
+            DirectionCommand = new RelayCommand<string>(OnDirectionInput);
+            ConfirmMoveCommand = new AsyncRelayCommand(OnConfirmMove);
+            CancelCommand = new RelayCommand(OnCancel);
+            Move = MoveList[0];
         }
-
-        private readonly string[,] baseMenuTexts;
-        private readonly List<string> originalMoveNames;
-
-
-        private int selectedRow = 0;
-        private int selectedCol = 0;
-
-        private ObservableCollection<MoveViewModel> moveList;
-        public ObservableCollection<MoveViewModel> MoveList
+        private MoveViewModel move;
+        public MoveViewModel Move
         {
-            get => moveList;
+            get => move;
             set
             {
-                if (moveList != value)
+                if (move != value)
                 {
-                    moveList = value;
-                    OnPropertyChanged(nameof(MoveList));
+                    move = value;
+                    OnPropertyChanged(nameof(Move));
                 }
             }
         }
 
-
-        private void OnKeyPressed(KeyEventArgs e)
+        private void UpdateSelectedMove()
         {
-
-            int newRow = selectedRow;
-            int newCol = selectedCol;
-
-            int targetIndex = newRow * (1 + 1) + newCol;
-            
-
-            switch (e.Key)
+            for (int i = 0; i < MoveList.Count; i++)
             {
-                case System.Windows.Input.Key.Up:
-                    if (selectedRow == 1)
-                        newRow = 0;
-                    break;
-                case System.Windows.Input.Key.Down:
-                    if (selectedRow == 0)
-                        newRow = 1;
-                    break;
-                case System.Windows.Input.Key.Left:
-                    if (selectedCol == 1)
-                        newCol = 0;
-                    break;
-                case System.Windows.Input.Key.Right:
-                    if (selectedCol == 0)
-                        newCol = 1;
-                    break;
-                case System.Windows.Input.Key.Escape:
-                    _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView);
-                    return;
-                case System.Windows.Input.Key.Enter:    
-                    if (baseMenuTexts[newRow, newCol] == "-")
-                    {
-                        selectedRow = newRow;
-                        selectedCol = newCol;
-                        return;
-                    }
-                     wildPokemonBattleView.MakeMove(baseMenuTexts[newRow,newCol]);
-                    foreach (var move in wildPokemonBattleView.MoveList)
-                    {
-                        move.Name = string.Join(" ", move.Name.Replace(">", "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-                    }
-                    _NavigationStore.CurrentViewModel = new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView);
-
-                    
-                    break;
-
+                int row = i / 2;
+                int col = i % 2;
+                MoveList[i].IsSelected = row == MenuSelection.SelectedRow && col == MenuSelection.SelectedCol;
+                if (MoveList[i].IsSelected)
+                {
+                    Move = MoveList[i];
+                }
             }
-            if (baseMenuTexts[newRow, newCol] == "-")
+        }
+        private void OnDirectionInput(string direction)
+        {
+            int row = MenuSelection.SelectedRow;
+            int col = MenuSelection.SelectedCol;
+
+            switch (direction)
             {
+                case "Up": if (row > 0) row--; break;
+                case "Down": if (row < 1) row++; break;
+                case "Left": if (col > 0) col--; break;
+                case "Right": if (col < 1) col++; break;
+            }
+
+            int index = row * 2 + col;
+            if (index >= MoveList.Count || MoveList[index].BaseName == "-")
                 return;
-            }
-            selectedRow = newRow;
-            selectedCol = newCol;
-            // Prevent movement if the target move is "-"
-            UpdateMenuTexts();
+
+            MenuSelection.SelectedRow = row;
+            MenuSelection.SelectedCol = col;
+            
+            UpdateSelectedMove();
         }
-    
-     
 
-        private void UpdateMenuTexts()
+        private async Task OnConfirmMove()
         {
-            bool validSelection = selectedRow >= 0 && selectedCol >= 0 &&
-                      selectedRow < baseMenuTexts.GetLength(0) &&
-                      selectedCol < baseMenuTexts.GetLength(1);
-
-            // Only update if a valid selection exists
-            if (validSelection)
+            int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
+            var selectedMove = MoveList[index];
+            if (selectedMove.BaseName == "-") return;
+            
+            await wildPokemonBattleView.MakeMove(selectedMove.BaseName);
+            if(wildPokemonBattleView._PageNavigationStore.CurrentViewModel != wildPokemonBattleView._mainWindow)
             {
-                for (int row = 0; row < 2; row++)
-                {
-                    for (int col = 0; col < 2; col++)
-                    {
-                        int index = row * 2 + col;
-
-                        if (index < MoveList.Count)
-                        {
-                            string baseName = baseMenuTexts[row, col];
-                            MoveList[index].Name = (selectedRow == row && selectedCol == col)
-                                ? $"> {baseName}"
-                                : baseName;
-                        }
-                    }
-                }
+                
+                _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
             }
+
+        }
+
+        private void OnCancel()
+        {
+            _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
         }
     }
 }
