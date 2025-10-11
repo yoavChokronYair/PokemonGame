@@ -24,14 +24,14 @@ namespace PokemonGame.Model.Map
 
             this.RouteMaps = new RouteMapData[4, 4];
             ArrayHelper.SetCenter2DArray(RouteMaps, routs.maps[0]);
+            this.towns = towns;
+            this.townMaps = new WorldData[4, 4];
+            ArrayHelper.SetCenter2DArray(townMaps, towns.maps[0]);
             foreach (RouteMapData route in routs.maps)
             {
                 routeMapTiles.Add(route, CreateRouteTiles(route));
             }
 
-            this.towns = towns;
-            this.townMaps = new WorldData[4, 4];
-            ArrayHelper.SetCenter2DArray(townMaps, towns.maps[0]);
             foreach (TownMapData town in towns.maps)
             {
                 CreateTownConnections(town);

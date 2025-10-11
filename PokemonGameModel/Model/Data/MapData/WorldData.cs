@@ -6,6 +6,9 @@ namespace PokemonGame.Model.Data.MapData
 {
     public class WorldData
     {
+        public int Width { get; set; }
+        public int Height { get; set; }
+
         public class WorldRegion
         {
             public TileType TileType { get; set; }

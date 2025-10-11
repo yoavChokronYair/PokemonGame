@@ -10,8 +10,6 @@ namespace PokemonGameModel.Model.Data.MapData
     public class TownMapData : WorldData
     {
         public string? Name { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
         public List<WorldRegion>? Regions { get; set; }
         public int[]? connections { get; set; }//first value:left,second value:up,third value:right,fourth value:down
         public int pathID { get; set; }
