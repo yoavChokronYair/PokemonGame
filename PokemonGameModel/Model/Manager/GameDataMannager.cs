@@ -5,7 +5,6 @@ using PokemonGame.Model.Data;
 using PokemonGame.Model.Data.Items;
 using PokemonGame.Model.Data.MapData;
 using PokemonGame.Model.Data.NpcData;
-using PokemonGame.Model.Data.Player;
 
 
 namespace PokemonGame.Model.Manager
@@ -14,8 +13,6 @@ namespace PokemonGame.Model.Manager
     {
         public PokemonDataList PokemonData { get; private set; } // Public property to access PokemonData
         public MoveDataList MoveData { get; private set; } // Public property to access MoveData
-        public CaughtPokemonDataList CaughtPokemonData { get; set; }//public property to access CaughtPokemonData
-        public PlayerDataList PlayerData { get; set; }
         public Dictionary<RivalData,bool> RivalData {  get; set; }//is defeted or not 
         public PokeBallDataList PokeballData { get; set; }
         public TrainerDataList TrainerData { get; set; }
@@ -39,8 +36,6 @@ namespace PokemonGame.Model.Manager
         {
             PokemonData = LoadJson<PokemonDataList>("Pokemons.json");
             MoveData = LoadJson<MoveDataList>("Moves.json");
-            CaughtPokemonData = LoadJson<CaughtPokemonDataList>("Player/CaughtPokemons.json");
-            PlayerData = LoadJson<PlayerDataList>("Player/Players.json");
             RivalDataList rivalList = LoadJson<RivalDataList>("Npc/Rivals.json");
             RivalData = rivalList.Rivals.ToDictionary(rival => rival, rival => true);
             PokeballData = LoadJson<PokeBallDataList>("Items/Pokeballs.json");

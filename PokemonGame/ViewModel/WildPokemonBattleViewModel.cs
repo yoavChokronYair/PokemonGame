@@ -21,10 +21,12 @@ namespace PokemonGame.ViewModel
             Damage = damage;
             IsSwitch = isSwitch;
             StatusEffect = statusType;
+
         }
         public int Damage { get; set; }
         public bool IsSwitch { get; set; }
         public StatusType StatusEffect { get; set; }
+        public int Priority { get; set; }
     }
     public class WildPokemonBattleViewModel : ViewModelBase
     {
@@ -66,7 +68,7 @@ namespace PokemonGame.ViewModel
             MoveResult  RivalMove = Rival.ExecuteMove();
             RivalCurrentHp = Rival.UpdateData(player, teamMove, (int)rivalCurrentHp);
             TeamCurrentHp = Team.UpdateData(enemy,RivalMove,(int)teamCurrentHp);
-            RivalCurrentHp = Rival.EndTurn();
+            RivalCurrentHp = Rival.EndTurn(false);
             TeamCurrentHp = Team.EndTurn();
             if (RivalCurrentHp <= 0)
             {
