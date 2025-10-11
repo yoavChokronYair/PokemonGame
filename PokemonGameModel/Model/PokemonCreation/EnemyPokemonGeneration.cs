@@ -46,13 +46,10 @@ namespace PokemonGame.Model.PokemonCreation
         public int CatchRate { get; set; }
         public StatValues BaseStats { get; set; }
         public GrowthRateType GrowthRate { get; set; }
+        public StatusType StatusType { get; set; }
 
-        public PokemonData pokemon;
-        // Constructors
-        //constractor to create enemy pokemon from the wild
-        public EnemyPokemonGeneration(Encounter species, PokemonData pokemon)
-        {
-            this.pokemon = pokemon;
+        public void GenerateWildPokemon(Encounter species, PokemonData pokemon)
+        { 
             // Level and HP
             this.Level = RandomHelper.Next(species.MinLevel, species.MaxLevel);
             this.GeneratePokemonID(pokemon);
@@ -63,6 +60,7 @@ namespace PokemonGame.Model.PokemonCreation
             this.Sprite = uri;
             this.Image = uri;
             this.CatchRate = pokemon.CatchRate;
+            this.StatusType = StatusType.None;
         }
         public void GeneratePokemonID(PokemonData pokemon)
         {

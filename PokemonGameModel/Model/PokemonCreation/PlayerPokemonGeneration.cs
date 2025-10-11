@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.Data;
-using PokemonGame.Model.Data.Player;
 using PokemonGame.Model.Helper;
 
 namespace PokemonGame.Model.PokemonCreation
 {
+    //TODO: add more generations 
     public class PlayerPokemonGeneration : IPokemon
     {
         // === Identity & Metadata ===
@@ -39,57 +39,102 @@ namespace PokemonGame.Model.PokemonCreation
         public int PokemonXP { get; set; }
         public StatusType StatusType { get; set; }
         public bool IsFainted { get; set; }
-        public int CatchRate {  get; set; }
         public StatValues BaseStats { get; set; }
 
-        // === Constructors ===
-        //for all pokemons that are created by catching them
-        public PlayerPokemonGeneration(IPokemon wildPokemon, string nickname, int currentHP, StatusType pokemonStatus)
+
+        public void GeneratePokemonID(PokemonData pokemon)
+        {
+            var randomHelper = RNGHelper.GenerateRandomPokemonIdentity();
+            this.ID = randomHelper.SecretID;
+            this.PokedexID = pokemon.Number;
+            this.Species = pokemon.Name;
+            this.Nature = randomHelper.GetNature();
+            this.Ability = pokemon.Abilitys[randomHelper.GetAbilityNumber(pokemon)];
+            this.Types = new PokemonType[2];
+            this.Types[0] = pokemon.Type1;
+            this.Types[1] = pokemon.Type2;
+            this.IsMale = randomHelper.IsFemale(pokemon.MaleGenderPercent);
+            this.IsShiny = randomHelper.IsShiny();
+            this.MaxHP = pokemon.IVs.HP + (pokemon.IVs.HP * Level / 100);
+            this.CurrentHp = MaxHP;
+            this.GrowthRate = pokemon.GrowthRate;
+        }
+        public void GenerateIvsAndEvs(PokemonData pokemon)
+        {
+            this.BaseStats = pokemon.BaseStats;
+            this.IVs = RNGHelper.GenerateAllIVs(pokemon);
+            this.EVs = new StatValues();
+        }
+
+        public void GeneratePokemonMoves(PokemonData pokemon)
+        {
+            Moves = new Dictionary<MoveData, int>();
+            int count = 0;
+
+            for (int i = Level; i > 0 && count < 4; i--)
+            {
+                foreach (var moveLearn in pokemon.Moves)
+                {
+                    if (moveLearn.Level == i && count < 4)
+                    {
+                        MoveData move = moveLearn.Moves;
+                        if (!Moves.ContainsKey(move))
+                        {
+                            Moves.Add(move, move.PP);
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+        //generations
+        public void GenerateCaughtWildPokemon(IPokemon wildPokemon, string nickname, int currentHP, StatusType pokemonStatus)
         {
             this.ID = wildPokemon.ID;
             this.PokedexID = wildPokemon.PokedexID;
             this.Species = wildPokemon.Species;
             this.Nickname = nickname;
-            
+
             this.Sprite = wildPokemon.Sprite;
             this.Image = wildPokemon.Image;
             this.IsShiny = wildPokemon.IsShiny;
             this.IsMale = wildPokemon.IsMale;
-            
+
             this.Types[0] = wildPokemon.Types[0];
             this.Types[1] = wildPokemon.Types[1];
             this.Nature = wildPokemon.Nature;
-            
+
             this.Ability = wildPokemon.Ability;
             this.GrowthRate = wildPokemon.GrowthRate; // Assumed default
             this.Friendship = 0; // Initial friendship level
-            
+
             this.Level = wildPokemon.Level;
             this.MaxHP = wildPokemon.MaxHP;
             this.CurrentHp = currentHP;
             this.IsFainted = (currentHP <= 0);
-            
+
             this.IVs = wildPokemon.IVs;
             this.EVs = wildPokemon.EVs;
-            this.BaseStats = wildPokemon.BaseStats; 
-
+            this.BaseStats = wildPokemon.BaseStats;
             this.Moves = wildPokemon.Moves;
             this.PokemonXP = 0;
             this.StatusType = pokemonStatus;
         }
-
-        //because of stealing data no need for generation for now. in future will need it 
-        public void GeneratePokemonID(PokemonData pokemon)
+        public void GenerateEggPokemon(PokemonData pokemon ,string nickname)
         {
-            return;
-        }
-        public void GeneratePokemonMoves(PokemonData pokemon)
-        {
-            return;
-        }
-        public void GenerateIvsAndEvs(PokemonData pokemon)
-        {
-            return;
+            // Level and HP
+            this.Level = 1;
+            this.GeneratePokemonID(pokemon);
+            this.GenerateIvsAndEvs(pokemon);
+            this.GeneratePokemonMoves(pokemon);
+            // Images
+            string uri = $"pack://application:,,,/Images/GenOnePokemon/{PokedexID}.png";
+            this.Sprite = uri;
+            this.Image = uri;
+            this.StatusType = StatusType.None;
+            this.IsFainted = false;
+            this.PokemonXP = 0;
+            this.Friendship = 0;
         }
     }
 }

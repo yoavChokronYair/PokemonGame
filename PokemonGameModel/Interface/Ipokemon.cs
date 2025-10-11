@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Data;
+using PokemonGame.Model.Data.Items;
 using System.Collections.Generic;
 
 namespace PokemonGame.Interface
@@ -27,9 +28,9 @@ namespace PokemonGame.Interface
         int CurrentHp { get; set; }
         StatValues IVs { get;  set; }
         StatValues EVs { get; set; }
-        int CatchRate { get; set; }
         StatValues BaseStats { get; set; }
          GrowthRateType GrowthRate { get; set; } // Placeholder for enum use
+        StatusType StatusType { get; set; }
 
         // === Combat Data ===
         Dictionary<MoveData, int> Moves { get; set; }
