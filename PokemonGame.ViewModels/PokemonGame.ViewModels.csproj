@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.VisualStudio.Utilities" Version="17.14.40264" />
+	  <PackageReference Include="MvvmLightLibs" Version="5.4.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PokemonGameModel\PokemonGame.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="PresentationCore">
+	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\PresentationCore.dll</HintPath>
+	  </Reference>
+	  <Reference Include="PresentationFramework">
+	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\PresentationFramework.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+</Project>

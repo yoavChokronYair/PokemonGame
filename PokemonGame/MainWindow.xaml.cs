@@ -1,5 +1,6 @@
 ﻿
-using PokemonGame.ViewModel;
+using PokemonGame.ViewModels;
+using PokemonGame.Views.Pages;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -24,7 +25,7 @@ namespace PokemonGame
             // Navigate to the battle view with the encounter
             this.DataContext = new MainWindowViewModel();
             //MainFrame.Navigate(new WildPokemonBattleView(encounter));
-            //MainFrame.Navigate(new NewGameView());
+            MainFrame.Navigate(new Backpack());
         }
     
 

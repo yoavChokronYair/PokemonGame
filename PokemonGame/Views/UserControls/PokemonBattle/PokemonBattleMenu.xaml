@@ -8,7 +8,7 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:PokemonGame.Views.UserControls.PokemonBattle"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:PokemonGame.ViewModel"
+    xmlns:vm="clr-namespace:PokemonGame.ViewModels"
     d:DesignHeight="150"
     d:DesignWidth="900"
     Background="Black"

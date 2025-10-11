@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:PokemonGame.ViewModel.Map"
+    xmlns:vm="clr-namespace:PokemonGame.ViewModels.Map;assembly=PokemonGame.ViewModels"
     Title="MapViewPage"
     d:DataContext="{d:DesignInstance Type=vm:MapViewModel}"
     d:DesignHeight="600"

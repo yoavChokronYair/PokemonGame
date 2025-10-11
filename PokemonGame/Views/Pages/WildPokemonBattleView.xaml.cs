@@ -1,8 +1,6 @@
-﻿using PokemonGame.Model.BattleSystem.Bot;
-using PokemonGame.Model.BattleSystem.Player;
-using PokemonGame.Model.PokemonCreation;
-using PokemonGame.ViewModel;
-using PokemonGame.ViewModel.ViewModelHelper;
+﻿
+using PokemonGame.ViewModels;
+using PokemonGame.ViewModels.ViewModelHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;

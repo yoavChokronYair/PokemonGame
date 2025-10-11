@@ -1,12 +1,12 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.ViewModel.ViewModelHelper;
+﻿using GalaSoft.MvvmLight.Command;
+using PokemonGame.ViewModels.ViewModelHelper;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModel.BattleMenu
+namespace PokemonGame.ViewModels.BattleMenu
 {
     public class PokemonBattleMovesetMenuViewModel : ViewModelBase
     {
@@ -33,7 +33,6 @@ namespace PokemonGame.ViewModel.BattleMenu
             UpdateSelectedMove();
 
             DirectionCommand = new RelayCommand<string>(OnDirectionInput);
-            ConfirmMoveCommand = new AsyncRelayCommand(OnConfirmMove);
             CancelCommand = new RelayCommand(OnCancel);
             Move = MoveList[0];
         }

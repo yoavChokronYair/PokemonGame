@@ -1,18 +1,16 @@
-﻿using PokemonGame.ViewModel.Map;
-using PokemonGame.Interface;
+﻿using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.ViewModel.BattleMenu;
-using PokemonGame.ViewModel.ViewModelHelper;
+using PokemonGame.ViewModels.BattleMenu;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using PokemonGame.Enums;
 using PokemonGame.Services.Data;
+using PokemonGame.ViewModels.Map;
+using PokemonGame.ViewModels.ViewModelHelper;
 
-namespace PokemonGame.ViewModel
+namespace PokemonGame.ViewModels
 {
     public class MoveResults : IMoveResult
     {

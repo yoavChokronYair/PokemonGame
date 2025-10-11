@@ -1,6 +1,6 @@
-﻿using PokemonGame.ViewModel.ViewModelHelper;
+﻿using PokemonGame.ViewModels.ViewModelHelper;
 
-namespace PokemonGame.ViewModel.Map
+namespace PokemonGame.ViewModels.Map
 {
     public class TileViewModel : ViewModelBase
     {
@@ -82,7 +82,7 @@ namespace PokemonGame.ViewModel.Map
                 }
             }
         }
-       
+
 
 
     }

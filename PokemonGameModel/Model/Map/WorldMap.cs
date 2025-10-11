@@ -13,6 +13,9 @@ namespace PokemonGame.Model.Map
         
         public Dictionary<RouteMapData, Tile[,]> routeMapTiles = new Dictionary<RouteMapData, Tile[,]>();
         public Dictionary<TownMapData, Tile[,]> townMapTiles = new Dictionary<TownMapData, Tile[,]>();
+        public int TownMapsRows => townMaps.GetLength(0);
+        public int TownMapsCols => townMaps.GetLength(1);
+        public WorldData? GetTownMapAt(int row, int col) => townMaps[row, col];
 
         //town
         private readonly HashSet<(WorldData, WorldData)> connectedPairs = new();

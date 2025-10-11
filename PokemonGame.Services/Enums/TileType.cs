@@ -8,6 +8,9 @@
         Event = 1,
         Interactable = 2,
         hill = 3,
+        Grass,
+        Water,
+        Mountain
     }
   
 }

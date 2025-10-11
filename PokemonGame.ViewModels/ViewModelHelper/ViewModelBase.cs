@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModel.ViewModelHelper
+namespace PokemonGame.ViewModels.ViewModelHelper
 {
-    public  class ViewModelBase:INotifyPropertyChanged
+    public class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyChanged)

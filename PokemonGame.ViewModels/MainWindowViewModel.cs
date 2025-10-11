@@ -1,8 +1,8 @@
-﻿using PokemonGame.ViewModel.Map;
+﻿using PokemonGame.ViewModels.Map;
 using PokemonGame.Model.Helper;
-using PokemonGame.ViewModel.ViewModelHelper;
+using PokemonGame.ViewModels.ViewModelHelper;
 
-namespace PokemonGame.ViewModel
+namespace PokemonGame.ViewModels
 {
     public class MainWindowViewModel:ViewModelBase
     {

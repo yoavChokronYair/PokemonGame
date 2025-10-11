@@ -1,8 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using PokemonGame.ViewModels.ViewModelHelper;
 
-namespace PokemonGame.ViewModel.BattleMenu
+namespace PokemonGame.ViewModels.BattleMenu
 {
-    public class MenuSelectionViewModel : ObservableObject
+    public class MenuSelectionViewModel :ViewModelBase
     {
         public int Rows => 2;
         public int Columns => 2;
@@ -11,14 +11,14 @@ namespace PokemonGame.ViewModel.BattleMenu
         public int SelectedRow
         {
             get => selectedRow;
-            set => SetProperty(ref selectedRow, value);
+            set => OnPropertyChanged(nameof(SelectedRow));
         }
 
         private int selectedCol;
         public int SelectedCol
         {
             get => selectedCol;
-            set => SetProperty(ref selectedCol, value);
+            set => OnPropertyChanged(nameof(SelectedCol));
         }
     }
 }
