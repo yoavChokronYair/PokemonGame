@@ -147,7 +147,6 @@ namespace PokemonGame.Model.Helper
             uint pid = GeneratePID();
             return new RNGHelper(pid, tid, sid);
         }
-        //encounters
       
 
     }

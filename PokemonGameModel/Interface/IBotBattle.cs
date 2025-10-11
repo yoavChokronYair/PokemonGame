@@ -6,10 +6,10 @@ namespace PokemonGame.Interface
 {
     public interface IBotBattle
     {
-        int _ActivePokemonHp{ get; set; }
-        EnemyPokemonGeneration _ActivePokemon { get; set; }
+        int activePokemonHp{ get; set; }
+        EnemyPokemonGeneration activePokemon { get; set; }
         int UpdateData(PlayerPokemonGeneration playerPokemon, IMoveResult moveResult,int currentHp);
-        bool HasProirerty();
+        bool HasPriority(MoveData rivalMove, IMoveResult playerMove);
         void ChooseNextPokemon(); // Called when a Pokémon faints
         bool ShouldSwitchPokemon();
         void SwitchPokemon();
@@ -17,6 +17,6 @@ namespace PokemonGame.Interface
         int HealPokemon(string item);
         MoveResult ExecuteMove();
         void ReceiveDamage();
-        int EndTurn();
+        int EndTurn(bool HasPriority);
     }
 }

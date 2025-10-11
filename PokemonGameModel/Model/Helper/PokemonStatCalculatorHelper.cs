@@ -12,7 +12,6 @@ namespace PokemonGame.Model.Helper
         public int SpecialAttack { get; set; }
         public int SpecialDefense { get; set; }
         public int Speed { get; set; }
-
         public PokemonStatCalculatorHelper(
             int baseHP, int baseAttack, int baseDefense, int baseSpecialAttack, int baseSpecialDefense, int baseSpeed,
             int ivHP, int ivAttack, int ivDefense, int ivSpecialAttack, int ivSpecialDefense, int ivSpeed,
@@ -31,7 +30,6 @@ namespace PokemonGame.Model.Helper
             this.SpecialDefense = CalculateStat(baseSpecialDefense, ivSpecialDefense, evSpecialDefense, level, natureModifiers.spDef);
             this.Speed = CalculateStat(baseSpeed, ivSpeed, evSpeed, level, natureModifiers.speed);
         }
-
         private static void ValidateEVs(params int[] evs)
         {
             int total = evs.Sum();
@@ -45,7 +43,6 @@ namespace PokemonGame.Model.Helper
             if (total > 510)
                 throw new ArgumentOutOfRangeException(nameof(evs), "Total EVs cannot exceed 510.");
         }
-
         private static void ValidateIVs(params int[] ivs)
         {
             foreach (var iv in ivs)
@@ -54,13 +51,11 @@ namespace PokemonGame.Model.Helper
                     throw new ArgumentOutOfRangeException(nameof(ivs), "Each IV must be between 0 and 31.");
             }
         }
-
         public static int CalculateHP(int baseStat, int iv, int ev, int level)
         {
             int evContribution = ev / 4; // floor division
             return ((2 * baseStat + iv + evContribution) * level) / 100 + level + 10;
         }
-
         public static int CalculateStat(int baseStat, int iv, int ev, int level, double natureModifier)
         {
             int evContribution = ev / 4; // floor division
