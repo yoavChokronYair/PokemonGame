@@ -11,21 +11,20 @@ namespace PokemonGame.Model.Map
 {
     public class WorldMap
     {
-        private readonly RouteMapData[,] RouteMaps;
-        public static Dictionary<RouteMapData, Tile[,]> routeMapTiles = new Dictionary<RouteMapData, Tile[,]>();
+        private readonly WorldData[,] townMaps;
+        
+        public Dictionary<RouteMapData, Tile[,]> routeMapTiles = new Dictionary<RouteMapData, Tile[,]>();
+        public Dictionary<TownMapData, Tile[,]> townMapTiles = new Dictionary<TownMapData, Tile[,]>();
 
         //town
         private readonly HashSet<(WorldData, WorldData)> connectedPairs = new();
-        private readonly WorldData[,] townMaps;
         private readonly TownMapDataList towns;
-        public  Dictionary<TownMapData, Tile[,]> townMapTiles = new Dictionary<TownMapData, Tile[,]>();
+        private readonly RouteMapDataList routs;
         public WorldMap(TownMapDataList towns, RouteMapDataList routs)
         {
-
-            this.RouteMaps = new RouteMapData[4, 4];
-            ArrayHelper.SetCenter2DArray(RouteMaps, routs.maps[0]);
-            this.towns = towns;
             this.townMaps = new WorldData[4, 4];
+            this.towns = towns;
+            this.routs = routs;
             ArrayHelper.SetCenter2DArray(townMaps, towns.maps[0]);
             foreach (RouteMapData route in routs.maps)
             {

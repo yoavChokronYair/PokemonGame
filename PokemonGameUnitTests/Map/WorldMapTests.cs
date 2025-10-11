@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Model.Map;
 using PokemonGameModel.Model.Data.MapData;
+using PokemonGameModel.Model.Map;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace PokemonGameUnitTests.Map
                 worldGrid[kvp.Value.X, kvp.Value.Y] = 't';
 
             // Draw route1 horizontally between town1 and town2
-            var route1Tiles = WorldMap.routeMapTiles[route1];
+            var route1Tiles = worldMap.routeMapTiles[route1];
             int startX = townPositions[town1].X + 1;
             int y = townPositions[town1].Y;
             for (int x = 0; x < route1.Width; x++)
@@ -67,7 +68,7 @@ namespace PokemonGameUnitTests.Map
             }
 
             // Draw route2 vertically between town1 and town3
-            var route2Tiles = WorldMap.routeMapTiles[route2];
+            var route2Tiles = worldMap.routeMapTiles[route2];
             int startY = townPositions[town1].Y + 1;
             int xPos = townPositions[town1].X;
             for (int yPos = 0; yPos < route2.Height; yPos++)
@@ -85,9 +86,68 @@ namespace PokemonGameUnitTests.Map
                     line += worldGrid[col, row];
                 _output.WriteLine(line);
             }
+            PrintTileArrayByCommand(worldMap, "r1");
+            PrintTileArrayByCommand(worldMap, "r2");
+            PrintTileArrayByCommand(worldMap, "t1");
+            PrintTileArrayByCommand(worldMap, "t2");
         }
 
+        private void PrintTileArrayByCommand(WorldMap worldMap, string command)
+        {
+            if (string.IsNullOrWhiteSpace(command))
+                return;
 
+            command = command.ToLower();
+
+            if (command.StartsWith("r")) // Route
+            {
+                if (int.TryParse(command.Substring(1), out int routeId))
+                {
+                    var route = worldMap.routeMapTiles.Keys.FirstOrDefault(r => r.ID == routeId);
+                    if (route != null)
+                    {
+                        var tiles = worldMap.routeMapTiles[route];
+                        _output.WriteLine($"--- Route {routeId} ({route.Width}x{route.Height}) ---");
+                        PrintTiles(tiles);
+                        return;
+                    }
+                }
+            }
+
+            if (command.StartsWith("t")) // Town
+            {
+                if (int.TryParse(command.Substring(1), out int townIndex))
+                {
+                    var towns = worldMap.townMapTiles.Keys.ToList();
+                    if (townIndex - 1 >= 0 && townIndex - 1 < towns.Count)
+                    {
+                        var town = towns[townIndex - 1];
+                        var tiles = worldMap.townMapTiles[town];
+                        _output.WriteLine($"--- Town {town.Name} ({town.Width}x{town.Height}) ---");
+                        PrintTiles(tiles);
+                        return;
+                    }
+                }
+            }
+
+            _output.WriteLine($"Unknown command: {command}");
+        }
+
+        private void PrintTiles(Tile[,] tiles)
+        {
+            int width = tiles.GetLength(0);
+            int height = tiles.GetLength(1);
+
+            for (int y = 0; y < height; y++)
+            {
+                string line = "";
+                for (int x = 0; x < width; x++)
+                {
+                    line += tiles[x, y].BackgroundID.ToString().PadLeft(2, '0') + " ";
+                }
+                _output.WriteLine(line);
+            }
+        }
 
     }
 }
