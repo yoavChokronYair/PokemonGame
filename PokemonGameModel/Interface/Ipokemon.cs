@@ -9,7 +9,6 @@ namespace PokemonGame.Interface
         int ID { get; }
         int PokedexID { get; set; }
         string Species { get; set; }
-        string Nickname { get; set; }
 
         // === Appearance ===
         string Sprite { get; set; }
@@ -26,13 +25,16 @@ namespace PokemonGame.Interface
         int Level { get; set; }
         int MaxHP { get; set; }
         int CurrentHp { get; set; }
-        IStatValues IVs { get;  set; }
-        IStatValues EVs { get; set; }
+        StatValues IVs { get;  set; }
+        StatValues EVs { get; set; }
         int CatchRate { get; set; }
+        StatValues BaseStats { get; set; }
+         GrowthRateType GrowthRate { get; set; } // Placeholder for enum use
 
         // === Combat Data ===
         Dictionary<MoveData, int> Moves { get; set; }
-        StatusType StatusType { get; set; }
-        bool IsFainted { get; set; }
+        void GenerateIvsAndEvs(PokemonData pokemon);
+        void GeneratePokemonID(PokemonData pokemon);
+        void GeneratePokemonMoves(PokemonData pokemon);
     }
 }

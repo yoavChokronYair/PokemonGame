@@ -1,32 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PokemonGame.Enums;
+﻿using PokemonGame.Enums;
 using PokemonGame.Model.Manager;
 
 namespace PokemonGame.Model.Data
 {
-    public class PokemonData
+    public class PokemonData 
     {
         public int Number { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public PokemonType Type1 { get; set; }
         public PokemonType Type2 { get; set; }
-        public string Ability1 { get; set; }
-        public string Ability2 { get; set; }
-        public string HiddenAbility { get; set; }
-        public int HP { get; set; }
-        public int Attack { get; set; }
-        public int Defense { get; set; }
-        public int SpAtk { get; set; }
-        public int SpDef { get; set; }
-        public int Speed { get; set; }
+        public List<AbilityType>? Abilitys { get; set; }
         public int CatchRate { get; set; }
         public int BaseFriendship { get; set; }
         public int BaseExp { get; set; }
-        public string GrowthRate { get; set; }
+        public GrowthRateType GrowthRate { get; set; }
         public double MaleGenderPercent { get; set; }
         public List<LevelUpMove> Moves { get; set; } = new List<LevelUpMove>();
         public List<EvolutionData> Evolution { get; set; } = new List<EvolutionData>();
+        public StatValues BaseStats { get; set; }
+        public StatValues IVs { get; set; }
+        public StatValues EVs { get; set; }
 
     }
     public class LevelUpMove
@@ -58,5 +51,15 @@ namespace PokemonGame.Model.Data
                 return Starters.Concat(Pokemons).ToList();
             }
         }
+    }
+    public class StatValues 
+    {
+        public int HP { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
+        public int SpecialAttack { get; set; }
+        public int SpecialDefense { get; set; }
+        public int Speed { get; set; }
+
     }
 }

@@ -4,6 +4,7 @@ using PokemonGame.Model.Data;
 using PokemonGame.Model.Data.MapData;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Manager;
+using PokemonGameModel.Model.Data.MapData;
 
 
 
@@ -13,7 +14,6 @@ namespace PokemonGame.Model.PokemonCreation
     {
         // Basic Info
         public string Species { get; set; }
-        public string Nickname { get; set; }
         public int Level { get; set; }
         public int ID { get; set; }
         public int PokedexID { get; set; }
@@ -23,8 +23,8 @@ namespace PokemonGame.Model.PokemonCreation
         public int CurrentHp { get; set; }
 
         // Stats
-        public IStatValues IVs { get; set; }
-        public IStatValues EVs { get; set; }
+        public StatValues IVs { get; set; }
+        public StatValues EVs { get; set; }
 
         // Moves
         public Dictionary<MoveData,int> Moves { get; set; }
@@ -43,80 +43,72 @@ namespace PokemonGame.Model.PokemonCreation
         public int AbilityIndex { get; set; }
         public AbilityType Ability { get;  set; }
         public PokemonType[] Types { get; set;}
-        public bool IsFainted { get; set; }
-        public StatusType StatusType { get; set; }
         public int CatchRate { get; set; }
+        public StatValues BaseStats { get; set; }
+        public GrowthRateType GrowthRate { get; set; }
 
-
+        public PokemonData pokemon;
         // Constructors
         //constractor to create enemy pokemon from the wild
-        //public EnemyPokemonGeneration(Encounter species, PokemonData pokemon)
-        //{
-        //    // Generate IDs
+        public EnemyPokemonGeneration(Encounter species, PokemonData pokemon)
+        {
+            this.pokemon = pokemon;
+            // Level and HP
+            this.Level = RandomHelper.Next(species.MinLevel, species.MaxLevel);
+            this.GeneratePokemonID(pokemon);
+            this.GenerateIvsAndEvs(pokemon);
+            this.GeneratePokemonMoves(pokemon);
+            // Images
+            string uri = $"pack://application:,,,/Images/GenOnePokemon/{PokedexID}.png";
+            this.Sprite = uri;
+            this.Image = uri;
+            this.CatchRate = pokemon.CatchRate;
+        }
+        public void GeneratePokemonID(PokemonData pokemon)
+        {
+            var randomHelper = RNGHelper.GenerateRandomPokemonIdentity();
+            this.ID = randomHelper.SecretID;
+            this.PokedexID = pokemon.Number;
+            this.Species = pokemon.Name;
+            this.Nature = randomHelper.GetNature();
+            this.Ability = pokemon.Abilitys[randomHelper.GetAbilityNumber(pokemon)];
+            this.Types = new PokemonType[2];
+            this.Types[0] = pokemon.Type1;
+            this.Types[1] = pokemon.Type2;
+            this.IsMale = randomHelper.IsFemale(pokemon.MaleGenderPercent);
+            this.IsShiny = randomHelper.IsShiny();
+            this.MaxHP = pokemon.IVs.HP + (pokemon.IVs.HP * Level / 100);
+            this.CurrentHp = MaxHP;
+            this.GrowthRate = pokemon.GrowthRate; 
+        }
+        public void GenerateIvsAndEvs(PokemonData pokemon)
+        {
+            this.BaseStats = pokemon.BaseStats;
+            this.IVs = RNGHelper.GenerateAllIVs(pokemon);
+            this.EVs = new StatValues();
+        }
             
-        //    var randomHelper = RNGHelper.GenerateRandomPokemonIdentity();
+        public void GeneratePokemonMoves(PokemonData pokemon)
+        {
+            Moves = new Dictionary<MoveData, int>();
+            int count = 0;
 
-        //    // Identification
-        //    ID = randomHelper.SecretID;
-        //    PokedexID = pokemon.Number;
-        //    Species = pokemon.Name;
-        //    Nickname = Species;
+            for (int i = Level; i > 0 && count < 4; i--)
+            {
+                foreach (var moveLearn in pokemon.Moves)
+                {
+                    if (moveLearn.Level == i && count < 4)
+                    {
+                        MoveData move = moveLearn.Moves;
+                        if (!Moves.ContainsKey(move))
+                        {
+                            Moves.Add(move, move.PP);
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
 
-        //    // Level and HP
-        //    Level = RandomHelper.Next(species.MinLevel, species.MaxLevel);
-        //    MaxHP = pokemon.HP + (pokemon.HP * Level / 100);
-        //    CurrentHp = MaxHP;
-
-        //    // Stats
-        //    IVs = new StatValues
-        //    {
-        //        HP = pokemon.HP,
-        //        Attack = pokemon.Attack,
-        //        Defense = pokemon.Defense,
-        //        SpecialAttack = pokemon.SpAtk,
-        //        SpecialDefense = pokemon.SpDef,
-        //        Speed = pokemon.Speed
-        //    };
-
-        //    EVs = new StatValues(); // default all 0
-
-        //    // Moves (up to 4 learned by level)
-        //    Moves = new Dictionary<MoveData, int>();
-        //    int count = 0;
-
-        //    for (int i = Level; i > 0 && count < 4; i--)
-        //    {
-        //        foreach (var moveLearn in pokemon.Moves)
-        //        {
-        //            if (moveLearn.Level == i && count < 4)
-        //            {
-        //                MoveData move = moveLearn.Moves;
-        //                if (!Moves.ContainsKey(move))
-        //                {
-        //                    Moves.Add(move, move.PP);
-        //                    count++;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    // Gender & Shiny
-        //    IsMale = randomHelper.IsFemale(species.Rarity);
-        //    IsShiny = randomHelper.IsShiny();
-
-        //    // Images
-        //    string uri = $"pack://application:,,,/Images/GenOnePokemon/{PokedexID}.png";
-        //    Sprite = uri;
-        //    Image = uri;
-            
-        //    // Abilities & Types
-        //    AbilityIndex = randomHelper.GetAbilityNumber();
-        //    Types = new PokemonType[2];
-        //    Types[0] = pokemon.Type1;
-        //    Types[1] = pokemon.Type2;
-        //    IsFainted = false;
-        //    StatusType = StatusType.None;
-        //    this.CatchRate = pokemon.CatchRate;
-        //    Nature = randomHelper.GetNature();
-        //}
     }
 }

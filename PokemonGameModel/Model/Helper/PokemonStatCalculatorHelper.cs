@@ -4,7 +4,7 @@ using PokemonGame.Interface;
 
 namespace PokemonGame.Model.Helper
 {
-    public class PokemonStatCalculatorHelper : IStatValues
+    public class PokemonStatCalculatorHelper 
     {
         public int HP { get; set; }
         public int Attack { get; set; }

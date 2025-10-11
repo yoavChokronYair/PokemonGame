@@ -2,13 +2,14 @@
 using PokemonGame.Interface;
 using PokemonGame.Model.Data;
 using PokemonGame.Model.Data.Player;
+using PokemonGame.Model.Helper;
 
 namespace PokemonGame.Model.PokemonCreation
 {
     public class PlayerPokemonGeneration : IPokemon
     {
         // === Identity & Metadata ===
-        public int ID { get; }
+        public int ID { get; set; }
         public int PokedexID { get; set; }
         public string Species { get; set; }
         public string Nickname { get; set; }
@@ -30,8 +31,8 @@ namespace PokemonGame.Model.PokemonCreation
         public int Level { get; set; }
         public int MaxHP { get; set; }
         public int CurrentHp { get; set; }
-        public IStatValues IVs { get; set; }
-        public IStatValues EVs { get; set; }
+        public StatValues IVs { get; set; }
+        public StatValues EVs { get; set; }
 
         // === Combat Data ===
         public Dictionary<MoveData,int> Moves { get; set; }
@@ -39,10 +40,11 @@ namespace PokemonGame.Model.PokemonCreation
         public StatusType StatusType { get; set; }
         public bool IsFainted { get; set; }
         public int CatchRate {  get; set; }
+        public StatValues BaseStats { get; set; }
 
         // === Constructors ===
         //for all pokemons that are created by catching them
-        public PlayerPokemonGeneration(EnemyPokemonGeneration wildPokemon, string nickname, int currentHP, StatusType pokemonStatus)
+        public PlayerPokemonGeneration(IPokemon wildPokemon, string nickname, int currentHP, StatusType pokemonStatus)
         {
             this.ID = wildPokemon.ID;
             this.PokedexID = wildPokemon.PokedexID;
@@ -59,7 +61,7 @@ namespace PokemonGame.Model.PokemonCreation
             this.Nature = wildPokemon.Nature;
             
             this.Ability = wildPokemon.Ability;
-            this.GrowthRate = GrowthRateType.MediumFast; // Assumed default
+            this.GrowthRate = wildPokemon.GrowthRate; // Assumed default
             this.Friendship = 0; // Initial friendship level
             
             this.Level = wildPokemon.Level;
@@ -69,48 +71,25 @@ namespace PokemonGame.Model.PokemonCreation
             
             this.IVs = wildPokemon.IVs;
             this.EVs = wildPokemon.EVs;
-            
+            this.BaseStats = wildPokemon.BaseStats; 
+
             this.Moves = wildPokemon.Moves;
             this.PokemonXP = 0;
             this.StatusType = pokemonStatus;
         }
-        //for all pokemons that are createdd by existingdata
-        public PlayerPokemonGeneration(CaughtPokemonData caughtPokemonData)
+
+        //because of stealing data no need for generation for now. in future will need it 
+        public void GeneratePokemonID(PokemonData pokemon)
         {
-            this.ID = caughtPokemonData.PokemonID;
-            this.PokedexID = caughtPokemonData.pokedexID;
-            this.Species = caughtPokemonData.pokemonName;
-            this.Nickname = caughtPokemonData.Nickname;
-
-            string uri = $"pack://application:,,,/Images/GenOnePokemon/{this.PokedexID}.png";
-            Sprite = uri;
-            Image = uri;
-            this.IsShiny = caughtPokemonData.IsShiny;
-            this.IsMale = caughtPokemonData.IsMale;
-
-            this.Types[0] = caughtPokemonData.Types[0];
-            this.Types[1] = caughtPokemonData.Types[1];
-            this.Nature = caughtPokemonData.Nature;
-
-            this.Ability = caughtPokemonData.Ability;
-            this.GrowthRate = caughtPokemonData.GrowthRate; 
-            this.Friendship = caughtPokemonData.Friendship;
-
-            this.Level = caughtPokemonData.Level;
-            this.MaxHP = caughtPokemonData.MaxHP;
-            this.CurrentHp = caughtPokemonData.CurrentHP;
-            this.IsFainted = caughtPokemonData.CurrentHP == 0;
-
-            this.IVs = caughtPokemonData.IVs;
-            this.EVs = caughtPokemonData.EVs;
-
-            this.Moves = new Dictionary<MoveData, int>();
-            foreach (var moveLearn in caughtPokemonData.Moves)
-            {
-                    Moves.Add(moveLearn, moveLearn.PP);
-            }
-            this.PokemonXP = caughtPokemonData.Experience;
-            this.StatusType = caughtPokemonData.StatusCondition;
+            return;
+        }
+        public void GeneratePokemonMoves(PokemonData pokemon)
+        {
+            return;
+        }
+        public void GenerateIvsAndEvs(PokemonData pokemon)
+        {
+            return;
         }
     }
 }

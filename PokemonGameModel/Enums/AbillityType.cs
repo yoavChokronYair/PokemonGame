@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PokemonGame.Enums
 {
+    //ToDo:make it not enum based
     public enum AbilityType
     {
         // Standard Gen III abilities used in FireRed
@@ -83,6 +84,5 @@ namespace PokemonGame.Enums
         CloudNine,
         Illuminate,
 
-        // You can add more or trim based on what you're supporting in your app.
     }
 }
