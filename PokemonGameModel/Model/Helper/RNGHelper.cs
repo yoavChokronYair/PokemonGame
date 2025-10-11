@@ -1,5 +1,7 @@
 ﻿using PokemonGame.Enums;
+using PokemonGame.Model.Data;
 using PokemonGame.Model.Data.MapData;
+using PokemonGame.Model.PokemonCreation;
 using System;
 
 namespace PokemonGame.Model.Helper
@@ -39,23 +41,34 @@ namespace PokemonGame.Model.Helper
         // ----------------------------
         // IVs
         // ----------------------------
-        public static int GenerateIV()
+        public static int GenerateIV(int? baseIV = null)
         {
-            return RandomHelper.Next(0, 32); // IV 0–31
+            // If base IV is defined (>= 0), use it directly
+            if (baseIV.HasValue && baseIV.Value >= 0)
+                return baseIV.Value;
+
+            // Otherwise, random IV between 0 and 31
+            return RandomHelper.Next(0, 32);
         }
 
-        public static int[] GenerateAllIVs()
+        /// <summary>
+        /// Generates IVs for all 6 stats. If the Pokémon species has base IVs defined, they’re respected.
+        /// </summary>
+        public static StatValues GenerateAllIVs(PokemonData? pokemon = null)
         {
-            return new int[]
+            var baseIVs = pokemon?.IVs;
+
+            return new StatValues
             {
-                GenerateIV(), // HP
-                GenerateIV(), // Attack
-                GenerateIV(), // Defense
-                GenerateIV(), // Sp. Atk
-                GenerateIV(), // Sp. Def
-                GenerateIV()  // Speed
+                HP = GenerateIV(baseIVs?.HP),
+                Attack = GenerateIV(baseIVs?.Attack),
+                Defense = GenerateIV(baseIVs?.Defense),
+                SpecialAttack = GenerateIV(baseIVs?.SpecialAttack),
+                SpecialDefense = GenerateIV(baseIVs?.SpecialDefense),
+                Speed = GenerateIV(baseIVs?.Speed)
             };
         }
+
 
         // ----------------------------
         // Nature
@@ -90,9 +103,15 @@ namespace PokemonGame.Model.Helper
         // ----------------------------
         // Ability Determination
         // ----------------------------
-        public int GetAbilityNumber()
+        public int GetAbilityNumber(PokemonData pokemon)
         {
-            // Ability 1 if PID is even, Ability 2 if PID is odd
+            // 0–15 range: if result == 0, Hidden Ability (1/16 chance)
+            int hiddenRoll = RandomHelper.Next(0,16);
+
+            if (hiddenRoll == 0 && pokemon.Abilitys.Count > 2)
+                return 3; // Hidden Ability
+
+            // Otherwise pick based on PID parity
             return (PID & 1) == 0 ? 1 : 2;
         }
         // ----------------------------
