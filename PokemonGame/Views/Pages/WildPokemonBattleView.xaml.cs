@@ -1,7 +1,5 @@
 ﻿using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Manager;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel;
 using PokemonGame.ViewModel.ViewModelHelper;

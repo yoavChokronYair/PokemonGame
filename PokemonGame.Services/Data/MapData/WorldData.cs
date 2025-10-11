@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PokemonGame.Model.Data.MapData
+namespace PokemonGame.Services.Data.MapData
 {
     public class WorldData
     {

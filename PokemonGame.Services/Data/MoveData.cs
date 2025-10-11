@@ -1,7 +1,7 @@
 ﻿using PokemonGame.Enums;
 using System.Collections.Generic;
 
-namespace PokemonGame.Model.Data
+namespace PokemonGame.Services.Data
 {
     public class MoveData 
     {

@@ -1,11 +1,6 @@
-﻿using PokemonGame.Enums;
-using PokemonGame.Model.Data.MapData;
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿
 
-namespace PokemonGameModel.Model.Data.MapData
+namespace PokemonGame.Services.Data.MapData
 {
     public class TownMapData : WorldData
     {

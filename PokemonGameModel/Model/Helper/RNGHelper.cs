@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Enums;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Data.MapData;
-using PokemonGame.Model.PokemonCreation;
+
+using PokemonGame.Services.Data;
 using System;
 
 namespace PokemonGame.Model.Helper

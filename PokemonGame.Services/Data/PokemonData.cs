@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Enums;
-using PokemonGame.Model.Manager;
-
-namespace PokemonGame.Model.Data
+using PokemonGame.Services;
+namespace PokemonGame.Services.Data
 {
     public class PokemonData 
     {

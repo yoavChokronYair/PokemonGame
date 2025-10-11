@@ -1,24 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Enums;
-using PokemonGame.Model.BattleSystem.Bot;
-using PokemonGame.Model.BattleSystem.Player;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Data.NpcData;
-using PokemonGame.Model.Helper;
-using PokemonGame.Model.Manager;
-using PokemonGame.Model.Map;
-using PokemonGame.Model.PokemonCreation;
+﻿
 using PokemonGame.ViewModel.ViewModelHelper;
-using PokemonGame.Model.Data.MapData;
-using PokemonGame.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace PokemonGame.ViewModel.Map
 {

@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Enums;
-using PokemonGame.Model.Data.MapData;
 
-namespace PokemonGameModel.Model.Data.MapData
+namespace PokemonGame.Services.Data.MapData
 {
     public class RouteMapData : WorldData
     {

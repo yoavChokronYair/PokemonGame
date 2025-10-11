@@ -1,7 +1,5 @@
 ﻿using PokemonGame.ViewModel.Map;
-using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
-using PokemonGame.Model.Manager;
 using PokemonGame.ViewModel.ViewModelHelper;
 
 namespace PokemonGame.ViewModel

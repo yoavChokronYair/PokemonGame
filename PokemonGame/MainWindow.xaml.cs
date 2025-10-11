@@ -1,5 +1,4 @@
-﻿using PokemonGame.Model.Manager;
-using PokemonGame.Model.PokemonCreation;
+﻿
 using PokemonGame.ViewModel;
 using System.Windows;
 using System.Windows.Input;
@@ -19,7 +18,6 @@ namespace PokemonGame
         public MainWindow()
         {
 
-            GameDataManager.Instance.LoadAllData();
             InitializeComponent();
             int count = 0;     
             

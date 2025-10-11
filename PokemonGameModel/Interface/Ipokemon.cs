@@ -1,6 +1,5 @@
 ﻿using PokemonGame.Enums;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Data.Items;
+using PokemonGame.Services.Data;
 using System.Collections.Generic;
 
 namespace PokemonGame.Interface

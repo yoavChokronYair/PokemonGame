@@ -515,6 +515,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PokemonGame.Services\PokemonGame.Services.csproj">
+      <Project>{936B9C1C-F508-46EC-97DB-18974F63BC85}</Project>
+      <Name>PokemonGame.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PokemonGameModel\PokemonGame.Core.csproj">
       <Project>{827ccd97-afc0-4247-a345-dd427d8adbe7}</Project>
       <Name>PokemonGame.Core</Name>

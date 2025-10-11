@@ -2,9 +2,8 @@
 using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
-using PokemonGame.Model.Data;
-using PokemonGame.Model.Data.Items;
 using PokemonGame.Model.PokemonCreation;
+using PokemonGame.Services.Data;
 using System;
 
 namespace PokemonGame.Model.Helper

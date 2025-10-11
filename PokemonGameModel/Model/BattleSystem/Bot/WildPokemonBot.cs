@@ -1,8 +1,8 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Interface;
-using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
+using PokemonGame.Services.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;

@@ -1,7 +1,7 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Interface;
-using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
+using PokemonGame.Services.Data;
 
 namespace PokemonGame.Model.PokemonCreation
 {

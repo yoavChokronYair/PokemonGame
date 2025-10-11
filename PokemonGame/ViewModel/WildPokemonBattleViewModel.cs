@@ -1,9 +1,7 @@
 ﻿using PokemonGame.ViewModel.Map;
-using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
-using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModel.BattleMenu;
@@ -11,6 +9,8 @@ using PokemonGame.ViewModel.ViewModelHelper;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using PokemonGame.Enums;
+using PokemonGame.Services.Data;
 
 namespace PokemonGame.ViewModel
 {
@@ -27,6 +27,7 @@ namespace PokemonGame.ViewModel
         public bool IsSwitch { get; set; }
         public StatusType StatusEffect { get; set; }
         public int Priority { get; set; }
+        StatusType IMoveResult.StatusEffect { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     }
     public class WildPokemonBattleViewModel : ViewModelBase
     {
