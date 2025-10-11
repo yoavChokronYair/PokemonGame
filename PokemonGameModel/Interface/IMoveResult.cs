@@ -12,5 +12,6 @@ namespace PokemonGame.Interface
          int Damage { get; set; }
          bool IsSwitch { get; set; } 
          StatusType StatusEffect { get; set; } // You can expand this for status names
+         int Priority { get; set; }
     }
 }

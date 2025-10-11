@@ -1,4 +1,5 @@
-﻿using PokemonGame.Enums;
+﻿using PokemonGame.Constants;
+using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.Data;
 using PokemonGame.Model.Helper;
@@ -8,13 +9,14 @@ namespace PokemonGame.Model.BattleSystem.Bot
 {
     public class RivalBot : IBotBattle, ITrainer
     {
-        private int _activePokemonIndex = 0; // Tracks which Pokémon is currently active in battle
-        private PlayerPokemonGeneration _PlayerPokemon {get; set;}
-        private  IMoveResult _playerMove { get; set;}
-        private Dictionary<EnemyPokemonGeneration,(bool,int)> _RivalTeam  { get; set; }
+        private Dictionary<EnemyPokemonGeneration,(bool,int)> rivalTeam = new Dictionary<EnemyPokemonGeneration, (bool, int)>();//first value isdown,second value currenthp
+        private PlayerPokemonGeneration playerPokemon {get; set;}
+        private  IMoveResult playerMove { get; set;}
+        private MoveData rivalMove {get; set;}
         //iBotBattle                             
-        public int _ActivePokemonHp { get; set; }
-        public EnemyPokemonGeneration _ActivePokemon { get; set;}
+        public int activePokemonHp { get; set; }
+        public EnemyPokemonGeneration activePokemon { get; set;}
+       
         //ITranier
         public int MoneyReward { get; set; } // How much money the player receives on win
         public bool CanRematch { get; set; } // Can this trainer be re-battled?
@@ -31,57 +33,75 @@ namespace PokemonGame.Model.BattleSystem.Bot
         public List<string> PostBattleDialogWin { get; set; }
         public List<string> PostBattleDialogLose { get; set; }
         public List<string> MidBattleDialog { get; set; }
+        
         public RivalBot(List<EnemyPokemonGeneration> rivalTeam,PlayerPokemonGeneration playerPokemon)
         {
             foreach(EnemyPokemonGeneration rivalPokemon in rivalTeam)
             {
-                _RivalTeam.Add(rivalPokemon, (false, rivalPokemon.MaxHP));
+                this.rivalTeam.Add(rivalPokemon, (false, rivalPokemon.MaxHP));
             }
-            _PlayerPokemon = playerPokemon;
-            _ActivePokemon = rivalTeam[0];
-            _ActivePokemonHp = _ActivePokemon.MaxHP;
+            this.playerPokemon = playerPokemon;
+            this.activePokemon = rivalTeam[0];
+            this.activePokemonHp = this.activePokemon.MaxHP;
         }
         public int UpdateData(PlayerPokemonGeneration playerPokemon,IMoveResult playermove,int currentHp)
         {
-            _PlayerPokemon = playerPokemon;
-            _playerMove = playermove;
-            _ActivePokemonHp = currentHp;
-            if(_ActivePokemon.StatusType == StatusType.None)
+            this.playerPokemon = playerPokemon;
+            this.playerMove = playermove;
+            this.activePokemonHp = currentHp;
+            this.rivalMove = ChooseMove();
+            if(this.activePokemon.StatusType == StatusType.None)
             {
-                _ActivePokemon.StatusType = _playerMove.StatusEffect;
+                this.activePokemon.StatusType = this.playerMove.StatusEffect;
             }
-            if (!HasProirerty())
+            if (!HasPriority(this.rivalMove,this.playerMove))
             {
                 ReceiveDamage();
-                if(_ActivePokemonHp < 0)
-                {
-                    _RivalTeam[_ActivePokemon] = (true,0);
-                }
+                
             }
-            return _ActivePokemonHp;
+            return this.activePokemonHp;
         }
-        public bool HasProirerty()
+        public bool HasPriority(MoveData rivalMove, IMoveResult playerMove)
         {
-            return _ActivePokemon.IVs.Speed > _PlayerPokemon.IVs.Speed; // Customize this threshold
+            if (rivalMove.Priority != playerMove.Priority)
+                return rivalMove.Priority > playerMove.Priority;
+
+            // If equal, fall back to Speed
+            return this.activePokemon.IVs.Speed > playerPokemon.IVs.Speed;
         }
+
         public void ChooseNextPokemon()
         {
-            for (int i = 0; i < _RivalTeam.Count; i++)
+            foreach (var kvp in this.rivalTeam)
             {
-                if (!_RivalTeam[_ActivePokemon].Item1)
+                if (!kvp.Value.Item1) // Item1 = isFainted
                 {
-                    _activePokemonIndex = i;
+                    this.activePokemon = kvp.Key;
+                    this.activePokemonHp = kvp.Value.Item2;
                     break;
                 }
             }
-            _ActivePokemon = _RivalTeam.Keys.ToList()[_activePokemonIndex];
-            _ActivePokemonHp = _RivalTeam[_ActivePokemon].Item2;
         }
         public bool ShouldSwitchPokemon()
         {
-            if (_RivalTeam[_ActivePokemon].Item1) return true;
+            // Fainted
+            if (this.rivalTeam[activePokemon].Item1) return true;
+
+            // If HP < 25% and there’s a healthy Pokémon with type advantage
+            if (this.activePokemonHp < this.activePokemon.MaxHP * 0.25)
+            {
+                foreach (var kvp in rivalTeam)
+                {
+                    if (!kvp.Value.Item1 &&
+                        TypeEffectivenessChartHelper.GetTypeEffectiveness(kvp.Key.Types, this.playerPokemon.Types) > 1.0)
+                    {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
+
         public void SwitchPokemon()
         {
             if (ShouldSwitchPokemon())
@@ -91,31 +111,36 @@ namespace PokemonGame.Model.BattleSystem.Bot
         }
         public MoveData ChooseMove()
         {
-            List<MoveData> availableMoves = new List<MoveData>();
-            foreach (var e in _ActivePokemon.Moves)
-            {
-                if(e.Value > 0)
-                {
-                    availableMoves.Add(e.Key);
-                }
-            }
-            if (availableMoves.Count == 0)
-                return null;
-            return availableMoves.OrderBy(m => m.Power).FirstOrDefault();
+            var availableMoves = this.activePokemon.Moves
+                .Where(m => m.Value > 0)
+                .Select(m => m.Key)
+                .ToList();
+
+            if (availableMoves.Count == 0) return null;
+
+            // Score moves based on effectiveness and power
+            return availableMoves
+                .OrderByDescending(move =>
+                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Type, playerPokemon.Types) *
+                    (move.Power + (this.activePokemon.Types.Contains(move.Type) ? 15 : 0)) // STAB bonus
+                )
+                .ThenByDescending(move => move.Accuracy)
+                .First();
         }
+
         public int HealPokemon(string item)
         {
-            return _ActivePokemonHp;
+            return activePokemonHp;
         }
         public MoveResult ExecuteMove()
         {
-            if (!_RivalTeam[_ActivePokemon].Item1)
+            if (!rivalTeam[activePokemon].Item1)
             { 
-                MoveData Movedata = ChooseMove();
-                MoveResult moveResult = BattleCalculator.ExecuteMove(_PlayerPokemon, _ActivePokemon, Movedata);
-                if (BattleCalculator.DoesMoveHit(Movedata,StatusType.None))
+                MoveData Movedata = rivalMove;
+                MoveResult moveResult = BattleCalculator.ExecuteMove(playerPokemon, activePokemon, Movedata);
+                if (BattleCalculator.DoesMoveHit(Movedata,this.activePokemon.StatusType))
                 {
-                    _ActivePokemon.Moves[Movedata] -= 1;
+                    this.activePokemon.Moves[Movedata] -= 1;
                     if (moveResult.IsSwitch)
                     {
                         SwitchPokemon();
@@ -128,29 +153,38 @@ namespace PokemonGame.Model.BattleSystem.Bot
         }
         public void ReceiveDamage()
         {
-            _ActivePokemonHp -= _playerMove.Damage; // Simple damage logic
+            activePokemonHp -= playerMove.Damage;
+            if (activePokemonHp <= 0)
+            {
+                this.activePokemonHp = 0;
+                rivalTeam[activePokemon] = (true, 0);
+            }
         }
-        public int EndTurn()
+
+        public int EndTurn(bool HasPriority)
         {
-            if(HasProirerty())
+            ApplyStatusEffects();
+            if (HasPriority)
             {
                 ReceiveDamage();
             }
-            if (_ActivePokemon.StatusType == StatusType.Burn)
+            if (activePokemonHp <= 0)
             {
-                _ActivePokemonHp -= (int)(_ActivePokemon.MaxHP * 0.0625);
+                SwitchPokemon();
             }
-            if(_ActivePokemon.StatusType == StatusType.Poison)
-            {
-                _ActivePokemonHp -= (int)(_ActivePokemon.MaxHP * 0.0625);
-                 
-            }
-            if (_ActivePokemonHp < 0)
-            {
-                _RivalTeam[_ActivePokemon] = (true, 0);
-            }
-            SwitchPokemon();
-            return _ActivePokemonHp;
+            return this.activePokemonHp;
         }
+
+        private void ApplyStatusEffects()
+        {
+            switch (this.activePokemon.StatusType)
+            {
+                case StatusType.Burn:
+                case StatusType.Poison:
+                    this.activePokemonHp -= (int)(this.activePokemon.MaxHP * 0.0625);
+                    break;
+            }
+        }
+
     }
 }

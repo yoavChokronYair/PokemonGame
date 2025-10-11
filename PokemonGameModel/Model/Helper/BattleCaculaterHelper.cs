@@ -14,12 +14,14 @@ namespace PokemonGame.Model.Helper
         public int Damage { get; set; }
         public bool IsSwitch { get; set; }
         public StatusType StatusEffect { get; set; }
+        public int Priority { get; set; }
 
         public MoveResult()
         {
             Damage = 0;
             IsSwitch = false;
             StatusEffect = StatusType.None;
+            Priority = 0;
         }
     }
 
@@ -33,7 +35,7 @@ namespace PokemonGame.Model.Helper
         public static MoveResult ExecuteMove(IPokemon defender, IPokemon attacker, MoveData move)
         {
             var result = new MoveResult();
-
+            result.Priority = move.Priority;
             switch (move.CategoryEn)
             {
                 case "Physical":
@@ -85,7 +87,7 @@ namespace PokemonGame.Model.Helper
 
             double baseDamage = (((2 * level / 5.0 + 2) * power * attackStat / defenseStat) / 50.0) + 2;
 
-            double effectiveness = TypeEffectivenessChartHelper.GetTotalEffectiveness(moveType, defender.Types);
+            double effectiveness = TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(moveType, defender.Types);
             double stab = attacker.Types.Contains(moveType) ? 1.5 : 1.0;
             double crit = IsCriticalHit() ? 1.5 : 1.0;
             double randomFactor = _rand.Next(85, 101) / 100.0;
@@ -128,28 +130,28 @@ namespace PokemonGame.Model.Helper
 
         private static int GetEffectivePhysicalAttack(IPokemon attacker)
         {
-            double baseAttack = attacker.IVs.Attack;
+            double baseAttack = attacker.BaseStats.Attack;
             double modifier = NatureHelper.GetNatureModifiers(attacker.Nature).atk;
             return (int)Math.Floor(baseAttack * modifier);
         }
 
         private static int GetEffectiveSpecialAttack(IPokemon attacker)
         {
-            double baseSpAttack = attacker.IVs.SpecialAttack;
+            double baseSpAttack = attacker.BaseStats.SpecialAttack;
             double modifier = NatureHelper.GetNatureModifiers(attacker.Nature).spAtk;
             return (int)Math.Floor(baseSpAttack * modifier);
         }
 
         private static int GetEffectivePhysicalDefense(IPokemon defender)
         {
-            double baseDef = defender.IVs.Defense;
+            double baseDef = defender.BaseStats.Defense;
             double modifier = NatureHelper.GetNatureModifiers(defender.Nature).def;
             return (int)Math.Floor(baseDef * modifier);
         }
 
         private static int GetEffectiveSpecialDefense(IPokemon defender)
         {
-            double baseSpDef = defender.IVs.SpecialDefense;
+            double baseSpDef = defender.BaseStats.SpecialDefense;
             double modifier = NatureHelper.GetNatureModifiers(defender.Nature).spDef;
             return (int)Math.Floor(baseSpDef * modifier);
         }
@@ -175,31 +177,31 @@ namespace PokemonGame.Model.Helper
         /// Simulates the 4-shake catch check for a Pokémon.
         /// Returns 0 if successfully caught, or the shake number (1-4) that failed.
         /// </summary>
-        public static int ShakeCheck(WildPokemonBot pokemonBot, PokeballData pokeball)
-        {
-            IPokemon pokemon = pokemonBot._ActivePokemon;
-            int hp = pokemonBot._ActivePokemonHp;
+        //public static int ShakeCheck(WildPokemonBot pokemonBot, PokeballData pokeball)
+        //{
+        //    IPokemon pokemon = pokemonBot.activePokemon;
+        //    int hp = pokemonBot.activePokemonHp;
 
-            double statusBonus = GetStatusBonus(pokemon);
-            double a = ((3.0 * pokemon.MaxHP - 2.0 * hp) * pokemon.CatchRate * pokeball.CatchRateModifier) / (3.0 * pokemon.MaxHP);
-            a *= statusBonus;
+        //    double statusBonus = GetStatusBonus(pokemon);
+        //    double a = ((3.0 * pokemon.MaxHP - 2.0 * hp) * pokemon. * pokeball.CatchRateModifier) / (3.0 * pokemon.MaxHP);
+        //    a *= statusBonus;
 
-            // Auto-catch if a >= 255
-            if (a >= 255)
-                return 0; // success
+        //    // Auto-catch if a >= 255
+        //    if (a >= 255)
+        //        return 0; // success
 
-            double b = 16711680.0 / a;
-            double shakeThreshold = 1048560.0 / Math.Sqrt(Math.Sqrt(b));
+        //    double b = 16711680.0 / a;
+        //    double shakeThreshold = 1048560.0 / Math.Sqrt(Math.Sqrt(b));
 
-            // Perform 4 shake checks
-            for (int i = 0; i < 4; i++)
-            {
-                if (_rand.Next(0, 65536) >= shakeThreshold)
-                    return i + 1; // shake failed at this number (1–4)
-            }
+        //    // Perform 4 shake checks
+        //    for (int i = 0; i < 4; i++)
+        //    {
+        //        if (_rand.Next(0, 65536) >= shakeThreshold)
+        //            return i + 1; // shake failed at this number (1–4)
+        //    }
 
-            return 0; // caught successfully
-        }
+        //    return 0; // caught successfully
+        //}
 
     }
 }

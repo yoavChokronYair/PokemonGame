@@ -30,5 +30,6 @@ namespace PokemonGame.Interface
 
         // Items or Rewards
         List<string> ItemRewards { get; } // TM, Item, etc.
+        
     }
 }

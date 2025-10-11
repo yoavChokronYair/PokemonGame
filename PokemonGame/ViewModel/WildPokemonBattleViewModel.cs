@@ -36,7 +36,7 @@ namespace PokemonGame.ViewModel
         public WildPokemonBattleViewModel(PlayerPokemonBot team, WildPokemonBot rival,NavigationStore navigation,MapViewModel mainWindow)
         {
             _mainWindow = mainWindow;
-            ImagePathRival = rival._ActivePokemon.Image;
+            ImagePathRival = rival.activePokemon.Image;
             ImagePathTeam = team._ActivePokemon.Image;
             _PageNavigationStore = navigation;
             MoveList = new ObservableCollection<MoveViewModel>(team._ActivePokemon.Moves
@@ -53,13 +53,13 @@ namespace PokemonGame.ViewModel
             Rival = rival;
             Gender = team._ActivePokemon.IsMale ? "♂" : "♀";
             TeamCurrentHp = team._ActivePokemonHp;
-            RivalCurrentHp = rival._ActivePokemonHp;
+            RivalCurrentHp = rival.activePokemonHp;
             _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
         }
         public async Task MakeMove(string move)
         {
             PlayerPokemonGeneration player = Team._ActivePokemon;
-            EnemyPokemonGeneration enemy = Rival._ActivePokemon;
+            EnemyPokemonGeneration enemy = Rival.activePokemon;
             MoveData moveData = player.Moves.Keys.FirstOrDefault(m => m.ename == move);
             MoveResult moveResult = Team.ExecuteMove(moveData);
             MoveResults teamMove = new MoveResults(moveResult.Damage,moveResult.IsSwitch,moveResult.StatusEffect);

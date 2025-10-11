@@ -30,6 +30,7 @@ namespace PokemonGame.Model.Data
                 }
             }
         }
+        public int Priority { get; set; }
     }
     public class MoveDataList
     {

@@ -115,19 +115,41 @@ namespace PokemonGame.Constants
             { (PokemonType.Dragon, PokemonType.Steel), TypeEffectivenessChartConstants.notVeryEffective },
             { (PokemonType.Dragon, PokemonType.Fairy), TypeEffectivenessChartConstants.noEffect },
             };
+        public static double GetTypeEffectiveness(PokemonType[] attackerTypes, PokemonType[] defenderTypes)
+        {
+            double totalMultiplier = 1.0;
 
-        public static double GetEffectiveness(PokemonType attackType, PokemonType defenderType)
+            foreach (var atkType in attackerTypes)
+            {
+                foreach (var defType in defenderTypes)
+                {
+                    if (_chart.TryGetValue((atkType, defType), out var multiplier))
+                    {
+                        totalMultiplier *= multiplier;
+                    }
+                    else
+                    {
+                        totalMultiplier *= TypeEffectivenessChartConstants.normal;
+                    }
+                }
+            }
+
+            return totalMultiplier;
+        }
+
+        public static double GetMoveEffectiveness(PokemonType attackType, PokemonType defenderType)
         {
             return _chart.TryGetValue((attackType, defenderType), out var multiplier)
                 ? multiplier
                 : TypeEffectivenessChartConstants.normal;
         }
 
-        public static double GetTotalEffectiveness(PokemonType attackType, PokemonType[] defenderTypes)
+
+        public static double GetTotalMoveEffectiveness(PokemonType attackType, PokemonType[] defenderTypes)
         {
             double total = 1.0;
             foreach (var defender in defenderTypes)
-                total *= GetEffectiveness(attackType, defender);
+                total *= GetMoveEffectiveness(attackType, defender);
             return total;
         }
     }
