@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PokemonGame.Model.Data;
 using PokemonGame.Model.Data.Items;
-using PokemonGame.Model.Data.MapData;
 using PokemonGame.Model.Data.NpcData;
 
 

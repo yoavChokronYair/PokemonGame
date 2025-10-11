@@ -36,7 +36,7 @@ namespace PokemonGame.Services
             PokemonData = LoadJson<PokemonDataList>("Pokemons.json");
             MoveData = LoadJson<MoveDataList>("Moves.json");
             RivalDataList rivalList = LoadJson<RivalDataList>("Npc/Rivals.json");
-            RivalData =rivalList.Rival.ToDictionary(rival => rival, rival => true);
+            RivalData =rivalList.Rivals.ToDictionary(rival => rival, rival => true);
             PokeballData = LoadJson<PokeBallDataList>("Items/Pokeballs.json");
             TrainerData = LoadJson<TrainerDataList>("Npc/Trainers.json");
         }
