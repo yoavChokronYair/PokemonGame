@@ -18,13 +18,9 @@ namespace PokemonGame.Model.Map
 
         //town
         private readonly HashSet<(WorldData, WorldData)> connectedPairs = new();
-        private readonly TownMapDataList towns;
-        private readonly RouteMapDataList routs;
         public WorldMap(TownMapDataList towns, RouteMapDataList routs)
         {
             this.townMaps = new WorldData[4, 4];
-            this.towns = towns;
-            this.routs = routs;
             ArrayHelper.SetCenter2DArray(townMaps, towns.maps[0]);
             foreach (RouteMapData route in routs.maps)
             {

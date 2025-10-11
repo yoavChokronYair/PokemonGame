@@ -22,15 +22,7 @@ namespace PokemonGame
             GameDataManager.Instance.LoadAllData();
             InitializeComponent();
             int count = 0;     
-            foreach (var pokemon in GameDataManager.Instance.CaughtPokemonData.CaughtPokemons)
-            {
-                if(count < 6)
-                {
-                    PlayerPokemonGeneration playerPokemonGeneration = new PlayerPokemonGeneration(pokemon);
-                    PlayerPokemonManager.Instance.AddPokemonToTeam(playerPokemonGeneration,count);
-                    count++;
-                }
-            }
+            
             // Navigate to the battle view with the encounter
             this.DataContext = new MainWindowViewModel();
             //MainFrame.Navigate(new WildPokemonBattleView(encounter));

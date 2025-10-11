@@ -1,18 +1,18 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PokemonGame.Model.Data;
 using PokemonGame.Model.Data.Items;
 using PokemonGame.Model.Data.NpcData;
 
-
-namespace PokemonGame.Model.Manager
-{
+namespace PokemonGame.Services
+{   /// <summary>
+/// json handler
+/// </summary>
     public class GameDataManager
     {
         public PokemonDataList PokemonData { get; private set; } // Public property to access PokemonData
         public MoveDataList MoveData { get; private set; } // Public property to access MoveData
-        public Dictionary<RivalData,bool> RivalData {  get; set; }//is defeted or not 
+        public Dictionary<RivalData, bool> RivalData { get; set; }//is defeted or not 
         public PokeBallDataList PokeballData { get; set; }
         public TrainerDataList TrainerData { get; set; }
         private GameDataManager() { } // Private constructor
@@ -36,7 +36,7 @@ namespace PokemonGame.Model.Manager
             PokemonData = LoadJson<PokemonDataList>("Pokemons.json");
             MoveData = LoadJson<MoveDataList>("Moves.json");
             RivalDataList rivalList = LoadJson<RivalDataList>("Npc/Rivals.json");
-            RivalData = rivalList.Rivals.ToDictionary(rival => rival, rival => true);
+            RivalData =rivalList.Rivals.ToDictionary(rival => rival, rival => true);
             PokeballData = LoadJson<PokeBallDataList>("Items/Pokeballs.json");
             TrainerData = LoadJson<TrainerDataList>("Npc/Trainers.json");
         }
@@ -45,7 +45,7 @@ namespace PokemonGame.Model.Manager
         {
             // This assumes "Resources" folder is in the output directory (e.g. bin/Debug/netstandard2.0/Resources)
             string fullFilePath = Path.Combine(AppContext.BaseDirectory, "Resources", filePath);
-            
+
             string json = File.ReadAllText(fullFilePath);
 
             var settings = new JsonSerializerSettings
@@ -79,3 +79,4 @@ namespace PokemonGame.Model.Manager
 
 
 }
+
