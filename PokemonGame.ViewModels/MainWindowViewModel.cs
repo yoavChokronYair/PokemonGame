@@ -15,7 +15,6 @@ namespace PokemonGame.ViewModels
             
            // _NavigationStore.CurrentViewModel = new MapViewModel(GameDataManager.Instance.MapData.maps[0],_NavigationStore,this);
             _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
-
         }
         private void OnCurrentViewModelChanged()
         {
