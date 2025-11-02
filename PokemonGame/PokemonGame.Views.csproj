@@ -448,9 +448,9 @@
     <Resource Include="Assets\Images\Backgrounds\Red\Middle.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\MiddleLeft.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\MiddleRight.png" />
-    <Resource Include="Assets\Images\Backgrounds\Red\TopLeft.png" />
-    <Resource Include="Assets\Images\Backgrounds\Red\TopMiddle.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\TopRight.png" />
+    <Resource Include="Assets\Images\Backgrounds\Red\TopMiddle.png" />
+    <Resource Include="Assets\Images\Backgrounds\Red\TopLeft.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\PokeBallsBackground.png" />
@@ -501,9 +501,9 @@
     <Resource Include="Assets\Images\Backgrounds\Blue\Middle.png" />
     <Resource Include="Assets\Images\Backgrounds\Blue\MiddleLeft.png" />
     <Resource Include="Assets\Images\Backgrounds\Blue\MiddleRight.png" />
-    <Resource Include="Assets\Images\Backgrounds\Blue\TopLeft.png" />
-    <Resource Include="Assets\Images\Backgrounds\Blue\TopMiddle.png" />
     <Resource Include="Assets\Images\Backgrounds\Blue\TopRight.png" />
+    <Resource Include="Assets\Images\Backgrounds\Blue\TopMiddle.png" />
+    <Resource Include="Assets\Images\Backgrounds\Blue\Topleft.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

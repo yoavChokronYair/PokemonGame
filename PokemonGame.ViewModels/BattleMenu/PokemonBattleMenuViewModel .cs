@@ -1,4 +1,4 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using CommunityToolkit.Mvvm.Input;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System;
 using System.Collections.ObjectModel;

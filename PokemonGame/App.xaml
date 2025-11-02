@@ -7,11 +7,20 @@
     <Application.Resources>
         <!--  Default font style for all text  -->
         <Style TargetType="{x:Type TextBlock}">
-            <Setter Property="FontFamily" Value="pack://application:,,,/Fonts/#Pokemon Classic" />
+            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
         </Style>
 
         <Style TargetType="{x:Type Control}">
-            <Setter Property="FontFamily" Value="pack://application:,,,/Fonts/#Pokemon Classic" />
+            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
+        </Style>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
+        </Style>
+        <Style TargetType="{x:Type PasswordBox}">
+            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
+        </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
         </Style>
     </Application.Resources>
 </Application>
