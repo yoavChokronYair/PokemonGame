@@ -141,11 +141,14 @@
     <Compile Include="Views\Pages\Backpack.xaml.cs">
       <DependentUpon>Backpack.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\LogIn.xaml.cs">
+      <DependentUpon>LogIn.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\MapViewPage.xaml.cs">
       <DependentUpon>MapViewPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\NewGameView.xaml.cs">
-      <DependentUpon>NewGameView.xaml</DependentUpon>
+    <Compile Include="Views\Pages\SignUp.xaml.cs">
+      <DependentUpon>SignUp.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\Backpack\MiniMap.xaml.cs">
       <DependentUpon>MiniMap.xaml</DependentUpon>
@@ -192,11 +195,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Pages\LogIn.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\MapViewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\NewGameView.xaml">
+    <Page Include="Views\Pages\SignUp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

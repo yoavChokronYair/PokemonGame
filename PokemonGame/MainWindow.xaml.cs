@@ -26,7 +26,7 @@ namespace PokemonGame
             this.DataContext = new MainWindowViewModel();
             //MainFrame.Navigate(new WildPokemonBattleView(encounter));
             //MainFrame.Navigate(new Backpack());
-            MainFrame.Navigate(new NewGameView());
+            MainFrame.Navigate(new LogIn());
         }
     
 
