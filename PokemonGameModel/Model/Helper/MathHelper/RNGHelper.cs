@@ -1,9 +1,9 @@
 ﻿using PokemonGame.Enums;
-
+using PokemonGame.Model.Helper;
 using PokemonGame.Services.Data;
 using System;
 
-namespace PokemonGame.Model.Helper
+namespace PokemonGame.Core.Model.Helper.MathHelper
 {
     //class helper for RNG game specific calculations
     internal class RNGHelper

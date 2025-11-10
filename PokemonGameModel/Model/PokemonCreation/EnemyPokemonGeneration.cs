@@ -1,4 +1,5 @@
-﻿using PokemonGame.Enums;
+﻿using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.Helper;
 using PokemonGame.Services.Data;

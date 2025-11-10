@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
-using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModels.BattleMenu;
 using System.Collections.ObjectModel;
@@ -9,6 +8,7 @@ using PokemonGame.Enums;
 using PokemonGame.Services.Data;
 using PokemonGame.ViewModels.Map;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.Core.Model.Helper.BattleHelper;
 
 namespace PokemonGame.ViewModels
 {

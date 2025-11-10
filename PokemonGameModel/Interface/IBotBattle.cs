@@ -1,4 +1,4 @@
-﻿using PokemonGame.Model.Helper;
+﻿using PokemonGame.Core.Model.Helper.BattleHelper;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.Services.Data;
 

@@ -7,7 +7,7 @@ using PokemonGame.Services.Data;
 using PokemonGame.Services.Enums.PokemonEnum;
 using System;
 
-namespace PokemonGame.Model.Helper
+namespace PokemonGame.Core.Model.Helper.BattleHelper
 {
     public class MoveResult : IMoveResult
     {

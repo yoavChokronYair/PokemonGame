@@ -1,7 +1,7 @@
 ﻿using PokemonGame.Constants;
+using PokemonGame.Core.Model.Helper.BattleHelper;
 using PokemonGame.Enums;
 using PokemonGame.Interface;
-using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.Services.Data;
 
