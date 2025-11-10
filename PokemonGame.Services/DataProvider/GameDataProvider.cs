@@ -1,9 +1,5 @@
-﻿using PokemonGame.Services.Data;
-using PokemonGame.Services.Data.Move;
-using PokemonGame.Services.Data.Pokemon;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PokemonGame.Services.DataProvider
 {
@@ -16,145 +12,88 @@ namespace PokemonGame.Services.DataProvider
             Instance = this;
         }
 
-        #region Caches
+        #region --- Generic Registries ---
 
-        private readonly Dictionary<int, PokemonData> _pokemonCache = new();
-        private readonly Dictionary<int, PokemonFormData> _formCache = new();
-        private readonly Dictionary<int, BaseStatsdata> _baseStatsCache = new();
-        private readonly Dictionary<int, EvolutionData> _evolutionCache = new();
-        private readonly Dictionary<int, EggMoveData> _eggMoveCache = new();
-        private readonly Dictionary<int, LevelUpMoveData> _levelUpMoveCache = new();
+        // Single-record loaders: keyed by (TValue type, TKey type, column name)
+        private readonly Dictionary<(Type valueType, Type keyType, string keyColumn), object> _loaders
+            = new();
 
-        private readonly Dictionary<string, MoveData> _moveCache = new();
-        private readonly Dictionary<string, AbilityData> _abilityCache = new();
+        // "GetAll" loaders: keyed by TValue type
+        private readonly Dictionary<Type, object> _allLoaders = new();
 
-        #endregion
-
-        #region Pokémon
-
-        public PokemonData GetPokemonData(int pokemonID, bool cache = true)
-        {
-            if (cache && _pokemonCache.TryGetValue(pokemonID, out var data))
-                return data;
-
-            data = LoadPokemonData(pokemonID); // abstract loader
-            if (cache)
-                _pokemonCache[pokemonID] = data;
-
-            return data;
-        }
-
-        public abstract PokemonData LoadPokemonData(int pokemonID);
-        public abstract List<PokemonData> GetAllPokemon();
-
-        public PokemonFormData GetFormData(int pokemonID, bool cache = true)
-        {
-            if (cache && _formCache.TryGetValue(pokemonID, out var data))
-                return data;
-
-            data = LoadFormData(pokemonID);
-            if (cache)
-                _formCache[pokemonID] = data;
-
-            return data;
-        }
-
-        public abstract PokemonFormData LoadFormData(int pokemonID);
-        public abstract List<PokemonFormData> GetAllFormData();
-
-        public BaseStatsdata GetBaseStatsData(int pokemonID, bool cache = true)
-        {
-            if (cache && _baseStatsCache.TryGetValue(pokemonID, out var data))
-                return data;
-
-            data = LoadBaseStatsData(pokemonID);
-            if (cache)
-                _baseStatsCache[pokemonID] = data;
-
-            return data;
-        }
-
-        public abstract BaseStatsdata LoadBaseStatsData(int pokemonID);
-        public abstract List<BaseStatsdata> GetAllBaseStats();
-
-        public EvolutionData GetEvolutionData(int pokemonID, bool cache = true)
-        {
-            if (cache && _evolutionCache.TryGetValue(pokemonID, out var data))
-                return data;
-
-            data = LoadEvolutionData(pokemonID);
-            if (cache)
-                _evolutionCache[pokemonID] = data;
-
-            return data;
-        }
-
-        public abstract EvolutionData LoadEvolutionData(int pokemonID);
-        public abstract List<EvolutionData> GetAllEvolution();
-
-        public EggMoveData GetEggMovesData(int pokemonID, bool cache = true)
-        {
-            if (cache && _eggMoveCache.TryGetValue(pokemonID, out var data))
-                return data;
-
-            data = LoadEggMovesData(pokemonID);
-            if (cache)
-                _eggMoveCache[pokemonID] = data;
-
-            return data;
-        }
-
-        public abstract EggMoveData LoadEggMovesData(int pokemonID);
-        public abstract List<EggMoveData> GetAllEggMoves();
-
-        public LevelUpMoveData GetLevelUpMovesData(int pokemonID, bool cache = true)
-        {
-            if (cache && _levelUpMoveCache.TryGetValue(pokemonID, out var data))
-                return data;
-
-            data = LoadLevelUpMovesData(pokemonID);
-            if (cache)
-                _levelUpMoveCache[pokemonID] = data;
-
-            return data;
-        }
-
-        public abstract LevelUpMoveData LoadLevelUpMovesData(int pokemonID);
-        public abstract List<LevelUpMoveData> GetAllLevelUpMoves();
+        // Cache: keyed by (TValue type, key value, column name)
+        private readonly Dictionary<(Type valueType, object key, string keyColumn), object> _cache
+            = new();
 
         #endregion
 
-        #region Moves & Abilities
+        #region --- Registration Methods ---
 
-        public MoveData GetMoveData(string moveName, bool cache = true)
+        /// <summary>
+        /// Registers a single-record loader for a given data type and key column.
+        /// </summary>
+        protected void Register<TKey, TValue>(string keyColumn, Func<TKey, TValue> loader)
         {
-            if (cache && _moveCache.TryGetValue(moveName, out var data))
-                return data;
-
-            data = LoadMoveData(moveName);
-            if (cache)
-                _moveCache[moveName] = data;
-
-            return data;
+            _loaders[(typeof(TValue), typeof(TKey), keyColumn)] = loader;
         }
 
-        public abstract MoveData LoadMoveData(string moveName);
-        public abstract List<MoveData> GetAllMoves();
-
-        public AbilityData GetAbilityData(string abilityName, bool cache = true)
+        /// <summary>
+        /// Registers a bulk loader (GetAll) for a given data type.
+        /// </summary>
+        protected void RegisterAll<TValue>(Func<List<TValue>> loader)
         {
-            if (cache && _abilityCache.TryGetValue(abilityName, out var data))
-                return data;
-
-            data = LoadAbilityData(abilityName);
-            if (cache)
-                _abilityCache[abilityName] = data;
-
-            return data;
+            _allLoaders[typeof(TValue)] = loader;
+        }
+        protected void RegisterAllLoader<TValue>(Func<List<TValue>> loader)
+        {
+            _allLoaders[typeof(TValue)] = loader;
         }
 
-        public abstract AbilityData LoadAbilityData(string abilityName);
-        public abstract List<AbilityData> GetAllAbilities();
+        #endregion
+
+        #region --- Generic Getters ---
+
+        /// <summary>
+        /// Gets a single data object by key (e.g., Pokémon by ID, Move by Name).
+        /// Uses cache if enabled.
+        /// </summary>
+        public TValue Get<TValue, TKey>(TKey key, string keyColumn, bool useCache = true)
+        {
+            var cacheKey = (typeof(TValue), (object)key!, keyColumn);
+
+            if (useCache && _cache.TryGetValue(cacheKey, out var cached))
+                return (TValue)cached;
+
+            if (!_loaders.TryGetValue((typeof(TValue), typeof(TKey), keyColumn), out var loaderObj))
+                throw new InvalidOperationException($"No loader registered for {typeof(TValue).Name} with key column '{keyColumn}'");
+
+            var loader = (Func<TKey, TValue>)loaderObj;
+            var value = loader(key);
+
+            if (useCache)
+                _cache[cacheKey] = value;
+
+            return value;
+        }
+
+        /// <summary>
+        /// Gets all entries of a registered data type.
+        /// </summary>
+        public List<TValue> GetAll<TValue>()
+        {
+            if (_allLoaders.TryGetValue(typeof(TValue), out var loaderObj))
+            {
+                var loader = (Func<List<TValue>>)loaderObj;
+                return loader();
+            }
+
+            throw new InvalidOperationException($"No 'GetAll' loader registered for {typeof(TValue).Name}");
+        }
+
+        /// <summary>
+        /// Clears all cached entries.
+        /// </summary>
+        public void ClearCache() => _cache.Clear();
 
         #endregion
     }

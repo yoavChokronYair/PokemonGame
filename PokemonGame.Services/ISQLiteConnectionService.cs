@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace PokemonGame.Services
 {
     public interface ISQLiteConnectionService
     {
         /// <summary>
-        /// Executes a SQL query that returns a single row and maps it to an object of type T.
+        /// Executes a SQL query that returns a single row and maps it to an object of type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T">The type to map the row to.</typeparam>
-        /// <param name="sql">The SQL query.</param>
-        /// <param name="parameters">Optional parameters for the query.</param>
-        /// <returns>An instance of T with the row data, or default if no row is found.</returns>
-        T QuerySingle<T>(string sql, object parameters = null) where T : new();
+        T QuerySingle<T>(string sql, object? parameters = null);
 
         /// <summary>
-        /// Executes a SQL query that returns multiple rows and maps them to a list of type T.
+        /// Executes a SQL query that returns multiple rows and maps them to a list of type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T">The type to map each row to.</typeparam>
-        /// <param name="sql">The SQL query.</param>
-        /// <returns>A list of T containing the query results.</returns>
-        List<T> Query<T>(string sql) where T : new();
+        List<T> Query<T>(string sql, object? parameters = null);
+
+        /// <summary>
+        /// Executes a non-query SQL command (INSERT, UPDATE, DELETE).
+        /// </summary>
+        int Execute(string sql, object? parameters = null);
     }
 }
