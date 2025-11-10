@@ -1,4 +1,6 @@
-﻿namespace PokemonGame.Services.Data.NpcData
+﻿using PokemonGame.Services.Data.Pokemon;
+
+namespace PokemonGame.Services.Data.NpcData
 {
     public class RivalData
     {

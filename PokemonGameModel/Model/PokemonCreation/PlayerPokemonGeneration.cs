@@ -2,6 +2,7 @@
 using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Services.Data;
+using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.PokemonCreation

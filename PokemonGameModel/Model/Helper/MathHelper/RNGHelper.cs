@@ -1,6 +1,6 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
-using PokemonGame.Services.Data;
+using PokemonGame.Services.Data.Pokemon;
 using System;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper

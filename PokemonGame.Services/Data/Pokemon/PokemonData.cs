@@ -1,6 +1,5 @@
-﻿using PokemonGame.Services;
-using PokemonGame.Services.Enums.PokemonEnum;
-namespace PokemonGame.Services.Data
+﻿using PokemonGame.Services.Enums.PokemonEnum;
+namespace PokemonGame.Services.Data.Pokemon
 {
     //TODO:change to proper one
     public sealed class PokemonData 

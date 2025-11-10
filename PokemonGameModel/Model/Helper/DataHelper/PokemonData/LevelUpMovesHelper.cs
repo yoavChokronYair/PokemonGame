@@ -1,4 +1,5 @@
-﻿using PokemonGame.Services.Data.Pokemon;
+﻿using PokemonGame.Core.Config;
+using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
@@ -67,7 +68,7 @@ namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
                 .Select(m => m.MoveName)                                                 
                 .Distinct()
                 .Reverse()                                                                
-                .Take(4)
+                .Take(PokemonConstants.NumMoves)
                 .ToArray();
         }
     }

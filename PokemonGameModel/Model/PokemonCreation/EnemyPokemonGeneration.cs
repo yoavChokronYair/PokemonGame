@@ -4,6 +4,7 @@ using PokemonGame.Interface;
 using PokemonGame.Model.Helper;
 using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.MapData;
+using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 
 

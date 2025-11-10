@@ -3,6 +3,7 @@ using Newtonsoft.Json.Converters;
 using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.Items;
 using PokemonGame.Services.Data.NpcData;
+using PokemonGame.Services.Data.Pokemon;
 
 namespace PokemonGame.Services
 {   /// <summary>
