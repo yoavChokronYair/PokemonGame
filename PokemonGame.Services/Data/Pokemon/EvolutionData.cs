@@ -9,15 +9,15 @@ namespace PokemonGame.Services.Data.Pokemon
     {
         //TODO: change to enum the strings
         private ushort levelRequired;
-        private SpeciesType babySpecies;
+        private SpeciesData babySpecies;
         private EvoMethodType method;
-        private SpeciesType species;
-        private FormType form;
+        private SpeciesData species;
+        private FormsData form;
 
         public ushort LevelRequired { get => levelRequired; set => levelRequired = value; }
-        public SpeciesType BabySpecies { get => babySpecies; set => babySpecies = value; }
+        public SpeciesData BabySpecies { get => babySpecies; set => babySpecies = value; }
         public EvoMethodType Method { get => method; set => method = value; }
-        public SpeciesType Species { get => species; set => species = value; }
-        public FormType Form { get => form; set => form = value; }
+        public SpeciesData Species { get => species; set => species = value; }
+        public FormsData Form { get => form; set => form = value; }
     }
 }
