@@ -1,9 +1,11 @@
-﻿using PokemonGame.Enums;
-using PokemonGame.Services;
+﻿using PokemonGame.Services;
+using PokemonGame.Services.Enums.PokemonEnum;
 namespace PokemonGame.Services.Data
 {
-    public class PokemonData 
+    //TODO:change to proper one
+    public sealed class PokemonData 
     {
+        public int pokemonID { get; set; }
         public int Number { get; set; }
         public string? Name { get; set; }
         public PokemonType Type1 { get; set; }
