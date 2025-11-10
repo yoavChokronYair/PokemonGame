@@ -20,7 +20,7 @@ namespace PokemonGame.Interface
         // === Typing & Traits ===
         PokemonType[] Types { get; set; }
         NatureType Nature { get; set; }
-        AbilityType Ability { get; set; } // Placeholder for ability implementation
+        AbilityCategoryType Ability { get; set; } // Placeholder for ability implementation
 
         // === Stats ===
         int Level { get; set; }

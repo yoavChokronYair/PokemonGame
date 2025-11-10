@@ -7,6 +7,7 @@ namespace PokemonGame.Services.Data.Pokemon
 {
     public sealed class PokemonBaseStatsdata
     {
+        private int pokemonID;
         private byte hP;
         private byte attack;
         private byte defence;
@@ -23,12 +24,13 @@ namespace PokemonGame.Services.Data.Pokemon
         private ushort baseExpYield;
         private EggGroupType eggGroup1; 
         private EggGroupType eggGroup2;
-        private AbilityType ability1;
-        private AbilityType ability2;
-        private AbilityType abilityH;
+        private AbilitysData? ability1;
+        private AbilitysData? ability2;
+        private AbilitysData? abilityH;
         private byte fleeRate;
         private float weight;
 
+        public int PokemonID { get => pokemonID; set => pokemonID = value; }
         public byte HP { get => hP; set => hP = value; }
         public byte Attack { get => attack; set => attack = value; }
         public byte Defence { get => defence; set => defence = value; }
@@ -45,9 +47,9 @@ namespace PokemonGame.Services.Data.Pokemon
         public ushort BaseExpYield { get => baseExpYield; set => baseExpYield = value; }
         public EggGroupType EggGroup1 { get => eggGroup1; set => eggGroup1 = value; }
         public EggGroupType EggGroup2 { get => eggGroup2; set => eggGroup2 = value; }
-        public AbilityType Ability1 { get => ability1; set => ability1 = value; }
-        public AbilityType Ability2 { get => ability2; set => ability2 = value; }
-        public AbilityType AbilityH { get => abilityH; set => abilityH = value; }
+        public AbilitysData? Ability1 { get => ability1; set => ability1 = value; }
+        public AbilitysData? Ability2 { get => ability2; set => ability2 = value; }
+        public AbilitysData? AbilityH { get => abilityH; set => abilityH = value; }
         public byte FleeRate { get => fleeRate; set => fleeRate = value; }
         public float Weight { get => weight; set => weight = value; }
     }

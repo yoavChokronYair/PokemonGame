@@ -7,7 +7,7 @@ namespace PokemonGame.Services.Data.Pokemon
 {
     public sealed class EggMovesData
     {
-        private MoveNameType eggMove;//TODO:change to enum
+        private MoveNameType eggMove;
         private int pokemonID;
 
         public MoveNameType EggMove { get => eggMove; set => eggMove = value; }
