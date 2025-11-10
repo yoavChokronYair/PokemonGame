@@ -53,20 +53,20 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         /// <summary>
         /// Generates IVs for all 6 stats. If the Pokémon species has base IVs defined, they’re respected.
         /// </summary>
-        public static StatValues GenerateAllIVs(PokemonData? pokemon = null)
-        {
-            var baseIVs = pokemon?.IVs;
+        //public static StatValues GenerateAllIVs(PokemonData? pokemon = null)
+        //{
+        //    var baseIVs = pokemon?.IVs;
 
-            return new StatValues
-            {
-                HP = GenerateIV(baseIVs?.HP),
-                Attack = GenerateIV(baseIVs?.Attack),
-                Defense = GenerateIV(baseIVs?.Defense),
-                SpecialAttack = GenerateIV(baseIVs?.SpecialAttack),
-                SpecialDefense = GenerateIV(baseIVs?.SpecialDefense),
-                Speed = GenerateIV(baseIVs?.Speed)
-            };
-        }
+        //    return new StatValues
+        //    {
+        //        HP = GenerateIV(baseIVs?.HP),
+        //        Attack = GenerateIV(baseIVs?.Attack),
+        //        Defense = GenerateIV(baseIVs?.Defense),
+        //        SpecialAttack = GenerateIV(baseIVs?.SpecialAttack),
+        //        SpecialDefense = GenerateIV(baseIVs?.SpecialDefense),
+        //        Speed = GenerateIV(baseIVs?.Speed)
+        //    };
+        //}
 
 
         // ----------------------------
@@ -102,17 +102,17 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         // ----------------------------
         // Ability Determination
         // ----------------------------
-        public int GetAbilityNumber(PokemonData pokemon)
-        {
-            // 0–15 range: if result == 0, Hidden Ability (1/16 chance)
-            int hiddenRoll = RandomHelper.Next(0,16);
+        //public int GetAbilityNumber(PokemonData pokemon)
+        //{
+        //    // 0–15 range: if result == 0, Hidden Ability (1/16 chance)
+        //    int hiddenRoll = RandomHelper.Next(0,16);
 
-            if (hiddenRoll == 0 && pokemon.Abilitys.Count > 2)
-                return 3; // Hidden Ability
+        //    if (hiddenRoll == 0 && pokemon.Abilitys.Count > 2)
+        //        return 3; // Hidden Ability
 
-            // Otherwise pick based on PID parity
-            return (PID & 1) == 0 ? 1 : 2;
-        }
+        //    // Otherwise pick based on PID parity
+        //    return (PID & 1) == 0 ? 1 : 2;
+        //}
         // ----------------------------
         // Gender check
         // ----------------------------

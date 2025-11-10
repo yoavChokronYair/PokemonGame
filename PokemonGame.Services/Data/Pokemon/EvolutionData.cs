@@ -10,16 +10,16 @@ namespace PokemonGame.Services.Data.Pokemon
         
         private int pokemonID;
         private ushort levelRequired;
-        private SpeciesData babySpecies;
+        private string babySpeciesName;
         private EvoMethodType method;
-        private SpeciesData species;
+        private string speciesName;
         private FormsData form;
 
         public int PokemonID { get => pokemonID; set => pokemonID = value; }
         public ushort LevelRequired { get => levelRequired; set => levelRequired = value; }
-        public SpeciesData BabySpecies { get => babySpecies; set => babySpecies = value; }
+        public string BabySpeciesName { get => babySpeciesName; set => babySpeciesName = value; }
         public EvoMethodType Method { get => method; set => method = value; }
-        public SpeciesData Species { get => species; set => species = value; }
+        public string SpeciesName { get => speciesName; set => speciesName = value; }
         public FormsData Form { get => form; set => form = value; }
     }
 }

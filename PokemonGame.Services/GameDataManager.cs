@@ -11,7 +11,6 @@ namespace PokemonGame.Services
 /// </summary>
     public class GameDataManager
     {
-        public PokemonDataList PokemonData { get; private set; } // Public property to access PokemonData
         public MoveDataList MoveData { get; private set; } // Public property to access MoveData
         public Dictionary<RivalData, bool> RivalData { get; set; }//is defeted or not 
         public PokeBallDataList PokeballData { get; set; }
@@ -28,13 +27,9 @@ namespace PokemonGame.Services
                 return instance;
             }
         }
-        public void SaveAllData()
-        {
-            SaveJson(PokemonData, "CaughtPokemons.json");
-        }
+    
         public void LoadAllData()
         {
-            PokemonData = LoadJson<PokemonDataList>("Pokemons.json");
             MoveData = LoadJson<MoveDataList>("Moves.json");
             RivalDataList rivalList = LoadJson<RivalDataList>("Npc/Rivals.json");
             RivalData =rivalList.Rivals.ToDictionary(rival => rival, rival => true);
