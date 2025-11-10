@@ -4,7 +4,7 @@ using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Services.Data.Move
 {
-    public sealed class MovesData
+    public sealed class MoveData
     {
         private string moveName;
         private PokemonType type;
