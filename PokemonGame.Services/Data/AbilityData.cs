@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PokemonGame.Services.Data.Pokemon
+namespace PokemonGame.Services.Data
 {
-    public sealed class AbilitysData
+    public sealed class AbilityData
     {
         private int abilityID;
         private string abilityName;

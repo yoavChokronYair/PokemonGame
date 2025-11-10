@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PokemonGame.Services.Data.Pokemon
 {
-    public sealed class PokemonBaseStatsdata
+    public sealed class BaseStatsdata
     {
         private int pokemonID;
         private byte hP;
@@ -24,9 +24,9 @@ namespace PokemonGame.Services.Data.Pokemon
         private ushort baseExpYield;
         private EggGroupType eggGroup1; 
         private EggGroupType eggGroup2;
-        private AbilitysData? ability1;
-        private AbilitysData? ability2;
-        private AbilitysData? abilityH;
+        private AbilityData? ability1;
+        private AbilityData? ability2;
+        private AbilityData? abilityH;
         private byte fleeRate;
         private float weight;
 
@@ -47,9 +47,9 @@ namespace PokemonGame.Services.Data.Pokemon
         public ushort BaseExpYield { get => baseExpYield; set => baseExpYield = value; }
         public EggGroupType EggGroup1 { get => eggGroup1; set => eggGroup1 = value; }
         public EggGroupType EggGroup2 { get => eggGroup2; set => eggGroup2 = value; }
-        public AbilitysData? Ability1 { get => ability1; set => ability1 = value; }
-        public AbilitysData? Ability2 { get => ability2; set => ability2 = value; }
-        public AbilitysData? AbilityH { get => abilityH; set => abilityH = value; }
+        public AbilityData? Ability1 { get => ability1; set => ability1 = value; }
+        public AbilityData? Ability2 { get => ability2; set => ability2 = value; }
+        public AbilityData? AbilityH { get => abilityH; set => abilityH = value; }
         public byte FleeRate { get => fleeRate; set => fleeRate = value; }
         public float Weight { get => weight; set => weight = value; }
     }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PokemonGame.Services.Data.Pokemon
 {
-    public sealed class FormsData
+    public sealed class FormData
     {
         private int pokemonID;
         private string formName;

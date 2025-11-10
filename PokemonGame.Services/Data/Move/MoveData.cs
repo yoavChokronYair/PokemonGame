@@ -16,7 +16,7 @@ namespace PokemonGame.Services.Data.Move
         private MoveEffectType effect;
         private int effectParam;
         private MoveTargetType targets;
-        private MoveFlag flags;
+        private MoveFlagType flags;
         public string MoveName { get => moveName; set => moveName = value; }
 
         public PokemonType Type { get => type; set => type = value; }
@@ -28,6 +28,6 @@ namespace PokemonGame.Services.Data.Move
         public MoveEffectType Effect { get => effect; set => effect = value; }
         public int EffectParam { get => effectParam; set => effectParam = value; }
         public MoveTargetType Targets { get => targets; set => targets = value; }
-        public MoveFlag Flags { get => flags; set => flags = value; }
+        public MoveFlagType Flags { get => flags; set => flags = value; }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 namespace PokemonGame.Services.Enums.MovesEnum
 {
     //TODO:test trial 
-    public enum MoveFlag : ulong
+    public enum MoveFlagType : ulong
     {
         None,
         /// <summary>The move's power is boosted by <see cref="PBEAbility.IronFist"/>.</summary>
