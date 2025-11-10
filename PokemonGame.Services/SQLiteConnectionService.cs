@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PokemonGame.Services
 { 
-    public class SQLiteConnectionService
+    public class SQLiteConnectionService: ISQLiteConnectionService
     {
         private readonly string _connectionString;
 

@@ -9,11 +9,11 @@ namespace PokemonGame.Services
 {
     public sealed class SQLiteDataProvider : GameDataProvider
     {
-        private readonly SQLiteConnectionService db;
+        private readonly ISQLiteConnectionService db;
 
-        public SQLiteDataProvider(string dbPath)
+        public SQLiteDataProvider(ISQLiteConnectionService dbService)
         {
-            db = new SQLiteConnectionService(dbPath);
+            db = dbService;
         }
         public override AbilityData GetAbilityData(string abilityID)
         {
