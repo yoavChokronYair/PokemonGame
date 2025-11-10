@@ -6,7 +6,7 @@ namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
 {
     public static class LevelUpMovesHelper
     {
-        public static bool CanLearnMoveEventually(List<LevelUpMovesData> moves,LevelUpMovesData move)
+        public static bool CanLearnMoveEventually(List<LevelUpMoveData> moves,LevelUpMoveData move)
         {
             if(moves.Contains(move))
             {
@@ -14,9 +14,9 @@ namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
             }
             return false;
         }
-        public static List<LevelUpMovesData> GetAllLearnableMoves(List<LevelUpMovesData> moves,byte level)
+        public static List<LevelUpMoveData> GetAllLearnableMoves(List<LevelUpMoveData> moves,byte level)
         {
-            List<LevelUpMovesData> learnableMoves = new List<LevelUpMovesData>();
+            List<LevelUpMoveData> learnableMoves = new List<LevelUpMoveData>();
             foreach(var move in moves)
             {
                 if(move.Level <= level)
@@ -26,7 +26,7 @@ namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
             }
             return learnableMoves;
         }
-        public static LevelUpMovesData? GetMoveAtLevel(List<LevelUpMovesData> moves,byte level)
+        public static LevelUpMoveData? GetMoveAtLevel(List<LevelUpMoveData> moves,byte level)
         {
             foreach(var move in moves)
             {
@@ -37,9 +37,9 @@ namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
             }
             return null;
         }
-        public static LevelUpMovesData? GetNextMove(List<LevelUpMovesData> moves,byte level)
+        public static LevelUpMoveData? GetNextMove(List<LevelUpMoveData> moves,byte level)
         {
-            LevelUpMovesData? nextMove = null;
+            LevelUpMoveData? nextMove = null;
             foreach(var move in moves)
             {
                 if(move.Level > level)
@@ -52,7 +52,7 @@ namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
             }
             return nextMove;
         }
-        public static MoveNameType[] GetAllMoveNames(List<LevelUpMovesData> moves)
+        public static MoveNameType[] GetAllMoveNames(List<LevelUpMoveData> moves)
         {
             List<MoveNameType> moveNames = new List<MoveNameType>();
             foreach(var move in moves)
@@ -61,7 +61,7 @@ namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
             }
             return moveNames.ToArray();
         }
-        public static MoveNameType[] GetDefaultMoves(List<LevelUpMovesData> moves, byte level)
+        public static MoveNameType[] GetDefaultMoves(List<LevelUpMoveData> moves, byte level)
         {
             return moves
                 .FindAll(m => m.Level <= level)

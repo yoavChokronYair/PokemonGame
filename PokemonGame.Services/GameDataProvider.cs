@@ -21,8 +21,8 @@ namespace PokemonGame.Services
         public abstract PokemonData GetPokemonData(int pokemonID);
         public abstract List<PokemonData> GetAllPokemon();
 
-        public abstract FormData GetFormData(int pokemonID);
-        public abstract List<FormData> GetAllFormData();
+        public abstract PokemonFormData GetFormData(int pokemonID);
+        public abstract List<PokemonFormData> GetAllFormData();
 
         public abstract BaseStatsdata GetBaseStatsData(int pokemonID);
         public abstract List<BaseStatsdata> GetAllBaseStats();
@@ -30,11 +30,11 @@ namespace PokemonGame.Services
         public abstract EvolutionData GetEvolutionData(int pokemonID);
         public abstract List<EvolutionData> GetAllEvolution();
         
-        public abstract EggMovesData GetEggMovesData(int pokemonID);
-        public abstract List<EggMovesData> GetAllEggMoves();
+        public abstract EggMoveData GetEggMovesData(int pokemonID);
+        public abstract List<EggMoveData> GetAllEggMoves();
 
-        public abstract LevelUpMovesData GetLevelUpMovesData(int pokemonID);
-        public abstract List<LevelUpMovesData> GetAllLevelUpMoves();
+        public abstract LevelUpMoveData GetLevelUpMovesData(int pokemonID);
+        public abstract List<LevelUpMoveData> GetAllLevelUpMoves();
         
         // --- Moves ---
         public abstract MoveData GetMoveData(string moveName);

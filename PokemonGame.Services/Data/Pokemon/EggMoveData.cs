@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PokemonGame.Services.Data.Pokemon
 {
-    public sealed class EggMovesData
+    public sealed class EggMoveData
     {
         private MoveNameType eggMove;
         private int pokemonID;

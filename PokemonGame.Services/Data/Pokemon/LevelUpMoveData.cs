@@ -2,7 +2,7 @@
 
 namespace PokemonGame.Services.Data.Pokemon
 {
-    public sealed class LevelUpMovesData
+    public sealed class LevelUpMoveData
     {
         private MoveNameType moveName;
         private byte level;

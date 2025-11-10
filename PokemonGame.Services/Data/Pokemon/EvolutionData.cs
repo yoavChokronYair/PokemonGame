@@ -13,13 +13,13 @@ namespace PokemonGame.Services.Data.Pokemon
         private string babySpeciesName;
         private EvoMethodType method;
         private string speciesName;
-        private FormData form;
+        private PokemonFormData form;
 
         public int PokemonID { get => pokemonID; set => pokemonID = value; }
         public ushort LevelRequired { get => levelRequired; set => levelRequired = value; }
         public string BabySpeciesName { get => babySpeciesName; set => babySpeciesName = value; }
         public EvoMethodType Method { get => method; set => method = value; }
         public string SpeciesName { get => speciesName; set => speciesName = value; }
-        public FormData Form { get => form; set => form = value; }
+        public PokemonFormData Form { get => form; set => form = value; }
     }
 }
