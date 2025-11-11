@@ -8,63 +8,74 @@ using Xunit;
 
 namespace PokemonGame.Tests.DBTests
 {
-    public class SQLiteDataProviderEmptyDBTests
+    public class SQLiteDataProviderTests
     {
         private readonly SQLiteDataProvider _provider;
         private readonly Mock<ISQLiteConnectionService> _mockDb;
 
-        public SQLiteDataProviderEmptyDBTests()
+        public SQLiteDataProviderTests()
         {
             _mockDb = new Mock<ISQLiteConnectionService>();
             _provider = new SQLiteDataProvider(_mockDb.Object);
         }
 
         [Fact]
-        public void GetSingle_ReturnsNull_WhenDataNotFound()
+        public void GetAbilityData_ReturnsCorrectData()
         {
-            _mockDb.Setup(d => d.QuerySingle<PokemonData>(
-                It.IsAny<string>(),
-                It.IsAny<object>()
-            )).Returns((PokemonData)null!); // simulate empty DB
+            var expected = new AbilityData
+            {
+                AbilityName = "Overgrow",
+                AbilityDescription = "Boosts Grass moves"
+            };
 
-            var result = _provider.Get<PokemonData, int>(1, "PokemonID");
-
-            Assert.Null(result); // should return null if not found
-        }
-
-        [Fact]
-        public void GetAll_ReturnsEmptyList_WhenTableEmpty()
-        {
-            _mockDb.Setup(d => d.Query<AbilityData>(
-                It.IsAny<string>(),
-                It.IsAny<object>()
-            )).Returns(new List<AbilityData>()); // simulate empty table
-
-            var result = _provider.GetAll<AbilityData>();
-
-            Assert.Empty(result); // should return empty list
-        }
-
-        [Fact]
-        public void GetMultiKey_ReturnsNull_WhenNoData()
-        {
             _mockDb.Setup(d => d.QuerySingle<AbilityData>(
                 It.IsAny<string>(),
-                It.IsAny<object>()
-            )).Returns((AbilityData)null!); // simulate missing row
+                It.IsAny<object>()))
+                .Returns(expected);
 
-            var resultByName = _provider.Get<AbilityData, string>("NonExistent", "AbilityName");
-            var resultByDesc = _provider.Get<AbilityData, string>("NoDesc", "AbilityDescription");
+            var result = _provider.GetAbilityData("Overgrow");
 
-            Assert.Null(resultByName);
-            Assert.Null(resultByDesc);
+            Assert.Equal(expected.AbilityName, result.AbilityName);
+            Assert.Equal(expected.AbilityDescription, result.AbilityDescription);
         }
 
         [Fact]
-        public void CacheDoesNotThrow_WhenEmpty()
+        public void GetAllAbilities_ReturnsList()
         {
-            // Clear cache on empty DB should not throw
-            _provider.ClearCache();
+            var expectedList = new List<AbilityData>
+            {
+                new AbilityData { AbilityName = "Overgrow" },
+                new AbilityData { AbilityName = "Chlorophyll" }
+            };
+
+            _mockDb.Setup(d => d.Query<AbilityData>(It.IsAny<string>()))
+                   .Returns(expectedList);
+
+            var result = _provider.GetAllAbilities();
+
+            Assert.Equal(2, result.Count);
+            Assert.Equal("Overgrow", result[0].AbilityName);
+            Assert.Equal("Chlorophyll", result[1].AbilityName);
+        }
+
+        [Fact]
+        public void GetPokemonData_ReturnsCorrectPokemon()
+        {
+            var expected = new PokemonData
+            {
+                PokemonID = 1,
+                SpeciesName = "Bulbasaur"
+            };
+
+            _mockDb.Setup(d => d.QuerySingle<PokemonData>(
+                                It.IsAny<string>(),
+                                It.IsAny<object>()))
+                   .Returns(expected);
+
+            var result = _provider.GetPokemonData(1);
+
+            Assert.Equal(1, result.PokemonID);
+            Assert.Equal("Bulbasaur", result.SpeciesName);
         }
     }
 }
