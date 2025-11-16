@@ -2,7 +2,6 @@
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 

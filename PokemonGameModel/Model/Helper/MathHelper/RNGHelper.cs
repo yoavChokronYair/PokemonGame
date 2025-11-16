@@ -1,8 +1,11 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.PokemonCreation;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
+using SQLitePCL;
 using System;
+using System.Diagnostics;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -123,17 +126,29 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         // ----------------------------
         // Ability Determination
         // ----------------------------
-        //public int GetAbilityNumber(PokemonData pokemon)
-        //{
-        //    // 0–15 range: if result == 0, Hidden Ability (1/16 chance)
-        //    int hiddenRoll = RandomHelper.Next(0,16);
+        public AbilityType GetAbilityNumber(BaseStatsdata baseStats)
+        {
+            // 0–15 range: if result == 0, Hidden Ability (1/16 chance)
+            int hiddenRoll = RandomHelper.Next(0, 16);
 
-        //    if (hiddenRoll == 0 && pokemon.Abilitys.Count > 2)
-        //        return 3; // Hidden Ability
+            if (hiddenRoll == 0 && baseStats.AbilityH != default)
+                return AbilityType.AbilityH; // Hidden Ability
 
-        //    // Otherwise pick based on PID parity
-        //    return (PID & 1) == 0 ? 1 : 2;
-        //}
+            // Otherwise pick based on PID parity
+            return (PID & 1) == 0 ? AbilityType.Ability1 : AbilityType.Ability1;
+        }
+        public static AbilityData GetAbility(BaseStatsdata baseStats,AbilityType abilityType)
+        {
+            switch(abilityType){
+                case AbilityType.Ability1:
+                    return baseStats.Ability1;
+                case AbilityType.Ability2:
+                    return baseStats.Ability2;
+                case AbilityType.AbilityH:
+                    return baseStats.AbilityH;
+            }
+            return default;
+        }
         // ----------------------------
         // Gender check
         // ----------------------------

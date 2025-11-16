@@ -4,7 +4,6 @@ using PokemonGame.Core.Model.Pkmn;
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
 using PokemonGame.Interface;
-using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.DataProvider;
 using PokemonGame.Services.Enums.PokemonEnum;
@@ -37,7 +36,6 @@ namespace PokemonGame.Model.PokemonCreation
         public bool Shiny { get; set; }
         public byte Level { get; set; }
         public uint EXP { get; set; }
-        /// <summary>Remaining egg cycles if <see cref="IsEgg"/> is true.</summary>
         public byte Friendship { get; set; }
         public string CaughtBall { get; set; }
 
@@ -106,16 +104,18 @@ namespace PokemonGame.Model.PokemonCreation
         public static PartyPokemon CreatePlayerOwnedMon(PokemonData species, PokemonFormData form, byte level)
         {
             RNGHelper RNGHelper = RNGHelper.GenerateRandomPokemonIdentity();
-            var p = new PartyPokemon(species, form, level);
-            p.PID = RNGHelper.PID;
-            p.SetEmptyPokerus();
+            var p = new PartyPokemon(species, form, level)
+            {
+                PID = RNGHelper.PID
+            };
+            p.Pokerus = new Pokerus(true);
             p.SetDefaultNickname();
             p.Shiny = RNGHelper.IsShiny();
             var bs = GameDataProvider.Instance.GetBaseStatsData(species.PokemonID);
-            p.SetDefaultFriendship(bs);
+            p.Friendship = bs.BaseFriendship;
             p.EXP = bs.BaseExpYield;
-            p.AbilType = AbilityType.Ability1;
-            p.Ability = bs.Ability1;
+            p.AbilType = RNGHelper.GetAbilityNumber(bs);
+            p.Ability = RNGHelper.GetAbility(bs,p.AbilType);
             p.Gender = RNGHelper.GenerateGender(bs.GenderRatio);
             p.Nature = RNGHelper.GenerateNature();
             p.Moveset = new Moveset();
@@ -125,14 +125,6 @@ namespace PokemonGame.Model.PokemonCreation
             p.HP = (ushort)PokemonStatCalculatorHelper.CalculateHP(bs.HP, p.IndividualValues.HP, p.EffortValues.HP, p.Level);
             p.SetHPToMaxHP();
             return p;
-        }
-        private void SetDefaultFriendship(BaseStatsdata bs)
-        {
-            Friendship = bs.BaseFriendship;
-        }
-        private void SetEmptyPokerus()
-        {
-            Pokerus = new Pokerus(true);
         }
         private void SetDefaultNickname()
         {

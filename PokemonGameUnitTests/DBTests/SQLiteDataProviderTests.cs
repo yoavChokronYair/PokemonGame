@@ -1,6 +1,5 @@
 ﻿using Moq;
 using PokemonGame.Services;
-using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.DataProvider;
 using System.Collections.Generic;

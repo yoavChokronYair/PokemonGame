@@ -18,7 +18,6 @@ namespace PokemonGame.Services.Data.Move
         private MoveTargetType targets;
         private MoveFlagType flags;
         public string MoveName { get => moveName; set => moveName = value; }
-
         public PokemonType Type { get => type; set => type = value; }
         public MovesCategoryType Category { get => category; set => category = value; }
         public sbyte Priority { get => priority; set => priority = value; }

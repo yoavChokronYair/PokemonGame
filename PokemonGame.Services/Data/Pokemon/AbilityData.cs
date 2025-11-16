@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PokemonGame.Services.Data
+namespace PokemonGame.Services.Data.Pokemon
 {
     public sealed class AbilityData
     {

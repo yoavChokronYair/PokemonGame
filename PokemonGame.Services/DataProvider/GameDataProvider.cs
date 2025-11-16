@@ -1,5 +1,4 @@
-﻿using PokemonGame.Services.Data;
-using PokemonGame.Services.Data.Move;
+﻿using PokemonGame.Services.Data.Move;
 using PokemonGame.Services.Data.Pokemon;
 using System;
 using System.Collections.Generic;
