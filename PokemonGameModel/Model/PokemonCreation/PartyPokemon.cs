@@ -24,6 +24,7 @@ namespace PokemonGame.Model.PokemonCreation
     }
     internal sealed class PartyPokemon : IPartyPokemon
     {
+        //TODO: abillity type change logic
         public string MetLocation { get; set; }
         public byte MetLevel { get; set; }
         public DateTime MetDate { get; set; }
@@ -129,11 +130,6 @@ namespace PokemonGame.Model.PokemonCreation
         {
             Friendship = bs.BaseFriendship;
         }
-        private void SetDefaultEggCycles(BaseStatsdata bs)
-        {
-            Friendship = bs.EggCycles;
-        }
-
         private void SetEmptyPokerus()
         {
             Pokerus = new Pokerus(true);
