@@ -2,6 +2,7 @@
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
 using PokemonGame.Model.PokemonCreation;
+using PokemonGame.Services.Data.Items;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 
@@ -24,10 +25,10 @@ namespace PokemonGame.Core.Model.Pkmn
         public byte Level { get; set; }
         public uint EXP { get; set; }
         public byte Friendship { get; set; }
-        public string CaughtBall { get; set; }
+        public ItemData CaughtBall { get; set; }
 
         public Pokerus Pokerus { get; set; }
-        public string Item { get; set; }
+        public ItemData Item { get; set; }
         public AbilityType AbilType { get; private set; }
         public AbilityData Ability { get; set; }
         public NatureType Nature { get; set; }

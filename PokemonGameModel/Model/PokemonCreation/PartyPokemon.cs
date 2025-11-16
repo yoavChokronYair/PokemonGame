@@ -4,6 +4,7 @@ using PokemonGame.Core.Model.Pkmn;
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
 using PokemonGame.Interface;
+using PokemonGame.Services.Data.Items;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.DataProvider;
 using PokemonGame.Services.Enums.PokemonEnum;
@@ -37,9 +38,9 @@ namespace PokemonGame.Model.PokemonCreation
         public byte Level { get; set; }
         public uint EXP { get; set; }
         public byte Friendship { get; set; }
-        public string CaughtBall { get; set; }
+        public ItemData CaughtBall { get; set; }
 
-        public string Item { get; set; }
+        public ItemData Item { get; set; }
         public AbilityType AbilType { get; private set; }
         public AbilityData Ability { get; set; }
         public NatureType Nature { get; set; }
@@ -61,8 +62,8 @@ namespace PokemonGame.Model.PokemonCreation
         #region PBE
         public bool PBEIgnore => IsEgg;
         bool IPBEPokemon.Pokerus => Pokerus.Exists;
-        string IPBEPokemon.CaughtBall => (string)CaughtBall;
-        string IPBEPokemon.Item => (string)Item;
+        ItemData IPBEPokemon.CaughtBall => CaughtBall;
+        ItemData IPBEPokemon.Item => Item;
         IPBEStatCollection IPBEPokemon.EffortValues => EffortValues;
         IPBEReadOnlyStatCollection IPBEPokemon.IndividualValues => IndividualValues;
         Moveset IPBEPokemon.Moveset => Moveset;

@@ -1,4 +1,5 @@
 ﻿using PokemonGame.Enums;
+using PokemonGame.Services.Data.Items;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 using System;
@@ -29,7 +30,7 @@ namespace PokemonGame.Core.Model.Pkmn.Interface
 
         bool Pokerus { get; }
 
-        string Item { get; }
+        ItemData Item { get; }
 
         byte Friendship { get; }
 
@@ -37,7 +38,7 @@ namespace PokemonGame.Core.Model.Pkmn.Interface
 
         NatureType Nature { get; }
 
-        string CaughtBall { get; }
+        ItemData CaughtBall { get; }
 
         IPBEStatCollection EffortValues { get; }
 
