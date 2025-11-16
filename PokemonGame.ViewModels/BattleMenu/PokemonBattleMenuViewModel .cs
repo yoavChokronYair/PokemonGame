@@ -17,12 +17,10 @@ namespace PokemonGame.ViewModels.BattleMenu
         public ICommand DirectionCommand { get; }
         public ICommand ConfirmCommand { get; }
 
-        public PokemonBattleMenuViewModel(NavigationStore navigationStore,NavigationStore navigation, WildPokemonBattleViewModel wildPokemonBattleViewModel)
+        public PokemonBattleMenuViewModel(NavigationStore navigationStore,NavigationStore navigation)
         {
             _NavigationStore = navigationStore;
             MenuSelection = new MenuSelectionViewModel();
-            WildPokemonBattleViewModel = wildPokemonBattleViewModel;
-
             MenuItems = new ObservableCollection<MenuItemViewModel>
         {
             new MenuItemViewModel("FIGHT"),
@@ -32,12 +30,11 @@ namespace PokemonGame.ViewModels.BattleMenu
         };
 
             DirectionCommand = new RelayCommand<string>(OnDirectionInput);
-            ConfirmCommand = new RelayCommand(OnConfirm);
+            //ConfirmCommand = new RelayCommand(OnConfirm);
 
             UpdateSelection();
         }
 
-        private WildPokemonBattleViewModel WildPokemonBattleViewModel;
 
         private void OnDirectionInput(string direction)
         {
@@ -57,20 +54,20 @@ namespace PokemonGame.ViewModels.BattleMenu
             UpdateSelection();
         }
 
-        private void OnConfirm()
-        {
-            int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
-            string selected = MenuItems[index].Label;
+        //private void OnConfirm()
+        //{
+        //    int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
+        //    string selected = MenuItems[index].Label;
 
-            if (selected == "FIGHT")
-            {
-                _NavigationStore.CurrentViewModel = new PokemonBattleMovesetMenuViewModel(_NavigationStore, WildPokemonBattleViewModel);
-            }
-            if (selected == "RUN")
-            {
-               WildPokemonBattleViewModel._PageNavigationStore.CurrentViewModel = WildPokemonBattleViewModel._mainWindow;
-            }
-        }
+        //    if (selected == "FIGHT")
+        //    {
+        //        _NavigationStore.CurrentViewModel = new PokemonBattleMovesetMenuViewModel(_NavigationStore, WildPokemonBattleViewModel);
+        //    }
+        //    if (selected == "RUN")
+        //    {
+        //       WildPokemonBattleViewModel._PageNavigationStore.CurrentViewModel = WildPokemonBattleViewModel._mainWindow;
+        //    }
+        //}
 
         private void UpdateSelection()
         {

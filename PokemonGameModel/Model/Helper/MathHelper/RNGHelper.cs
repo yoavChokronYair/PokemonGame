@@ -1,9 +1,10 @@
 ﻿using PokemonGame.Enums;
-
-using PokemonGame.Services.Data;
+using PokemonGame.Model.Helper;
+using PokemonGame.Services.Data.Pokemon;
+using PokemonGame.Services.Enums.PokemonEnum;
 using System;
 
-namespace PokemonGame.Model.Helper
+namespace PokemonGame.Core.Model.Helper.MathHelper
 {
     //class helper for RNG game specific calculations
     internal class RNGHelper
@@ -53,20 +54,20 @@ namespace PokemonGame.Model.Helper
         /// <summary>
         /// Generates IVs for all 6 stats. If the Pokémon species has base IVs defined, they’re respected.
         /// </summary>
-        public static StatValues GenerateAllIVs(PokemonData? pokemon = null)
-        {
-            var baseIVs = pokemon?.IVs;
+        //public static StatValues GenerateAllIVs(PokemonData? pokemon = null)
+        //{
+        //    var baseIVs = pokemon?.IVs;
 
-            return new StatValues
-            {
-                HP = GenerateIV(baseIVs?.HP),
-                Attack = GenerateIV(baseIVs?.Attack),
-                Defense = GenerateIV(baseIVs?.Defense),
-                SpecialAttack = GenerateIV(baseIVs?.SpecialAttack),
-                SpecialDefense = GenerateIV(baseIVs?.SpecialDefense),
-                Speed = GenerateIV(baseIVs?.Speed)
-            };
-        }
+        //    return new StatValues
+        //    {
+        //        HP = GenerateIV(baseIVs?.HP),
+        //        Attack = GenerateIV(baseIVs?.Attack),
+        //        Defense = GenerateIV(baseIVs?.Defense),
+        //        SpecialAttack = GenerateIV(baseIVs?.SpecialAttack),
+        //        SpecialDefense = GenerateIV(baseIVs?.SpecialDefense),
+        //        Speed = GenerateIV(baseIVs?.Speed)
+        //    };
+        //}
 
 
         // ----------------------------
@@ -84,11 +85,31 @@ namespace PokemonGame.Model.Helper
         /// <summary>
         /// ratio = chance of female (0.0–1.0), -1 = genderless.
         /// </summary>
-        public static string GenerateGender(double femaleRatio)
+        /// 
+        private static double GetFemaleRatio(GenderRatioType ratio)
         {
-            if (femaleRatio < 0) return "Genderless";
-            return RandomHelper.NextBool(femaleRatio) ? "Female" : "Male";
+            return ratio switch
+            {
+                GenderRatioType.M7_F1 => 0.125, // 12.5%
+                GenderRatioType.M3_F1 => 0.25,  // 25%
+                GenderRatioType.M1_F1 => 0.5,   // 50%
+                GenderRatioType.M1_F3 => 0.75,  // 75%
+                GenderRatioType.M0_F1 => 1.0,   // 100% female
+                GenderRatioType.M1_F0 => 0.0,   // 0% female
+                GenderRatioType.M0_F0 => -1.0,  // genderless
+                _ => -1.0
+            };
         }
+        public static GenderType GenerateGender(GenderRatioType ratio)
+        {
+            double femaleRatio = GetFemaleRatio(ratio);
+
+            if (femaleRatio < 0)
+                return GenderType.Genderless;
+
+            return RandomHelper.NextBool(femaleRatio) ? GenderType.Female : GenderType.Male;
+        }
+
 
         // ----------------------------
         // Shininess
@@ -102,17 +123,17 @@ namespace PokemonGame.Model.Helper
         // ----------------------------
         // Ability Determination
         // ----------------------------
-        public int GetAbilityNumber(PokemonData pokemon)
-        {
-            // 0–15 range: if result == 0, Hidden Ability (1/16 chance)
-            int hiddenRoll = RandomHelper.Next(0,16);
+        //public int GetAbilityNumber(PokemonData pokemon)
+        //{
+        //    // 0–15 range: if result == 0, Hidden Ability (1/16 chance)
+        //    int hiddenRoll = RandomHelper.Next(0,16);
 
-            if (hiddenRoll == 0 && pokemon.Abilitys.Count > 2)
-                return 3; // Hidden Ability
+        //    if (hiddenRoll == 0 && pokemon.Abilitys.Count > 2)
+        //        return 3; // Hidden Ability
 
-            // Otherwise pick based on PID parity
-            return (PID & 1) == 0 ? 1 : 2;
-        }
+        //    // Otherwise pick based on PID parity
+        //    return (PID & 1) == 0 ? 1 : 2;
+        //}
         // ----------------------------
         // Gender check
         // ----------------------------
