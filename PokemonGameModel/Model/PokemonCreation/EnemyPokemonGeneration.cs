@@ -11,7 +11,7 @@ using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.PokemonCreation
 {
-    public class EnemyPokemonGeneration : IPokemon
+    public class EnemyPokemonGeneration : IPartyPokemon
     {
     //    // Basic Info
     //    public string Species { get; set; }

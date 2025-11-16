@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Services.Data.Pokemon;
+using PokemonGame.Services.Enums.PokemonEnum;
 using System;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
@@ -84,11 +85,31 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         /// <summary>
         /// ratio = chance of female (0.0–1.0), -1 = genderless.
         /// </summary>
-        public static string GenerateGender(double femaleRatio)
+        /// 
+        private static double GetFemaleRatio(GenderRatioType ratio)
         {
-            if (femaleRatio < 0) return "Genderless";
-            return RandomHelper.NextBool(femaleRatio) ? "Female" : "Male";
+            return ratio switch
+            {
+                GenderRatioType.M7_F1 => 0.125, // 12.5%
+                GenderRatioType.M3_F1 => 0.25,  // 25%
+                GenderRatioType.M1_F1 => 0.5,   // 50%
+                GenderRatioType.M1_F3 => 0.75,  // 75%
+                GenderRatioType.M0_F1 => 1.0,   // 100% female
+                GenderRatioType.M1_F0 => 0.0,   // 0% female
+                GenderRatioType.M0_F0 => -1.0,  // genderless
+                _ => -1.0
+            };
         }
+        public static GenderType GenerateGender(GenderRatioType ratio)
+        {
+            double femaleRatio = GetFemaleRatio(ratio);
+
+            if (femaleRatio < 0)
+                return GenderType.Genderless;
+
+            return RandomHelper.NextBool(femaleRatio) ? GenderType.Female : GenderType.Male;
+        }
+
 
         // ----------------------------
         // Shininess
