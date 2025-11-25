@@ -49,7 +49,6 @@ namespace PokemonGame.Model.PokemonCreation
         public ushort MaxHP { get; private set; }
         public StatusType Status1 { get; set; }
         public byte SleepTurns { get; set; }
-        public Pokerus Pokerus { get; set; }
 
         public Moveset Moveset { get; set; }
 
@@ -61,7 +60,6 @@ namespace PokemonGame.Model.PokemonCreation
 
         #region PBE
         public bool PBEIgnore => IsEgg;
-        bool IPBEPokemon.Pokerus => Pokerus.Exists;
         ItemData IPBEPokemon.CaughtBall => CaughtBall;
         ItemData IPBEPokemon.Item => Item;
         IPBEStatCollection IPBEPokemon.EffortValues => EffortValues;
@@ -80,7 +78,6 @@ namespace PokemonGame.Model.PokemonCreation
         public PartyPokemon(BoxPokemon other)
         {
             PID = other.PID;
-            Pokerus = new Pokerus(other.Pokerus);
             IsEgg = other.IsEgg;
             MetLocation = other.MetLocation;
             MetLevel = other.MetLevel;
@@ -109,7 +106,6 @@ namespace PokemonGame.Model.PokemonCreation
             {
                 PID = RNGHelper.PID
             };
-            p.Pokerus = new Pokerus(true);
             p.SetDefaultNickname();
             p.Shiny = RNGHelper.IsShiny();
             var bs = GameDataProvider.Instance.GetBaseStatsData(species.PokemonID);

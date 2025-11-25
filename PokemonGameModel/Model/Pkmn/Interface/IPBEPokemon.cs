@@ -27,9 +27,6 @@ namespace PokemonGame.Core.Model.Pkmn.Interface
         byte Level { get; }
 
         uint EXP { get; }
-
-        bool Pokerus { get; }
-
         ItemData Item { get; }
 
         byte Friendship { get; }
