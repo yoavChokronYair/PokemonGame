@@ -3,6 +3,7 @@ using PokemonGame.Interface;
 using PokemonGame.Model.Helper;
 using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.MapData;
+using PokemonGame.Services.Enums.PokemonEnum;
 
 
 namespace PokemonGame.Model.PokemonCreation
@@ -38,7 +39,7 @@ namespace PokemonGame.Model.PokemonCreation
         // Other Attributes
         public NatureType Nature { get; set; }
         public int AbilityIndex { get; set; }
-        public AbilityType Ability { get;  set; }
+        public AbilityCategoryType Ability { get;  set; }
         public PokemonType[] Types { get; set;}
         public int CatchRate { get; set; }
         public StatValues BaseStats { get; set; }

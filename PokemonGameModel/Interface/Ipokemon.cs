@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Services.Data;
+using PokemonGame.Services.Enums.PokemonEnum;
 using System.Collections.Generic;
 
 namespace PokemonGame.Interface
@@ -19,7 +20,7 @@ namespace PokemonGame.Interface
         // === Typing & Traits ===
         PokemonType[] Types { get; set; }
         NatureType Nature { get; set; }
-        AbilityType Ability { get; set; } // Placeholder for ability implementation
+        AbilityCategoryType Ability { get; set; } // Placeholder for ability implementation
 
         // === Stats ===
         int Level { get; set; }

@@ -1,0 +1,69 @@
+﻿using PokemonGame.Services.Data.User;
+using PokemonGame.Services.DataProvider;
+using System;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace PokemonGame.Services
+{
+    public class LogInHandler
+    {
+        private readonly GameDataProvider provider;
+
+        public LogInHandler(GameDataProvider dataProvider)
+        {
+            provider = dataProvider;
+        }
+
+        // LOGIN
+        public bool Login(string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                return false;
+
+            var user = provider.LoadUserByName(username);
+            if (user == null)
+                return false;
+
+            int hash = HashPassword(password);
+            return user.Password == hash;
+        }
+
+        // CREATE ACCOUNT
+        public bool CreateAccount(string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                return false;
+
+            if (provider.UserExists(username))
+                return false;
+
+            int hash = HashPassword(password);
+
+            provider.CreateUser(username, hash.ToString());
+            return true;
+        }
+
+        // CHECK EXISTS
+        public bool UserExists(string username)
+        {
+            return provider.UserExists(username);
+        }
+
+        // GET USER
+        public UserData? GetUser(string username)
+        {
+            return provider.LoadUserByName(username);
+        }
+
+        // PASSWORD HASH
+        private int HashPassword(string password)
+        {
+            using (SHA256 sha = SHA256.Create())
+            {
+                byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToInt32(bytes, 0);
+            }
+        }
+    }
+}

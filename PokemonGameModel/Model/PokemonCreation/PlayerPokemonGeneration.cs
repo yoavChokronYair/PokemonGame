@@ -2,6 +2,7 @@
 using PokemonGame.Interface;
 using PokemonGame.Model.Helper;
 using PokemonGame.Services.Data;
+using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.PokemonCreation
 {
@@ -23,7 +24,7 @@ namespace PokemonGame.Model.PokemonCreation
         // === Typing & Traits ===
         public PokemonType[] Types { get; set; } = new PokemonType[2];
         public NatureType Nature { get; set; }
-        public AbilityType Ability { get; set; } // Placeholder for ability implementation
+        public AbilityCategoryType Ability { get; set; } // Placeholder for ability implementation
         public GrowthRateType GrowthRate { get; set; } // Placeholder for enum use
         public int Friendship { get; set; } // Base 0, can be used for evolution mechanics
 
