@@ -25,7 +25,8 @@ namespace PokemonGame
             // Navigate to the battle view with the encounter
             this.DataContext = new MainWindowViewModel();
             //MainFrame.Navigate(new WildPokemonBattleView(encounter));
-            MainFrame.Navigate(new Backpack());
+            //MainFrame.Navigate(new Backpack());
+            MainFrame.Navigate(new LogIn());
         }
     
 

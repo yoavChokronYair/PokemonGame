@@ -141,11 +141,14 @@
     <Compile Include="Views\Pages\Backpack.xaml.cs">
       <DependentUpon>Backpack.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\LogIn.xaml.cs">
+      <DependentUpon>LogIn.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\MapViewPage.xaml.cs">
       <DependentUpon>MapViewPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\NewGameView.xaml.cs">
-      <DependentUpon>NewGameView.xaml</DependentUpon>
+    <Compile Include="Views\Pages\SignUp.xaml.cs">
+      <DependentUpon>SignUp.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\Backpack\MiniMap.xaml.cs">
       <DependentUpon>MiniMap.xaml</DependentUpon>
@@ -192,11 +195,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Pages\LogIn.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\MapViewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\NewGameView.xaml">
+    <Page Include="Views\Pages\SignUp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -448,9 +455,9 @@
     <Resource Include="Assets\Images\Backgrounds\Red\Middle.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\MiddleLeft.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\MiddleRight.png" />
-    <Resource Include="Assets\Images\Backgrounds\Red\TopLeft.png" />
-    <Resource Include="Assets\Images\Backgrounds\Red\TopMiddle.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\TopRight.png" />
+    <Resource Include="Assets\Images\Backgrounds\Red\TopMiddle.png" />
+    <Resource Include="Assets\Images\Backgrounds\Red\TopLeft.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\PokeBallsBackground.png" />
@@ -501,9 +508,9 @@
     <Resource Include="Assets\Images\Backgrounds\Blue\Middle.png" />
     <Resource Include="Assets\Images\Backgrounds\Blue\MiddleLeft.png" />
     <Resource Include="Assets\Images\Backgrounds\Blue\MiddleRight.png" />
-    <Resource Include="Assets\Images\Backgrounds\Blue\TopLeft.png" />
-    <Resource Include="Assets\Images\Backgrounds\Blue\TopMiddle.png" />
     <Resource Include="Assets\Images\Backgrounds\Blue\TopRight.png" />
+    <Resource Include="Assets\Images\Backgrounds\Blue\TopMiddle.png" />
+    <Resource Include="Assets\Images\Backgrounds\Blue\Topleft.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
