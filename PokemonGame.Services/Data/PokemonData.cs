@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Services;
+using PokemonGame.Services.Enums.PokemonEnum;
 namespace PokemonGame.Services.Data
 {
     public class PokemonData 
@@ -8,7 +9,7 @@ namespace PokemonGame.Services.Data
         public string? Name { get; set; }
         public PokemonType Type1 { get; set; }
         public PokemonType Type2 { get; set; }
-        public List<AbilityType>? Abilitys { get; set; }
+        public List<AbilityCategoryType>? Abilitys { get; set; }
         public int CatchRate { get; set; }
         public int BaseFriendship { get; set; }
         public int BaseExp { get; set; }

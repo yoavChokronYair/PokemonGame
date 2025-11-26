@@ -1,4 +1,5 @@
 ﻿using PokemonGame.Enums;
+using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Interface
 {
