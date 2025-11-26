@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemonGame.Enums
+namespace PokemonGame.Services.Enums.PokemonEnum
 {
     //ToDo:make it not enum based
-    public enum AbilityType
+    public enum AbilityCategoryType
     {
         // Standard Gen III abilities used in FireRed
         Overgrow,

@@ -12,20 +12,19 @@ namespace PokemonGame.ViewModels.BattleMenu
     {
         private readonly NavigationStore _NavigationStore;
         public ICommand KeyPressedCommand { get; }
-        public WildPokemonBattleViewModel wildPokemonBattleView { get; }
         public ObservableCollection<MoveViewModel> MoveList { get; }
         public MenuSelectionViewModel MenuSelection { get; }
 
         public ICommand DirectionCommand { get; }
         public ICommand ConfirmMoveCommand { get; }
         public ICommand CancelCommand { get; }
-        public PokemonBattleMovesetMenuViewModel(NavigationStore navigationStore, WildPokemonBattleViewModel wildPokemonBattleView)
+        public PokemonBattleMovesetMenuViewModel(NavigationStore navigationStore)
         {
             _NavigationStore = navigationStore;
             _NavigationStore.CurrentViewModel = this;
-            this.wildPokemonBattleView = wildPokemonBattleView;
+            //this.wildPokemonBattleView = wildPokemonBattleView;
 
-            MoveList = new ObservableCollection<MoveViewModel>(wildPokemonBattleView.MoveList);
+            //MoveList = new ObservableCollection<MoveViewModel>(wildPokemonBattleView.MoveList);
             while (MoveList.Count < 4)
                 MoveList.Add(new MoveViewModel { BaseName = "-", CurrentPP = 0 });
 
@@ -33,7 +32,7 @@ namespace PokemonGame.ViewModels.BattleMenu
             UpdateSelectedMove();
 
             DirectionCommand = new RelayCommand<string>(OnDirectionInput);
-            CancelCommand = new RelayCommand(OnCancel);
+            //CancelCommand = new RelayCommand(OnCancel);
             Move = MoveList[0];
         }
         private MoveViewModel move;
@@ -86,24 +85,24 @@ namespace PokemonGame.ViewModels.BattleMenu
             UpdateSelectedMove();
         }
 
-        private async Task OnConfirmMove()
-        {
-            int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
-            var selectedMove = MoveList[index];
-            if (selectedMove.BaseName == "-") return;
+        //private async Task OnConfirmMove()
+        //{
+        //    int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
+        //    var selectedMove = MoveList[index];
+        //    if (selectedMove.BaseName == "-") return;
             
-            await wildPokemonBattleView.MakeMove(selectedMove.BaseName);
-            if(wildPokemonBattleView._PageNavigationStore.CurrentViewModel != wildPokemonBattleView._mainWindow)
-            {
+        //    await wildPokemonBattleView.MakeMove(selectedMove.BaseName);
+        //    if(wildPokemonBattleView._PageNavigationStore.CurrentViewModel != wildPokemonBattleView._mainWindow)
+        //    {
                 
-                _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
-            }
+        //        _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
+        //    }
 
-        }
+        //}
 
-        private void OnCancel()
-        {
-            _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
-        }
+        //private void OnCancel()
+        //{
+        //    _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
+        //}
     }
 }

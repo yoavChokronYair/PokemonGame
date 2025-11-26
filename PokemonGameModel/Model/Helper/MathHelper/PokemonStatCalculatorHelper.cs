@@ -2,7 +2,7 @@
 using PokemonGame.Enums;
 using PokemonGame.Interface;
 
-namespace PokemonGame.Model.Helper
+namespace PokemonGame.Core.Model.Helper.MathHelper
 {
     public class PokemonStatCalculatorHelper 
     {

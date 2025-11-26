@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using PokemonGame.Enums;
+﻿using PokemonGame.Enums;
 using PokemonGame.Model.Map;
 using PokemonGame.Services.Data.MapData;
 using PokemonGameModel.Model.Map;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace PokemonGame.ViewModels.Backpack
 {
@@ -100,12 +97,22 @@ namespace PokemonGame.ViewModels.Backpack
             AddTiles(CreateTileArray(1, 1, TileType.Grass, 2), 5, 0);
             // Town3 (1x1)
             AddTiles(CreateTileArray(1, 1, TileType.Grass, 3), 1, 3);
+            // Town4 (1x1)
+            AddTiles(CreateTileArray(1, 1, TileType.Grass, 4), 9, 0);
+
+            AddTiles(CreateTileArray(1, 1, TileType.Grass, 5), 5, 3);
+
 
             // Route1 horizontal: Town1 -> Town2
             AddTiles(CreateTileArray(3, 1, TileType.None, 9), 2, 0);
             // Route2 vertical: Town1 -> Town3
             AddTiles(CreateTileArray(1, 2, TileType.None, 9), 1, 1);
+            // Route3 horizontal: Town2 -> Town4
+            AddTiles(CreateTileArray(3, 1, TileType.None, 9), 6, 0);
+
+            AddTiles(CreateTileArray(1, 2, TileType.None, 9), 5, 1);
         }
+       
 
         /// <summary>
         /// Helper to create a rectangular tile array

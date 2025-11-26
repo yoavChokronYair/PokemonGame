@@ -9,27 +9,22 @@
 
   <ItemGroup>
     <None Remove="resources\Maps\Maps.Json" />
-    <None Remove="resources\Pokemons.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="resources\Maps\Maps.Json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="resources\Pokemons.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SQLite" Version="3.13.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="resources\Items\Pokeballs.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\Moves.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="resources\Npc\Rivals.json">
@@ -38,12 +33,13 @@
     <None Update="resources\Npc\Trainers.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\Player\CaughtPokemons.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="resources\Player\Players.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="resources\DB\" />
   </ItemGroup>
 
 </Project>

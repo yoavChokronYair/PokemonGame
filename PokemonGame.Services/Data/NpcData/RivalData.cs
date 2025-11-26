@@ -1,4 +1,6 @@
-﻿namespace PokemonGame.Services.Data.NpcData
+﻿using PokemonGame.Services.Data.Pokemon;
+
+namespace PokemonGame.Services.Data.NpcData
 {
     public class RivalData
     {
@@ -17,8 +19,8 @@
         public int MaxHP { get; set; }
         public string? Ability { get; set; }
         public string[]? Types { get; set; }
-        public StatValues? IVs { get; set; }
-        public StatValues? EVs { get; set; }
+        //public StatValues? IVs { get; set; }
+        //public StatValues? EVs { get; set; }
         public List<string>? Moves { get; set; }
     }
 

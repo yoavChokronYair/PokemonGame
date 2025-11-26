@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PokemonGame.Services\PokemonGame.Services.csproj" />
     <ProjectReference Include="..\PokemonGameModel\PokemonGame.Core.csproj" />
   </ItemGroup>
 
