@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.Move;
 using PokemonGame.Services.Data.Pokemon;
+using PokemonGame.Services.Data.User;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -31,7 +32,6 @@ namespace PokemonGame.Services.DataProvider
         #endregion
 
         #region Pokémon
-
         public PokemonData GetPokemonData(int pokemonID, bool cache = true)
         {
             if (cache && _pokemonCache.TryGetValue(pokemonID, out var data))
@@ -156,6 +156,14 @@ namespace PokemonGame.Services.DataProvider
         public abstract AbilityData LoadAbilityData(string abilityName);
         public abstract List<AbilityData> GetAllAbilities();
 
+        #endregion
+      
+        #region User
+
+        public abstract UserData? LoadUserByName(string username);
+        public abstract bool UserExists(string username);
+        public abstract UserData CreateUser(string username, string passwordHash);
+        public abstract List<UserData> GetAllUsers();
         #endregion
     }
 }

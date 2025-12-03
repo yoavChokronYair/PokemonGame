@@ -7,7 +7,6 @@ namespace PokemonGame.Interface
     public interface IBotBattle
     {
         int activePokemonHp{ get; set; }
-        EnemyPokemonGeneration activePokemon { get; set; }
         //int UpdateData(PlayerPokemonGeneration playerPokemon, IMoveResult moveResult,int currentHp);
       //  bool HasPriority(MoveData rivalMove, IMoveResult playerMove);
         void ChooseNextPokemon(); // Called when a Pokémon faints

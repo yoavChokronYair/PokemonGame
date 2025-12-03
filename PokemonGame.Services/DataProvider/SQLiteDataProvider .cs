@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.Move;
 using PokemonGame.Services.Data.Pokemon;
+using PokemonGame.Services.Data.User;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -106,6 +107,38 @@ namespace PokemonGame.Services.DataProvider
 
         public override List<AbilityData> GetAllAbilities() =>
             db.Query<AbilityData>("SELECT * FROM Ability").ToList();
+        // ---------------------------
+        // USER METHODS
+        // ---------------------------
+
+        public override UserData? LoadUserByName(string username)
+        {
+
+            var user = db.QuerySingle<UserData>(
+                "SELECT UserName, Password FROM Users WHERE UserName = @UserName",
+                new { UserName = username }
+            );
+            return user;
+        }
+
+        public override bool UserExists(string username)
+        {
+            // Simply use LoadUserByName
+            return LoadUserByName(username) != null;
+        }
+
+        public override UserData CreateUser(string username, string passwordHash)
+        {
+            return db.QuerySingle<UserData>(
+                "INSERT INTO Users (UserName, Password) VALUES (@UserName, @Password) RETURNING *;",
+                new { UserName = username, Password = passwordHash }
+            );
+        }
+
+        public override List<UserData> GetAllUsers()
+        {
+            return db.Query<UserData>("SELECT * FROM Users");
+        }
     }
 
 }

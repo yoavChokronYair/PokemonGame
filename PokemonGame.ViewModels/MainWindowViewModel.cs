@@ -1,6 +1,7 @@
-﻿using PokemonGame.ViewModels.Map;
-using PokemonGame.Model.Helper;
+﻿using PokemonGame.Model.Helper;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.Services.DataProvider;
+using PokemonGame.Services;
 
 namespace PokemonGame.ViewModels
 {
@@ -11,14 +12,10 @@ namespace PokemonGame.ViewModels
 
         public MainWindowViewModel()
         {
-            _NavigationStore = new NavigationStore();
+            SQLiteDataProvider handler = new SQLiteDataProvider(new SQLiteConnectionService("C:\\Users\\yoav\\Documents\\PokemonGameDB.db"));
             
-            //_NavigationStore.CurrentViewModel = new MapViewModel(GameDataManager.Instance.MapData.maps[0],_NavigationStore,this);
-            _NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+            GameDataProvider gameDataProvider = handler;
         }
-        private void OnCurrentViewModelChanged()
-        {
-            OnPropertyChanged(nameof(CurrentViewModel));
-        }
+
     }
 }
