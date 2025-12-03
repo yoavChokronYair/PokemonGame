@@ -127,13 +127,24 @@ namespace PokemonGame.Services.DataProvider
             return LoadUserByName(username) != null;
         }
 
-        public override UserData CreateUser(string username, string passwordHash)
+        public override UserData CreateUser(string username, int passwordHash)
         {
-            return db.QuerySingle<UserData>(
-                "INSERT INTO Users (UserName, Password) VALUES (@UserName, @Password) RETURNING *;",
-                new { UserName = username, Password = passwordHash }
-            );
+            // 1️⃣ Insert the user
+            const string insertSql = @"
+            INSERT INTO Users (UserName, Password)
+            VALUES (@UserName, @Password);";
+
+            db.Execute(insertSql, new { UserName = username, Password = passwordHash });
+
+            // 2️⃣ Get the last inserted row ID
+            const string selectSql = @"
+            SELECT UserID, UserName, Password
+            FROM Users
+            WHERE UserID = last_insert_rowid();";
+
+            return db.QuerySingle<UserData>(selectSql);
         }
+
 
         public override List<UserData> GetAllUsers()
         {

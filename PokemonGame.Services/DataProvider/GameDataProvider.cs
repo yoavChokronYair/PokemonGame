@@ -162,7 +162,7 @@ namespace PokemonGame.Services.DataProvider
 
         public abstract UserData? LoadUserByName(string username);
         public abstract bool UserExists(string username);
-        public abstract UserData CreateUser(string username, string passwordHash);
+        public abstract UserData CreateUser(string username, int passwordHash);
         public abstract List<UserData> GetAllUsers();
         #endregion
     }

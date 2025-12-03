@@ -5,7 +5,7 @@ using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModels
+namespace PokemonGame.ViewModels.SignUp
 {
     public class LogInViewModel : ViewModelBase
     {

@@ -26,24 +26,11 @@ namespace PokemonGame.Services.Handler
             if (user == null)
                 return false;
 
-            int hash = int.Parse(password);
+            int hash = HashPassword(password);
             return user.Password == hash;
         }
 
-        // CREATE ACCOUNT
-        public bool CreateAccount(string username, string password)
-        {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                return false;
-
-            if (provider.UserExists(username))
-                return false;
-
-            int hash = HashPassword(password);
-
-            provider.CreateUser(username, hash.ToString());
-            return true;
-        }
+        
 
         // CHECK EXISTS
         public bool UserExists(string username)

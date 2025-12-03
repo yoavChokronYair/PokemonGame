@@ -85,6 +85,23 @@ namespace PokemonGame.Services
 
             return list;
         }
+        public int Execute(string sql, object parameters = null)
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
+
+            if (parameters != null)
+            {
+                foreach (var prop in parameters.GetType().GetProperties())
+                {
+                    cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters));
+                }
+            }
+
+            return cmd.ExecuteNonQuery(); // returns number of rows affected
+        }
+
     }
 
 }

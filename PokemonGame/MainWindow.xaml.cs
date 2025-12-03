@@ -1,5 +1,6 @@
 ﻿
 using PokemonGame.ViewModels;
+using PokemonGame.ViewModels.SignUp;
 using PokemonGame.Views.Pages;
 using System.Windows;
 using System.Windows.Input;

@@ -15,7 +15,7 @@
     <Grid>
         <controls:BoardBackground
             Width="500"
-            Height="300"
+            Height="400"
             BackgroundType="{x:Static controls:BackgroundType.White}"
             BorderThickness="0">
 
@@ -76,6 +76,7 @@
                     Margin="0,10,0,0"
                     Background="Transparent"
                     BorderThickness="0"
+                    Click="Button_Click"
                     Command="{Binding SwitchToSignUpCommand}"
                     Content="Sign Up"
                     Cursor="Hand">
@@ -89,5 +90,6 @@
             </StackPanel>
 
         </controls:BoardBackground>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
     </Grid>
 </Page>
