@@ -8,9 +8,7 @@ using PokemonGame.Services.Data;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.DataProvider;
 using PokemonGame.Services.Enums.PokemonEnum;
-using PokemonGameModel.Model.Map;
-using SQLitePCL;
-using System;
+
 
 namespace PokemonGame.Model.PokemonCreation
 {

@@ -151,10 +151,13 @@
     </ApplicationDefinition>
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\Controls\PasswordHelper.cs" />
-    <Compile Include="Views\Pages\LogIn.xaml.cs">
+    <Compile Include="Views\Pages\Signin\GameModeChooser.xaml.cs">
+      <DependentUpon>GameModeChooser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\Signin\LogIn.xaml.cs">
       <DependentUpon>LogIn.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\SignUp.xaml.cs">
+    <Compile Include="Views\Pages\Signin\SignUp.xaml.cs">
       <DependentUpon>SignUp.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
@@ -173,11 +176,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\LogIn.xaml">
+    <Page Include="Views\Pages\Signin\GameModeChooser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\SignUp.xaml">
+    <Page Include="Views\Pages\Signin\LogIn.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\Signin\SignUp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

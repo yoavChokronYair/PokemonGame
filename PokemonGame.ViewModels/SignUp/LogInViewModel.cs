@@ -43,8 +43,7 @@ namespace PokemonGame.ViewModels.SignUp
         public ICommand SwitchToSignUpCommand { get; }
 
         public LogInViewModel()
-        {
-            
+        {  
             var provider = new SQLiteConnectionService("C:\\Users\\yoav\\source\\repos\\PokemonGame\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
 
             GameDataProvider handler = new SQLiteDataProvider(provider);
@@ -70,6 +69,7 @@ namespace PokemonGame.ViewModels.SignUp
 
         private void SwitchToSignUp()
         {
+
         }
     }
 }

@@ -1,0 +1,141 @@
+﻿<Page
+    x:Class="PokemonGame.Views.Pages.SignUp"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PokemonGame.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="SignUp"
+    d:DesignHeight="600"
+    d:DesignWidth="900"
+    Background="#4a5194"
+    mc:Ignorable="d">
+
+
+
+    <Grid>
+        <controls:BoardBackground
+            Width="500"
+            Height="400"
+            BackgroundType="{x:Static controls:BackgroundType.White}"
+            BorderThickness="0">
+
+            <StackPanel
+                Width="220"
+                Margin="0,35,0,0"
+                Orientation="Vertical">
+
+                <TextBlock
+                    Height="30"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontWeight="Medium"
+                    Foreground="Black"
+                    Text="Create Account" />
+
+                <!--  Username  -->
+                <TextBlock
+                    Margin="0,35,0,0"
+                    FontSize="9"
+                    FontWeight="Medium"
+                    Foreground="DarkGray"
+                    Text="Username" />
+                <TextBox
+                    Height="28"
+                    Margin="0,5,0,0"
+                    VerticalContentAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="DarkGray"
+                    BorderThickness="0,0,0,2"
+                    CaretBrush="LightGray"
+                    FontSize="13"
+                    FontWeight="Medium"
+                    Foreground="Black"
+                    Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!--  Password  -->
+                <TextBlock
+                    Margin="0,15,0,0"
+                    FontSize="9"
+                    FontWeight="Medium"
+                    Foreground="DarkGray"
+                    Text="Password" />
+                <TextBox
+                    Height="28"
+                    Margin="0,5,0,0"
+                    VerticalContentAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="DarkGray"
+                    BorderThickness="0,0,0,2"
+                    CaretBrush="LightGray"
+                    FontSize="13"
+                    FontWeight="Medium"
+                    Foreground="Black"
+                    Text="{Binding Password}" />
+                <TextBlock
+                    Margin="0,15,0,0"
+                    FontSize="9"
+                    FontWeight="Medium"
+                    Foreground="DarkGray"
+                    Text="Confirm Password" />
+                <TextBox
+                    Height="28"
+                    Margin="0,5,0,0"
+                    VerticalContentAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="DarkGray"
+                    BorderThickness="0,0,0,2"
+                    CaretBrush="LightGray"
+                    FontSize="13"
+                    FontWeight="Medium"
+                    Foreground="Black"
+                    Text="{Binding ConfirmPassword}" />
+
+                <!--  Status message  -->
+                <TextBlock
+                    Margin="0,10,0,0"
+                    FontSize="10"
+                    Foreground="Red"
+                    Text="{Binding StatusMessage}"
+                    TextWrapping="Wrap" />
+
+                <!--  Sign Up Button  -->
+                <Button
+                    Margin="0,15,0,0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding SignUpCommand}"
+                    Content="Sign Up"
+                    Cursor="Hand"
+                    FontFamily="Montserrat"
+                    FontSize="12"
+                    FontWeight="Medium"
+                    Foreground="Black">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button
+                    Margin="0,10,0,0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="Button_Click"
+                    Command="{Binding SwitchToLoginCommand}"
+                    Cursor="Hand">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="11"
+                        Foreground="DarkGray"
+                        Text="Already have an account? Log In"
+                        TextDecorations="Underline" />
+                </Button>
+
+            </StackPanel>
+        </controls:BoardBackground>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
+    </Grid>
+</Page>

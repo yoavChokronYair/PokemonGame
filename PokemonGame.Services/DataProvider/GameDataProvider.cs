@@ -165,5 +165,12 @@ namespace PokemonGame.Services.DataProvider
         public abstract UserData CreateUser(string username, int passwordHash);
         public abstract List<UserData> GetAllUsers();
         #endregion
+        #region OnlinePlayer
+        public abstract UserData CreateOnlinePlayer(string username, int passwordHash);
+        public abstract bool OnlinePlayerExists(string username);
+        public abstract StoryPlayerData? LoadOnlinePlayerByName(string username);
+        
+        #endregion
+
     }
 }

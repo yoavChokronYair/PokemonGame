@@ -7,11 +7,11 @@ namespace PokemonGame.Services.Handler
 {
     public class SignUpHandler
     {
-        private readonly GameDataProvider _db;
+        private readonly GameDataProvider provider;
 
         public SignUpHandler(GameDataProvider db)
         {
-            _db = db;
+            provider = db;
         }
 
         public bool UserNameExists(string userName)
@@ -19,7 +19,7 @@ namespace PokemonGame.Services.Handler
             if(string.IsNullOrEmpty(userName))
                 return false;
 
-            return  _db.UserExists(userName);
+            return  provider.UserExists(userName);
 
         }
 
@@ -29,7 +29,7 @@ namespace PokemonGame.Services.Handler
                 return false;
             var hashedPassword = HashPassword(password);
 
-             _db.CreateUser(userName,hashedPassword);
+             provider.CreateUser(userName,hashedPassword);
             return true;
         }
 
