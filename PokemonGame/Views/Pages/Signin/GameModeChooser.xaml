@@ -6,15 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame.Views.Pages.Signin"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:PokemonGame.ViewModels.SignUp;assembly=PokemonGame.ViewModels"
     Title="GameModeChooser"
     d:DesignHeight="450"
     d:DesignWidth="800"
     Background="#4a5194"
     mc:Ignorable="d">
-    <Page.DataContext>
-        <vm:GameModeChooserViewModel/>
-    </Page.DataContext>
 
     <Grid>
         <Label
@@ -22,21 +18,26 @@
             VerticalAlignment="Top"
             Content="Game mode"
             FontSize="24" />
+
         <StackPanel
             Width="350"
             Height="350"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
+
+            <!--  Story Mode Box  -->
             <controls:BoardBackground
                 Width="300"
                 Height="125"
                 Margin="25"
                 BackgroundType="{x:Static controls:BackgroundType.White}"
                 BorderThickness="0">
+
                 <Button
                     Margin="25"
                     Background="Transparent"
                     BorderThickness="0"
+                    Command="{Binding StoryModeCommand}"
                     Content="Story mode"
                     Cursor="Hand">
                     <Button.Template>
@@ -44,28 +45,33 @@
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </ControlTemplate>
                     </Button.Template>
-
                 </Button>
+
             </controls:BoardBackground>
+
+            <!--  Online Mode Box  -->
             <controls:BoardBackground
                 Width="300"
                 Height="125"
                 Margin="25"
                 BackgroundType="{x:Static controls:BackgroundType.White}">
+
                 <Button
                     Margin="25"
                     Background="Transparent"
                     BorderThickness="0"
-                    Content="online mode"
+                    Command="{Binding OnlineModeCommand}"
+                    Content="Online mode"
                     Cursor="Hand">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </ControlTemplate>
                     </Button.Template>
-
                 </Button>
+
             </controls:BoardBackground>
+
         </StackPanel>
     </Grid>
 </Page>

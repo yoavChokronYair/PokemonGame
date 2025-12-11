@@ -10,57 +10,49 @@ namespace PokemonGame.Services.Handler
     public class GameModeChooserHandler
     {
         private readonly GameDataProvider provider;
+        UserData userData;
 
-        public GameModeChooserHandler(GameDataProvider dataProvider)
+        public GameModeChooserHandler(GameDataProvider dataProvider, UserData userData)
         {
             provider = dataProvider;
+            this.userData = userData;
         }
 
-        public bool AddOnlineModePayer(string userName, string password)
+        public bool AddOnlineModePayer(string userName)
         {
             if (UserExists(userName))
                 return false;
-            var hashedPassword = HashPassword(password);
-            Random Random = new Random();
-            string VisibleuserID = Random.Next(0, 10000).ToString();
-            provider.CreateUser(userName +"#"+VisibleuserID, hashedPassword);
+            provider.CreateOnlinePlayer(userName,userData);
             return true;
         }
 
-        public bool OnlinePlayerLogIN(string username, string password,int userID)
-        {
-            
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        public bool OnlinePlayerLogIn(string username)
+        {  
+            if (string.IsNullOrWhiteSpace(username))
                 return false;
 
-            StoryPlayerData user = provider.LoadOnlinePlayerByName(username);
-            if (user == null )
+            BattlePlayerData user = GetOnlinePlayer(username);
+            if (user == null)
                 return false;
-            if(user.UserID != userID) return false;
-
-            int hash = HashPassword(password);
-            return user.Password == hash;
+            return true;
         }
 
         // CHECK EXISTS
         public bool UserExists(string username)
         {
-            return provider.UserExists(username);
+            return provider.OnlinePlayerExists(username,userData);
         }
 
         // GET USER
-        public StoryPlayerData? GetUser(string username)
+        public BattlePlayerData? GetOnlinePlayer(string username)
         {
-            return provider.LoadOnlinePlayerByName(username);
+            return provider.LoadOnlinePlayerByName(username,userData);
         }
-        private int HashPassword(string password)
+        public List<BattlePlayerData> GetAllOnlinePlayers()
         {
-            using (SHA256 sha = SHA256.Create())
-            {
-                byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return BitConverter.ToInt32(bytes, 0);
-            }
+            return GameDataProvider.Instance.GetAllOnlinePlayers(userData);
         }
+
 
     }
 }

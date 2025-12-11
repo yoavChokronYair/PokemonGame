@@ -67,24 +67,44 @@ namespace PokemonGame.Services
         public List<T> Query<T>(string sql) where T : new()
         {
             var list = new List<T>();
+
             using var conn = new SqliteConnection(_connectionString);
             conn.Open();
             using var cmd = new SqliteCommand(sql, conn);
             using var reader = cmd.ExecuteReader();
 
+            // Create hashset manually (ToHashSet not available)
+            var columnNames = new HashSet<string>(
+                Enumerable.Range(0, reader.FieldCount).Select(reader.GetName),
+                StringComparer.OrdinalIgnoreCase
+            );
+
             while (reader.Read())
             {
                 var result = new T();
+
                 foreach (var prop in typeof(T).GetProperties())
                 {
-                    if (!reader.IsDBNull(reader.GetOrdinal(prop.Name)))
-                        prop.SetValue(result, reader[prop.Name]);
+                    if (columnNames.Contains(prop.Name))
+                    {
+                        var value = reader[prop.Name];
+
+                        if (value != DBNull.Value)
+                        {
+                            var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                            var safeValue = Convert.ChangeType(value, targetType);
+
+                            prop.SetValue(result, safeValue);
+                        }
+                    }
                 }
+
                 list.Add(result);
             }
 
             return list;
         }
+
         public int Execute(string sql, object parameters = null)
         {
             using var conn = new SqliteConnection(_connectionString);

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PokemonGame.ViewModels.SignUp;
+using PokemonGame.ViewModels.ViewModelHelper.Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,11 @@ namespace PokemonGame.Views.Pages.Signin
     /// </summary>
     public partial class GameModeChooser : Page
     {
-        public GameModeChooser()
+        public GameModeChooser(string username)
         {
             InitializeComponent();
+
+            DataContext = new GameModeChooserViewModel(username,new DialogService());
         }
     }
 }

@@ -150,6 +150,59 @@ namespace PokemonGame.Services.DataProvider
         {
             return db.Query<UserData>("SELECT * FROM Users");
         }
+        // ---------------------------
+        // ONLINE PLAYER METHODS
+        // ---------------------------
+
+        public override bool OnlinePlayerExists(string username, UserData user)
+        {
+            const string sql = @"SELECT COUNT(*) 
+                                FROM BattlePlayer 
+                                WHERE Name = @name AND UserID = @uid;";
+
+            int count = db.QuerySingle<int>(sql, new { name = username, uid = user.UserID });
+            return count > 0;
+        }
+
+
+        public override BattlePlayerData? LoadOnlinePlayerByName(string username, UserData user)
+        {
+            const string sql = @"SELECT ID, UserID, Name, Level
+                                FROM BattlePlayer
+                                WHERE Name = @name AND UserID = @uid;";
+
+            return db.QuerySingle<BattlePlayerData>(sql,
+                new { name = username, uid = user.UserID });
+        }
+
+
+        public override BattlePlayerData CreateOnlinePlayer(string username, UserData user)
+        {
+            const string insertSql = @"INSERT INTO BattlePlayer (UserID, Name, Level)
+                                     VALUES (@uid, @name, 1);";
+
+            db.Execute(insertSql, new { uid = user.UserID, name = username });
+
+            const string selectSql = @"SELECT ID, UserID, Name, Level
+                                        FROM BattlePlayer
+                                        WHERE ID = last_insert_rowid();";
+
+            return db.QuerySingle<BattlePlayerData>(selectSql);
+        }
+        public override List<BattlePlayerData> GetAllOnlinePlayers(UserData data)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            // Query all BattlePlayer rows
+            const string sql = @"SELECT * FROM BattlePlayer";
+            var list = db.Query<BattlePlayerData>(sql).ToList();
+
+            // Filter by UserID
+            var userPlayers = list.Where(m => m.UserID == data.UserID).ToList();
+
+            return userPlayers;
+        }
     }
 
 }

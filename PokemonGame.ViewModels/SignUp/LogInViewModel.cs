@@ -60,6 +60,7 @@ namespace PokemonGame.ViewModels.SignUp
             {
                 // Login successful, you can navigate to a different ViewModel here
                 Console.WriteLine("Login success");
+                
             }
             else
             {

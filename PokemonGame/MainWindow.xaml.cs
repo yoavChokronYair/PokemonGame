@@ -30,7 +30,7 @@ namespace PokemonGame
             //MainFrame.Navigate(new Backpack());
             
             this.DataContext = new LogInViewModel();
-            MainFrame.Navigate(new GameModeChooser());
+            MainFrame.Navigate(new GameModeChooser("TestUser"));
         }
     
 
