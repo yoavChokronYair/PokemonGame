@@ -2,6 +2,7 @@
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.SignUp;
 using PokemonGame.Views.Pages;
+using PokemonGame.Views.Pages.OnlineBattlePages;
 using PokemonGame.Views.Pages.Signin;
 using System.Windows;
 using System.Windows.Input;
@@ -30,7 +31,8 @@ namespace PokemonGame
             //MainFrame.Navigate(new Backpack());
             
             this.DataContext = new LogInViewModel();
-            MainFrame.Navigate(new GameModeChooser("TestUser"));
+            MainFrame.Navigate(new BattleMenuPage());
+            //  MainFrame.Navigate(new GameModeChooser("TestUser"));
         }
     
 

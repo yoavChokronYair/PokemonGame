@@ -152,6 +152,15 @@
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\Controls\DialogService .cs" />
     <Compile Include="Views\Controls\PasswordHelper.cs" />
+    <Compile Include="Views\Pages\OnlineBattlePages\BattleMenuPage.xaml.cs">
+      <DependentUpon>BattleMenuPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\OnlineBattlePages\HistoryBattlePage.xaml.cs">
+      <DependentUpon>HistoryBattlePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\OnlineBattlePages\OnlineFriendsPage.xaml.cs">
+      <DependentUpon>OnlineFriendsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\Signin\GameModeChooser.xaml.cs">
       <DependentUpon>GameModeChooser.xaml</DependentUpon>
     </Compile>
@@ -180,6 +189,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\OnlineBattlePages\BattleMenuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\OnlineBattlePages\HistoryBattlePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\OnlineBattlePages\OnlineFriendsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
