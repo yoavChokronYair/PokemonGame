@@ -124,7 +124,7 @@ namespace PokemonGame.Model.PokemonCreation
             p.SetHPToMaxHP();
             return p;
         }
-        private void SetDefaultFriendship(BaseStatsdata bs)
+        private void SetDefaultFriendship(BaseStatsData bs)
         {
             Friendship = bs.BaseFriendship;
         }

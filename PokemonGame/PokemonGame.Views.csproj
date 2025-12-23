@@ -149,6 +149,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\OnlineStatusConverter.cs" />
+    <Compile Include="Converters\WinnerTextConverter.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\Controls\DialogService .cs" />
     <Compile Include="Views\Controls\PasswordHelper.cs" />

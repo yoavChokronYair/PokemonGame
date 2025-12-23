@@ -1,127 +1,114 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace PokemonGame.Services
-{ 
-    public class SQLiteConnectionService: ISQLiteConnectionService
+{
+    public class SQLiteConnectionService : ISQLiteConnectionService
     {
         private readonly string _connectionString;
 
         public SQLiteConnectionService(string dbPath)
         {
-            _connectionString = $"data source={dbPath}";
+            _connectionString = $"Data Source={dbPath}";
         }
 
+        // --- Single row query ---
         public T QuerySingle<T>(string sql, object parameters = null) where T : new()
         {
             using var conn = new SqliteConnection(_connectionString);
             conn.Open();
 
             using var cmd = new SqliteCommand(sql, conn);
-
-            if (parameters != null)
-            {
-                foreach (var prop in parameters.GetType().GetProperties())
-                {
-                    cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters));
-                }
-            }
+            AddParameters(cmd, parameters);
 
             using var reader = cmd.ExecuteReader();
 
             if (!reader.Read())
                 return default!;
 
-            var result = new T();
-
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                var columnName = reader.GetName(i);
-
-                var prop = typeof(T).GetProperty(
-                    columnName,
-                    BindingFlags.Public |
-                    BindingFlags.Instance |
-                    BindingFlags.IgnoreCase
-                );
-
-                if (prop == null || reader.IsDBNull(i))
-                    continue;
-
-                var value = reader.GetValue(i);
-
-                // Get the actual type (handles nullable types)
-                var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;           
-                var safeValue = Convert.ChangeType(value, targetType);
-                prop.SetValue(result, safeValue);
-                
-            }
-
-            return result;
+            return MapReaderToObject<T>(reader);
         }
 
-
+        // --- Multiple row query (without parameters) ---
         public List<T> Query<T>(string sql) where T : new()
+        {
+            return Query<T>(sql, null);
+        }
+
+        // --- Multiple row query (with parameters) ---
+        public List<T> Query<T>(string sql, object parameters) where T : new()
         {
             var list = new List<T>();
 
             using var conn = new SqliteConnection(_connectionString);
             conn.Open();
-            using var cmd = new SqliteCommand(sql, conn);
-            using var reader = cmd.ExecuteReader();
 
-            // Create hashset manually (ToHashSet not available)
-            var columnNames = new HashSet<string>(
-                Enumerable.Range(0, reader.FieldCount).Select(reader.GetName),
-                StringComparer.OrdinalIgnoreCase
-            );
+            using var cmd = new SqliteCommand(sql, conn);
+            AddParameters(cmd, parameters);
+
+            using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
             {
-                var result = new T();
-
-                foreach (var prop in typeof(T).GetProperties())
-                {
-                    if (columnNames.Contains(prop.Name))
-                    {
-                        var value = reader[prop.Name];
-
-                        if (value != DBNull.Value)
-                        {
-                            var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                            var safeValue = Convert.ChangeType(value, targetType);
-
-                            prop.SetValue(result, safeValue);
-                        }
-                    }
-                }
-
-                list.Add(result);
+                list.Add(MapReaderToObject<T>(reader));
             }
 
             return list;
         }
 
+        // --- Execute non-query (INSERT, UPDATE, DELETE) ---
         public int Execute(string sql, object parameters = null)
         {
             using var conn = new SqliteConnection(_connectionString);
             conn.Open();
-            using var cmd = new SqliteCommand(sql, conn);
 
-            if (parameters != null)
+            using var cmd = new SqliteCommand(sql, conn);
+            AddParameters(cmd, parameters);
+
+            return cmd.ExecuteNonQuery();
+        }
+
+        // --- Helper: add parameters to command ---
+        private static void AddParameters(SqliteCommand cmd, object parameters)
+        {
+            if (parameters == null)
+                return;
+
+            foreach (var prop in parameters.GetType().GetProperties())
             {
-                foreach (var prop in parameters.GetType().GetProperties())
-                {
-                    cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters));
-                }
+                cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
+            }
+        }
+
+        // --- Helper: map a SqliteDataReader row to an object ---
+        private static T MapReaderToObject<T>(SqliteDataReader reader) where T : new()
+        {
+            var result = new T();
+
+            // Create HashSet manually (instead of ToHashSet)
+            var columnNames = new HashSet<string>(
+                Enumerable.Range(0, reader.FieldCount).Select(reader.GetName),
+                StringComparer.OrdinalIgnoreCase
+            );
+
+            foreach (var prop in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (!columnNames.Contains(prop.Name))
+                    continue;
+
+                var value = reader[prop.Name];
+                if (value == DBNull.Value)
+                    continue;
+
+                var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                prop.SetValue(result, Convert.ChangeType(value, targetType));
             }
 
-            return cmd.ExecuteNonQuery(); // returns number of rows affected
+            return result;
         }
 
     }
-
 }

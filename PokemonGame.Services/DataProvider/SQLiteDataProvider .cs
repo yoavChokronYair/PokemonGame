@@ -4,7 +4,7 @@ using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Data.User;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace PokemonGame.Services.DataProvider
 {
@@ -17,81 +17,46 @@ namespace PokemonGame.Services.DataProvider
             db = dbService;
         }
 
-        // --- Pokémon ---
-        public override PokemonData LoadPokemonData(int pokemonID)
-        {
-            return db.QuerySingle<PokemonData>(
+        #region Pokémon Loaders
+
+        public override PokemonData LoadPokemonData(int pokemonID) =>
+            db.QuerySingle<PokemonData>(
                 "SELECT * FROM Pokemon WHERE PokemonID = @id",
-                new { id = pokemonID }
-            );
-        }
+                new { id = pokemonID });
 
-        public override PokemonFormData LoadFormData(int pokemonID)
-        {
-            return db.QuerySingle<PokemonFormData>(
+        public override PokemonFormData LoadFormData(int pokemonID) =>
+            db.QuerySingle<PokemonFormData>(
                 "SELECT * FROM PokemonForm WHERE PokemonID = @id",
-                new { id = pokemonID }
-            );
-        }
+                new { id = pokemonID });
 
-        public override BaseStatsdata LoadBaseStatsData(int pokemonID)
-        {
-            return db.QuerySingle<BaseStatsdata>(
+        public override BaseStatsData LoadBaseStatsData(int pokemonID) =>
+            db.QuerySingle<BaseStatsData>(
                 "SELECT * FROM BaseStats WHERE PokemonID = @id",
-                new { id = pokemonID }
-            );
-        }
+                new { id = pokemonID });
 
-        public override EvolutionData LoadEvolutionData(int pokemonID)
-        {
-            return db.QuerySingle<EvolutionData>(
+        public override EvolutionData LoadEvolutionData(int pokemonID) =>
+            db.QuerySingle<EvolutionData>(
                 "SELECT * FROM Evolution WHERE PokemonID = @id",
-                new { id = pokemonID }
-            );
-        }
+                new { id = pokemonID });
 
-        public override EggMoveData LoadEggMovesData(int pokemonID)
-        {
-            return db.QuerySingle<EggMoveData>(
+        public override EggMoveData LoadEggMovesData(int pokemonID) =>
+            db.QuerySingle<EggMoveData>(
                 "SELECT * FROM EggMove WHERE PokemonID = @id",
-                new { id = pokemonID }
-            );
-        }
+                new { id = pokemonID });
 
-        public override LevelUpMoveData LoadLevelUpMovesData(int pokemonID)
-        {
-            return db.QuerySingle<LevelUpMoveData>(
+        public override LevelUpMoveData LoadLevelUpMovesData(int pokemonID) =>
+            db.QuerySingle<LevelUpMoveData>(
                 "SELECT * FROM LevelUpMove WHERE PokemonID = @id",
-                new { id = pokemonID }
-            );
-        }
+                new { id = pokemonID });
 
-        // --- Moves & Abilities ---
-        public override MoveData LoadMoveData(string moveName)
-        {
-            return db.QuerySingle<MoveData>(
-                "SELECT * FROM Move WHERE MoveName = @MoveName",
-                new { MoveName = moveName }
-            );
-        }
-
-        public override AbilityData LoadAbilityData(string abilityName)
-        {
-            return db.QuerySingle<AbilityData>(
-                "SELECT * FROM Ability WHERE AbilityID = @abilityName",
-                new { abilityName = abilityName }
-            );
-        }
-
-        // --- “GetAll” methods ---
         public override List<PokemonData> GetAllPokemon() =>
             db.Query<PokemonData>("SELECT * FROM Pokemon").ToList();
 
         public override List<PokemonFormData> GetAllFormData() =>
             db.Query<PokemonFormData>("SELECT * FROM PokemonForm").ToList();
 
-        public override List<BaseStatsdata> GetAllBaseStats() =>
-            db.Query<BaseStatsdata>("SELECT * FROM BaseStats").ToList();
+        public override List<BaseStatsData> GetAllBaseStats() =>
+            db.Query<BaseStatsData>("SELECT * FROM BaseStats").ToList();
 
         public override List<EvolutionData> GetAllEvolution() =>
             db.Query<EvolutionData>("SELECT * FROM Evolution").ToList();
@@ -102,107 +67,84 @@ namespace PokemonGame.Services.DataProvider
         public override List<LevelUpMoveData> GetAllLevelUpMoves() =>
             db.Query<LevelUpMoveData>("SELECT * FROM LevelUpMove").ToList();
 
+        #endregion
+
+        #region Moves & Abilities
+
+        public override MoveData LoadMoveData(string moveName) =>
+            db.QuerySingle<MoveData>(
+                "SELECT * FROM Move WHERE MoveName = @moveName",
+                new { moveName });
+
+        public override AbilityData LoadAbilityData(string abilityName) =>
+            db.QuerySingle<AbilityData>(
+                "SELECT * FROM Ability WHERE AbilityName = @abilityName",
+                new { abilityName });
+
         public override List<MoveData> GetAllMoves() =>
             db.Query<MoveData>("SELECT * FROM Move").ToList();
 
         public override List<AbilityData> GetAllAbilities() =>
             db.Query<AbilityData>("SELECT * FROM Ability").ToList();
-        // ---------------------------
-        // USER METHODS
-        // ---------------------------
 
-        public override UserData? LoadUserByName(string username)
-        {
+        #endregion
 
-            var user = db.QuerySingle<UserData>(
-                "SELECT UserName, Password FROM Users WHERE UserName = @UserName",
-                new { UserName = username }
-            );
-            return user;
-        }
+        #region User Methods
 
-        public override bool UserExists(string username)
-        {
-            // Simply use LoadUserByName
-            return LoadUserByName(username) != null;
-        }
+        public override UserData? LoadUserByName(string username) =>
+            db.QuerySingle<UserData?>(
+                "SELECT * FROM Users WHERE UserName = @UserName",
+                new { UserName = username });
+
+        public override bool UserExists(string username) => LoadUserByName(username) != null;
 
         public override UserData CreateUser(string username, int passwordHash)
         {
-            // 1️⃣ Insert the user
-            const string insertSql = @"
-            INSERT INTO Users (UserName, Password)
-            VALUES (@UserName, @Password);";
+            db.Execute(
+                "INSERT INTO Users (UserName, Password) VALUES (@UserName, @Password);",
+                new { UserName = username, Password = passwordHash });
 
-            db.Execute(insertSql, new { UserName = username, Password = passwordHash });
-
-            // 2️⃣ Get the last inserted row ID
-            const string selectSql = @"
-            SELECT UserID, UserName, Password
-            FROM Users
-            WHERE UserID = last_insert_rowid();";
-
-            return db.QuerySingle<UserData>(selectSql);
+            return db.QuerySingle<UserData>(
+                "SELECT * FROM Users WHERE UserID = last_insert_rowid();");
         }
 
+        public override List<UserData> GetAllUsers() =>
+            db.Query<UserData>("SELECT * FROM Users").ToList();
 
-        public override List<UserData> GetAllUsers()
-        {
-            return db.Query<UserData>("SELECT * FROM Users");
-        }
-        // ---------------------------
-        // ONLINE PLAYER METHODS
-        // ---------------------------
+        #endregion
+
+        #region Online Player (BattlePlayer)
 
         public override bool OnlinePlayerExists(string username, UserData user)
         {
-            const string sql = @"SELECT COUNT(*) 
-                                FROM BattlePlayer 
-                                WHERE Name = @name AND UserID = @uid;";
-
+            const string sql = @"SELECT COUNT(*) FROM BattlePlayer 
+                                 WHERE Name = @name AND UserID = @uid;";
             int count = db.QuerySingle<int>(sql, new { name = username, uid = user.UserID });
             return count > 0;
         }
 
-
         public override BattlePlayerData? LoadOnlinePlayerByName(string username, UserData user)
         {
-            const string sql = @"SELECT ID, UserID, Name, Level
-                                FROM BattlePlayer
-                                WHERE Name = @name AND UserID = @uid;";
-
-            return db.QuerySingle<BattlePlayerData>(sql,
-                new { name = username, uid = user.UserID });
+            const string sql = @"SELECT * FROM BattlePlayer 
+                                 WHERE Name = @name AND UserID = @uid;";
+            return db.QuerySingle<BattlePlayerData?>(sql, new { name = username, uid = user.UserID });
         }
-
 
         public override BattlePlayerData CreateOnlinePlayer(string username, UserData user)
         {
-            const string insertSql = @"INSERT INTO BattlePlayer (UserID, Name, Level)
-                                     VALUES (@uid, @name, 1);";
+            db.Execute(
+                "INSERT INTO BattlePlayer (UserID, Name, Level) VALUES (@uid, @name, 1);",
+                new { uid = user.UserID, name = username });
 
-            db.Execute(insertSql, new { uid = user.UserID, name = username });
-
-            const string selectSql = @"SELECT ID, UserID, Name, Level
-                                        FROM BattlePlayer
-                                        WHERE ID = last_insert_rowid();";
-
-            return db.QuerySingle<BattlePlayerData>(selectSql);
+            return db.QuerySingle<BattlePlayerData>(
+                "SELECT * FROM BattlePlayer WHERE BattlePlayerID = last_insert_rowid();");
         }
-        public override List<BattlePlayerData> GetAllOnlinePlayers(UserData data)
-        {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
 
-            // Query all BattlePlayer rows
-            const string sql = @"SELECT * FROM BattlePlayer";
-            var list = db.Query<BattlePlayerData>(sql).ToList();
+        public override List<BattlePlayerData> GetAllOnlinePlayers(UserData user) =>
+            db.Query<BattlePlayerData>(
+                "SELECT * FROM BattlePlayer WHERE UserID = @uid;",
+                new { uid = user.UserID }).ToList();
 
-            // Filter by UserID
-            var userPlayers = list.Where(m => m.UserID == data.UserID).ToList();
-
-            return userPlayers;
-        }
+        #endregion
     }
-
 }

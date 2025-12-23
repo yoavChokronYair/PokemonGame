@@ -4,7 +4,7 @@ using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Data.User;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace PokemonGame.Services.DataProvider
 {
@@ -21,7 +21,7 @@ namespace PokemonGame.Services.DataProvider
 
         private readonly Dictionary<int, PokemonData> _pokemonCache = new();
         private readonly Dictionary<int, PokemonFormData> _formCache = new();
-        private readonly Dictionary<int, BaseStatsdata> _baseStatsCache = new();
+        private readonly Dictionary<int, BaseStatsData> _baseStatsCache = new();
         private readonly Dictionary<int, EvolutionData> _evolutionCache = new();
         private readonly Dictionary<int, EggMoveData> _eggMoveCache = new();
         private readonly Dictionary<int, LevelUpMoveData> _levelUpMoveCache = new();
@@ -32,90 +32,67 @@ namespace PokemonGame.Services.DataProvider
         #endregion
 
         #region Pokémon
-        public PokemonData GetPokemonData(int pokemonID, bool cache = true)
+
+        public PokemonData GetPokemonData(int pokemonID, bool useCache = true)
         {
-            if (cache && _pokemonCache.TryGetValue(pokemonID, out var data))
-                return data;
-
-            data = LoadPokemonData(pokemonID); // abstract loader
-            if (cache)
-                _pokemonCache[pokemonID] = data;
-
+            if (useCache && _pokemonCache.TryGetValue(pokemonID, out var data)) return data;
+            data = LoadPokemonData(pokemonID);
+            if (useCache) _pokemonCache[pokemonID] = data;
             return data;
         }
 
         public abstract PokemonData LoadPokemonData(int pokemonID);
         public abstract List<PokemonData> GetAllPokemon();
 
-        public PokemonFormData GetFormData(int pokemonID, bool cache = true)
+        public PokemonFormData GetFormData(int pokemonID, bool useCache = true)
         {
-            if (cache && _formCache.TryGetValue(pokemonID, out var data))
-                return data;
-
+            if (useCache && _formCache.TryGetValue(pokemonID, out var data)) return data;
             data = LoadFormData(pokemonID);
-            if (cache)
-                _formCache[pokemonID] = data;
-
+            if (useCache) _formCache[pokemonID] = data;
             return data;
         }
 
         public abstract PokemonFormData LoadFormData(int pokemonID);
         public abstract List<PokemonFormData> GetAllFormData();
 
-        public BaseStatsdata GetBaseStatsData(int pokemonID, bool cache = true)
+        public BaseStatsData GetBaseStatsData(int pokemonID, bool useCache = true)
         {
-            if (cache && _baseStatsCache.TryGetValue(pokemonID, out var data))
-                return data;
-
+            if (useCache && _baseStatsCache.TryGetValue(pokemonID, out var data)) return data;
             data = LoadBaseStatsData(pokemonID);
-            if (cache)
-                _baseStatsCache[pokemonID] = data;
-
+            if (useCache) _baseStatsCache[pokemonID] = data;
             return data;
         }
 
-        public abstract BaseStatsdata LoadBaseStatsData(int pokemonID);
-        public abstract List<BaseStatsdata> GetAllBaseStats();
+        public abstract BaseStatsData LoadBaseStatsData(int pokemonID);
+        public abstract List<BaseStatsData  > GetAllBaseStats();
 
-        public EvolutionData GetEvolutionData(int pokemonID, bool cache = true)
+        public EvolutionData GetEvolutionData(int pokemonID, bool useCache = true)
         {
-            if (cache && _evolutionCache.TryGetValue(pokemonID, out var data))
-                return data;
-
+            if (useCache && _evolutionCache.TryGetValue(pokemonID, out var data)) return data;
             data = LoadEvolutionData(pokemonID);
-            if (cache)
-                _evolutionCache[pokemonID] = data;
-
+            if (useCache) _evolutionCache[pokemonID] = data;
             return data;
         }
 
         public abstract EvolutionData LoadEvolutionData(int pokemonID);
         public abstract List<EvolutionData> GetAllEvolution();
 
-        public EggMoveData GetEggMovesData(int pokemonID, bool cache = true)
+        public EggMoveData GetEggMovesData(int pokemonID, bool useCache = true)
         {
-            if (cache && _eggMoveCache.TryGetValue(pokemonID, out var data))
-                return data;
-
+            if (useCache && _eggMoveCache.TryGetValue(pokemonID, out var data)) return data;
             data = LoadEggMovesData(pokemonID);
-            if (cache)
-                _eggMoveCache[pokemonID] = data;
-
+            if (useCache) _eggMoveCache[pokemonID] = data;
             return data;
         }
 
         public abstract EggMoveData LoadEggMovesData(int pokemonID);
         public abstract List<EggMoveData> GetAllEggMoves();
 
-        public LevelUpMoveData GetLevelUpMovesData(int pokemonID, bool cache = true)
+        public LevelUpMoveData GetLevelUpMovesData(int pokemonID, bool useCache = true)
         {
-            if (cache && _levelUpMoveCache.TryGetValue(pokemonID, out var data))
-                return data;
-
+            if (useCache && _levelUpMoveCache.TryGetValue(pokemonID, out var data)) return data;
             data = LoadLevelUpMovesData(pokemonID);
-            if (cache)
-                _levelUpMoveCache[pokemonID] = data;
-
+            if (useCache) _levelUpMoveCache[pokemonID] = data;
             return data;
         }
 
@@ -126,30 +103,22 @@ namespace PokemonGame.Services.DataProvider
 
         #region Moves & Abilities
 
-        public MoveData GetMoveData(string moveName, bool cache = true)
+        public MoveData GetMoveData(string moveName, bool useCache = true)
         {
-            if (cache && _moveCache.TryGetValue(moveName, out var data))
-                return data;
-
+            if (useCache && _moveCache.TryGetValue(moveName, out var data)) return data;
             data = LoadMoveData(moveName);
-            if (cache)
-                _moveCache[moveName] = data;
-
+            if (useCache) _moveCache[moveName] = data;
             return data;
         }
 
         public abstract MoveData LoadMoveData(string moveName);
         public abstract List<MoveData> GetAllMoves();
 
-        public AbilityData GetAbilityData(string abilityName, bool cache = true)
+        public AbilityData GetAbilityData(string abilityName, bool useCache = true)
         {
-            if (cache && _abilityCache.TryGetValue(abilityName, out var data))
-                return data;
-
+            if (useCache && _abilityCache.TryGetValue(abilityName, out var data)) return data;
             data = LoadAbilityData(abilityName);
-            if (cache)
-                _abilityCache[abilityName] = data;
-
+            if (useCache) _abilityCache[abilityName] = data;
             return data;
         }
 
@@ -157,22 +126,23 @@ namespace PokemonGame.Services.DataProvider
         public abstract List<AbilityData> GetAllAbilities();
 
         #endregion
-      
-        #region User
+
+        #region Users
 
         public abstract UserData? LoadUserByName(string username);
         public abstract bool UserExists(string username);
         public abstract UserData CreateUser(string username, int passwordHash);
         public abstract List<UserData> GetAllUsers();
-        #endregion
-        #region OnlinePlayer
-        public abstract BattlePlayerData CreateOnlinePlayer(string username,UserData user);
-        public abstract bool OnlinePlayerExists(string username,UserData user);
-        public abstract BattlePlayerData? LoadOnlinePlayerByName(string username,UserData user);
-        public abstract List<BattlePlayerData> GetAllOnlinePlayers(UserData data);
-
 
         #endregion
 
+        #region Online Players (BattlePlayer)
+
+        public abstract BattlePlayerData CreateOnlinePlayer(string username, UserData user);
+        public abstract bool OnlinePlayerExists(string username, UserData user);
+        public abstract BattlePlayerData? LoadOnlinePlayerByName(string username, UserData user);
+        public abstract List<BattlePlayerData> GetAllOnlinePlayers(UserData user);
+
+        #endregion
     }
 }

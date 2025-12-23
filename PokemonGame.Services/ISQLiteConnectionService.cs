@@ -22,6 +22,8 @@ namespace PokemonGame.Services
         /// <param name="sql">The SQL query.</param>
         /// <returns>A list of T containing the query results.</returns>
         List<T> Query<T>(string sql) where T : new();
+        List<T> Query<T>(string sql, object parameters) where T : new();
+
         int Execute(string sql, object parameters = null);
 
     }

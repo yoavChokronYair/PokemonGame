@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PokemonGame.Services.Data.Pokemon
 {
-    public sealed class BaseStatsdata
+    public sealed class BaseStatsData
     {
         private int pokemonID;
         private byte hP;

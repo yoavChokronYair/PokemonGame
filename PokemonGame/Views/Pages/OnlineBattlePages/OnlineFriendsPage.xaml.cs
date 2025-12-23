@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokemonGame.ViewModels.OnlineBattle;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,8 @@ namespace PokemonGame.Views.Pages.OnlineBattlePages
         public OnlineFriendsPage()
         {
             InitializeComponent();
+            DataContext = new OnlineFriendsViewModel();
+
         }
     }
 }
