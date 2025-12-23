@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokemonGame.ViewModels.OnlineBattle;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,15 +17,15 @@ using System.Windows.Shapes;
 namespace PokemonGame.Views.Pages.OnlineBattlePages
 {
     /// <summary>
-    /// Interaction logic for BattleMenuPage.xaml
+    /// Interaction logic for BattleTeamChooserPage.xaml
     /// </summary>
-    public partial class BattleMenuPage : Page
+    public partial class TeamSelectPage : Page
     {
-
-        public BattleMenuPage()
+        public TeamSelectPage()
         {
             InitializeComponent();
+            DataContext = new TeamSelectViewModel();
+
         }
-        
     }
 }

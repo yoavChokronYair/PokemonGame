@@ -9,18 +9,76 @@
     xmlns:vm="clr-namespace:PokemonGame.ViewModels;assembly=PokemonGame.ViewModels"
     xmlns:vm1="clr-namespace:PokemonGame.ViewModels.BattleMenu;assembly=PokemonGame.ViewModels"
     Title="MainWindow"
-    Width="900"
-    Height="600"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
     KeyUp="Window_KeyUp"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid ShowGridLines="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100*" />
+            <RowDefinition Height="350*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="MenuColumn" Width="200" />
+            <ColumnDefinition Width="600*" />
+        </Grid.ColumnDefinitions>
+        <Border
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Padding="5"
+            Background="#1E1E1E">
 
+            <StackPanel>
+
+                <!--  Hamburger Button  -->
+                <Button
+                    Width="40"
+                    Height="40"
+                    Margin="10"
+                    HorizontalAlignment="Left"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="Hamburger_Click"
+                    Content="☰"
+                    Cursor="Hand"
+                    FontSize="22"
+                    Foreground="White" />
+
+                <!--  Menu Buttons  -->
+                <Button
+                    x:Name="HistroyBtn"
+                    Click="HistroyBtn_Click"
+                    Content="History"
+                    Style="{StaticResource MenuButtonStyle}" />
+                <Button
+                    x:Name="FriendsBtn"
+                    Click="FriendsBtn_Click"
+                    Content="Friends"
+                    Style="{StaticResource MenuButtonStyle}" />
+                <Button
+                    x:Name="TeamBtn"
+                    Click="TeamBtn_Click"
+                    Content="Team"
+                    Style="{StaticResource MenuButtonStyle}" />
+                <Button
+                    x:Name="ProfileBtn"
+                    Content="Profile"
+                    Style="{StaticResource MenuButtonStyle}" />
+                <Button
+                    x:Name="exitBtn"
+                    Click="exitBtn_Click"
+                    Content="to main window"
+                    Style="{StaticResource MenuButtonStyle}" />
+
+            </StackPanel>
+        </Border>
 
         <Frame
             x:Name="MainFrame"
-            Grid.Row="5"
-            Grid.ColumnSpan="2"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="2"
             NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>

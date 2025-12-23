@@ -18,7 +18,7 @@ namespace PokemonGame
 
     public partial class MainWindow : Window
     {
-        
+        private bool _menuOpen = true;
         public MainWindow()
         {
 
@@ -46,6 +46,53 @@ namespace PokemonGame
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Keyboard.Focus(this);
+        }
+        private void Hamburger_Click(object sender, RoutedEventArgs e)
+        {
+            if (_menuOpen)
+            {
+                // Collapse
+                MenuColumn.Width = new GridLength(75);
+
+                HistroyBtn.Content = "";
+                FriendsBtn.Content = "";
+                TeamBtn.Content = "";
+                ProfileBtn.Content = "";
+                exitBtn.Content = "";
+            }
+            else
+            {
+                // Expand
+                MenuColumn.Width = new GridLength(200);
+
+                HistroyBtn.Content = "History";
+                FriendsBtn.Content = "Friends";
+                TeamBtn.Content = "Team";
+                ProfileBtn.Content = "Profile";
+                exitBtn.Content = "Exit";
+            }
+
+            _menuOpen = !_menuOpen;
+        }
+
+        private void HistroyBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new HistoryBattlePage());
+        }
+
+        private void FriendsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new OnlineFriendsPage());
+        }
+
+        private void TeamBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new TeamSelectPage());
+        }
+
+        private void exitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new BattleMenuPage());
         }
 
     }

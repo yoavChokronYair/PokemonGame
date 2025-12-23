@@ -9,7 +9,6 @@
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
         </Style>
-
         <Style TargetType="{x:Type Control}">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
         </Style>
@@ -21,6 +20,16 @@
         </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontSize" Value="14" />
+
+            <!--  Optional: placeholder simulation  -->
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Foreground" Value="Gray" />
+                    <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style x:Key="MenuButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="45" />

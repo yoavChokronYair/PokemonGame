@@ -149,6 +149,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\NullToBoolConverter .cs" />
     <Compile Include="Converters\OnlineStatusConverter.cs" />
     <Compile Include="Converters\WinnerTextConverter.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
@@ -156,6 +159,9 @@
     <Compile Include="Views\Controls\PasswordHelper.cs" />
     <Compile Include="Views\Pages\OnlineBattlePages\BattleMenuPage.xaml.cs">
       <DependentUpon>BattleMenuPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\OnlineBattlePages\TeamSelectPage.xaml.cs">
+      <DependentUpon>TeamSelectPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\OnlineBattlePages\HistoryBattlePage.xaml.cs">
       <DependentUpon>HistoryBattlePage.xaml</DependentUpon>
@@ -195,6 +201,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\OnlineBattlePages\BattleMenuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\OnlineBattlePages\TeamSelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
