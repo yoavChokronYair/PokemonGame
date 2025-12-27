@@ -143,12 +143,18 @@ namespace PokemonGame.Services.DataProvider
         public abstract bool OnlinePlayerExists(string username, UserData user);
         public abstract BattlePlayerData? LoadOnlinePlayerByName(string username, UserData user);
         public abstract List<BattlePlayerData> GetAllOnlinePlayers(UserData user);
+        public abstract BattlePlayerData? LoadOpponentPlayer(BattlePlayerData player, int battleID);
+
 
         #endregion
-       
+
         #region Battles
 
         public abstract List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player);
+        public abstract List<PokemonData> GetBattleTeamPokemonForPlayer(int battleID, int battlePlayerID);
+        public abstract BattlePlayerData? GetOpponentPlayer(int battleID, int playerID);
+
+
 
         #endregion
     }

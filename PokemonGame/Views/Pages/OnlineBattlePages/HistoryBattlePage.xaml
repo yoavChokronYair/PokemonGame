@@ -12,8 +12,8 @@
 
     <Grid>
         <ScrollViewer
-            Width="520"
-            Height="350"
+            Width="650"
+            Height="500"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             VerticalScrollBarVisibility="Auto">
@@ -40,11 +40,39 @@
                                         Margin="0,0,0,6"
                                         FontWeight="Bold"
                                         Text="{Binding PlayerName}" />
-                                    <controls:BoardBackground />
+
+                                    <controls:BoardBackground
+                                        Width="250"
+                                        Height="220"
+                                        Padding="5">
+                                        <ItemsControl ItemsSource="{Binding PlayerPokemon}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Columns="2"  />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border
+                                                        Margin="2"
+                                                        Background="#FFFFFF"
+                                                        CornerRadius="4">
+                                                        <TextBlock
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Text="{Binding}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </controls:BoardBackground>
                                 </StackPanel>
 
                                 <!--  VS  -->
-                                <StackPanel Grid.Column="1" Margin="20,0">
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Margin="20,0"
+                                    VerticalAlignment="Center">
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         FontSize="12"
@@ -62,8 +90,34 @@
                                         Margin="0,0,0,6"
                                         FontWeight="Bold"
                                         Text="{Binding OpponentName}" />
-                                    <controls:BoardBackground />
+
+                                    <controls:BoardBackground
+                                        Width="250"
+                                        Height="220"
+                                        Padding="5">
+                                        <ItemsControl ItemsSource="{Binding OpponentPokemon}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Rows="3" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border
+                                                        Margin="2"
+                                                        Background="#FFFFFF"
+                                                        CornerRadius="4">
+                                                        <TextBlock
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Text="{Binding}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </controls:BoardBackground>
                                 </StackPanel>
+
                             </Grid>
                         </Border>
                     </DataTemplate>

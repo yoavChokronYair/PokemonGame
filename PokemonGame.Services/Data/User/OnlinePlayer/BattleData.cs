@@ -20,6 +20,7 @@ namespace PokemonGame.Services.Data.User.OnlinePlayer
     {
         public int BattleID { get; set; }
         public DateTime BattleDate { get; set; }
+        public string PlayerName { get; set; }
         public string OpponentName { get; set; } = "";
         public bool IsWin { get; set; }
     }
