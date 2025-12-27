@@ -2,6 +2,7 @@
 using PokemonGame.Services.Data.Move;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Data.User;
+using PokemonGame.Services.Data.User.OnlinePlayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,6 +143,12 @@ namespace PokemonGame.Services.DataProvider
         public abstract bool OnlinePlayerExists(string username, UserData user);
         public abstract BattlePlayerData? LoadOnlinePlayerByName(string username, UserData user);
         public abstract List<BattlePlayerData> GetAllOnlinePlayers(UserData user);
+
+        #endregion
+       
+        #region Battles
+
+        public abstract List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player);
 
         #endregion
     }

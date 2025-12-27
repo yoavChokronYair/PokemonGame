@@ -95,6 +95,10 @@ namespace PokemonGame
             MainFrame.Navigate(new BattleMenuPage());
         }
 
+        private void ProfileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ProfilePage());
+        }
     }
 }
 

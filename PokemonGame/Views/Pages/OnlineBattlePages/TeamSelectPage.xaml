@@ -200,7 +200,7 @@
                 BorderThickness="0"
                 Command="{Binding ClearSlotCommand}"
                 Content="Clear Slot"
-                IsEnabled="{Binding SelectedSlot, Converter={StaticResource NullToBoolConverter}, ConverterParameter=True}" />
+                IsEnabled="{Binding SelectedSlot, Converter={StaticResource NullToBoolConverter }, ConverterParameter=True}" />
 
         </StackPanel>
     </Grid>

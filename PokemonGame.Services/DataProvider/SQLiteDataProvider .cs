@@ -2,6 +2,7 @@
 using PokemonGame.Services.Data.Move;
 using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Data.User;
+using PokemonGame.Services.Data.User.OnlinePlayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,5 +147,40 @@ namespace PokemonGame.Services.DataProvider
                 new { uid = user.UserID }).ToList();
 
         #endregion
+
+        #region Battles
+
+        public override List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player)
+        {
+            const string sql = @"
+        SELECT
+            b.BattleID,
+            b.BattleDate,
+            opp.Name AS OpponentName,
+            CASE 
+                WHEN b.WinnerBattlePlayerID = @pid THEN 1
+                ELSE 0
+            END AS IsWin
+        FROM Battle b
+        JOIN BattleTeam myTeam
+            ON myTeam.BattleID = b.BattleID
+           AND myTeam.BattlePlayerID = @pid
+        JOIN BattleTeam oppTeam
+            ON oppTeam.BattleID = b.BattleID
+           AND oppTeam.BattlePlayerID != @pid
+        JOIN BattlePlayer opp
+            ON opp.BattlePlayerID = oppTeam.BattlePlayerID
+        ORDER BY b.BattleDate DESC;
+    ";
+
+            return db.Query<BattleHistoryEntryData>(
+                sql,
+                new { pid = player.BattlePlayerID }
+            ).ToList();
+        }
+
+        #endregion
+
+
     }
 }

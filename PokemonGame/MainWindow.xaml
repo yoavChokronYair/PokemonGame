@@ -63,6 +63,7 @@
                     Style="{StaticResource MenuButtonStyle}" />
                 <Button
                     x:Name="ProfileBtn"
+                    Click="ProfileBtn_Click"
                     Content="Profile"
                     Style="{StaticResource MenuButtonStyle}" />
                 <Button

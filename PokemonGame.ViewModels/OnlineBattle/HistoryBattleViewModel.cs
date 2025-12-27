@@ -9,25 +9,25 @@ namespace PokemonGame.ViewModels.OnlineBattle
 {
     public class HistoryBattleViewModel : ViewModelBase
     {
-        public ObservableCollection<BattleHistoryItem> Battles { get; }
+        public ObservableCollection<BattleData> Battles { get; }
 
         public HistoryBattleViewModel()
         {
-            Battles = new ObservableCollection<BattleHistoryItem>
+            Battles = new ObservableCollection<BattleData>
             {
-                new BattleHistoryItem
+                new BattleData
                 {
                     PlayerName = "You",
                     OpponentName = "Ash",
                     IsPlayerWinner = true
                 },
-                new BattleHistoryItem
+                new BattleData
                 {
                     PlayerName = "You",
                     OpponentName = "Misty",
                     IsPlayerWinner = false
                 },
-                new BattleHistoryItem
+                new BattleData
                 {
                     PlayerName = "You",
                     OpponentName = "Brock",
