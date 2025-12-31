@@ -44,7 +44,7 @@ namespace PokemonGame.ViewModels.SignUp
 
         public LogInViewModel()
         {  
-            var provider = new SQLiteConnectionService("C:\\Users\\yoav\\source\\repos\\PokemonGame\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
+            var provider = new SQLiteConnectionService("C:\\Users\\yoav\\Source\\Repos\\PokemonGame\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
 
             GameDataProvider handler = new SQLiteDataProvider(provider);
 
