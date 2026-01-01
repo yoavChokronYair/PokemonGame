@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 
 
-namespace PokemonGame.ViewModels.SignUp
+namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class SignUpViewModel : ViewModelBase
     {
@@ -20,7 +20,7 @@ namespace PokemonGame.ViewModels.SignUp
         private string _confirmPassword = string.Empty;
         private string _statusMessage = string.Empty;
 
-        public SignUpViewModel()
+        public SignUpViewModel(NavigationStore navigationStore)
         {
 
             _signUpHandler = new SignUpService();

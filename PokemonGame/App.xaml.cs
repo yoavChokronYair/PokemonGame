@@ -1,5 +1,4 @@
 ﻿using PokemonGame.ViewModels;
-using PokemonGame.ViewModels.BattleMenu;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

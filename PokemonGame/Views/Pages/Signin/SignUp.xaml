@@ -1,19 +1,15 @@
 ﻿<Page
-    x:Class="PokemonGame.Views.Pages.SignUp"
+    x:Class="PokemonGame.Views.Pages.SignIn.SignUp"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:PokemonGame.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="SignUp"
     d:DesignHeight="600"
     d:DesignWidth="900"
     Background="#4a5194"
     mc:Ignorable="d">
-
-
-
     <Grid>
         <controls:BoardBackground
             Width="500"
@@ -136,6 +132,5 @@
 
             </StackPanel>
         </controls:BoardBackground>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
     </Grid>
 </Page>

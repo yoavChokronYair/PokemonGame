@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModels.OnlineBattle
+namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class OnlineFriendsViewModel : ViewModelBase
     {

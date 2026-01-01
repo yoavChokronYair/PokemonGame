@@ -5,7 +5,7 @@ using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.Collections.ObjectModel;
 
-namespace PokemonGame.ViewModels.OnlineBattle
+namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class HistoryBattleViewModel : ViewModelBase
     {

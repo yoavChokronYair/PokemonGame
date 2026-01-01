@@ -163,6 +163,9 @@
     <Compile Include="Views\Pages\OnlineBattlePages\ProfilePage.xaml.cs">
       <DependentUpon>ProfilePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\OnlineBattlePages\SideMenu.xaml.cs">
+      <DependentUpon>SideMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\OnlineBattlePages\TeamSelectPage.xaml.cs">
       <DependentUpon>TeamSelectPage.xaml</DependentUpon>
     </Compile>
@@ -172,13 +175,13 @@
     <Compile Include="Views\Pages\OnlineBattlePages\OnlineFriendsPage.xaml.cs">
       <DependentUpon>OnlineFriendsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\Signin\GameModeChooser.xaml.cs">
+    <Compile Include="Views\Pages\SignIn\GameModeChooser.xaml.cs">
       <DependentUpon>GameModeChooser.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\Signin\LogIn.xaml.cs">
+    <Compile Include="Views\Pages\SignIn\LogIn.xaml.cs">
       <DependentUpon>LogIn.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\Signin\SignUp.xaml.cs">
+    <Compile Include="Views\Pages\SignIn\SignUp.xaml.cs">
       <DependentUpon>SignUp.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\InputDialog.xaml.cs">
@@ -211,6 +214,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Pages\OnlineBattlePages\SideMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\OnlineBattlePages\TeamSelectPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -223,15 +230,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\Signin\GameModeChooser.xaml">
+    <Page Include="Views\Pages\SignIn\GameModeChooser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\Signin\LogIn.xaml">
+    <Page Include="Views\Pages\SignIn\LogIn.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\Signin\SignUp.xaml">
+    <Page Include="Views\Pages\SignIn\SignUp.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

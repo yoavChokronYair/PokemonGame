@@ -1,5 +1,4 @@
 ﻿using PokemonGame.ViewModels;
-using PokemonGame.ViewModels.SignUp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PokemonGame.Views.Pages
+namespace PokemonGame.Views.Pages.SignIn
 {
     /// <summary>
     /// Interaction logic for LogIn.xaml
@@ -25,13 +24,12 @@ namespace PokemonGame.Views.Pages
         public LogIn()
         {
             InitializeComponent();
-            DataContext = new LogInViewModel();
+            
 
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new SignUp());
         }
     }
 }

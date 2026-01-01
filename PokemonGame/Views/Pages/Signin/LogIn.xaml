@@ -1,10 +1,10 @@
 ﻿<Page
-    x:Class="PokemonGame.Views.Pages.LogIn"
+    x:Class="PokemonGame.Views.Pages.SignIn.LogIn"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:PokemonGame.Views.Pages"
+    xmlns:local="clr-namespace:PokemonGame.Views.Pages.SignIn"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="LogIn"
     d:DesignHeight="450"
@@ -83,7 +83,6 @@
                     Margin="0,10,0,0"
                     Background="Transparent"
                     BorderThickness="0"
-                    Click="Button_Click"
                     Command="{Binding SwitchToSignUpCommand}"
                     Content="Sign Up"
                     Cursor="Hand">
@@ -97,6 +96,5 @@
             </StackPanel>
 
         </controls:BoardBackground>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
     </Grid>
 </Page>

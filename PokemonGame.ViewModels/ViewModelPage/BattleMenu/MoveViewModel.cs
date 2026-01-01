@@ -1,6 +1,6 @@
 ﻿using PokemonGame.ViewModels.ViewModelHelper;
 
-namespace PokemonGame.ViewModels.BattleMenu
+namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class MoveViewModel : ViewModelBase
     {

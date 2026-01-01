@@ -5,10 +5,13 @@ using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModels.SignUp
+namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class LogInViewModel : ViewModelBase
     {
+        private readonly NavigationStore NavigationStore;
+        public ViewModelBase CurrentViewModel => NavigationStore.CurrentViewModel;
+
         private readonly LogInService _handler;
 
         private string _username = "";
@@ -42,12 +45,10 @@ namespace PokemonGame.ViewModels.SignUp
         public ICommand LoginCommand { get; }
         public ICommand SwitchToSignUpCommand { get; }
 
-        public LogInViewModel()
+        public LogInViewModel(NavigationStore navigationStore)
         {  
-           
-
+            NavigationStore = navigationStore;
             _handler = new LogInService();
-
             LoginCommand = new RelayCommand(Login);
             SwitchToSignUpCommand = new RelayCommand(SwitchToSignUp);
         }
@@ -68,7 +69,9 @@ namespace PokemonGame.ViewModels.SignUp
 
         private void SwitchToSignUp()
         {
-
+            Console.WriteLine("?");
+           SignUpViewModel signUpViewModel = new SignUpViewModel(NavigationStore);
+            NavigationStore.CurrentViewModel = signUpViewModel;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModels.BattleMenu
+namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class PokemonBattleMovesetMenuViewModel : ViewModelBase
     {

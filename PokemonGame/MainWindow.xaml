@@ -4,82 +4,26 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame"
-    xmlns:local2="clr-namespace:PokemonGame.Views.Pages"
+    xmlns:local2="clr-namespace:PokemonGame.Views.Pages.SignIn"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:signinvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.SignUp;assembly=PokemonGame.ViewModels"
     xmlns:vm="clr-namespace:PokemonGame.ViewModels;assembly=PokemonGame.ViewModels"
-    xmlns:vm1="clr-namespace:PokemonGame.ViewModels.BattleMenu;assembly=PokemonGame.ViewModels"
+    xmlns:vm1="clr-namespace:PokemonGame.ViewModels.ViewModelPage.BattleMenu;assembly=PokemonGame.ViewModels"
     Title="MainWindow"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    KeyUp="Window_KeyUp"
-    Loaded="Window_Loaded"
     mc:Ignorable="d">
-    <Grid ShowGridLines="False">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100*" />
-            <RowDefinition Height="350*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="MenuColumn" Width="200" />
-            <ColumnDefinition Width="600*" />
-        </Grid.ColumnDefinitions>
-        <Border
-            Grid.RowSpan="2"
-            Grid.Column="0"
-            Padding="5"
-            Background="#1E1E1E">
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type signinvm:LogInViewModel}">
+                <local2:LogIn />
+            </DataTemplate>
 
-            <StackPanel>
+            <DataTemplate DataType="{x:Type signinvm:SignUpViewModel}">
+                <local2:SignUp />
+            </DataTemplate>
+        </Grid.Resources>
+        <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />
 
-                <!--  Hamburger Button  -->
-                <Button
-                    Width="40"
-                    Height="40"
-                    Margin="10"
-                    HorizontalAlignment="Left"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Click="Hamburger_Click"
-                    Content="☰"
-                    Cursor="Hand"
-                    FontSize="22"
-                    Foreground="White" />
-
-                <!--  Menu Buttons  -->
-                <Button
-                    x:Name="HistroyBtn"
-                    Click="HistroyBtn_Click"
-                    Content="History"
-                    Style="{StaticResource MenuButtonStyle}" />
-                <Button
-                    x:Name="FriendsBtn"
-                    Click="FriendsBtn_Click"
-                    Content="Friends"
-                    Style="{StaticResource MenuButtonStyle}" />
-                <Button
-                    x:Name="TeamBtn"
-                    Click="TeamBtn_Click"
-                    Content="Team"
-                    Style="{StaticResource MenuButtonStyle}" />
-                <Button
-                    x:Name="ProfileBtn"
-                    Click="ProfileBtn_Click"
-                    Content="Profile"
-                    Style="{StaticResource MenuButtonStyle}" />
-                <Button
-                    x:Name="exitBtn"
-                    Click="exitBtn_Click"
-                    Content="to main window"
-                    Style="{StaticResource MenuButtonStyle}" />
-
-            </StackPanel>
-        </Border>
-
-        <Frame
-            x:Name="MainFrame"
-            Grid.Row="0"
-            Grid.RowSpan="2"
-            Grid.Column="2"
-            NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>

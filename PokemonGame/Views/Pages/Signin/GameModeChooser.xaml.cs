@@ -1,5 +1,5 @@
-﻿using PokemonGame.ViewModels.SignUp;
-using PokemonGame.ViewModels.ViewModelHelper.Service;
+﻿using PokemonGame.ViewModels.ViewModelHelper.Service;
+using PokemonGame.ViewModels.ViewModelPage.SignUp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PokemonGame.Views.Pages.Signin
+namespace PokemonGame.Views.Pages.SignIn
 {
     /// <summary>
     /// Interaction logic for GameModeChooser.xaml

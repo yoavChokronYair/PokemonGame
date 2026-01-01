@@ -12,10 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using PokemonGame.ViewModels.SignUp;
 using System.Windows.Shapes;
 
-namespace PokemonGame.Views.Pages
+namespace PokemonGame.Views.Pages.SignIn
 {
     /// <summary>
     /// Interaction logic for NewGame.xaml
@@ -26,7 +25,6 @@ namespace PokemonGame.Views.Pages
         public SignUp()
         {
             InitializeComponent();
-            this.DataContext = new SignUpViewModel();
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -41,7 +39,6 @@ namespace PokemonGame.Views.Pages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new LogIn());
         }
     }
 }

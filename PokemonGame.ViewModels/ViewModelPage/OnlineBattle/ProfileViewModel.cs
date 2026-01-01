@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PokemonGame.ViewModels.OnlineBattle
+namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class ProfileViewModel : ViewModelBase
     {

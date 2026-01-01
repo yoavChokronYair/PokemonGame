@@ -1,7 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Moq;
-using PokemonGame.Services.GameData;
-using PokemonGame.Services.GameData.Pokemon;
+
 using System.Collections.Generic;
 using Xunit;
 using Microsoft.Data.Sqlite;
@@ -13,7 +12,6 @@ namespace PokemonGame.Tests.DBTests
 {
     public class SQLiteDataProviderTests
     {
-        private readonly SQLiteDataProvider _provider;
         private readonly Mock<ISQLiteConnectionService> _mockDb;
 
         public SQLiteDataProviderTests()

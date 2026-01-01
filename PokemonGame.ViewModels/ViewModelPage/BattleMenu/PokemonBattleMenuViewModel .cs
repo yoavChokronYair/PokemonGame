@@ -4,7 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModels.BattleMenu
+namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class PokemonBattleMenuViewModel : ViewModelBase
     {

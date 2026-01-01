@@ -9,7 +9,7 @@ using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
 
-namespace PokemonGame.ViewModels.SignUp
+namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class GameModeChooserViewModel : ObservableObject
     {

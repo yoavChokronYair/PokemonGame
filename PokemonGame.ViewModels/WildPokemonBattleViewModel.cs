@@ -2,7 +2,6 @@
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.BattleSystem.Player;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.ViewModels.BattleMenu;
 using System.Collections.ObjectModel;
 using PokemonGame.Enums;
 using PokemonGame.ViewModels.ViewModelHelper;
