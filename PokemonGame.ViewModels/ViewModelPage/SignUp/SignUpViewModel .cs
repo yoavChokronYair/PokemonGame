@@ -2,6 +2,7 @@
 using PokemonGame.Services;
 using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,6 +14,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class SignUpViewModel : ViewModelBase
     {
+        private readonly NavigationStore NavigationStore;
+        private readonly UserStore _userStore;
+        public ViewModelBase CurrentViewModel => NavigationStore.CurrentViewModel;
+
         private readonly SignUpService _signUpHandler;
 
         private string _userName = string.Empty;
@@ -20,12 +25,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private string _confirmPassword = string.Empty;
         private string _statusMessage = string.Empty;
 
-        public SignUpViewModel(NavigationStore navigationStore)
+        public SignUpViewModel(UserStore userStore, NavigationStore navigationStore,Func<LogInViewModel> createLogInViewModel,Func<GameModeChooserViewModel> createGameChooserViewModel)
         {
-
+            _userStore = userStore;
+            NavigationStore = navigationStore;
             _signUpHandler = new SignUpService();
 
             SignUpCommand = new RelayCommand(SignUp);
+            SwitchToLogInCommand = new NavigateCommand(navigationStore, createLogInViewModel);
+            NavigateToGameModeChooserCommand =
+            new NavigateCommand(navigationStore, createGameChooserViewModel);
         }
 
         // ------------------ PROPERTIES ------------------
@@ -73,6 +82,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         // ------------------ COMMANDS ------------------
 
         public ICommand SignUpCommand { get; }
+        public ICommand SwitchToLogInCommand { get; }
+        public ICommand NavigateToGameModeChooserCommand { get; }
+
 
         private void SignUp()
         {
@@ -106,7 +118,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 return;
             }
 
-            StatusMessage = "Account created successfully!";
+            _userStore.Username = UserName;
+            NavigateToGameModeChooserCommand.Execute(null);
         }
 
     }

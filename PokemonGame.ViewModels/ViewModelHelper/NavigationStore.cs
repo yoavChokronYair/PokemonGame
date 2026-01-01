@@ -14,12 +14,11 @@ namespace PokemonGame.ViewModels.ViewModelHelper
                 OnCurrentViewModelChange();
             }
         }
-
+        public event Action CurrentViewModelChanged;
         private void OnCurrentViewModelChange()
         {
             CurrentViewModelChanged?.Invoke();
         }
 
-        public event Action CurrentViewModelChanged;
     }
 }

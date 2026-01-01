@@ -8,10 +8,13 @@ using System.Windows.Input;
 using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
+using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.Services.Data.GameData.NpcData;
+using PokemonGame.ViewModels.Store;
 
 namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
-    public class GameModeChooserViewModel : ObservableObject
+    public class GameModeChooserViewModel : ViewModelBase
     {
         private readonly GameModeChooserService _handler;
         private readonly IDialogService _dialogService;
@@ -35,15 +38,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand QuickLoginCommand { get; }
         public ICommand CreateAccountCommand { get; }
 
-        public GameModeChooserViewModel(string? username, IDialogService dialogService)
+        public GameModeChooserViewModel(UserStore? user, NavigationStore navigationStore,IDialogService dialogService)
         {
-            _dialogService = dialogService;
 
+            _dialogService = dialogService;
             // ✅ Use ServiceFactory and OnlinePlayerCacheService
             _handler = new GameModeChooserService();
 
             // Initialize username
-            Username = username ?? string.Empty;
+            Username = user.Username ?? string.Empty;
 
             // Commands
             StoryModeCommand = new RelayCommand(OnStoryMode);

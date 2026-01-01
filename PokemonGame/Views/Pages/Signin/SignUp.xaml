@@ -33,7 +33,7 @@
 
                 <!--  Username  -->
                 <TextBlock
-                    Margin="0,35,0,0"
+                    Margin="0,15,0,0"
                     FontSize="9"
                     FontWeight="Medium"
                     Foreground="DarkGray"
@@ -99,7 +99,7 @@
 
                 <!--  Sign Up Button  -->
                 <Button
-                    Margin="0,15,0,0"
+                    Margin="0,5,0,0"
                     Background="Transparent"
                     BorderThickness="0"
                     Command="{Binding SignUpCommand}"
@@ -120,14 +120,19 @@
                     Background="Transparent"
                     BorderThickness="0"
                     Click="Button_Click"
-                    Command="{Binding SwitchToLoginCommand}"
+                    Command="{Binding SwitchToLogInCommand}"
                     Cursor="Hand">
                     <TextBlock
                         HorizontalAlignment="Center"
-                        FontSize="11"
+                        FontSize="8"
                         Foreground="DarkGray"
                         Text="Already have an account? Log In"
                         TextDecorations="Underline" />
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </ControlTemplate>
+                    </Button.Template>
                 </Button>
 
             </StackPanel>

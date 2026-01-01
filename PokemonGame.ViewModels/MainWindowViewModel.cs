@@ -13,10 +13,9 @@ namespace PokemonGame.ViewModels
         public MainWindowViewModel(NavigationStore navigationStore)
         {
             NavigationStore = navigationStore;
-            NavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
-
-            LogInViewModel logInViewModel = new LogInViewModel(navigationStore);
-            NavigationStore.CurrentViewModel = logInViewModel;
+           // LogInViewModel logInViewModel = new LogInViewModel(navigationStore,createViewModel);
+            //NavigationStore.CurrentViewModel = logInViewModel;
+            navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
         }
 
         public ViewModelBase CurrentViewModel => NavigationStore.CurrentViewModel;
@@ -25,5 +24,6 @@ namespace PokemonGame.ViewModels
         {
             OnPropertyChanged(nameof(CurrentViewModel));
         }
+
     }
 }

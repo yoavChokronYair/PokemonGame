@@ -2,6 +2,7 @@
 using PokemonGame.Services;
 using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.Windows.Input;
 
@@ -10,6 +11,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
     public class LogInViewModel : ViewModelBase
     {
         private readonly NavigationStore NavigationStore;
+        private readonly UserStore _userStore;
         public ViewModelBase CurrentViewModel => NavigationStore.CurrentViewModel;
 
         private readonly LogInService _handler;
@@ -45,12 +47,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand LoginCommand { get; }
         public ICommand SwitchToSignUpCommand { get; }
 
-        public LogInViewModel(NavigationStore navigationStore)
+        public LogInViewModel(UserStore user,NavigationStore navigationStore,Func<SignUpViewModel> createViewModel)
         {  
+            _userStore = user;
             NavigationStore = navigationStore;
             _handler = new LogInService();
             LoginCommand = new RelayCommand(Login);
-            SwitchToSignUpCommand = new RelayCommand(SwitchToSignUp);
+            SwitchToSignUpCommand = new NavigateCommand(navigationStore,createViewModel);
         }
 
         private void Login()
@@ -59,7 +62,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             {
                 // Login successful, you can navigate to a different ViewModel here
                 Console.WriteLine("Login success");
-                
+                _userStore.Username = Username;
+
+
             }
             else
             {
@@ -67,11 +72,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             }
         }
 
-        private void SwitchToSignUp()
-        {
-            Console.WriteLine("?");
-           SignUpViewModel signUpViewModel = new SignUpViewModel(NavigationStore);
-            NavigationStore.CurrentViewModel = signUpViewModel;
-        }
+       
     }
 }

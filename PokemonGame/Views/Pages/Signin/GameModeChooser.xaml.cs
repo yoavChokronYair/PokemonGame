@@ -22,11 +22,9 @@ namespace PokemonGame.Views.Pages.SignIn
     /// </summary>
     public partial class GameModeChooser : Page
     {
-        public GameModeChooser(string username)
+        public GameModeChooser()
         {
             InitializeComponent();
-
-            DataContext = new GameModeChooserViewModel(username,new DialogService());
         }
     }
 }

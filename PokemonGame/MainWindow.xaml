@@ -22,6 +22,9 @@
             <DataTemplate DataType="{x:Type signinvm:SignUpViewModel}">
                 <local2:SignUp />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type signinvm:GameModeChooserViewModel}">
+                <local2:GameModeChooser />
+            </DataTemplate>
         </Grid.Resources>
         <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />
 
