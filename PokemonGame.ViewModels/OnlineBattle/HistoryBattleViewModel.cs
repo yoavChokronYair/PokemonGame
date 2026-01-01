@@ -1,8 +1,9 @@
-﻿using PokemonGame.Services.Handler;
+﻿using PokemonGame.Services.Data.DataCache;
+using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Factory;
+using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.Collections.ObjectModel;
-using PokemonGame.Services.Data.DataProvider;
-using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.ViewModels.OnlineBattle
 {
@@ -10,16 +11,23 @@ namespace PokemonGame.ViewModels.OnlineBattle
     {
         public ObservableCollection<BattleDisplayData> Battles { get; }
 
-        private readonly BattleHistoryService historyHandler;
+        private readonly BattleHistoryService _historyHandler;
 
         public HistoryBattleViewModel()
         {
             Battles = new ObservableCollection<BattleDisplayData>();
-            historyHandler = new BattleHistoryService(GameDataProvider.Instance);
 
-            // Just pass the BattlePlayerData
-            var player = GameDataProvider.Instance.LoadOnlinePlayerByName("BattleHero",
-                GameDataProvider.Instance.LoadUserByName("TestUser"));
+            var player = ServiceFactory.Instance.OnlinePlayerCache.GetOnlinePlayer("BattleHero",
+                ServiceFactory.Instance.UserCache.GetUserByName("TestUser"));
+
+            // Use the factory to get the public cache service
+            var battleCache = ServiceFactory.Instance.BattleCache;
+
+            // Create BattleHistoryService using the cached repository
+            _historyHandler = new BattleHistoryService();
+
+            // Load the current online player
+           // var player = ServiceFactory.Instance.OnlinePlayerCache.GetOnlinePlayer(onlinePlayerName, currentUser);
             if (player != null)
                 LoadBattles(player);
         }
@@ -28,11 +36,9 @@ namespace PokemonGame.ViewModels.OnlineBattle
         {
             Battles.Clear();
 
-            var displayBattles = historyHandler.GetBattleHistoryDisplay(player);
+            var displayBattles = _historyHandler.GetBattleHistoryDisplay(player);
             foreach (var battle in displayBattles)
                 Battles.Add(battle);
         }
-
-
     }
 }

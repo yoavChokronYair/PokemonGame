@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Core.Model.Helper.BattleHelper;
 using PokemonGame.Enums;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.Services.GameData;
 using System;
 using System.Collections.Generic;
 using System.Linq;

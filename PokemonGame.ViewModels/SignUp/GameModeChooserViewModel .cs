@@ -5,7 +5,9 @@ using PokemonGame.ViewModels.ViewModelHelper.Service;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using PokemonGame.Services.Data.DataProvider;
+using PokemonGame.Services.Data.DataCache;
+using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Factory;
 
 namespace PokemonGame.ViewModels.SignUp
 {
@@ -33,17 +35,17 @@ namespace PokemonGame.ViewModels.SignUp
         public ICommand QuickLoginCommand { get; }
         public ICommand CreateAccountCommand { get; }
 
-        public GameModeChooserViewModel(string username, IDialogService dialogService)
+        public GameModeChooserViewModel(string? username, IDialogService dialogService)
         {
             _dialogService = dialogService;
 
-            // Safe null check for username
-            var userData = string.IsNullOrWhiteSpace(username)
-                ? null
-                : GameDataProvider.Instance.GetAllUsers().FirstOrDefault(u => u.UserName == username);
+            // ✅ Use ServiceFactory and OnlinePlayerCacheService
+            _handler = new GameModeChooserService();
 
-            _handler = new GameModeChooserService(GameDataProvider.Instance, userData);
+            // Initialize username
+            Username = username ?? string.Empty;
 
+            // Commands
             StoryModeCommand = new RelayCommand(OnStoryMode);
             OnlineModeCommand = new AsyncRelayCommand(OnOnlineModeAsync);
             QuickLoginCommand = new AsyncRelayCommand(OnQuickLoginAsync);
@@ -57,8 +59,20 @@ namespace PokemonGame.ViewModels.SignUp
 
         private async Task OnOnlineModeAsync()
         {
-            // 1️⃣ Try quick login first if users exist
-            var users = _handler.GetAllOnlinePlayers().Select(u => u.Name).ToList();
+            // 1️⃣ Get all online players for the current user
+            var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
+                                .FirstOrDefault(u => u.UserName == Username);
+
+            if (currentUser == null)
+            {
+                await _dialogService.ShowError("Error", "User not found. Please create an account first.");
+                return;
+            }
+
+            var users = _handler.GetAllOnlinePlayers(currentUser)
+                                .Select(p => p.Name)
+                                .ToList();
+
             string? selectedUser = null;
 
             if (users.Count > 0)
@@ -70,7 +84,7 @@ namespace PokemonGame.ViewModels.SignUp
                 );
             }
 
-            // 2️⃣ If no selection or no users, ask for a new username
+            // 2️⃣ If no selection, create new account
             if (string.IsNullOrWhiteSpace(selectedUser))
             {
                 bool createNew = await _dialogService.ShowConfirm(
@@ -86,7 +100,7 @@ namespace PokemonGame.ViewModels.SignUp
                 if (string.IsNullOrWhiteSpace(selectedUser))
                     return; // user cancelled
 
-                bool created = _handler.AddOnlineModePayer(selectedUser);
+                bool created = _handler.AddOnlineModePlayer(selectedUser, currentUser);
                 if (!created)
                 {
                     await _dialogService.ShowError("Error", "Username already exists. Try another one.");
@@ -96,9 +110,9 @@ namespace PokemonGame.ViewModels.SignUp
                 await _dialogService.ShowSuccess("Success", $"Account '{selectedUser}' created successfully!");
             }
 
-            // 3️⃣ Attempt login with selected or newly created username
+            // 3️⃣ Attempt login
             Username = selectedUser;
-            if (_handler.OnlinePlayerLogIn(Username))
+            if (_handler.OnlinePlayerLogIn(Username, currentUser))
             {
                 await _dialogService.ShowSuccess("Success", $"Logged in successfully as '{Username}'!");
             }
@@ -110,7 +124,16 @@ namespace PokemonGame.ViewModels.SignUp
 
         private async Task OnQuickLoginAsync()
         {
-            var users = GameDataProvider.Instance.GetAllUsers().Select(u => u.UserName).ToList();
+            var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
+                                .FirstOrDefault(u => u.UserName == Username);
+
+            if (currentUser == null)
+                return;
+
+            var users = _handler.GetAllOnlinePlayers(currentUser)
+                                .Select(u => u.Name)
+                                .ToList();
+
             string? selectedUser = await _dialogService.ShowSelection(
                 "Select Account",
                 "Choose your username:",
@@ -122,7 +145,6 @@ namespace PokemonGame.ViewModels.SignUp
 
             Username = selectedUser;
             await OnOnlineModeAsync();
-
         }
 
         private async Task OnCreateAccountAsync()
@@ -131,7 +153,13 @@ namespace PokemonGame.ViewModels.SignUp
             if (string.IsNullOrWhiteSpace(newUser))
                 return;
 
-            if (_handler.AddOnlineModePayer(newUser))
+            var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
+                                .FirstOrDefault(u => u.UserName == Username);
+
+            if (currentUser == null)
+                return;
+
+            if (_handler.AddOnlineModePlayer(newUser, currentUser))
             {
                 Username = newUser;
                 await _dialogService.ShowSuccess("Success", $"Account '{newUser}' created! You can now log in.");

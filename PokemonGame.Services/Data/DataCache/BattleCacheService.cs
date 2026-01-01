@@ -6,15 +6,15 @@ using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
-    internal class BattleCacheService
+    public class BattleCacheService
     {
         private readonly IBattleRepository _repository;
 
-        // --- Caches ---
         private readonly Dictionary<int, List<BattleHistoryEntryData>> _historyCache = new();
         private readonly Dictionary<(int battleID, int playerID), List<PokemonData>> _teamPokemonCache = new();
 
-        public BattleCacheService(IBattleRepository repository)
+        // **internal constructor**
+        internal BattleCacheService(IBattleRepository repository)
         {
             _repository = repository;
         }
@@ -46,7 +46,6 @@ namespace PokemonGame.Services.Data.DataCache
 
         public BattlePlayerData? GetOpponentPlayer(int battleID, int playerID)
         {
-            // usually opponents change frequently, so optional: do not cache
             return _repository.GetOpponentPlayer(battleID, playerID);
         }
     }

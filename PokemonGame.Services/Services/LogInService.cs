@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class LogInService
     {
-        private readonly GameDataProvider provider;
+        private readonly UserCacheService provider;
 
-        public LogInService(GameDataProvider dataProvider)
+        public LogInService()
         {
-            provider = dataProvider;
+            provider = ServiceFactory.Instance.UserCache;
         }
 
         // LOGIN
@@ -22,7 +24,7 @@ namespace PokemonGame.Services.Handler
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 return false;
 
-            UserData user = provider.LoadUserByName(username);
+            UserData user = provider.GetUserByName(username);
             if (user == null)
                 return false;
 
@@ -41,7 +43,7 @@ namespace PokemonGame.Services.Handler
         // GET USER
         public UserData? GetUser(string username)
         {
-            return provider.LoadUserByName(username);
+            return provider.GetUserByName(username);
         }
 
         // PASSWORD HASH

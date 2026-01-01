@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services;
 using PokemonGame.Services.Data.DataProvider;
-using PokemonGame.Services.DataProvider;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.Windows.Input;
@@ -45,11 +44,9 @@ namespace PokemonGame.ViewModels.SignUp
 
         public LogInViewModel()
         {  
-            var provider = new SQLiteConnectionService("C:\\Users\\yoav\\Source\\Repos\\PokemonGame\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
+           
 
-            GameDataProvider handler = new SQLiteDataProvider(provider);
-
-            _handler = new LogInService(handler);
+            _handler = new LogInService();
 
             LoginCommand = new RelayCommand(Login);
             SwitchToSignUpCommand = new RelayCommand(SwitchToSignUp);

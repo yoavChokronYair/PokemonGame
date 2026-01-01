@@ -23,7 +23,7 @@ namespace PokemonGame.ViewModels.SignUp
         public SignUpViewModel()
         {
 
-            _signUpHandler = new SignUpService(GameDataProvider.Instance);
+            _signUpHandler = new SignUpService();
 
             SignUpCommand = new RelayCommand(SignUp);
         }

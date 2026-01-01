@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
-    internal class OnlinePlayerCacheService
+    public class OnlinePlayerCacheService
     {
         private readonly IOnlinePlayerRepository _repository;
 
@@ -13,7 +13,7 @@ namespace PokemonGame.Services.Data.DataCache
         // Keyed by (username + userID) to avoid clashes between different accounts
         private readonly Dictionary<string, BattlePlayerData> _onlinePlayerCache = new();
 
-        public OnlinePlayerCacheService(IOnlinePlayerRepository repository)
+        internal OnlinePlayerCacheService(IOnlinePlayerRepository repository)
         {
             _repository = repository;
         }

@@ -1,6 +1,5 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
-using PokemonGame.Services.GameData.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 using System;
 

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
-    internal class PokemonCacheService
+    public class PokemonCacheService
     {
         private readonly IPokemonRepository _provider;
 
@@ -21,7 +21,7 @@ namespace PokemonGame.Services.Data.DataCache
         private readonly Dictionary<int, LevelUpMoveData> _levelUpMoveCache = new();
 
         // --- Constructor ---
-        public PokemonCacheService(IPokemonRepository provider)
+        internal PokemonCacheService(IPokemonRepository provider)
         {
             _provider = provider;
         }

@@ -11,10 +11,7 @@ namespace PokemonGame.ViewModels
         public ViewModelBase CurrentViewModel => _NavigationStore.CurrentViewModel;
 
         public MainWindowViewModel()
-        {
-            SQLiteDataProvider handler = new SQLiteDataProvider(new SQLiteConnectionService("C:\\Users\\yoav\\Documents\\PokemonGameDB.db"));
-            
-            GameDataProvider gameDataProvider = handler;
+        { 
         }
 
     }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PokemonGame.Services.Data.Interfaces
 {
-    public interface IBattleRepository
+    internal interface IBattleRepository
     {
         List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player);
         List<PokemonData> GetBattleTeamPokemonForPlayer(int battleID, int battlePlayerID);

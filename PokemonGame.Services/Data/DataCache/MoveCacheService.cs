@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PokemonGame.Services.Data.DataCache
 {
-    internal class MoveCacheService
+    public class MoveCacheService
     {
         private readonly IMoveRepository _provider;
 
@@ -17,7 +17,7 @@ namespace PokemonGame.Services.Data.DataCache
         private readonly Dictionary<string, AbilityData> _abilityCache = new();
 
         // --- Constructor ---
-        public MoveCacheService(IMoveRepository provider)
+        internal MoveCacheService(IMoveRepository provider)
         {
             _provider = provider;
         }

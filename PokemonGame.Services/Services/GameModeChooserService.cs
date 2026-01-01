@@ -1,58 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
-using PokemonGame.Services.Data.DataProvider;
+﻿using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Factory;
+using System.Collections.Generic;
 
 namespace PokemonGame.Services.Handler
 {
     public class GameModeChooserService
     {
-        private readonly GameDataProvider provider;
-        UserData userData;
+        private readonly OnlinePlayerCacheService _onlinePlayerCache;
 
-        public GameModeChooserService(GameDataProvider dataProvider, UserData userData)
+        public GameModeChooserService()
         {
-            provider = dataProvider;
-            this.userData = userData;
+            _onlinePlayerCache = ServiceFactory.Instance.OnlinePlayerCache;
         }
 
-        public bool AddOnlineModePayer(string userName)
+        // Add a new online player
+        public bool AddOnlineModePlayer(string username, UserData user)
         {
-            if (UserExists(userName))
-                return false;
-            provider.CreateOnlinePlayer(userName,userData);
-            return true;
-        }
-
-        public bool OnlinePlayerLogIn(string username)
-        {  
             if (string.IsNullOrWhiteSpace(username))
                 return false;
 
-            BattlePlayerData user = GetOnlinePlayer(username);
-            if (user == null)
+            if (UserExists(username, user))
                 return false;
+
+            _onlinePlayerCache.CreateOnlinePlayer(username, user);
             return true;
         }
 
-        // CHECK EXISTS
-        public bool UserExists(string username)
+        // Log in an existing online player
+        public bool OnlinePlayerLogIn(string username, UserData user)
         {
-            return provider.OnlinePlayerExists(username,userData);
+            if (string.IsNullOrWhiteSpace(username))
+                return false;
+
+            var player = GetOnlinePlayer(username, user);
+            return player != null;
         }
 
-        // GET USER
-        public BattlePlayerData? GetOnlinePlayer(string username)
+        // Check if a player exists
+        public bool UserExists(string username, UserData user)
         {
-            return provider.LoadOnlinePlayerByName(username,userData);
-        }
-        public List<BattlePlayerData> GetAllOnlinePlayers()
-        {
-            return GameDataProvider.Instance.GetAllOnlinePlayers(userData);
+            return _onlinePlayerCache.OnlinePlayerExists(username, user);
         }
 
+        // Get a specific online player
+        public BattlePlayerData? GetOnlinePlayer(string username, UserData user)
+        {
+            return _onlinePlayerCache.GetOnlinePlayer(username, user);
+        }
 
+        // Get all online players for a user
+        public List<BattlePlayerData> GetAllOnlinePlayers(UserData user)
+        {
+            return _onlinePlayerCache.GetAllOnlinePlayers(user);
+        }
     }
 }

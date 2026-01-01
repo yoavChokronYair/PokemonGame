@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
-    internal class UserCacheService
+    public class UserCacheService
     {
         private readonly IUserRepository _repository;
 
         // --- Caches ---
         private readonly Dictionary<string, UserData> _userCache = new();
 
-        public UserCacheService(IUserRepository repository)
+        internal UserCacheService(IUserRepository repository)
         {
             _repository = repository;
         }

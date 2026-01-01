@@ -3,7 +3,6 @@ using PokemonGame.Core.Model.Helper.BattleHelper;
 using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.Services.GameData;
 
 namespace PokemonGame.Model.BattleSystem.Bot
 {

@@ -1,5 +1,4 @@
-﻿using PokemonGame.Services.GameData.Pokemon;
-
+﻿
 namespace PokemonGame.Services.Data.GameData.NpcData
 {
     public class RivalData

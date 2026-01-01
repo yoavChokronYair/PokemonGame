@@ -1,48 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using PokemonGame.Services.Data.DataProvider;
+﻿using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
+using PokemonGame.Services.Factory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonGame.Services.Handler
 {
     public class BattleHistoryService
     {
-        private readonly GameDataProvider provider;
+        private readonly BattleCacheService _battleCache;
 
-        public BattleHistoryService(GameDataProvider dataProvider)
+        public BattleHistoryService()
         {
-            provider = dataProvider;
+            // Use the singleton factory to get the public BattleCacheService
+            _battleCache = ServiceFactory.Instance.BattleCache;
         }
 
-        // GET RAW BATTLE HISTORY (from database)
+        // GET RAW BATTLE HISTORY (cached)
         public List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player)
         {
             if (player == null)
                 return new List<BattleHistoryEntryData>();
 
-            return provider.GetBattleHistory(player);
+            return _battleCache.GetBattleHistory(player);
         }
 
         // TRANSFORM INTO VIEWMODEL-FRIENDLY DATA
         public List<BattleDisplayData> GetBattleHistoryDisplay(BattlePlayerData player)
         {
-            var history = provider.GetBattleHistory(player);
+            var history = _battleCache.GetBattleHistory(player);
             var displayList = new List<BattleDisplayData>();
 
             foreach (var entry in history)
             {
                 // Player Pokémon team (max 6)
-                var playerPokemon = provider.GetBattleTeamPokemonForPlayer(entry.BattleID, player.BattlePlayerID)
+                var playerPokemon = _battleCache.GetBattleTeamPokemonForPlayer(entry.BattleID, player.BattlePlayerID)
                     .Select(p => p.SpeciesName)
                     .Take(6)
                     .ToList();
 
                 // Opponent
-                var opponentPlayer = provider.GetOpponentPlayer(entry.BattleID, player.BattlePlayerID);
+                var opponentPlayer = _battleCache.GetOpponentPlayer(entry.BattleID, player.BattlePlayerID);
                 var opponentPokemon = opponentPlayer != null
-                    ? provider.GetBattleTeamPokemonForPlayer(entry.BattleID, opponentPlayer.BattlePlayerID)
+                    ? _battleCache.GetBattleTeamPokemonForPlayer(entry.BattleID, opponentPlayer.BattlePlayerID)
                         .Select(p => p.SpeciesName)
                         .Take(6)
                         .ToList()
@@ -62,12 +64,8 @@ namespace PokemonGame.Services.Handler
 
             return displayList;
         }
-
-
-
     }
 
-    // This can be shared with your ViewModel
     public class BattleDisplayData
     {
         public int BattleID { get; set; }
