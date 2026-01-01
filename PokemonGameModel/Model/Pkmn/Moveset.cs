@@ -1,5 +1,5 @@
 ﻿using PokemonGame.Core.Config;
-using PokemonGame.Services.Data.GameData.Move;
+using PokemonGame.Model.Domain.Move;
 using System;
 using System.Collections;
 using System.Collections.Generic;

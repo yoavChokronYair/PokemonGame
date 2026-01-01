@@ -1,8 +1,7 @@
 ﻿using PokemonGame.Enums;
+using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Helper;
 using PokemonGameModel.Model.Map;
-using PokemonGame.Services.Data.GameData.MapData;
-
 namespace PokemonGame.Model.Map
 {
     public class WorldMap
@@ -20,13 +19,13 @@ namespace PokemonGame.Model.Map
         public WorldMap(TownMapDataList towns, RouteMapDataList routs)
         {
             this.townMaps = new WorldData[4, 4];
-            ArrayHelper.SetCenter2DArray(townMaps, towns.maps[0]);
-            foreach (RouteMapData route in routs.maps)
+            ArrayHelper.SetCenter2DArray(townMaps, towns.Maps[0]);
+            foreach (RouteMapData route in routs.Maps)
             {
                 routeMapTiles.Add(route, CreateRouteTiles(route));
             }
 
-            foreach (TownMapData town in towns.maps)
+            foreach (TownMapData town in towns.Maps)
             {
                 CreateTownConnections(town);
                 townMapTiles.Add(town, CreateTownTiles(town));

@@ -1,4 +1,5 @@
-﻿using PokemonGame.Model.Map;
+﻿using PokemonGame.Model.Domain.Map;
+using PokemonGame.Model.Map;
 using PokemonGame.Services.Data.GameData.MapData;
 using PokemonGameModel.Model.Map;
 

@@ -1,5 +1,5 @@
 ﻿using PokemonGame.Core.Config;
-using PokemonGame.Services.Data.GameData.Move;
+using PokemonGame.Model.Domain.Move;
 
 namespace PokemonGame.Core.Model.Pkmn
 {

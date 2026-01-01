@@ -1,7 +1,7 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Services.Enums.PokemonEnum;
 using System;
-using PokemonGame.Services.Data.GameData;
+using PokemonGame.Model.Domain.Pokemon;
 
 namespace PokemonGame.Core.Model.Pkmn.Interface
 {

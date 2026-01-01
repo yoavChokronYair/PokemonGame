@@ -5,10 +5,8 @@ using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Services.Enums.PokemonEnum;
-using PokemonGame.Services.Data.DataProvider;
-using PokemonGame.Services.Data.GameData;
-using PokemonGame.Services.Data.GameData.Pokemon;
-using PokemonGame.Services.Factory;
+
+using PokemonGame.Model.Domain.Pokemon;
 
 
 namespace PokemonGame.Model.PokemonCreation
@@ -102,7 +100,7 @@ namespace PokemonGame.Model.PokemonCreation
             SetHPToMaxHP();
         }
 
-        public static PartyPokemon CreatePlayerOwnedMon(PokemonData species, PokemonFormData form, byte level)
+        public static PartyPokemon CreatePlayerOwnedMon(PokemonData species, PokemonFormData form, byte level, BaseStatsData baseStats)
         {
             RNGHelper RNGHelper = RNGHelper.GenerateRandomPokemonIdentity();
             var p = new PartyPokemon(species, form, level);
@@ -110,7 +108,7 @@ namespace PokemonGame.Model.PokemonCreation
             p.SetEmptyPokerus();
             p.SetDefaultNickname();
             p.Shiny = RNGHelper.IsShiny();
-            var bs = ServiceFactory.Instance.PokemonCache.GetBaseStats(species.PokemonID);
+            var bs = baseStats;
             p.SetDefaultFriendship(bs);
             p.EXP = bs.BaseExpYield;
             p.AbilType = AbilityType.Ability1;

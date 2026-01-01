@@ -1,33 +1,18 @@
-﻿using PokemonGame.Services.Enums.MovesEnum;
-using PokemonGame.Services.Enums.PokemonEnum;
-
-
-namespace PokemonGame.Services.Data.GameData.Move
+﻿namespace PokemonGame.Services.Data.GameData.Move
 {
     public sealed class MoveData
     {
-        private string moveName;
-        private PokemonType type;
-        private MovesCategoryType category;
-        private sbyte priority;
-        private byte pPTier;
-        private byte movePower;
-        private byte moveAccuracy;
-        private MoveEffectType effect;
-        private int effectParam;
-        private MoveTargetType targets;
-        private MoveFlagType flags;
-        public string MoveName { get => moveName; set => moveName = value; }
+        public string MoveName { get; set; }
+        public int Type { get; set; }//should be enum in model
+        public int Category { get; set; }//should be enum in model
+        public sbyte Priority { get; set; }
+        public byte pPTier { get; set; }
+        public byte MovePower { get; set; }
+        public byte MoveAccuracy { get; set; }
+        public int Effect { get; set; }//should be enum in model
+        public int EffectParam { get; set; }
+        public int Targets { get; set; }//should be enum in model
+        public int Flags { get; set; }//should be enum in model
 
-        public PokemonType Type { get => type; set => type = value; }
-        public MovesCategoryType Category { get => category; set => category = value; }
-        public sbyte Priority { get => priority; set => priority = value; }
-        public byte PPTier { get => pPTier; set => pPTier = value; }
-        public byte MovePower { get => movePower; set => movePower = value; }
-        public byte MoveAccuracy { get => moveAccuracy; set => moveAccuracy = value; }
-        public MoveEffectType Effect { get => effect; set => effect = value; }
-        public int EffectParam { get => effectParam; set => effectParam = value; }
-        public MoveTargetType Targets { get => targets; set => targets = value; }
-        public MoveFlagType Flags { get => flags; set => flags = value; }
     }
 }

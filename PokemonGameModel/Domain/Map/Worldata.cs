@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using PokemonGame.Enums;
 
-namespace PokemonGame.Services.Data.GameData.MapData
+namespace PokemonGame.Model.Domain.Map
 {
     public class WorldData
     {
@@ -10,7 +9,7 @@ namespace PokemonGame.Services.Data.GameData.MapData
 
         public class WorldRegion
         {
-            public int TileType { get; set; }// to enum later 
+            public TileType TileType { get; set; }
             public int ID { get; set; }
             public int StartX { get; set; }
             public int StartY { get; set; }
@@ -18,5 +17,4 @@ namespace PokemonGame.Services.Data.GameData.MapData
             public int Height { get; set; }
         }
     }
-    
 }

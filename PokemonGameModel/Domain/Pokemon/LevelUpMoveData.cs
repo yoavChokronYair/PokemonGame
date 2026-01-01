@@ -1,9 +1,11 @@
 ﻿
-namespace PokemonGame.Services.Data.GameData.Pokemon
+using PokemonGame.Services.Enums.PokemonEnum;
+
+namespace PokemonGame.Model.Domain.Pokemon
 {
     public sealed class LevelUpMoveData
     {
-        public int MoveName { get; set; }//should be enum in model 
+        public MoveNameType MoveName { get; set; }
         public byte Level {  get; set; }
         public int PokemonID { get; set; }
     }

@@ -1,5 +1,4 @@
-﻿using PokemonGame.Services.Enums.PokemonEnum;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,13 +6,10 @@ namespace PokemonGame.Services.Data.GameData
 {
     public sealed class AbilityData
     {
-        private int abilityID;
-        private string abilityName;
-        private string abilityDescription;
-        private AbilityCategoryType category;
-        public int AbilityID { get => abilityID; set => abilityID = value; }
-        public string AbilityName { get => abilityName; set => abilityName = value; }
-        public string AbilityDescription { get => abilityDescription; set => abilityDescription = value; }
-        public AbilityCategoryType Category { get => category; set => category = value; }
+        public int abilityID { get; set; }
+        public string abilityName { get; set; }
+        public string abilityDescription { get; set; }
+        public int category { get; set; }//should be enum in model
+
     }
 }

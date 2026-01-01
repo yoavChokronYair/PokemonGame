@@ -1,6 +1,6 @@
-﻿namespace PokemonGame.Services.Data.GameData.Pokemon
+﻿namespace PokemonGame.Model.Domain.Pokemon
 {
-    public sealed class PokemonData 
+    public class PokemonData
     {
         public int PokemonID { get; set; }
         public string SpeciesName { get; set; }

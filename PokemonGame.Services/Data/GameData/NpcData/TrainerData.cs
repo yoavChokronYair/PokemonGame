@@ -1,5 +1,4 @@
-﻿using PokemonGame.Enums;
-namespace PokemonGame.Services.Data.GameData.NpcData
+﻿namespace PokemonGame.Services.Data.GameData.NpcData
 {
     public class TrainerData
     {
@@ -13,8 +12,8 @@ namespace PokemonGame.Services.Data.GameData.NpcData
         public List<TrainerPokemon>? Team { get; set; }
         public Reward? Rewards { get; set; }
         public bool RematchAvailable { get; set; }
-        public Direction? FirstDirection { get; set; }
-        public Direction? SecondDirection { get; set; }
+        public int FirstDirection { get; set; }//should be enum in model
+        public int SecondDirection { get; set; }//should be enum in model
     }
     public class TrainerDataList
     {

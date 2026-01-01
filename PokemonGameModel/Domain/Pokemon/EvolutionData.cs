@@ -1,16 +1,16 @@
-﻿using System;
+﻿using PokemonGame.Services.Enums.PokemonEnum;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PokemonGame.Services.Data.GameData.Pokemon
+namespace PokemonGame.Model.Domain.Pokemon
 {
-    public sealed class EvolutionData
+    public class EvolutionData
     {
-        
         public int PokemonID { get; set; }
         public ushort LevelRequired { get; set; }
         public string BabySpeciesName { get; set; }
-        public int Method { get; set; }//should be enum in model
+        public EvoMethodType Method { get; set; }
         public string SpeciesName { get; set; }
         public PokemonFormData Form { get; set; }
     }

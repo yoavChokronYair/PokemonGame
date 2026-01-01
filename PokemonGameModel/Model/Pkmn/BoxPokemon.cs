@@ -1,10 +1,10 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.Services.Enums.PokemonEnum;
-using PokemonGame.Services.Data.GameData;
-using PokemonGame.Services.Data.GameData.Pokemon;
+
 
 namespace PokemonGame.Core.Model.Pkmn
 {
@@ -96,4 +96,5 @@ namespace PokemonGame.Core.Model.Pkmn
         }
     }
 
+   
 }
