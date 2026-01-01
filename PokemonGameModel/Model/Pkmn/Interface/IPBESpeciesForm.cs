@@ -1,4 +1,4 @@
-﻿using PokemonGame.Services.Data.Pokemon;
+﻿using PokemonGame.Services.Data.GameData.Pokemon;
 
 namespace PokemonGame.Core.Model.Pkmn.Interface
 {

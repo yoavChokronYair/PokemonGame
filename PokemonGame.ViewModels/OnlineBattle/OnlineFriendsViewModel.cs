@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services.Data.User.OnlinePlayer;
+using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System;
 using System.Collections.Generic;

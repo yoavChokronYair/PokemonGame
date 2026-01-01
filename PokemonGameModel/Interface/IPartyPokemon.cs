@@ -1,8 +1,8 @@
 ﻿using PokemonGame.Core.Model.Pkmn;
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
-using PokemonGame.Services.Data;
-using PokemonGame.Services.Data.Pokemon;
+using PokemonGame.Services.GameData;
+using PokemonGame.Services.GameData.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
 using System.Collections.Generic;
 

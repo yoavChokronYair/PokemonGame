@@ -1,7 +1,7 @@
 ﻿using PokemonGame.Model.Helper;
 using PokemonGame.ViewModels.ViewModelHelper;
-using PokemonGame.Services.DataProvider;
 using PokemonGame.Services;
+using PokemonGame.Services.Data.DataProvider;
 
 namespace PokemonGame.ViewModels
 {

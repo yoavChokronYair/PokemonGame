@@ -1,6 +1,6 @@
 ﻿using PokemonGame.Core.Model.Helper.BattleHelper;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.Services.Data;
+using PokemonGame.Services.GameData;
 
 namespace PokemonGame.Interface
 {

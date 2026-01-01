@@ -1,12 +1,12 @@
 ﻿using Microsoft.Data.Sqlite;
 using Moq;
-using PokemonGame.Services;
-using PokemonGame.Services.Data;
-using PokemonGame.Services.Data.Pokemon;
-using PokemonGame.Services.DataProvider;
+using PokemonGame.Services.GameData;
+using PokemonGame.Services.GameData.Pokemon;
 using System.Collections.Generic;
 using Xunit;
 using Microsoft.Data.Sqlite;
+using PokemonGame.Services.Data.DataProvider;
+using PokemonGame.Services.Data.ConnectionsService;
 
 
 namespace PokemonGame.Tests.DBTests

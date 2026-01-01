@@ -48,7 +48,7 @@
                                         <ItemsControl ItemsSource="{Binding PlayerPokemon}">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
-                                                    <UniformGrid Columns="2"  />
+                                                    <UniformGrid Columns="3" Rows="2    " />
                                                 </ItemsPanelTemplate>
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
@@ -98,7 +98,7 @@
                                         <ItemsControl ItemsSource="{Binding OpponentPokemon}">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
-                                                    <UniformGrid Rows="3" />
+                                                    <UniformGrid Columns="3" Rows="2" />
                                                 </ItemsPanelTemplate>
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>

@@ -4,10 +4,10 @@ using PokemonGame.Core.Model.Pkmn;
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
 using PokemonGame.Interface;
-using PokemonGame.Services.Data;
-using PokemonGame.Services.Data.Pokemon;
-using PokemonGame.Services.DataProvider;
 using PokemonGame.Services.Enums.PokemonEnum;
+using PokemonGame.Services.Data.DataProvider;
+using PokemonGame.Services.Data.GameData;
+using PokemonGame.Services.Data.GameData.Pokemon;
 
 
 namespace PokemonGame.Model.PokemonCreation

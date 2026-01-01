@@ -1,5 +1,5 @@
 ﻿using PokemonGame.Model.Map;
-using PokemonGame.Services.Data.MapData;
+using PokemonGame.Services.Data.GameData.MapData;
 using PokemonGameModel.Model.Map;
 
 using Xunit.Abstractions;

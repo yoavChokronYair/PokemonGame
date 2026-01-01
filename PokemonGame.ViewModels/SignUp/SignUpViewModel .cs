@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services;
-using PokemonGame.Services.DataProvider;
+using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.ComponentModel;
@@ -13,7 +13,7 @@ namespace PokemonGame.ViewModels.SignUp
 {
     public class SignUpViewModel : ViewModelBase
     {
-        private readonly SignUpHandler _signUpHandler;
+        private readonly SignUpService _signUpHandler;
 
         private string _userName = string.Empty;
         private string _password = string.Empty;
@@ -23,7 +23,7 @@ namespace PokemonGame.ViewModels.SignUp
         public SignUpViewModel()
         {
 
-            _signUpHandler = new SignUpHandler(GameDataProvider.Instance);
+            _signUpHandler = new SignUpService(GameDataProvider.Instance);
 
             SignUpCommand = new RelayCommand(SignUp);
         }

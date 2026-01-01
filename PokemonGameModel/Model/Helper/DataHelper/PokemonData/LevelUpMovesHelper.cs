@@ -1,6 +1,6 @@
 ﻿using PokemonGame.Core.Config;
-using PokemonGame.Services.Data.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
+using PokemonGame.Services.Data.GameData.Pokemon;
 
 namespace PokemonGame.Core.Model.Helper.DataHelper.PokemonData
 {

@@ -1,4 +1,4 @@
-﻿using PokemonGame.Services.Data.Move;
+﻿using PokemonGame.Services.GameData.Move;
 using PokemonGame.Services.Enums.MovesEnum;
 using System;
 using System.Collections.Generic;

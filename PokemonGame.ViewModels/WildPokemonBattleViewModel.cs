@@ -5,7 +5,7 @@ using PokemonGame.Model.PokemonCreation;
 using PokemonGame.ViewModels.BattleMenu;
 using System.Collections.ObjectModel;
 using PokemonGame.Enums;
-using PokemonGame.Services.Data;
+using PokemonGame.Services.GameData;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.Core.Model.Helper.BattleHelper;
 

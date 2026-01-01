@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\PokemonGameModel\PokemonGame.Core.csproj" />
+	  <ProjectReference Include="..\PokemonGameModel\PokemonGame.Model.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,9 +1,7 @@
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGameModel.Model.Map;
-
-
-using PokemonGame.Services.Data.MapData;
+using PokemonGame.Services.Data.GameData.MapData;
 
 namespace PokemonGame.Model.Map
 {

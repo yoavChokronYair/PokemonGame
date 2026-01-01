@@ -1,8 +1,8 @@
-﻿using PokemonGame.Services.Data.User;
-using PokemonGame.Services.DataProvider;
-using PokemonGame.Services.Handler;
+﻿using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using System.Collections.ObjectModel;
+using PokemonGame.Services.Data.DataProvider;
+using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.ViewModels.OnlineBattle
 {
@@ -10,12 +10,12 @@ namespace PokemonGame.ViewModels.OnlineBattle
     {
         public ObservableCollection<BattleDisplayData> Battles { get; }
 
-        private readonly BattleHistoryHandler historyHandler;
+        private readonly BattleHistoryService historyHandler;
 
         public HistoryBattleViewModel()
         {
             Battles = new ObservableCollection<BattleDisplayData>();
-            historyHandler = new BattleHistoryHandler(GameDataProvider.Instance);
+            historyHandler = new BattleHistoryService(GameDataProvider.Instance);
 
             // Just pass the BattlePlayerData
             var player = GameDataProvider.Instance.LoadOnlinePlayerByName("BattleHero",

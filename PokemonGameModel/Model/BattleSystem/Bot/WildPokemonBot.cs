@@ -2,7 +2,7 @@
 using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.Services.Data;
+using PokemonGame.Services.GameData;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;

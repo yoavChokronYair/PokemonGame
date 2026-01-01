@@ -3,7 +3,7 @@ using PokemonGame.Enums;
 using PokemonGame.Interface;
 using PokemonGame.Model.BattleSystem.Bot;
 using PokemonGame.Model.PokemonCreation;
-using PokemonGame.Services.Data;
+using PokemonGame.Services.GameData;
 using PokemonGame.Services.Enums.PokemonEnum;
 using System;
 

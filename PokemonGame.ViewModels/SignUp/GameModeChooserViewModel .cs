@@ -1,17 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
-using PokemonGame.Services.DataProvider;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using PokemonGame.Services.Data.DataProvider;
 
 namespace PokemonGame.ViewModels.SignUp
 {
     public class GameModeChooserViewModel : ObservableObject
     {
-        private readonly GameModeChooserHandler _handler;
+        private readonly GameModeChooserService _handler;
         private readonly IDialogService _dialogService;
 
         private string userName = string.Empty;
@@ -42,7 +42,7 @@ namespace PokemonGame.ViewModels.SignUp
                 ? null
                 : GameDataProvider.Instance.GetAllUsers().FirstOrDefault(u => u.UserName == username);
 
-            _handler = new GameModeChooserHandler(GameDataProvider.Instance, userData);
+            _handler = new GameModeChooserService(GameDataProvider.Instance, userData);
 
             StoryModeCommand = new RelayCommand(OnStoryMode);
             OnlineModeCommand = new AsyncRelayCommand(OnOnlineModeAsync);
