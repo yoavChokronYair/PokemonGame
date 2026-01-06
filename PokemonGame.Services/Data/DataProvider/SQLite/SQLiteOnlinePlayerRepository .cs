@@ -20,7 +20,7 @@ namespace PokemonGame.Services.Data.DataProvider.SQLite
         {
             _db.Execute(
                 "INSERT INTO BattlePlayer (UserID, Name, Level) VALUES (@uid, @name, 1);",
-                new { uid = user.UserID, name = username });
+                new { uid = user.UserID, name = username});
 
             return _db.QuerySingle<BattlePlayerData>(
                 "SELECT * FROM BattlePlayer WHERE BattlePlayerID = last_insert_rowid();");

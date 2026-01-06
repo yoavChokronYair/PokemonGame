@@ -24,7 +24,6 @@ namespace PokemonGame.Views.Pages.OnlineBattlePages
         public TeamSelectPage()
         {
             InitializeComponent();
-            DataContext = new TeamSelectViewModel();
 
         }
     }

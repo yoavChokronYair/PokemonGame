@@ -6,6 +6,8 @@
     xmlns:local="clr-namespace:PokemonGame"
     xmlns:local2="clr-namespace:PokemonGame.Views.Pages.SignIn"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:onlineview="clr-namespace:PokemonGame.Views.Pages.OnlineBattlePages"
+    xmlns:onlinevm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.OnlineBattle;assembly=PokemonGame.ViewModels"
     xmlns:signinvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.SignUp;assembly=PokemonGame.ViewModels"
     xmlns:vm="clr-namespace:PokemonGame.ViewModels;assembly=PokemonGame.ViewModels"
     xmlns:vm1="clr-namespace:PokemonGame.ViewModels.ViewModelPage.BattleMenu;assembly=PokemonGame.ViewModels"
@@ -24,6 +26,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type signinvm:GameModeChooserViewModel}">
                 <local2:GameModeChooser />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type onlinevm:SideMenuViewModel}">
+                <onlineview:SideMenu />
             </DataTemplate>
         </Grid.Resources>
         <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />

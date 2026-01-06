@@ -46,14 +46,17 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         public ICommand LoginCommand { get; }
         public ICommand SwitchToSignUpCommand { get; }
+        public ICommand NavigateToGameModeChooserCommand { get; }   
 
-        public LogInViewModel(UserStore user,NavigationStore navigationStore,Func<SignUpViewModel> createViewModel)
+        public LogInViewModel(UserStore user, NavigationStore navigationStore, Func<SignUpViewModel> createViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel)
         {  
             _userStore = user;
             NavigationStore = navigationStore;
             _handler = new LogInService();
             LoginCommand = new RelayCommand(Login);
             SwitchToSignUpCommand = new NavigateCommand(navigationStore,createViewModel);
+            NavigateToGameModeChooserCommand =
+            new NavigateCommand(navigationStore, createGameChooserViewModel);
         }
 
         private void Login()
@@ -63,6 +66,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 // Login successful, you can navigate to a different ViewModel here
                 Console.WriteLine("Login success");
                 _userStore.Username = Username;
+                NavigateToGameModeChooserCommand.Execute(null);
 
 
             }

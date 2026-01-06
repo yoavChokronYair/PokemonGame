@@ -1,16 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
+using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
+using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using PokemonGame.Services.Data.DataCache;
-using PokemonGame.Services.Data.GameData.User;
-using PokemonGame.Services.Factory;
-using PokemonGame.ViewModels.ViewModelHelper;
-using PokemonGame.Services.Data.GameData.NpcData;
-using PokemonGame.ViewModels.Store;
 
 namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
@@ -18,6 +17,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
     {
         private readonly GameModeChooserService _handler;
         private readonly IDialogService _dialogService;
+        private readonly NavigationStore _navigationStore;
 
         private string userName = string.Empty;
         public string Username
@@ -37,22 +37,24 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand OnlineModeCommand { get; }
         public ICommand QuickLoginCommand { get; }
         public ICommand CreateAccountCommand { get; }
+        public ICommand NavigateToSideMenuCommand { get; }  // ✅ Command for navigation
 
-        public GameModeChooserViewModel(UserStore? user, NavigationStore navigationStore,IDialogService dialogService)
+        public GameModeChooserViewModel(UserStore? user, NavigationStore navigationStore, IDialogService dialogService,
+            Func<SideMenuViewModel> createSideMenuViewModel)
         {
-
             _dialogService = dialogService;
-            // ✅ Use ServiceFactory and OnlinePlayerCacheService
+            _navigationStore = navigationStore;
             _handler = new GameModeChooserService();
 
-            // Initialize username
-            Username = user.Username ?? string.Empty;
+            Username = user?.Username ?? string.Empty;
 
-            // Commands
             StoryModeCommand = new RelayCommand(OnStoryMode);
             OnlineModeCommand = new AsyncRelayCommand(OnOnlineModeAsync);
             QuickLoginCommand = new AsyncRelayCommand(OnQuickLoginAsync);
             CreateAccountCommand = new AsyncRelayCommand(OnCreateAccountAsync);
+
+            // ✅ Inject navigation command
+            NavigateToSideMenuCommand = new NavigateCommand(_navigationStore, createSideMenuViewModel);
         }
 
         private void OnStoryMode()
@@ -62,7 +64,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         private async Task OnOnlineModeAsync()
         {
-            // 1️⃣ Get all online players for the current user
             var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
                                 .FirstOrDefault(u => u.UserName == Username);
 
@@ -87,7 +88,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 );
             }
 
-            // 2️⃣ If no selection, create new account
             if (string.IsNullOrWhiteSpace(selectedUser))
             {
                 bool createNew = await _dialogService.ShowConfirm(
@@ -98,10 +98,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 if (!createNew)
                     return;
 
-                // Ask for new username
                 selectedUser = await _dialogService.ShowInput("Create Account", "Enter a username:");
                 if (string.IsNullOrWhiteSpace(selectedUser))
-                    return; // user cancelled
+                    return;
 
                 bool created = _handler.AddOnlineModePlayer(selectedUser, currentUser);
                 if (!created)
@@ -113,11 +112,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 await _dialogService.ShowSuccess("Success", $"Account '{selectedUser}' created successfully!");
             }
 
-            // 3️⃣ Attempt login
-            Username = selectedUser;
             if (_handler.OnlinePlayerLogIn(Username, currentUser))
             {
                 await _dialogService.ShowSuccess("Success", $"Logged in successfully as '{Username}'!");
+
+                // ✅ Use NavigateCommand instead of setting CurrentViewModel manually
+                NavigateToSideMenuCommand.Execute(null);
             }
             else
             {
@@ -144,9 +144,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             );
 
             if (string.IsNullOrWhiteSpace(selectedUser))
-                return; // user cancelled
+                return;
 
-            Username = selectedUser;
             await OnOnlineModeAsync();
         }
 
@@ -166,6 +165,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             {
                 Username = newUser;
                 await _dialogService.ShowSuccess("Success", $"Account '{newUser}' created! You can now log in.");
+
+                // ✅ Navigate using NavigateCommand
+                NavigateToSideMenuCommand.Execute(null);
             }
             else
             {

@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:PokemonGame.Views.Pages.OnlineBattlePages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="SideMenu"
     d:DesignHeight="450"
@@ -16,10 +15,12 @@
             <RowDefinition Height="100*" />
             <RowDefinition Height="350*" />
         </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="MenuColumn" Width="200" />
-            <ColumnDefinition Width="600*" />
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+
         <Border
             Grid.RowSpan="2"
             Grid.Column="0"
@@ -28,7 +29,7 @@
 
             <StackPanel>
 
-                <!--  Hamburger Button  -->
+                <!--  Hamburger  -->
                 <Button
                     Width="40"
                     Height="40"
@@ -36,42 +37,39 @@
                     HorizontalAlignment="Left"
                     Background="Transparent"
                     BorderThickness="0"
-                    Click="Hamburger_Click"
+                    Command="{Binding ToggleMenuCommand}"
                     Content="☰"
                     Cursor="Hand"
                     FontSize="22"
                     Foreground="White" />
 
-                <!--  Menu Buttons  -->
+                <!--  Menu buttons  -->
                 <Button
-                    x:Name="HistroyBtn"
-                    Click="HistroyBtn_Click"
+                    Command="{Binding HistoryCommand}"
                     Content="History"
                     Style="{StaticResource MenuButtonStyle}" />
+
                 <Button
-                    x:Name="FriendsBtn"
-                    Click="FriendsBtn_Click"
+                    Command="{Binding FriendsCommand}"
                     Content="Friends"
                     Style="{StaticResource MenuButtonStyle}" />
+
                 <Button
-                    x:Name="TeamBtn"
-                    Click="TeamBtn_Click"
+                    Command="{Binding TeamCommand}"
                     Content="Team"
                     Style="{StaticResource MenuButtonStyle}" />
+
                 <Button
-                    x:Name="ProfileBtn"
-                    Click="ProfileBtn_Click"
+                    Command="{Binding ProfileCommand}"
                     Content="Profile"
                     Style="{StaticResource MenuButtonStyle}" />
+
                 <Button
-                    x:Name="exitBtn"
-                    Click="exitBtn_Click"
+                    Command="{Binding ExitCommand}"
                     Content="to main window"
                     Style="{StaticResource MenuButtonStyle}" />
 
             </StackPanel>
         </Border>
-
-
     </Grid>
 </Page>
