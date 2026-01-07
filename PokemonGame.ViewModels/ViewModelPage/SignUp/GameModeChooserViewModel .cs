@@ -40,7 +40,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand NavigateToSideMenuCommand { get; }  // ✅ Command for navigation
 
         public GameModeChooserViewModel(UserStore? user, NavigationStore navigationStore, IDialogService dialogService,
-            Func<SideMenuViewModel> createSideMenuViewModel)
+            Func<OnlineBattleShellViewModel> createSideMenuViewModel)
         {
             _dialogService = dialogService;
             _navigationStore = navigationStore;

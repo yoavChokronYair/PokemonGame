@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:conv="clr-namespace:PokemonGame.Converters"
-    xmlns:local="clr-namespace:PokemonGame.ViewModels.OnlineBattle;assembly=PokemonGame.ViewModels"
+    xmlns:local="clr-namespace:PokemonGame.ViewModels.ViewModelPage.OnlineBattle;assembly=PokemonGame.ViewModels"
     Background="#F5F5F5">
 
 
@@ -200,7 +200,7 @@
                 BorderThickness="0"
                 Command="{Binding ClearSlotCommand}"
                 Content="Clear Slot"
-                IsEnabled="{Binding SelectedSlot, Converter={StaticResource NullToBoolConverter }, ConverterParameter=True}" />
+                IsEnabled="{Binding SelectedSlot, Converter={StaticResource NullToBoolConverter}, ConverterParameter=True}" />
 
         </StackPanel>
     </Grid>

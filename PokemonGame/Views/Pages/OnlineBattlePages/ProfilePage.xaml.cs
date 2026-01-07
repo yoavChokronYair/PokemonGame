@@ -1,5 +1,4 @@
-﻿using PokemonGame.ViewModels.OnlineBattle;
-using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
+﻿using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using System;
 using System.Collections.Generic;
 using System.Linq;

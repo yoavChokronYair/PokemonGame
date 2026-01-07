@@ -1,0 +1,56 @@
+﻿<Page
+    x:Class="PokemonGame.Views.Pages.OnlineBattlePages.OnlineBattleShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:PokemonGame.Views.Pages.OnlineBattlePages"
+    xmlns:onlinevm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.OnlineBattle;assembly=PokemonGame.ViewModels">
+
+    <Page.Resources>
+
+        <!--  Side Menu  -->
+        <DataTemplate DataType="{x:Type onlinevm:SideMenuViewModel}">
+            <local:SideMenu />
+        </DataTemplate>
+
+        <!--  Pages  -->
+        <DataTemplate DataType="{x:Type onlinevm:TeamViewModel}">
+            <local:TeamSelectPage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type onlinevm:OnlineFriendsViewModel}">
+            <local:OnlineFriendsPage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type onlinevm:ProfileViewModel}">
+            <local:ProfilePage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type onlinevm:HistoryBattleViewModel}">
+            <local:HistoryBattlePage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type onlinevm:OnlineBattleShellViewModel}">
+            <local:BattleMenuPage />
+        </DataTemplate>
+
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--  Side Menu  -->
+        <Frame
+            Grid.Column="0"
+            Content="{Binding SideMenu}"
+            NavigationUIVisibility="Hidden" />
+
+        <!--  Main Content  -->
+        <Frame
+            Grid.Column="1"
+            Content="{Binding CurrentContentViewModel}"
+            NavigationUIVisibility="Hidden" />
+    </Grid>
+</Page>

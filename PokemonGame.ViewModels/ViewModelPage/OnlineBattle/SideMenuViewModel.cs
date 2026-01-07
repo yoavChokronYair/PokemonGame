@@ -1,79 +1,57 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services.Handler;
-using PokemonGame.ViewModels.OnlineBattle;
-using PokemonGame.ViewModels.ViewModelHelper;
-using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
-using PokemonGame.ViewModels.ViewModelPage.SignUp;
+﻿using PokemonGame.ViewModels.ViewModelHelper;
+using System;
 using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class SideMenuViewModel : ViewModelBase
     {
-        private readonly NavigationStore _navigationStore;
+        private readonly NavigationStore _contentNavigationStore;
 
-        private bool _isMenuOpen = true;
-        public bool IsMenuOpen
-        {
-            get => _isMenuOpen;
-            set
-            {
-                if (_isMenuOpen != value)
-                {
-                    _isMenuOpen = value;
-                    OnPropertyChanged(nameof(IsMenuOpen));
-                }
-            }
-        }
-
-        public ICommand ToggleMenuCommand { get; }
         public ICommand HistoryCommand { get; }
         public ICommand FriendsCommand { get; }
-        public ICommand TeamCommand { get; }
         public ICommand ProfileCommand { get; }
+        public ICommand TeamCommand { get; }
         public ICommand ExitCommand { get; }
 
         public SideMenuViewModel(
-            NavigationStore navigationStore,
-            Func<HistoryBattleViewModel> createHistoryViewModel,
-            Func<OnlineFriendsViewModel> createFriendsViewModel,
-            Func<TeamViewModel> createTeamViewModel,
-            Func<ProfileViewModel> createProfileViewModel,
-            Func<GameModeChooserViewModel> createMainMenuViewModel)
+            NavigationStore contentNavigationStore,
+            Func<HistoryBattleViewModel> createHistory,
+            Func<OnlineFriendsViewModel> createFriends,
+            Func<TeamViewModel> createTeam,
+            Func<ProfileViewModel> createProfile,
+            Func<ViewModelBase>? exit = null
+        )
         {
-            _navigationStore = navigationStore;
-
-            ToggleMenuCommand = new RelayCommand(ToggleMenu);
+            _contentNavigationStore = contentNavigationStore;
 
             HistoryCommand = new NavigateCommand(
-                navigationStore,
-                createHistoryViewModel
+                _contentNavigationStore,
+                createHistory
             );
 
             FriendsCommand = new NavigateCommand(
-                navigationStore,
-                createFriendsViewModel
+                _contentNavigationStore,
+                createFriends
             );
 
             TeamCommand = new NavigateCommand(
-                navigationStore,
-                createTeamViewModel
+                _contentNavigationStore,
+                createTeam
             );
 
             ProfileCommand = new NavigateCommand(
-                navigationStore,
-                createProfileViewModel
+                _contentNavigationStore,
+                createProfile
             );
 
-            ExitCommand = new NavigateCommand(
-                navigationStore,
-                createMainMenuViewModel
-            );
-        }
-
-        private void ToggleMenu()
-        {
-            IsMenuOpen = !IsMenuOpen;
+            if (exit != null)
+            {
+                ExitCommand = new NavigateCommand(
+                    _contentNavigationStore,
+                    exit
+                );
+            }
         }
     }
 }

@@ -9,14 +9,15 @@
     xmlns:onlineview="clr-namespace:PokemonGame.Views.Pages.OnlineBattlePages"
     xmlns:onlinevm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.OnlineBattle;assembly=PokemonGame.ViewModels"
     xmlns:signinvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.SignUp;assembly=PokemonGame.ViewModels"
-    xmlns:vm="clr-namespace:PokemonGame.ViewModels;assembly=PokemonGame.ViewModels"
-    xmlns:vm1="clr-namespace:PokemonGame.ViewModels.ViewModelPage.BattleMenu;assembly=PokemonGame.ViewModels"
     Title="MainWindow"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
     <Grid>
         <Grid.Resources>
+
+            <!--  Sign In / Sign Up  -->
             <DataTemplate DataType="{x:Type signinvm:LogInViewModel}">
                 <local2:LogIn />
             </DataTemplate>
@@ -24,13 +25,20 @@
             <DataTemplate DataType="{x:Type signinvm:SignUpViewModel}">
                 <local2:SignUp />
             </DataTemplate>
+
             <DataTemplate DataType="{x:Type signinvm:GameModeChooserViewModel}">
                 <local2:GameModeChooser />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type onlinevm:SideMenuViewModel}">
-                <onlineview:SideMenu />
+
+            <!--  Online Battle Shell  -->
+            <DataTemplate DataType="{x:Type onlinevm:OnlineBattleShellViewModel}">
+                <onlineview:OnlineBattleShell />
             </DataTemplate>
+           
+
+
         </Grid.Resources>
+
         <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />
 
     </Grid>

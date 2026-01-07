@@ -1,24 +1,14 @@
 ﻿using PokemonGame.ViewModels;
-using PokemonGame.ViewModels.OnlineBattle;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace PokemonGame
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         private readonly NavigationStore _navigationStore;
@@ -34,7 +24,7 @@ namespace PokemonGame
         {
             _navigationStore.CurrentViewModel = CreateLogInViewModel();
 
-            MainWindow = new MainWindow()
+            MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
             };
@@ -42,6 +32,8 @@ namespace PokemonGame
             MainWindow.Show();
             base.OnStartup(e);
         }
+
+        // ---------------- ROOT NAVIGATION ----------------
 
         private LogInViewModel CreateLogInViewModel()
         {
@@ -69,21 +61,35 @@ namespace PokemonGame
                 _userStore,
                 _navigationStore,
                 new DialogService(),
-                CreateSideMenuViewModel
+                CreateOnlineBattleShellViewModel
             );
         }
 
-        private SideMenuViewModel CreateSideMenuViewModel()
+        // ---------------- ONLINE BATTLE SHELL ----------------
+
+        private OnlineBattleShellViewModel CreateOnlineBattleShellViewModel()
+        {
+            var contentNavigationStore = new NavigationStore();
+
+            return new OnlineBattleShellViewModel(
+                contentNavigationStore,
+                CreateSideMenuViewModel(contentNavigationStore)
+            );
+        }
+
+        private SideMenuViewModel CreateSideMenuViewModel(NavigationStore contentNavigationStore)
         {
             return new SideMenuViewModel(
-                _navigationStore,
+                contentNavigationStore,
                 CreateHistoryViewModel,
                 CreateFriendsViewModel,
                 CreateTeamViewModel,
-                CreateProfileViewModel,
-                CreateGameModeChooserViewModel
+                CreateProfileViewModel
             );
         }
+
+        // ---------------- CONTENT VIEWMODELS ----------------
+
         private HistoryBattleViewModel CreateHistoryViewModel()
         {
             return new HistoryBattleViewModel();
@@ -96,7 +102,7 @@ namespace PokemonGame
 
         private TeamViewModel CreateTeamViewModel()
         {
-            return new TeamViewModel("yoav"); // or TeamNavViewModel if you rename
+            return new TeamViewModel("yoavyair");
         }
 
         private ProfileViewModel CreateProfileViewModel()

@@ -1,5 +1,4 @@
-﻿using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,15 +16,13 @@ using System.Windows.Shapes;
 namespace PokemonGame.Views.Pages.OnlineBattlePages
 {
     /// <summary>
-    /// Interaction logic for HistoryBattlePage.xaml
+    /// Interaction logic for OnlineBattleShell.xaml
     /// </summary>
-    public partial class HistoryBattlePage : Page
+    public partial class OnlineBattleShell : Page
     {
-        public HistoryBattlePage()
+        public OnlineBattleShell()
         {
             InitializeComponent();
-            DataContext = new HistoryBattleViewModel();
-
         }
     }
 }

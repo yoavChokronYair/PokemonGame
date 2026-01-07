@@ -7,7 +7,7 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace PokemonGame.ViewModels.OnlineBattle
+namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class TeamViewModel : ViewModelBase
     {

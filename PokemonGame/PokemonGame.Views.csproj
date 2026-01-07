@@ -160,6 +160,9 @@
     <Compile Include="Views\Pages\OnlineBattlePages\BattleMenuPage.xaml.cs">
       <DependentUpon>BattleMenuPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\OnlineBattlePages\OnlineBattleShell.xaml.cs">
+      <DependentUpon>OnlineBattleShell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\OnlineBattlePages\ProfilePage.xaml.cs">
       <DependentUpon>ProfilePage.xaml</DependentUpon>
     </Compile>
@@ -207,6 +210,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\OnlineBattlePages\BattleMenuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\OnlineBattlePages\OnlineBattleShell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
