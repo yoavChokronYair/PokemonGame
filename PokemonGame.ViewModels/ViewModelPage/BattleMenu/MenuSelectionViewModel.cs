@@ -2,22 +2,22 @@
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
-    public class MenuSelectionViewModel :ViewModelBase
+    public class MenuSelectionViewModel : ViewModelBase
     {
         public int Rows => 2;
         public int Columns => 2;
 
-        private int selectedRow;
+        private int _selectedRow;
         public int SelectedRow
         {
-            get => selectedRow;
+            get => _selectedRow;
             set => OnPropertyChanged(nameof(SelectedRow));
         }
 
-        private int selectedCol;
+        private int _selectedCol;
         public int SelectedCol
         {
-            get => selectedCol;
+            get => _selectedCol;
             set => OnPropertyChanged(nameof(SelectedCol));
         }
     }

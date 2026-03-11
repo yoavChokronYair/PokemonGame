@@ -9,9 +9,9 @@ namespace PokemonGame.Views.Controls
         Blue,
         Red
     }
-    public class BoardBackground: ContentControl
+    public class BoardBackground : ContentControl
     {
-        
+
         public static readonly DependencyProperty BackgroundTypeProperty =
             DependencyProperty.Register(nameof(BackgroundType), typeof(BackgroundType), typeof(BoardBackground),
                 new PropertyMetadata(BackgroundType.White));
@@ -27,6 +27,6 @@ namespace PokemonGame.Views.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(BoardBackground),
                 new FrameworkPropertyMetadata(typeof(BoardBackground)));
         }
-        
+
     }
 }
