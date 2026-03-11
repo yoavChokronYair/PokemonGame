@@ -69,7 +69,9 @@ namespace PokemonGame.Model.Model.Helper.Decorator
         }
 
         public bool IsLocked => turnsLocked > 0;
-        public void Tick() { if (turnsLocked > 0)
+        public void Tick()
+        {
+            if (turnsLocked > 0)
             {
                 turnsLocked--;
             }
