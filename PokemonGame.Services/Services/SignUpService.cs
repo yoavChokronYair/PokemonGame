@@ -1,37 +1,40 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using PokemonGame.Services.Data.DataCache;
-using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class SignUpService
     {
-        private readonly UserCacheService provider;
+        private readonly UserCacheService _provider;
 
         public SignUpService()
         {
-            provider = ServiceFactory.Instance.UserCache;
+            _provider = ServiceFactory.Instance.UserCache;
         }
 
         public bool UserNameExists(string userName)
         {
-            if(string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName))
+            {
                 return false;
+            }
 
-            return  provider.UserExists(userName);
+            return _provider.UserExists(userName);
 
         }
 
         public bool CreateUser(string userName, string password)
         {
             if (UserNameExists(userName))
+            {
                 return false;
+            }
+
             var hashedPassword = HashPassword(password);
 
-             provider.CreateUser(userName,hashedPassword);
+            _provider.CreateUser(userName, hashedPassword);
             return true;
         }
 

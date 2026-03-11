@@ -1,18 +1,16 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services;
-using PokemonGame.Services.Data.DataProvider;
+﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class LogInViewModel : ViewModelBase
     {
-        private readonly NavigationStore NavigationStore;
+        private readonly NavigationStore _navigationStore;
         private readonly UserStore _userStore;
-        public ViewModelBase CurrentViewModel => NavigationStore.CurrentViewModel;
+        public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
 
         private readonly LogInService _handler;
 
@@ -46,15 +44,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         public ICommand LoginCommand { get; }
         public ICommand SwitchToSignUpCommand { get; }
-        public ICommand NavigateToGameModeChooserCommand { get; }   
+        public ICommand NavigateToGameModeChooserCommand { get; }
 
         public LogInViewModel(UserStore user, NavigationStore navigationStore, Func<SignUpViewModel> createViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel)
-        {  
+        {
             _userStore = user;
-            NavigationStore = navigationStore;
+            _navigationStore = navigationStore;
             _handler = new LogInService();
             LoginCommand = new RelayCommand(Login);
-            SwitchToSignUpCommand = new NavigateCommand(navigationStore,createViewModel);
+            SwitchToSignUpCommand = new NavigateCommand(navigationStore, createViewModel);
             NavigateToGameModeChooserCommand =
             new NavigateCommand(navigationStore, createGameChooserViewModel);
         }
@@ -76,6 +74,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             }
         }
 
-       
+
     }
 }

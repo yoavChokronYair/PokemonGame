@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Services.Data.ConnectionsService
+﻿namespace PokemonGame.Services.Data.ConnectionsService
 {
     public interface ISQLiteConnectionService
     {

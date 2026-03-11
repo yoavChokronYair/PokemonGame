@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Services.Data.GameData
+﻿namespace PokemonGame.Services.Data.GameData
 {
     public sealed class AbilityData
     {

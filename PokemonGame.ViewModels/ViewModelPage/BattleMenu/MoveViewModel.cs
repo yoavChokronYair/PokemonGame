@@ -4,43 +4,43 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class MoveViewModel : ViewModelBase
     {
-        private string baseName;
+        private string _baseName;
         public string BaseName
         {
-            get => baseName;
-            set { if (baseName != value) { baseName = value; OnPropertyChanged(nameof(BaseName)); OnPropertyChanged(nameof(DisplayName)); } }
+            get => _baseName;
+            set { if (_baseName != value) { _baseName = value; OnPropertyChanged(nameof(BaseName)); OnPropertyChanged(nameof(DisplayName)); } }
         }
 
-        private bool isSelected;
+        private bool _isSelected;
         public bool IsSelected
         {
-            get => isSelected;
-            set { if (isSelected != value) { isSelected = value; OnPropertyChanged(nameof(IsSelected)); OnPropertyChanged(nameof(DisplayName)); } }
+            get => _isSelected;
+            set { if (_isSelected != value) { _isSelected = value; OnPropertyChanged(nameof(IsSelected)); OnPropertyChanged(nameof(DisplayName)); } }
         }
 
         public string DisplayName => IsSelected ? $"> {BaseName}" : BaseName;
 
-        private int maxPP;
+        private int _maxPP;
         public int MaxPP
         {
-            get => maxPP;
-            set { if (maxPP != value) { maxPP = value; OnPropertyChanged(nameof(MaxPP)); } }
+            get => _maxPP;
+            set { if (_maxPP != value) { _maxPP = value; OnPropertyChanged(nameof(MaxPP)); } }
         }
 
-        private int currentPP;
+        private int _currentPP;
         public int CurrentPP
         {
-            get => currentPP;
-            set { if (currentPP != value) { currentPP = value; OnPropertyChanged(nameof(CurrentPP)); } }
+            get => _currentPP;
+            set { if (_currentPP != value) { _currentPP = value; OnPropertyChanged(nameof(CurrentPP)); } }
         }
 
-        private string type;
+        private string _type;
         public string Type
         {
-            get => type;
-            set { if (type != value) { type = value; OnPropertyChanged(nameof(Type)); } }
+            get => _type;
+            set { if (_type != value) { _type = value; OnPropertyChanged(nameof(Type)); } }
         }
 
-        
+
     }
 }

@@ -1,22 +1,17 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services;
-using PokemonGame.Services.Data.DataProvider;
+﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Input;
 
 
 namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class SignUpViewModel : ViewModelBase
     {
-        private readonly NavigationStore NavigationStore;
+        private readonly NavigationStore _navigationStore;
         private readonly UserStore _userStore;
-        public ViewModelBase CurrentViewModel => NavigationStore.CurrentViewModel;
+        public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
 
         private readonly SignUpService _signUpHandler;
 
@@ -25,10 +20,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private string _confirmPassword = string.Empty;
         private string _statusMessage = string.Empty;
 
-        public SignUpViewModel(UserStore userStore, NavigationStore navigationStore,Func<LogInViewModel> createLogInViewModel,Func<GameModeChooserViewModel> createGameChooserViewModel)
+        public SignUpViewModel(UserStore userStore, NavigationStore navigationStore, Func<LogInViewModel> createLogInViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel)
         {
             _userStore = userStore;
-            NavigationStore = navigationStore;
+            _navigationStore = navigationStore;
             _signUpHandler = new SignUpService();
 
             SignUpCommand = new RelayCommand(SignUp);

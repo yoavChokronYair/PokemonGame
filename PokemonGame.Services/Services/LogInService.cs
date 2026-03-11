@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using PokemonGame.Services.Data.DataCache;
-using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
 
@@ -11,39 +8,43 @@ namespace PokemonGame.Services.Handler
 {
     public class LogInService
     {
-        private readonly UserCacheService provider;
+        private readonly UserCacheService _provider;
 
         public LogInService()
         {
-            provider = ServiceFactory.Instance.UserCache;
+            _provider = ServiceFactory.Instance.UserCache;
         }
 
         // LOGIN
         public bool Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
                 return false;
+            }
 
-            UserData user = provider.GetUserByName(username);
+            UserData user = _provider.GetUserByName(username);
             if (user == null)
+            {
                 return false;
+            }
 
             int hash = HashPassword(password);
             return user.Password == hash;
         }
 
-        
+
 
         // CHECK EXISTS
         public bool UserExists(string username)
         {
-            return provider.UserExists(username);
+            return _provider.UserExists(username);
         }
 
         // GET USER
         public UserData? GetUser(string username)
         {
-            return provider.GetUserByName(username);
+            return _provider.GetUserByName(username);
         }
 
         // PASSWORD HASH
