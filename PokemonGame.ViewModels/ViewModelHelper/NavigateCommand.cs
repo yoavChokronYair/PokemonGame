@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.ViewModels.ViewModelHelper
+﻿namespace PokemonGame.ViewModels.ViewModelHelper
 {
     internal class NavigateCommand : CommandBase
     {

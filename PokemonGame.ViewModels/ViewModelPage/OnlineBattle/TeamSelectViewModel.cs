@@ -1,11 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using System.Collections.ObjectModel;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows.Data;
-using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
@@ -20,7 +14,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             Slots = new ObservableCollection<PokemonSlotViewModel>();
 
             for (int i = 0; i < 6; i++)
+            {
                 Slots.Add(new PokemonSlotViewModel());
+            }
         }
     }
 
