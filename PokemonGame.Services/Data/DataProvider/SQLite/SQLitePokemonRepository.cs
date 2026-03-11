@@ -1,9 +1,6 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Data.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonGame.Services.Data.DataProvider.SQLite
 {
@@ -49,7 +46,7 @@ namespace PokemonGame.Services.Data.DataProvider.SQLite
         public List<PokemonData> GetAllPokemon() =>
             db.Query<PokemonData>("SELECT * FROM Pokemon").ToList();
 
-        public  List<PokemonFormData> GetAllFormData() =>
+        public List<PokemonFormData> GetAllFormData() =>
             db.Query<PokemonFormData>("SELECT * FROM PokemonForm").ToList();
 
         public List<BaseStatsData> GetAllBaseStats() =>

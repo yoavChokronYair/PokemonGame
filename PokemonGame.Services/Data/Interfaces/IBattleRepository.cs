@@ -1,9 +1,6 @@
 ﻿using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonGame.Services.Data.Interfaces
 {

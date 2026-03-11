@@ -2,27 +2,22 @@ root = true
 
 [*.cs]
 
-# indentation
-indent_style = space
-indent_size = 4
-
-# var preferences
-csharp_style_var_for_built_in_types = false:error
-csharp_style_var_when_type_is_apparent = false:error
-csharp_style_var_elsewhere = false:error
-
-# naming conventions
-dotnet_naming_rule.private_fields_should_be_camel_case.severity = error
-dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
-dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case_style
+# Naming conventions
+dotnet_naming_rule.private_fields_camel_case.severity = warning
+dotnet_naming_rule.private_fields_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_camel_case.style = camel_case_style
 
 dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 
 dotnet_naming_style.camel_case_style.capitalization = camel_case
 
-# braces
-csharp_prefer_braces = true:error
+# Formatting
+csharp_prefer_braces = true:warning
+dotnet_sort_system_directives_first = true:warning
 
-# expression rules
-dotnet_style_require_accessibility_modifiers = always:error
+# Unused imports
+dotnet_diagnostic.IDE0005.severity = warning
+
+# Magic numbers
+dotnet_diagnostic.CA1502.severity = warning
