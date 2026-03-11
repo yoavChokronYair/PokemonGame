@@ -23,22 +23,34 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore dependencies
+      - name: Restore
         run: dotnet restore
 
-      - name: Run code style fixer
+      - name: Run formatter
         run: dotnet format
 
-      - name: Configure git
+      - name: Check if files changed
+        id: changes
         run: |
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure git
+        if: steps.changes.outputs.changed == 'true'
+        run: |
           git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Commit changes
+        if: steps.changes.outputs.changed == 'true'
         run: |
           git add .
-          git diff --staged --quiet || git commit -m "Auto fix code style"
+          git commit -m "Auto fix code style"
 
       - name: Push changes
+        if: steps.changes.outputs.changed == 'true'
         run: |
           git push origin HEAD:${{ github.head_ref }}
