@@ -2,7 +2,7 @@ name: Auto Fix C# Style
 
 on:
   pull_request:
-
+  
 jobs:
   format:
     if: github.actor != 'github-actions[bot]'
