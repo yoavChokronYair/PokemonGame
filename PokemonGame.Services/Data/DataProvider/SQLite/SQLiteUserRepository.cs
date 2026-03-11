@@ -1,8 +1,6 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PokemonGame.Services.Data.DataProvider.SQLite
 {

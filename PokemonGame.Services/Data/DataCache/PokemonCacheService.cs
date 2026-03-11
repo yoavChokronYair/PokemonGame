@@ -1,10 +1,5 @@
-﻿using PokemonGame.Services.Data.DataProvider;
-using PokemonGame.Services.Data.GameData;
-using PokemonGame.Services.Data.GameData.Move;
-using PokemonGame.Services.Data.GameData.Pokemon;
+﻿using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Data.Interfaces;
-using System;
-using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
@@ -29,9 +24,17 @@ namespace PokemonGame.Services.Data.DataCache
 
         public PokemonData GetPokemonData(int id, bool useCache = true)
         {
-            if (useCache && _pokemonCache.TryGetValue(id, out var data)) return data;
+            if (useCache && _pokemonCache.TryGetValue(id, out var data))
+            {
+                return data;
+            }
+
             data = _provider.LoadPokemonData(id);
-            if (useCache) _pokemonCache[id] = data;
+            if (useCache)
+            {
+                _pokemonCache[id] = data;
+            }
+
             return data;
         }
 
@@ -39,9 +42,17 @@ namespace PokemonGame.Services.Data.DataCache
 
         public PokemonFormData GetFormData(int id, bool useCache = true)
         {
-            if (useCache && _formCache.TryGetValue(id, out var data)) return data;
+            if (useCache && _formCache.TryGetValue(id, out var data))
+            {
+                return data;
+            }
+
             data = _provider.LoadFormData(id);
-            if (useCache) _formCache[id] = data;
+            if (useCache)
+            {
+                _formCache[id] = data;
+            }
+
             return data;
         }
 
@@ -49,9 +60,17 @@ namespace PokemonGame.Services.Data.DataCache
 
         public BaseStatsData GetBaseStats(int id, bool useCache = true)
         {
-            if (useCache && _baseStatsCache.TryGetValue(id, out var data)) return data;
+            if (useCache && _baseStatsCache.TryGetValue(id, out var data))
+            {
+                return data;
+            }
+
             data = _provider.LoadBaseStatsData(id);
-            if (useCache) _baseStatsCache[id] = data;
+            if (useCache)
+            {
+                _baseStatsCache[id] = data;
+            }
+
             return data;
         }
 
@@ -59,9 +78,17 @@ namespace PokemonGame.Services.Data.DataCache
 
         public EvolutionData GetEvolutionData(int id, bool useCache = true)
         {
-            if (useCache && _evolutionCache.TryGetValue(id, out var data)) return data;
+            if (useCache && _evolutionCache.TryGetValue(id, out var data))
+            {
+                return data;
+            }
+
             data = _provider.LoadEvolutionData(id);
-            if (useCache) _evolutionCache[id] = data;
+            if (useCache)
+            {
+                _evolutionCache[id] = data;
+            }
+
             return data;
         }
 
@@ -69,9 +96,17 @@ namespace PokemonGame.Services.Data.DataCache
 
         public EggMoveData GetEggMoves(int id, bool useCache = true)
         {
-            if (useCache && _eggMoveCache.TryGetValue(id, out var data)) return data;
+            if (useCache && _eggMoveCache.TryGetValue(id, out var data))
+            {
+                return data;
+            }
+
             data = _provider.LoadEggMovesData(id);
-            if (useCache) _eggMoveCache[id] = data;
+            if (useCache)
+            {
+                _eggMoveCache[id] = data;
+            }
+
             return data;
         }
 
@@ -79,9 +114,17 @@ namespace PokemonGame.Services.Data.DataCache
 
         public LevelUpMoveData GetLevelUpMoves(int id, bool useCache = true)
         {
-            if (useCache && _levelUpMoveCache.TryGetValue(id, out var data)) return data;
+            if (useCache && _levelUpMoveCache.TryGetValue(id, out var data))
+            {
+                return data;
+            }
+
             data = _provider.LoadLevelUpMovesData(id);
-            if (useCache) _levelUpMoveCache[id] = data;
+            if (useCache)
+            {
+                _levelUpMoveCache[id] = data;
+            }
+
             return data;
         }
 

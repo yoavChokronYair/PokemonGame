@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
-using System.Collections.Generic;
 
 namespace PokemonGame.Services.Handler
 {
@@ -18,10 +17,14 @@ namespace PokemonGame.Services.Handler
         public bool AddOnlineModePlayer(string username, UserData user)
         {
             if (string.IsNullOrWhiteSpace(username))
+            {
                 return false;
+            }
 
             if (UserExists(username, user))
+            {
                 return false;
+            }
 
             _onlinePlayerCache.CreateOnlinePlayer(username, user);
             return true;
@@ -31,7 +34,9 @@ namespace PokemonGame.Services.Handler
         public bool OnlinePlayerLogIn(string username, UserData user)
         {
             if (string.IsNullOrWhiteSpace(username))
+            {
                 return false;
+            }
 
             var player = GetOnlinePlayer(username, user);
             return player != null;

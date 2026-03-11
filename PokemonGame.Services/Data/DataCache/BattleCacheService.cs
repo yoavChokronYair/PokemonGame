@@ -2,7 +2,6 @@
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
 using PokemonGame.Services.Data.Interfaces;
-using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
@@ -22,11 +21,15 @@ namespace PokemonGame.Services.Data.DataCache
         public List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player, bool useCache = true)
         {
             if (useCache && _historyCache.TryGetValue(player.BattlePlayerID, out var history))
+            {
                 return history;
+            }
 
             history = _repository.GetBattleHistory(player);
             if (useCache)
+            {
                 _historyCache[player.BattlePlayerID] = history;
+            }
 
             return history;
         }
@@ -35,11 +38,15 @@ namespace PokemonGame.Services.Data.DataCache
         {
             var key = (battleID, playerID);
             if (useCache && _teamPokemonCache.TryGetValue(key, out var team))
+            {
                 return team;
+            }
 
             team = _repository.GetBattleTeamPokemonForPlayer(battleID, playerID);
             if (useCache)
+            {
                 _teamPokemonCache[key] = team;
+            }
 
             return team;
         }

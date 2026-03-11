@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelHelper
 {
-    public abstract class CommandBase:ICommand
+    public abstract class CommandBase : ICommand
     {
         public event EventHandler? CanExecuteChanged;
         public virtual bool CanExecute(object? parameter)
@@ -14,7 +11,7 @@ namespace PokemonGame.ViewModels.ViewModelHelper
         }
 
         public abstract void Execute(object? parameter);
-        protected void OnCanExecuteChanged() 
+        protected void OnCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }

@@ -1,19 +1,15 @@
-﻿using PokemonGame.Model.Helper;
-using PokemonGame.ViewModels.ViewModelHelper;
-using PokemonGame.Services;
-using PokemonGame.Services.Data.DataProvider;
-using PokemonGame.ViewModels.ViewModelPage.SignUp;
+﻿using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels
 {
-    public class MainWindowViewModel:ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
         private readonly NavigationStore NavigationStore;
 
         public MainWindowViewModel(NavigationStore navigationStore)
         {
             NavigationStore = navigationStore;
-           // LogInViewModel logInViewModel = new LogInViewModel(navigationStore,createViewModel);
+            // LogInViewModel logInViewModel = new LogInViewModel(navigationStore,createViewModel);
             //NavigationStore.CurrentViewModel = logInViewModel;
             navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
         }
