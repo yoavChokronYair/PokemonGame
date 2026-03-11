@@ -2,9 +2,6 @@
 using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonGame.Services.Data.DataProvider.SQLite
 {
@@ -30,7 +27,7 @@ namespace PokemonGame.Services.Data.DataProvider.SQLite
         public List<MoveData> GetAllMoves() =>
             db.Query<MoveData>("SELECT * FROM Move").ToList();
 
-        public  List<AbilityData> GetAllAbilities() =>
+        public List<AbilityData> GetAllAbilities() =>
             db.Query<AbilityData>("SELECT * FROM Ability").ToList();
 
     }

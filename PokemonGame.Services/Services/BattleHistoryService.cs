@@ -2,9 +2,6 @@
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
 using PokemonGame.Services.Factory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PokemonGame.Services.Handler
 {
@@ -22,7 +19,9 @@ namespace PokemonGame.Services.Handler
         public List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player)
         {
             if (player == null)
+            {
                 return new List<BattleHistoryEntryData>();
+            }
 
             return _battleCache.GetBattleHistory(player);
         }

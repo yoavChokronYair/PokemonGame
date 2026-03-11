@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace PokemonGame.Services.Data.GameData.MapData
+﻿namespace PokemonGame.Services.Data.GameData.MapData
 {
     public class WorldData
     {
@@ -18,5 +15,5 @@ namespace PokemonGame.Services.Data.GameData.MapData
             public int Height { get; set; }
         }
     }
-    
+
 }
