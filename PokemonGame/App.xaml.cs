@@ -1,11 +1,11 @@
-﻿using PokemonGame.ViewModels;
+﻿using System;
+using System.Windows;
+using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
-using System;
-using System.Windows;
 
 namespace PokemonGame
 {
@@ -23,12 +23,10 @@ namespace PokemonGame
         protected override void OnStartup(StartupEventArgs e)
         {
             _navigationStore.CurrentViewModel = CreateLogInViewModel();
-
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
             };
-
             MainWindow.Show();
             base.OnStartup(e);
         }
@@ -70,7 +68,6 @@ namespace PokemonGame
         private OnlineBattleShellViewModel CreateOnlineBattleShellViewModel()
         {
             var contentNavigationStore = new NavigationStore();
-
             return new OnlineBattleShellViewModel(
                 contentNavigationStore,
                 CreateSideMenuViewModel(contentNavigationStore)
@@ -83,7 +80,7 @@ namespace PokemonGame
                 contentNavigationStore,
                 CreateHistoryViewModel,
                 CreateFriendsViewModel,
-                CreateTeamViewModel,
+                CreateTeamSelectPageViewModel,
                 CreateProfileViewModel
             );
         }
@@ -100,14 +97,14 @@ namespace PokemonGame
             return new OnlineFriendsViewModel();
         }
 
-        private TeamViewModel CreateTeamViewModel()
+        private TeamSelectPageViewModel CreateTeamSelectPageViewModel()
         {
-            return new TeamViewModel("yoavyair");
+            return new TeamSelectPageViewModel(_userStore);
         }
 
         private ProfileViewModel CreateProfileViewModel()
         {
-            return new ProfileViewModel();
+            return new ProfileViewModel(_userStore);
         }
     }
 }
