@@ -14,168 +14,24 @@ using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Move
 {
-    internal class MoveDomain : IMove
+    internal class MoveDomain
     {
-        public string Name { get; }
-        public PokemonType Element { get; }
-        public MoveCategory Category { get; }
-        public MoveTarget Target { get; }
-        public int PP { get; private set; }
-        public int MaxPP { get; }
-        public IAttempt Attempt { get; }
+        public string Name { get; set; } = string.Empty;
+        public PokemonType Element { get; set; }
+        public MoveCategory Category { get; set; }
+        public MoveTarget Target { get; set; }
+        public int PP { get; set; }
+        public int MaxPP { get; set; }
 
-        public MoveDomain(
-            string name,
-            PokemonType element,
-            MoveCategory category,
-            IAttempt attempt,
-            int pp = 10,
-            MoveTarget target = MoveTarget.Opponent)
+        public MoveDomain(string name, PokemonType element, MoveCategory category,
+                         int pp = 10, MoveTarget target = MoveTarget.Opponent)
         {
             Name = name;
             Element = element;
             Category = category;
-            Attempt = attempt;
             PP = pp;
             MaxPP = pp;
             Target = target;
-        }
-
-        public void Execute(BattleState battle)
-        {
-            if (PP <= 0)
-            {
-                battle.Logger.Log($"{Name} has no PP left!");
-                return;
-            }
-
-            PP--;
-            battle.RegisterMove(this);
-            battle.Logger.Log($"{battle.Attacker.Name} used {Name}!");
-            Attempt.Execute(battle);
-        }
-
-        public void RestorePP(int amount) => PP = Math.Min(PP + amount, MaxPP);
-        public bool HasPP => PP > 0;
-    }
-
-    // Blocks execution if a battle-level condition is not met.
-    // e.g. can't use a fire move in heavy rain, can't sleep an already-asleep target.
-    internal class WithPrecondition : IMove
-    {
-        private readonly ICondition<BattleState> condition;
-        private readonly IMove move;
-        private readonly string? failMessage;
-
-        public WithPrecondition(ICondition<BattleState> condition, IMove move, string? failMessage = null)
-        {
-            this.condition = condition;
-            this.move = move;
-            this.failMessage = failMessage;
-        }
-
-        public void Execute(BattleState battle)
-        {
-            if (!condition.Check(battle))
-            {
-                battle.Logger.Log(failMessage ?? "But it failed!");
-                return;
-            }
-            move.Execute(battle);
-        }
-    }
-
-    // Blocks execution if the user pokemon itself doesn't meet a condition.
-    // e.g. can't move while paralyzed/frozen, can't use Fly if already airborne.
-    internal class WithApplicability : IMove
-    {
-        private readonly ICondition<PokemonState> condition;
-        private readonly IMove move;
-        private readonly string? failMessage;
-
-        public WithApplicability(ICondition<PokemonState> condition, IMove move, string? failMessage = null)
-        {
-            this.condition = condition;
-            this.move = move;
-            this.failMessage = failMessage;
-        }
-
-        public void Execute(BattleState battle)
-        {
-            if (!condition.Check(battle.Attacker))
-            {
-                battle.Logger.Log(failMessage ?? "But it failed!");
-                return;
-            }
-            move.Execute(battle);
-        }
-    }
-
-    // Disables a move after use for N turns — e.g. Disable, Encore lock.
-    internal class WithDisable : IMove
-    {
-        private readonly IMove move;
-        private readonly int lockTurns;
-        private int turnsLocked = 0;
-
-        public WithDisable(IMove move, int lockTurns)
-        {
-            this.move = move;
-            this.lockTurns = lockTurns;
-        }
-
-        public bool IsLocked => turnsLocked > 0;
-        public void Tick() { if (turnsLocked > 0) turnsLocked--; }
-
-        public void Execute(BattleState battle)
-        {
-            if (IsLocked)
-            {
-                battle.Logger.Log("The move is disabled!");
-                return;
-            }
-            move.Execute(battle);
-            turnsLocked = lockTurns;
-        }
-    }
-
-    // Overrides type effectiveness — e.g. Scrappy lets Normal hit Ghost.
-    internal class WithTypeOverride : IMove
-    {
-        private readonly IMove move;
-        private readonly PokemonType overrideType;
-
-        public WithTypeOverride(IMove move, PokemonType overrideType)
-        {
-            this.move = move;
-            this.overrideType = overrideType;
-        }
-
-        public void Execute(BattleState battle)
-        {
-            battle.ActiveTypeOverride = overrideType;
-            move.Execute(battle);
-            battle.ActiveTypeOverride = null;
-        }
-    }
-
-    // Executes a follow-up effect automatically after the main move.
-    // e.g. Relic Song transforms Meloetta, U-turn forces a switch after damage.
-    internal class WithFollowUp : IMove
-    {
-        private readonly IMove main;
-        private readonly IEffect followUp;
-
-        public WithFollowUp(IMove main, IEffect followUp)
-        {
-            this.main = main;
-            this.followUp = followUp;
-        }
-
-        public void Execute(BattleState battle)
-        {
-            main.Execute(battle);
-            followUp.Apply(battle);
         }
     }
 }

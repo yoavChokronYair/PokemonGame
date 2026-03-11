@@ -11,7 +11,7 @@ using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
-namespace PokemonGame.Model.Domain.Move
+namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     #region Combinators
 

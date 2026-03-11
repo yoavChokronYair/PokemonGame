@@ -12,7 +12,7 @@ using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
-namespace PokemonGame.Model.Domain.Move
+namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     // Single move attempt — hits or misses, with optional after effect.
     // e.g. Flamethrower: accuracy check → damage + 10% burn chance, crash on miss.

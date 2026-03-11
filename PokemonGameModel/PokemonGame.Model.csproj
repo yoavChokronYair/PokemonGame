@@ -14,7 +14,6 @@
 	<ItemGroup>
 	  <Folder Include="Model\BattleSystem\Bot\" />
 	  <Folder Include="Model\BattleSystem\Player\" />
-	  <Folder Include="Model\Helper\MoveHelper\" />
 	  <Folder Include="Model\Map\" />
 	</ItemGroup>
 

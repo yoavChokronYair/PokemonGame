@@ -13,7 +13,7 @@ using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Model.Model.Helper.PokemonHelper;
 
-namespace PokemonGame.Model.Domain.Move
+namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     // ── Condition Combinators ─────────────────────────────────────────────────
 

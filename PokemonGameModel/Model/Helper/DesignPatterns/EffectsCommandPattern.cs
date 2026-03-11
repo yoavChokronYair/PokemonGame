@@ -1,7 +1,7 @@
 // Design: Command pattern — each IEffect is a self-contained battle action.
 // Design: Composite pattern — Sequence and Conditional compose multiple effects.
 // Covers: damage (formula, direct, OHKO), drain, recoil, HP restore, status, stat changes,
-//         field effects (weather/screens/hazards), utility (ForceSwitch, CureStatus, CopyMove).
+// field effects (weather/screens/hazards), utility (ForceSwitch, CureStatus, CopyMove).
 // Layer: Domain/Move — concrete effect implementations.
 // IEffect interface lives in Interface/Move/IEffect.cs.
 // NOTE: Chance uses RandomHelper.NextBool — no inline new Random() in this file.
@@ -13,7 +13,7 @@ using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
-namespace PokemonGame.Model.Domain.Move
+namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     #region Combinators
 
