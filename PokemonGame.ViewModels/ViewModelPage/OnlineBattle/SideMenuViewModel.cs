@@ -18,7 +18,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             NavigationStore contentNavigationStore,
             Func<HistoryBattleViewModel> createHistory,
             Func<OnlineFriendsViewModel> createFriends,
-            Func<TeamViewModel> createTeam,
+            Func<TeamSelectPageViewModel> createTeam,
             Func<ProfileViewModel> createProfile,
             Func<ViewModelBase>? exit = null
         )
