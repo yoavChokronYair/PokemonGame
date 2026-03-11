@@ -17,25 +17,25 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     internal class And<T> : ICondition<T>
     {
-        private readonly ICondition<T> left;
-        private readonly ICondition<T> right;
-        public And(ICondition<T> left, ICondition<T> right) { this.left = left; this.right = right; }
-        public bool Check(T entity) => left.Check(entity) && right.Check(entity);
+        private readonly ICondition<T> _left;
+        private readonly ICondition<T> _right;
+        public And(ICondition<T> left, ICondition<T> right) { _left = left; _right = right; }
+        public bool Check(T entity) => _left.Check(entity) && _right.Check(entity);
     }
 
     internal class Or<T> : ICondition<T>
     {
-        private readonly ICondition<T> left;
-        private readonly ICondition<T> right;
-        public Or(ICondition<T> left, ICondition<T> right) { this.left = left; this.right = right; }
-        public bool Check(T entity) => left.Check(entity) || right.Check(entity);
+        private readonly ICondition<T> _left;
+        private readonly ICondition<T> _right;
+        public Or(ICondition<T> left, ICondition<T> right) { _left = left; _right = right; }
+        public bool Check(T entity) => _left.Check(entity) || _right.Check(entity);
     }
 
     internal class Not<T> : ICondition<T>
     {
-        private readonly ICondition<T> inner;
-        public Not(ICondition<T> inner) { this.inner = inner; }
-        public bool Check(T entity) => !inner.Check(entity);
+        private readonly ICondition<T> _inner;
+        public Not(ICondition<T> inner) { _inner = inner; }
+        public bool Check(T entity) => !_inner.Check(entity);
     }
 
     // ── Probability ───────────────────────────────────────────────────────────
@@ -43,12 +43,12 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     // Uses RandomHelper.NextBool — do not use new Random() here.
     internal class Probability<T> : ICondition<T>
     {
-        private readonly double probability;
+        private readonly double _probability;
         public Probability(double probability)
         {
-            this.probability = MathHelper.Clamp(probability, 0.0, 1.0);
+            _probability = MathHelper.Clamp(probability, 0.0, 1.0);
         }
-        public bool Check(T entity) => RandomHelper.NextBool(probability);
+        public bool Check(T entity) => RandomHelper.NextBool(_probability);
     }
 
     // Convenience alias — most common usage is against BattleDomain.
@@ -61,9 +61,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     internal class IsWeatherActive : ICondition<BattleState>
     {
-        private readonly Weather weather;
-        public IsWeatherActive(Weather weather) { this.weather = weather; }
-        public bool Check(BattleState battle) => battle.WeatherService.IsWeatherActive(weather);
+        private readonly Weather _weather;
+        public IsWeatherActive(Weather weather) { _weather = weather; }
+        public bool Check(BattleState battle) => battle.WeatherService.IsWeatherActive(_weather);
     }
 
     internal class IsBattleOver : ICondition<BattleState>
@@ -75,16 +75,16 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     internal class HasStatus : ICondition<PokemonState>
     {
-        private readonly StatusCondition status;
-        public HasStatus(StatusCondition status) { this.status = status; }
-        public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() == status;
+        private readonly StatusCondition _status;
+        public HasStatus(StatusCondition status) { _status = status; }
+        public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() == _status;
     }
 
     internal class HasVolatile : ICondition<PokemonState>
     {
-        private readonly VolatileStatus status;
-        public HasVolatile(VolatileStatus status) { this.status = status; }
-        public bool Check(PokemonState pokemon) => pokemon.HasVolatileStatus(status);
+        private readonly VolatileStatus _status;
+        public HasVolatile(VolatileStatus status) { _status = status; }
+        public bool Check(PokemonState pokemon) => pokemon.HasVolatileStatus(_status);
     }
 
     internal class IsFainted : ICondition<PokemonState>
@@ -99,31 +99,31 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     internal class HPBelow : ICondition<PokemonState>
     {
-        private readonly double fraction;
-        public HPBelow(double fraction) { this.fraction = fraction; }
-        public bool Check(PokemonState pokemon) => pokemon.GetHPFraction() < fraction;
+        private readonly double _fraction;
+        public HPBelow(double fraction) { _fraction = fraction; }
+        public bool Check(PokemonState pokemon) => pokemon.GetHPFraction() < _fraction;
     }
 
     internal class HasType : ICondition<PokemonState>
     {
-        private readonly PokemonType type;
-        public HasType(PokemonType type) { this.type = type; }
-        public bool Check(PokemonState pokemon) => pokemon.HasType(type);
+        private readonly PokemonType _type;
+        public HasType(PokemonType type) { _type = type; }
+        public bool Check(PokemonState pokemon) => pokemon.HasType(_type);
     }
 
     // Adapter: wraps a PokemonDomain condition so it can be used as ICondition<BattleDomain>.
     internal class UserCondition : ICondition<BattleState>
     {
-        private readonly ICondition<PokemonState> inner;
-        public UserCondition(ICondition<PokemonState> inner) { this.inner = inner; }
-        public bool Check(BattleState battle) => inner.Check(battle.Attacker);
+        private readonly ICondition<PokemonState> _inner;
+        public UserCondition(ICondition<PokemonState> inner) { _inner = inner; }
+        public bool Check(BattleState battle) => _inner.Check(battle.Attacker);
     }
 
     internal class OpponentCondition : ICondition<BattleState>
     {
-        private readonly ICondition<PokemonState> inner;
-        public OpponentCondition(ICondition<PokemonState> inner) { this.inner = inner; }
-        public bool Check(BattleState battle) => inner.Check(battle.Attacker);
+        private readonly ICondition<PokemonState> _inner;
+        public OpponentCondition(ICondition<PokemonState> inner) { _inner = inner; }
+        public bool Check(BattleState battle) => _inner.Check(battle.Attacker);
     }
 
     // ── Target Implementations ────────────────────────────────────────────────
@@ -143,8 +143,8 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     // Useful for field effects, weather damage, end-of-turn effects.
     internal class SpecificTarget : ITarget
     {
-        private readonly PokemonState pokemon;
-        public SpecificTarget(PokemonState pokemon) { this.pokemon = pokemon; }
-        public PokemonState Resolve(BattleState battle) => pokemon;
+        private readonly PokemonState _pokemon;
+        public SpecificTarget(PokemonState pokemon) { _pokemon = pokemon; }
+        public PokemonState Resolve(BattleState battle) => _pokemon;
     }
 }

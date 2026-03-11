@@ -8,45 +8,45 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
 {
     internal class PokemonState
     {
-        private readonly PokemonDomain state;
+        private readonly PokemonDomain _state;
 
         public PokemonState(PokemonDomain state)
         {
-            this.state = state;
+            _state = state;
         }
 
         // --- Identity / stats ---
-        public string Name => state.Name;
-        public int Level => state.Level;
-        public int MaxHP => state.MaxHP;
-        public int CurrentHP => state.CurrentHP;
-        public bool IsFainted => state.CurrentHP <= 0;
+        public string Name => _state.Name;
+        public int Level => _state.Level;
+        public int MaxHP => _state.MaxHP;
+        public int CurrentHP => _state.CurrentHP;
+        public bool IsFainted => _state.CurrentHP <= 0;
 
-        public IReadOnlyList<IMove> Moves => state.Moves;
-        public IMove? LastUsedMove => state.LastUsedMove;
+        public IReadOnlyList<IMove> Moves => _state.Moves;
+        public IMove? LastUsedMove => _state.LastUsedMove;
 
         public double LastDamageDealt { get; internal set; }
 
         // --- HP ---
         public void TakeDamage(int amount)
         {
-            state.LastDamageTaken = Math.Min(amount, state.CurrentHP);
-            state.CurrentHP = Math.Max(0, state.CurrentHP - amount);
+            _state.LastDamageTaken = Math.Min(amount, _state.CurrentHP);
+            _state.CurrentHP = Math.Max(0, _state.CurrentHP - amount);
         }
 
         public void RestoreHP(int amount)
         {
-            state.CurrentHP = Math.Min(MaxHP, state.CurrentHP + amount);
+            _state.CurrentHP = Math.Min(MaxHP, _state.CurrentHP + amount);
         }
 
-        public void RegisterDamageDealt(int amount) => state.LastDamageDealt = amount;
+        public void RegisterDamageDealt(int amount) => _state.LastDamageDealt = amount;
         public double GetHPFraction() => (double)CurrentHP / MaxHP;
 
 
         // --- Status ---
         public bool CanApplyStatus(StatusCondition newStatus)
         {
-            if (state.Status != StatusCondition.None)
+            if (_state.Status != StatusCondition.None)
             {
                 return false;
             }
@@ -68,7 +68,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
 
             return true;
         }
-        public StatusCondition PokemonStatusCondition() => state.Status;
+        public StatusCondition PokemonStatusCondition() => _state.Status;
         public void ApplyStatus(StatusCondition status, int turns = 0)
         {
             if (!CanApplyStatus(status))
@@ -76,68 +76,68 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
                 return;
             }
 
-            state.Status = status;
-            state.ToxicCounter = 0;
+            _state.Status = status;
+            _state.ToxicCounter = 0;
             if (status == StatusCondition.Sleep)
             {
-                state.SleepTurns = turns > 0 ? turns : RandomHelper.Next(1, 4);
+                _state.SleepTurns = turns > 0 ? turns : RandomHelper.Next(1, 4);
             }
         }
 
         public void ClearStatus()
         {
-            state.Status = StatusCondition.None;
-            state.ToxicCounter = 0;
-            state.SleepTurns = 0;
+            _state.Status = StatusCondition.None;
+            _state.ToxicCounter = 0;
+            _state.SleepTurns = 0;
         }
         public void ApplyToxicByOne()
         {
-            this.state.ToxicCounter++;
+            this._state.ToxicCounter++;
         }
         public int getToxicCounter()
         {
-            return this.state.ToxicCounter;
+            return this._state.ToxicCounter;
         }
         // --- Volatile Status ---
         public void ApplyVolatileStatus(VolatileStatus status, int turns = 0)
         {
-            if (!state.VolatileStatuses.ContainsKey(status))
+            if (!_state.VolatileStatuses.ContainsKey(status))
             {
-                state.VolatileStatuses[status] = turns;
+                _state.VolatileStatuses[status] = turns;
             }
         }
 
-        public bool HasVolatileStatus(VolatileStatus status) => state.VolatileStatuses.ContainsKey(status);
-        public void RemoveVolatileStatus(VolatileStatus status) => state.VolatileStatuses.Remove(status);
+        public bool HasVolatileStatus(VolatileStatus status) => _state.VolatileStatuses.ContainsKey(status);
+        public void RemoveVolatileStatus(VolatileStatus status) => _state.VolatileStatuses.Remove(status);
 
         // --- Type helpers ---
-        public bool HasType(PokemonType type) => state.PrimaryType == type || state.SecondaryType == type;
+        public bool HasType(PokemonType type) => _state.PrimaryType == type || _state.SecondaryType == type;
 
         // --- Moves ---
-        public void CopyMove(IMove? move) => state.LastUsedMove = move;
+        public void CopyMove(IMove? move) => _state.LastUsedMove = move;
 
         // --- Charge / Rampage ---
-        public void BeginCharge(IAttempt release) { state.IsCharging = true; state.ChargeRelease = release; }
-        public void EndCharge() { state.IsCharging = false; state.ChargeRelease = null; }
-        public bool IsCharging() => state.IsCharging;
-        public void BeginRampage(int turns) { state.IsRampaging = true; state.RampageTurnsLeft = turns; }
+        public void BeginCharge(IAttempt release) { _state.IsCharging = true; _state.ChargeRelease = release; }
+        public void EndCharge() { _state.IsCharging = false; _state.ChargeRelease = null; }
+        public bool IsCharging() => _state.IsCharging;
+        public void BeginRampage(int turns) { _state.IsRampaging = true; _state.RampageTurnsLeft = turns; }
         public void DecrementRampage()
         {
-            if (--state.RampageTurnsLeft <= 0)
+            if (--_state.RampageTurnsLeft <= 0)
             {
-                state.IsRampaging = false;
+                _state.IsRampaging = false;
             }
         }
-        public bool IsRampaging() => state.IsRampaging;
+        public bool IsRampaging() => _state.IsRampaging;
 
         // --- Bide ---
-        public void StartBide(int turns) { state.IsBiding = true; state.BideTurnsLeft = turns; state.BideStoredDamage = 0; }
-        public void AccumulateBideDamage(int damage) => state.BideStoredDamage += damage;
+        public void StartBide(int turns) { _state.IsBiding = true; _state.BideTurnsLeft = turns; _state.BideStoredDamage = 0; }
+        public void AccumulateBideDamage(int damage) => _state.BideStoredDamage += damage;
         public void DecrementBide()
         {
-            if (--state.BideTurnsLeft <= 0)
+            if (--_state.BideTurnsLeft <= 0)
             {
-                state.IsBiding = false;
+                _state.IsBiding = false;
             }
         }
 
@@ -146,23 +146,23 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         {
             int baseStat = stat switch
             {
-                Stat.Attack => state.BaseAttack,
-                Stat.Defense => state.BaseDefense,
-                Stat.SpecialAttack => state.BaseSpecialAttack,
-                Stat.SpecialDefense => state.BaseSpecialDefense,
-                Stat.Speed => state.BaseSpeed,
+                Stat.Attack => _state.BaseAttack,
+                Stat.Defense => _state.BaseDefense,
+                Stat.SpecialAttack => _state.BaseSpecialAttack,
+                Stat.SpecialDefense => _state.BaseSpecialDefense,
+                Stat.Speed => _state.BaseSpeed,
                 _ => 1
             };
 
-            int stage = state.StatStages[stat];
+            int stage = _state.StatStages[stat];
 
             // Apply status modifiers
-            if (stat == Stat.Speed && state.Status == StatusCondition.Paralysis)
+            if (stat == Stat.Speed && _state.Status == StatusCondition.Paralysis)
             {
                 baseStat /= 2;
             }
 
-            if (stat == Stat.Attack && state.Status == StatusCondition.Burn)
+            if (stat == Stat.Attack && _state.Status == StatusCondition.Burn)
             {
                 baseStat /= 2;
             }
@@ -190,13 +190,13 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         }
 
         public void ChangeStatStage(Stat stat, int stages)
-            => state.StatStages[stat] = MathHelper.Clamp(state.StatStages[stat] + stages, -6, 6);
+            => _state.StatStages[stat] = MathHelper.Clamp(_state.StatStages[stat] + stages, -6, 6);
 
         public void ResetStatStages()
         {
-            foreach (var key in state.StatStages.Keys.ToList())
+            foreach (var key in _state.StatStages.Keys.ToList())
             {
-                state.StatStages[key] = 0;
+                _state.StatStages[key] = 0;
             }
         }
 
@@ -204,12 +204,12 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public void ForceSwitch(BattleState battle)
         {
             ResetStatStages();
-            state.VolatileStatuses.Clear();
-            state.IsCharging = false;
-            state.IsRampaging = false;
+            _state.VolatileStatuses.Clear();
+            _state.IsCharging = false;
+            _state.IsRampaging = false;
             battle.Logger.Log($"{Name} was forced out!");
         }
 
-        public override string ToString() => $"{Name} (Lv.{Level}) {CurrentHP}/{MaxHP} HP [{state.Status}]";
+        public override string ToString() => $"{Name} (Lv.{Level}) {CurrentHP}/{MaxHP} HP [{_state.Status}]";
     }
 }

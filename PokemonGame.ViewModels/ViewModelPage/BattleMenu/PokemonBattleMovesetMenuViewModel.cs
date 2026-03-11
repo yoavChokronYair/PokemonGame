@@ -7,7 +7,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class PokemonBattleMovesetMenuViewModel : ViewModelBase
     {
-        private readonly NavigationStore _NavigationStore;
+        private readonly NavigationStore _navigationStore;
         public ICommand KeyPressedCommand { get; }
         public ObservableCollection<MoveViewModel> MoveList { get; }
         public MenuSelectionViewModel MenuSelection { get; }
@@ -17,8 +17,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public ICommand CancelCommand { get; }
         public PokemonBattleMovesetMenuViewModel(NavigationStore navigationStore)
         {
-            _NavigationStore = navigationStore;
-            _NavigationStore.CurrentViewModel = this;
+            _navigationStore = navigationStore;
+            _navigationStore.CurrentViewModel = this;
             //this.wildPokemonBattleView = wildPokemonBattleView;
 
             //MoveList = new ObservableCollection<MoveViewModel>(wildPokemonBattleView.MoveList);
@@ -34,15 +34,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             //CancelCommand = new RelayCommand(OnCancel);
             Move = MoveList[0];
         }
-        private MoveViewModel move;
+        private MoveViewModel _move;
         public MoveViewModel Move
         {
-            get => move;
+            get => _move;
             set
             {
-                if (move != value)
+                if (_move != value)
                 {
-                    move = value;
+                    _move = value;
                     OnPropertyChanged(nameof(Move));
                 }
             }

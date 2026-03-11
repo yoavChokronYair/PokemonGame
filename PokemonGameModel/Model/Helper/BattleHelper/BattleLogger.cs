@@ -8,9 +8,9 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleLogger
     {
-        private readonly List<string> battleLog = new();
-        public IReadOnlyList<string> BattleLog => battleLog;
-        public void Log(string message) => battleLog.Add(message);
+        private readonly List<string> _battleLog = new();
+        public IReadOnlyList<string> BattleLog => _battleLog;
+        public void Log(string message) => _battleLog.Add(message);
     }
 
 

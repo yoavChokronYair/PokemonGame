@@ -1,58 +1,46 @@
-// Design: Static helper (pure function, no state).
-// Layer: Model/Helper/DataHelper — maps NatureType enum to stat modifier tuples.
-// CANONICAL nature modifier source — PokemonDomain.NatureModifier has been removed; use this class.
-// Moved from Config/ (had logic, not just constants).
-
-
-// Design: Static helper (pure function, no state).
-// Layer: Model/Helper/DataHelper — maps NatureType enum to stat modifier tuples.
-// CANONICAL nature modifier source — PokemonDomain.NatureModifier has been removed; use this class.
-// Moved from Config/ (had logic, not just constants).
-
 using PokemonGame.Enums;
 
 namespace PokemonGame.Model.Model.Helper
 {
     public static class NatureHelper
     {
+        private static readonly Dictionary<NatureType, (double atk, double def, double spAtk, double spDef, double speed)> _modifiers
+            = new()
+        {
+            { NatureType.Hardy, (1, 1, 1, 1, 1) },
+            { NatureType.Lonely, (1.1, 0.9, 1, 1, 1) },
+            { NatureType.Brave, (1.1, 1, 1, 1, 0.9) },
+            { NatureType.Adamant, (1.1, 1, 0.9, 1, 1) },
+            { NatureType.Naughty, (1.1, 1, 1, 0.9, 1) },
+
+            { NatureType.Bold, (0.9, 1.1, 1, 1, 1) },
+            { NatureType.Docile, (1, 1, 1, 1, 1) },
+            { NatureType.Relaxed, (1, 1.1, 1, 1, 0.9) },
+            { NatureType.Impish, (1, 1.1, 0.9, 1, 1) },
+            { NatureType.Lax, (1, 1.1, 1, 0.9, 1) },
+
+            { NatureType.Timid, (0.9, 1, 1, 1, 1.1) },
+            { NatureType.Hasty, (1, 0.9, 1, 1, 1.1) },
+            { NatureType.Serious, (1, 1, 1, 1, 1) },
+            { NatureType.Jolly, (1, 1, 0.9, 1, 1.1) },
+            { NatureType.Naive, (1, 1, 1, 0.9, 1.1) },
+
+            { NatureType.Modest, (0.9, 1, 1.1, 1, 1) },
+            { NatureType.Mild, (1, 0.9, 1.1, 1, 1) },
+            { NatureType.Quiet, (1, 1, 1.1, 1, 0.9) },
+            { NatureType.Bashful, (1, 1, 1, 1, 1) },
+            { NatureType.Rash, (1, 1, 1.1, 0.9, 1) },
+
+            { NatureType.Calm, (0.9, 1, 1, 1.1, 1) },
+            { NatureType.Gentle, (1, 0.9, 1, 1.1, 1) },
+            { NatureType.Sassy, (1, 1, 1, 1.1, 0.9) },
+            { NatureType.Careful, (1, 1, 0.9, 1.1, 1) },
+            { NatureType.Quirky, (1, 1, 1, 1, 1) },
+        };
+
         public static (double atk, double def, double spAtk, double spDef, double speed) GetNatureModifiers(NatureType nature)
         {
-            double atk = 1.0, def = 1.0, spAtk = 1.0, spDef = 1.0, speed = 1.0;
-
-            switch (nature)
-            {
-                case NatureType.Hardy: break;                          // Neutral
-                case NatureType.Lonely: atk = 1.1; def = 0.9; break;
-                case NatureType.Brave: atk = 1.1; speed = 0.9; break;
-                case NatureType.Adamant: atk = 1.1; spAtk = 0.9; break;
-                case NatureType.Naughty: atk = 1.1; spDef = 0.9; break;
-
-                case NatureType.Bold: def = 1.1; atk = 0.9; break;
-                case NatureType.Docile: break;                        // Neutral
-                case NatureType.Relaxed: def = 1.1; speed = 0.9; break;
-                case NatureType.Impish: def = 1.1; spAtk = 0.9; break;
-                case NatureType.Lax: def = 1.1; spDef = 0.9; break;
-
-                case NatureType.Timid: speed = 1.1; atk = 0.9; break;
-                case NatureType.Hasty: speed = 1.1; def = 0.9; break;
-                case NatureType.Serious: break;                      // Neutral
-                case NatureType.Jolly: speed = 1.1; spAtk = 0.9; break;
-                case NatureType.Naive: speed = 1.1; spDef = 0.9; break;
-
-                case NatureType.Modest: spAtk = 1.1; atk = 0.9; break;
-                case NatureType.Mild: spAtk = 1.1; def = 0.9; break;
-                case NatureType.Quiet: spAtk = 1.1; speed = 0.9; break;
-                case NatureType.Bashful: break;                      // Neutral
-                case NatureType.Rash: spAtk = 1.1; spDef = 0.9; break;
-
-                case NatureType.Calm: spDef = 1.1; atk = 0.9; break;
-                case NatureType.Gentle: spDef = 1.1; def = 0.9; break;
-                case NatureType.Sassy: spDef = 1.1; speed = 0.9; break;
-                case NatureType.Careful: spDef = 1.1; spAtk = 0.9; break;
-                case NatureType.Quirky: break;                       // Neutral
-            }
-
-            return (atk, def, spAtk, spDef, speed);
+            return _modifiers[nature];
         }
     }
 }

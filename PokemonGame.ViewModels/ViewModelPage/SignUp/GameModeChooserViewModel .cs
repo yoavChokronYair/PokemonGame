@@ -15,15 +15,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private readonly IDialogService _dialogService;
         private readonly NavigationStore _navigationStore;
 
-        private string userName = string.Empty;
+        private string _userName = string.Empty;
         public string Username
         {
-            get => userName;
+            get => _userName;
             set
             {
-                if (userName != value)
+                if (_userName != value)
                 {
-                    userName = value;
+                    _userName = value;
                     OnPropertyChanged(nameof(Username));
                 }
             }

@@ -7,7 +7,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class PokemonBattleMenuViewModel : ViewModelBase
     {
-        private readonly NavigationStore _NavigationStore;
+        private readonly NavigationStore _navigationStore;
 
 
         public ObservableCollection<MenuItemViewModel> MenuItems { get; }
@@ -18,7 +18,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
         public PokemonBattleMenuViewModel(NavigationStore navigationStore, NavigationStore navigation)
         {
-            _NavigationStore = navigationStore;
+            _navigationStore = navigationStore;
             MenuSelection = new MenuSelectionViewModel();
             MenuItems = new ObservableCollection<MenuItemViewModel>
         {

@@ -6,7 +6,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleState
     {
-        private readonly BattleDomain state;
+        private readonly BattleDomain _state;
         public BattleWeatherService WeatherService { get; }
         public BattleStatusService StatusService { get; }
         public BattleLogger Logger { get; } = new();
@@ -14,30 +14,30 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 
         public BattleState(BattleDomain state)
         {
-            this.state = state;
+            _state = state;
             WeatherService = new BattleWeatherService(this, Logger);
             StatusService = new BattleStatusService(Logger);
             TurnResolver = new BattleTurnResolver();
         }
 
         // Data accessors
-        public PokemonHelper.PokemonState Attacker => state.Attacker;
-        public PokemonHelper.PokemonState Defender => state.Defender;
-        public BattleSideState AttackerSide => state.AttackerSide;
-        public BattleSideState DefenderSide => state.DefenderSide;
-        public IMove? LastUsedMove => state.LastUsedMove;
-        public PokemonType? ActiveTypeOverride { get => state.ActiveTypeOverride; set => state.ActiveTypeOverride = value; }
-        public int TurnNumber => state.TurnNumber;
-        public int LastDamageDealt { get => state.LastDamageDealt; set => state.LastDamageDealt = value; }
+        public PokemonHelper.PokemonState Attacker => _state.Attacker;
+        public PokemonHelper.PokemonState Defender => _state.Defender;
+        public BattleSideState AttackerSide => _state.AttackerSide;
+        public BattleSideState DefenderSide => _state.DefenderSide;
+        public IMove? LastUsedMove => _state.LastUsedMove;
+        public PokemonType? ActiveTypeOverride { get => _state.ActiveTypeOverride; set => _state.ActiveTypeOverride = value; }
+        public int TurnNumber => _state.TurnNumber;
+        public int LastDamageDealt { get => _state.LastDamageDealt; set => _state.LastDamageDealt = value; }
 
         // Logic
-        public void RegisterMove(IMove move) => state.LastUsedMove = move;
+        public void RegisterMove(IMove move) => _state.LastUsedMove = move;
 
         public void BeginTurn()
         {
-            state.TurnNumber++;
-            state.LastDamageDealt = 0;
-            Logger.Log($"--- Turn {state.TurnNumber} ---");
+            _state.TurnNumber++;
+            _state.LastDamageDealt = 0;
+            Logger.Log($"--- Turn {_state.TurnNumber} ---");
         }
 
         public void EndTurn()
@@ -49,14 +49,14 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             StatusService.ApplyEndOfTurnStatus(Defender);
         }
 
-        public void SwitchAttackerDefender() => (state.Attacker, state.Defender) = (state.Defender, state.Attacker);
+        public void SwitchAttackerDefender() => (_state.Attacker, _state.Defender) = (_state.Defender, _state.Attacker);
 
         public bool AttackerMovesFirst(int attackerPriority, int defenderPriority)
-            => TurnResolver.AttackerMovesFirst(state.Attacker, state.Defender, attackerPriority, defenderPriority);
+            => TurnResolver.AttackerMovesFirst(_state.Attacker, _state.Defender, attackerPriority, defenderPriority);
 
         public BattleSideState GetSide(BattleSide side) => side == BattleSide.Attacker ? AttackerSide : DefenderSide;
 
-        public bool IsBattleOver => state.Attacker.IsFainted || state.Defender.IsFainted;
-        public PokemonHelper.PokemonState? Winner => state.Attacker.IsFainted ? state.Defender : state.Defender.IsFainted ? state.Attacker : null;
+        public bool IsBattleOver => _state.Attacker.IsFainted || _state.Defender.IsFainted;
+        public PokemonHelper.PokemonState? Winner => _state.Attacker.IsFainted ? _state.Defender : _state.Defender.IsFainted ? _state.Attacker : null;
     }
 }

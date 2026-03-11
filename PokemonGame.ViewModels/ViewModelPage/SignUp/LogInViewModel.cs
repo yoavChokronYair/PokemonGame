@@ -8,9 +8,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class LogInViewModel : ViewModelBase
     {
-        private readonly NavigationStore NavigationStore;
+        private readonly NavigationStore _navigationStore;
         private readonly UserStore _userStore;
-        public ViewModelBase CurrentViewModel => NavigationStore.CurrentViewModel;
+        public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
 
         private readonly LogInService _handler;
 
@@ -49,7 +49,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public LogInViewModel(UserStore user, NavigationStore navigationStore, Func<SignUpViewModel> createViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel)
         {
             _userStore = user;
-            NavigationStore = navigationStore;
+            _navigationStore = navigationStore;
             _handler = new LogInService();
             LoginCommand = new RelayCommand(Login);
             SwitchToSignUpCommand = new NavigateCommand(navigationStore, createViewModel);

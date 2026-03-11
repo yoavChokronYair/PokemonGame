@@ -11,9 +11,9 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleStatusService
     {
-        private readonly BattleLogger logger;
+        private readonly BattleLogger _logger;
 
-        public BattleStatusService(BattleLogger logger) => this.logger = logger;
+        public BattleStatusService(BattleLogger logger) => _logger = logger;
 
         public void ApplyEndOfTurnStatus(PokemonState pokemon)
         {
@@ -21,16 +21,16 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             {
                 case StatusCondition.Burn:
                     pokemon.TakeDamage(pokemon.MaxHP / 8);
-                    logger.Log($"{pokemon.Name} is hurt by its burn!");
+                    _logger.Log($"{pokemon.Name} is hurt by its burn!");
                     break;
                 case StatusCondition.Poison:
                     pokemon.TakeDamage(pokemon.MaxHP / 8);
-                    logger.Log($"{pokemon.Name} is hurt by poison!");
+                    _logger.Log($"{pokemon.Name} is hurt by poison!");
                     break;
                 case StatusCondition.Toxic:
                     pokemon.ApplyToxicByOne();
                     pokemon.TakeDamage(pokemon.MaxHP * pokemon.getToxicCounter() / 16);
-                    logger.Log($"{pokemon.Name} is hurt by bad poison!");
+                    _logger.Log($"{pokemon.Name} is hurt by bad poison!");
                     break;
             }
         }

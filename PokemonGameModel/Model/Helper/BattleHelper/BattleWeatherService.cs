@@ -10,23 +10,23 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleWeatherService
     {
-        private readonly BattleState battle;
-        private readonly BattleLogger logger;
+        private readonly BattleState _battle;
+        private readonly BattleLogger _logger;
 
         public Weather CurrentWeather { get; private set; } = Weather.None;
         public int WeatherTurnsRemaining { get; private set; } = 0;
 
         public BattleWeatherService(BattleState battle, BattleLogger logger)
         {
-            this.battle = battle;
-            this.logger = logger;
+            _battle = battle;
+            _logger = logger;
         }
 
         public void SetWeather(Weather weather, int turns = 5)
         {
             CurrentWeather = weather;
             WeatherTurnsRemaining = turns;
-            logger.Log($"The weather changed to {weather}.");
+            _logger.Log($"The weather changed to {weather}.");
         }
 
         public void TickWeather()
@@ -39,7 +39,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             WeatherTurnsRemaining--;
             if (WeatherTurnsRemaining <= 0)
             {
-                logger.Log($"The {CurrentWeather} subsided.");
+                _logger.Log($"The {CurrentWeather} subsided.");
                 CurrentWeather = Weather.None;
                 return;
             }
@@ -56,7 +56,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public bool IsWeatherActive(Weather weather) => CurrentWeather == weather && WeatherTurnsRemaining > 0;
         private void ApplyWeatherDamage(string source)
         {
-            foreach (var p in new[] { battle.Attacker, battle.Defender })
+            foreach (var p in new[] { _battle.Attacker, _battle.Defender })
             {
                 bool immune = source == "sandstorm"
                     ? p.HasType(PokemonType.Rock) || p.HasType(PokemonType.Steel) || p.HasType(PokemonType.Ground)
@@ -66,7 +66,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
                 {
                     int dmg = p.MaxHP / 16;
                     p.TakeDamage(dmg);
-                    logger.Log($"{p.Name} is buffeted by the {source}!");
+                    _logger.Log($"{p.Name} is buffeted by the {source}!");
                 }
             }
         }

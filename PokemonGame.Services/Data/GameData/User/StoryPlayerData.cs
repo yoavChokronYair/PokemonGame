@@ -2,9 +2,8 @@
 {
     public class StoryPlayerData : UserData
     {
-        private int name;
-        private int playerID;
-        public int Name { get => name; set => name = value; }
-        public int PlayerID { get => playerID; set => playerID = value; }
+        
+        public int Name { get; set; }
+        public int PlayerID { get; set; }
     }
 }

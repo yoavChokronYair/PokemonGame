@@ -6,15 +6,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     {
         public string Label { get; }
 
-        private bool isSelected;
+        private bool _isSelected;
         public bool IsSelected
         {
-            get => isSelected;
+            get => _isSelected;
             set
             {
-                if (isSelected != value)
+                if (_isSelected != value)
                 {
-                    isSelected = value;
+                    _isSelected = value;
                     OnPropertyChanged(nameof(IsSelected));
                     OnPropertyChanged(nameof(FormattedLabel));
                 }
