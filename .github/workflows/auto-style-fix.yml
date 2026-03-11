@@ -1,37 +1,45 @@
 name: Auto Fix C# Style
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-  
+
 jobs:
-  format:
-    if: github.actor != 'github-actions[bot]'
-
+  auto-fix-style:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT_TOKEN }}  # use PAT here
-          fetch-depth: 0         # fetch full history
-          ref: ${{ github.head_ref }}  # checkout the PR branch
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Setup .NET
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: '8.0.x'
 
-      - name: Restore
+      - name: Restore dependencies
         run: dotnet restore
 
-      - name: Fix formatting
-        run: dotnet format
-
-      - name: Commit fixes
+      - name: Run code style fixer
         run: |
-          git config --global user.name "github-actions"
+          # Replace this with the command you use to fix code style.
+          # Example for dotnet format:
+          dotnet format --severity info --verify-no-changes || true
+
+      - name: Configure git
+        run: |
           git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Commit changes
+        run: |
           git add .
-          git diff --cached --quiet || git commit -m "Auto fix code style"
-          git push origin HEAD  # push to the current PR branch
+          git diff-index --quiet HEAD || git commit -m "Auto fix code style"
+
+      - name: Push changes using PAT
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/${{ github.repository }}.git
+          git push origin HEAD:${{ github.ref_name }}
