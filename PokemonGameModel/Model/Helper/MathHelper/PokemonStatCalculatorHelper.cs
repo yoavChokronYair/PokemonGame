@@ -4,7 +4,6 @@
 // Uses NatureHelper.GetNatureModifiers for nature modifier lookups.
 ﻿using PokemonGame.Constants;
 using PokemonGame.Enums;
-using PokemonGame.Interface;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {

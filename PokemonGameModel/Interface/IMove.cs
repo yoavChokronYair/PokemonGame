@@ -3,7 +3,7 @@ using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Services.Enums.PokemonEnum;
 
-namespace PokemonGame.Model.Interface.Move
+namespace PokemonGame.Model.Interface
 {
     internal interface IMove
     {

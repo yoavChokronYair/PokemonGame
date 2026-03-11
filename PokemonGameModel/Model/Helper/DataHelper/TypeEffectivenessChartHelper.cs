@@ -5,7 +5,7 @@
 // Depends on TypeEffectivenessChartConstants which remains in Config/.
 
 using PokemonGame.Constants;
-using PokemonGame.Services.Enums.PokemonEnum;
+using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Helper.DataHelper
 {

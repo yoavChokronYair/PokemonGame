@@ -5,9 +5,9 @@
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
 using PokemonGame.Enums.Battle;
-using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Domain;
 
-namespace PokemonGame.Model.Enums.Battle
+namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleStatusService
     {

@@ -9,16 +9,15 @@
 
 using PokemonGame.Enums;
 using PokemonGame.Enums.Battle;
-using PokemonGame.Interface.Move;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Helper.DataHelper;
 using PokemonGame.Core.Model.Helper.MathHelper;
-using PokemonGame.Services.Enums.PokemonEnum;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Interface.Move;
+using PokemonGame.Model.Interface;
+using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Domain.Pokemon
+namespace PokemonGame.Model.Domain
 {
     // ── Base Stats (immutable — the species template) ─────────────────────────
 

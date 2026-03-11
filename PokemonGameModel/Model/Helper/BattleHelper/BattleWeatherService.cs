@@ -5,10 +5,9 @@
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
 using PokemonGame.Enums.Battle;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Services.Enums.PokemonEnum;
+using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Enums.Battle
+namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleWeatherService
     {

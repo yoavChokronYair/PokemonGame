@@ -6,9 +6,9 @@
 // INumber interface lives in Interface/Move/INumber.cs.
 // NOTE: Between and Weighted use RandomHelper — no inline new Random() in this file.
 
-using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Domain.Move

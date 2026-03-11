@@ -7,7 +7,7 @@
 using PokemonGame.Enums.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 
-namespace PokemonGame.Model.Enums.Battle
+namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleLogger
     {

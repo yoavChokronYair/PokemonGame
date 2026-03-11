@@ -6,12 +6,11 @@
 // NOTE: Probability uses RandomHelper — no inline new Random() anywhere in this file.
 
 using PokemonGame.Enums.Battle;
-using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.Domain.Move
 {

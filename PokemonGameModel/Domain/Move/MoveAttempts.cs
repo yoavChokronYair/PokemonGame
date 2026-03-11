@@ -7,9 +7,9 @@
 // Layer: Domain/Move — move attempt implementations.
 // IAttempt interface lives in Interface/Move/IAttempt.cs.
 
-using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Domain.Move

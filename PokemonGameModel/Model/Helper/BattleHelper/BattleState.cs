@@ -1,9 +1,8 @@
 ﻿using PokemonGame.Enums.Battle;
+using PokemonGame.Model.Domain;
 using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Model.Enums.Battle;
-using PokemonGame.Model.Interface.Move;
-using PokemonGame.Services.Enums.PokemonEnum;
+using PokemonGame.Model.Enums;
+using PokemonGame.Model.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -4,7 +4,7 @@
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
-namespace PokemonGame.Interface.Move
+namespace PokemonGame.Model.Interface
 {
     internal interface IEffect
     {

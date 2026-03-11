@@ -1,7 +1,7 @@
-﻿using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Enums.Battle;
+﻿using PokemonGame.Enums.Battle;
+using PokemonGame.Model.Domain;
 
-namespace PokemonGame.Model.Enums.Battle
+namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleTurnResolver
     {

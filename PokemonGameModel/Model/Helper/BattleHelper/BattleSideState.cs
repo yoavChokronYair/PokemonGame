@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PokemonGame.Model.Enums.Battle
+namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleSideState
     {

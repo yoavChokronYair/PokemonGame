@@ -7,10 +7,10 @@
 // NOTE: Chance uses RandomHelper.NextBool — no inline new Random() in this file.
 
 using PokemonGame.Enums.Battle;
-using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Domain.Move

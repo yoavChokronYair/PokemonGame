@@ -1,4 +1,4 @@
-﻿namespace PokemonGame.Services.Enums.PokemonEnum
+﻿namespace PokemonGame.Model.Enums
 {
     public enum PokemonType
     {
