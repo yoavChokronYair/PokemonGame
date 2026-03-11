@@ -1,7 +1,5 @@
-﻿using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
-using PokemonGame.Services.Data.GameData.User;
+﻿using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Interfaces;
-using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
@@ -24,11 +22,15 @@ namespace PokemonGame.Services.Data.DataCache
         {
             var key = GetCacheKey(username, user.UserID);
             if (useCache && _onlinePlayerCache.TryGetValue(key, out var player))
+            {
                 return player;
+            }
 
             player = _repository.LoadOnlinePlayerByName(username, user);
             if (player != null && useCache)
+            {
                 _onlinePlayerCache[key] = player;
+            }
 
             return player;
         }
@@ -37,7 +39,9 @@ namespace PokemonGame.Services.Data.DataCache
         {
             var key = GetCacheKey(username, user.UserID);
             if (useCache && _onlinePlayerCache.ContainsKey(key))
+            {
                 return true;
+            }
 
             return _repository.OnlinePlayerExists(username, user);
         }
@@ -64,11 +68,15 @@ namespace PokemonGame.Services.Data.DataCache
                 foreach (var kvp in _onlinePlayerCache)
                 {
                     if (kvp.Key.EndsWith($"_{user.UserID}"))
+                    {
                         cachedPlayers.Add(kvp.Value);
+                    }
                 }
 
                 if (cachedPlayers.Count > 0)
+                {
                     return cachedPlayers;
+                }
             }
 
             var allPlayers = _repository.GetAllOnlinePlayers(user);
