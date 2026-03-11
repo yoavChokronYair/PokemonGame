@@ -1,6 +1,5 @@
-﻿using PokemonGame.ViewModels.ViewModelHelper;
-using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
@@ -18,7 +17,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             NavigationStore contentNavigationStore,
             Func<HistoryBattleViewModel> createHistory,
             Func<OnlineFriendsViewModel> createFriends,
-            Func<TeamViewModel> createTeam,
+            Func<TeamSelectPageViewModel> createTeam,
             Func<ProfileViewModel> createProfile,
             Func<ViewModelBase>? exit = null
         )

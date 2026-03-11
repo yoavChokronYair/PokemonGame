@@ -1,8 +1,7 @@
-﻿using PokemonGame.Services.Data.DataCache;
+﻿using PokemonGame.Services.Data.ConnectionsService;
+using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.DataProvider.SQLite;
-using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.Interfaces;
-using System;
 
 namespace PokemonGame.Services.Factory
 {

@@ -1,7 +1,9 @@
-﻿using PokemonGame.Enums;
+// Design: Static factory + Instance value object.
+// Layer: Model/Helper/MathHelper — game-specific RNG (PID, IVs, nature, gender, shininess).
+// Uses RandomHelper for all random number generation — no inline new Random() here.
+// Instance holds PID/TID/SID for shiny and gender checks.
+using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
-using PokemonGame.Services.Enums.PokemonEnum;
-using System;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -44,7 +46,9 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         {
             // If base IV is defined (>= 0), use it directly
             if (baseIV.HasValue && baseIV.Value >= 0)
+            {
                 return baseIV.Value;
+            }
 
             // Otherwise, random IV between 0 and 31
             return RandomHelper.Next(0, 32);
@@ -78,36 +82,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             return (NatureType)values.GetValue(RandomHelper.Next(0, values.Length));
         }
 
-        // ----------------------------
-        // Gender
-        // ----------------------------
-        /// <summary>
-        /// ratio = chance of female (0.0–1.0), -1 = genderless.
-        /// </summary>
-        /// 
-        private static double GetFemaleRatio(GenderRatioType ratio)
-        {
-            return ratio switch
-            {
-                GenderRatioType.M7_F1 => 0.125, // 12.5%
-                GenderRatioType.M3_F1 => 0.25,  // 25%
-                GenderRatioType.M1_F1 => 0.5,   // 50%
-                GenderRatioType.M1_F3 => 0.75,  // 75%
-                GenderRatioType.M0_F1 => 1.0,   // 100% female
-                GenderRatioType.M1_F0 => 0.0,   // 0% female
-                GenderRatioType.M0_F0 => -1.0,  // genderless
-                _ => -1.0
-            };
-        }
-        public static GenderType GenerateGender(GenderRatioType ratio)
-        {
-            double femaleRatio = GetFemaleRatio(ratio);
 
-            if (femaleRatio < 0)
-                return GenderType.Genderless;
-
-            return RandomHelper.NextBool(femaleRatio) ? GenderType.Female : GenderType.Male;
-        }
 
 
         // ----------------------------
@@ -139,7 +114,10 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         public bool IsFemale(double femaleRatio)
         {
             // Genderless
-            if (femaleRatio < 0) return false;
+            if (femaleRatio < 0)
+            {
+                return false;
+            }
 
             // PID determines gender
             int genderThreshold = (int)(femaleRatio * 256);
@@ -166,7 +144,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             uint pid = GeneratePID();
             return new RNGHelper(pid, tid, sid);
         }
-      
+
 
     }
 }

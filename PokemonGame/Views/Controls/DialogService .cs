@@ -1,9 +1,9 @@
-﻿using PokemonGame.Views.Windows;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PokemonGame.Views.Windows;
 
 namespace PokemonGame.ViewModels.ViewModelHelper.Service
 {

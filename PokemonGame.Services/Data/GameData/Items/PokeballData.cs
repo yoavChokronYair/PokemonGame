@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
-
-namespace PokemonGame.Services.Data.GameData.Items
+﻿namespace PokemonGame.Services.Data.GameData.Items
 {
     public class PokeballData
     {
-        public string Id {  get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public float CatchRateModifier { get; set; }
         public bool IsGuaranteedCatch { get; set; }
         public int Price { get; set; }
-        public string Sprite {  get; set; }
+        public string Sprite { get; set; }
         public string Animation { get; set; }
         public string SoundEffect { get; set; }
         public bool CanBeUsedInBattle { get; set; }
