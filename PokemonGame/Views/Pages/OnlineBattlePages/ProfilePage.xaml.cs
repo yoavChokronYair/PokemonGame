@@ -24,7 +24,6 @@ namespace PokemonGame.Views.Pages.OnlineBattlePages
         public ProfilePage()
         {
             InitializeComponent();
-            DataContext = new ProfileViewModel();
         }
     }
 }
