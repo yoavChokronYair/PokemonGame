@@ -1,6 +1,9 @@
-﻿using PokemonGame.Constants;
+// Design: Value Object / Calculator — computes all final stats once and caches them as properties.
+// Layer: Model/Helper/MathHelper — Gen 3+ stat formula (HP and non-HP stats, nature modifier).
+// CANONICAL stat calculator — PokemonDomain delegates to this class (no duplicate formulas elsewhere).
+// Uses NatureHelper.GetNatureModifiers for nature modifier lookups.
 using PokemonGame.Enums;
-using PokemonGame.Interface;
+using PokemonGame.Model.Model.Helper;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {

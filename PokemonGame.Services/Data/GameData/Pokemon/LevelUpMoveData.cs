@@ -1,10 +1,9 @@
-﻿
-namespace PokemonGame.Services.Data.GameData.Pokemon
+﻿namespace PokemonGame.Services.Data.GameData.Pokemon
 {
     public sealed class LevelUpMoveData
     {
-        public int MoveName { get; set; }//should be enum in model 
-        public byte Level {  get; set; }
+        public int MoveID { get; set; }    // FK to Move.MoveID
+        public byte Level { get; set; }
         public int PokemonID { get; set; }
     }
 }
