@@ -1,8 +1,9 @@
 ﻿using PokemonGame.Enums.Battle;
-using PokemonGame.Model.Domain;
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,8 +27,8 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         }
 
         // Data accessors
-        public PokemonDomain Attacker => state.Attacker;
-        public PokemonDomain Defender => state.Defender;
+        public PokemonHelper.PokemonState Attacker => state.Attacker;
+        public PokemonHelper.PokemonState Defender => state.Defender;
         public BattleSideState AttackerSide => state.AttackerSide;
         public BattleSideState DefenderSide => state.DefenderSide;
         public IMove? LastUsedMove => state.LastUsedMove;
@@ -62,6 +63,6 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public BattleSideState GetSide(BattleSide side) => side == BattleSide.Attacker ? AttackerSide : DefenderSide;
 
         public bool IsBattleOver => state.Attacker.IsFainted || state.Defender.IsFainted;
-        public PokemonDomain? Winner => state.Attacker.IsFainted ? state.Defender : state.Defender.IsFainted ? state.Attacker : null;
+        public PokemonHelper.PokemonState? Winner => state.Attacker.IsFainted ? state.Defender : state.Defender.IsFainted ? state.Attacker : null;
     }
 }

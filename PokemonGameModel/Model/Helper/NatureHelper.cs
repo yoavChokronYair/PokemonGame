@@ -3,9 +3,15 @@
 // CANONICAL nature modifier source — PokemonDomain.NatureModifier has been removed; use this class.
 // Moved from Config/ (had logic, not just constants).
 
+
+// Design: Static helper (pure function, no state).
+// Layer: Model/Helper/DataHelper — maps NatureType enum to stat modifier tuples.
+// CANONICAL nature modifier source — PokemonDomain.NatureModifier has been removed; use this class.
+// Moved from Config/ (had logic, not just constants).
+
 using PokemonGame.Enums;
 
-namespace PokemonGame.Model.Helper.DataHelper
+namespace PokemonGame.Model.Model.Helper
 {
     public static class NatureHelper
     {

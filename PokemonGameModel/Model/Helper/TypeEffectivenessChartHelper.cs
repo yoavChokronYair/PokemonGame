@@ -7,7 +7,7 @@
 using PokemonGame.Constants;
 using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Helper.DataHelper
+namespace PokemonGame.Model.Model.Helper
 {
     public static class TypeEffectivenessChartHelper
     {

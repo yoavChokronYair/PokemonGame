@@ -10,6 +10,7 @@ using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Move
 {
@@ -88,11 +89,11 @@ namespace PokemonGame.Model.Domain.Move
     // e.g. can't move while paralyzed/frozen, can't use Fly if already airborne.
     internal class WithApplicability : IMove
     {
-        private readonly ICondition<PokemonDomain> condition;
+        private readonly ICondition<PokemonState> condition;
         private readonly IMove move;
         private readonly string? failMessage;
 
-        public WithApplicability(ICondition<PokemonDomain> condition, IMove move, string? failMessage = null)
+        public WithApplicability(ICondition<PokemonState> condition, IMove move, string? failMessage = null)
         {
             this.condition = condition;
             this.move = move;

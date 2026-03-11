@@ -5,7 +5,7 @@
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
 using PokemonGame.Enums.Battle;
-using PokemonGame.Model.Domain;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
@@ -15,9 +15,9 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 
         public BattleStatusService(BattleLogger logger) => this.logger = logger;
 
-        public void ApplyEndOfTurnStatus(PokemonDomain pokemon)
+        public void ApplyEndOfTurnStatus(PokemonState pokemon)
         {
-            switch (pokemon.Status)
+            switch (pokemon.PokemonStatusCondition())
             {
                 case StatusCondition.Burn:
                     pokemon.TakeDamage(pokemon.MaxHP / 8);
@@ -28,8 +28,8 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
                     logger.Log($"{pokemon.Name} is hurt by poison!");
                     break;
                 case StatusCondition.Toxic:
-                    pokemon.ToxicCounter++;
-                    pokemon.TakeDamage(pokemon.MaxHP * pokemon.ToxicCounter / 16);
+                    pokemon.ApplyToxicByOne();
+                    pokemon.TakeDamage(pokemon.MaxHP * pokemon.getToxicCounter() / 16);
                     logger.Log($"{pokemon.Name} is hurt by bad poison!");
                     break;
             }

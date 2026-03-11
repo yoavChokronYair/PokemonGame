@@ -11,6 +11,7 @@ using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Move
 {
@@ -74,56 +75,56 @@ namespace PokemonGame.Model.Domain.Move
 
     // ── Pokemon Conditions ────────────────────────────────────────────────────
 
-    internal class HasStatus : ICondition<PokemonDomain>
+    internal class HasStatus : ICondition<PokemonState>
     {
         private readonly StatusCondition status;
         public HasStatus(StatusCondition status) { this.status = status; }
-        public bool Check(PokemonDomain pokemon) => pokemon.Status == status;
+        public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() == status;
     }
 
-    internal class HasVolatile : ICondition<PokemonDomain>
+    internal class HasVolatile : ICondition<PokemonState>
     {
         private readonly VolatileStatus status;
         public HasVolatile(VolatileStatus status) { this.status = status; }
-        public bool Check(PokemonDomain pokemon) => pokemon.HasVolatileStatus(status);
+        public bool Check(PokemonState pokemon) => pokemon.HasVolatileStatus(status);
     }
 
-    internal class IsFainted : ICondition<PokemonDomain>
+    internal class IsFainted : ICondition<PokemonState>
     {
-        public bool Check(PokemonDomain pokemon) => pokemon.IsFainted;
+        public bool Check(PokemonState pokemon) => pokemon.IsFainted;
     }
 
-    internal class IsFullHP : ICondition<PokemonDomain>
+    internal class IsFullHP : ICondition<PokemonState>
     {
-        public bool Check(PokemonDomain pokemon) => pokemon.CurrentHP == pokemon.MaxHP;
+        public bool Check(PokemonState pokemon) => pokemon.CurrentHP == pokemon.MaxHP;
     }
 
-    internal class HPBelow : ICondition<PokemonDomain>
+    internal class HPBelow : ICondition<PokemonState>
     {
         private readonly double fraction;
         public HPBelow(double fraction) { this.fraction = fraction; }
-        public bool Check(PokemonDomain pokemon) => pokemon.HPFraction < fraction;
+        public bool Check(PokemonState pokemon) => pokemon.GetHPFraction() < fraction;
     }
 
-    internal class HasType : ICondition<PokemonDomain>
+    internal class HasType : ICondition<PokemonState>
     {
         private readonly PokemonType type;
         public HasType(PokemonType type) { this.type = type; }
-        public bool Check(PokemonDomain pokemon) => pokemon.HasType(type);
+        public bool Check(PokemonState pokemon) => pokemon.HasType(type);
     }
 
     // Adapter: wraps a PokemonDomain condition so it can be used as ICondition<BattleDomain>.
     internal class UserCondition : ICondition<BattleState>
     {
-        private readonly ICondition<PokemonDomain> inner;
-        public UserCondition(ICondition<PokemonDomain> inner) { this.inner = inner; }
+        private readonly ICondition<PokemonState> inner;
+        public UserCondition(ICondition<PokemonState> inner) { this.inner = inner; }
         public bool Check(BattleState battle) => inner.Check(battle.Attacker);
     }
 
     internal class OpponentCondition : ICondition<BattleState>
     {
-        private readonly ICondition<PokemonDomain> inner;
-        public OpponentCondition(ICondition<PokemonDomain> inner) { this.inner = inner; }
+        private readonly ICondition<PokemonState> inner;
+        public OpponentCondition(ICondition<PokemonState> inner) { this.inner = inner; }
         public bool Check(BattleState battle) => inner.Check(battle.Attacker);
     }
 
@@ -132,20 +133,20 @@ namespace PokemonGame.Model.Domain.Move
 
     internal class AttackerTarget : ITarget
     {
-        public PokemonDomain Resolve(BattleState battle) => battle.Attacker;
+        public PokemonState Resolve(BattleState battle) => battle.Attacker;
     }
 
     internal class DefenderTarget : ITarget
     {
-        public PokemonDomain Resolve(BattleState battle) => battle.Attacker;
+        public PokemonState Resolve(BattleState battle) => battle.Attacker;
     }
 
     // Always resolves to a specific pokemon regardless of attacker/defender roles.
     // Useful for field effects, weather damage, end-of-turn effects.
     internal class SpecificTarget : ITarget
     {
-        private readonly PokemonDomain pokemon;
-        public SpecificTarget(PokemonDomain pokemon) { this.pokemon = pokemon; }
-        public PokemonDomain Resolve(BattleState battle) => pokemon;
+        private readonly PokemonState pokemon;
+        public SpecificTarget(PokemonState pokemon) { this.pokemon = pokemon; }
+        public PokemonState Resolve(BattleState battle) => pokemon;
     }
 }

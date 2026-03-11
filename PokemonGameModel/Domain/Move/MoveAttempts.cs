@@ -132,7 +132,7 @@ namespace PokemonGame.Model.Domain.Move
 
         public void Execute(BattleState battle)
         {
-            if (!battle.Attacker.IsCharging)
+            if (!battle.Attacker.IsCharging())
             {
                 chargeEffect.Apply(battle);
                 battle.Attacker.BeginCharge(this);
@@ -164,7 +164,7 @@ namespace PokemonGame.Model.Domain.Move
         {
             var user = battle.Attacker;
 
-            if (!user.IsRampaging)
+            if (!user.IsRampaging())
             {
                 int turns = (int)duration.Evaluate(battle);
                 user.BeginRampage(turns);
@@ -173,7 +173,7 @@ namespace PokemonGame.Model.Domain.Move
             attack.Execute(battle);
             user.DecrementRampage();
 
-            if (!user.IsRampaging)
+            if (!user.IsRampaging())
                 afterRampage.Apply(battle);
         }
     }

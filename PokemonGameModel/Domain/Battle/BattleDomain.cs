@@ -5,9 +5,11 @@
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
 using PokemonGame.Enums.Battle;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Battle
 {
@@ -16,8 +18,8 @@ namespace PokemonGame.Model.Domain.Battle
     // ── Battle Domain ─────────────────────────────────────────────────────────
     internal class BattleDomain
     {
-        public PokemonDomain? Attacker { get; set; }
-        public PokemonDomain? Defender { get; set; }
+        public Model.Helper.PokemonHelper.PokemonState? Attacker { get; set; }
+        public Model.Helper.PokemonHelper.PokemonState? Defender { get; set; }
 
         public BattleSideState AttackerSide { get; } = new();
         public BattleSideState DefenderSide { get; } = new();
