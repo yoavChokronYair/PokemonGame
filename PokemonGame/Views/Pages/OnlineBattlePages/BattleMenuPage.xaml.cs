@@ -25,6 +25,6 @@ namespace PokemonGame.Views.Pages.OnlineBattlePages
         {
             InitializeComponent();
         }
-        
+
     }
 }
