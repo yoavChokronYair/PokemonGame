@@ -1,9 +1,8 @@
-﻿using PokemonGame.Services.Data.DataCache;
+﻿using System.Collections.ObjectModel;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System.Collections.ObjectModel;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
@@ -27,9 +26,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             _historyHandler = new BattleHistoryService();
 
             // Load the current online player
-           // var player = ServiceFactory.Instance.OnlinePlayerCache.GetOnlinePlayer(onlinePlayerName, currentUser);
+            // var player = ServiceFactory.Instance.OnlinePlayerCache.GetOnlinePlayer(onlinePlayerName, currentUser);
             if (player != null)
+            {
                 LoadBattles(player);
+            }
         }
 
         private void LoadBattles(BattlePlayerData player)
@@ -38,7 +39,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
             var displayBattles = _historyHandler.GetBattleHistoryDisplay(player);
             foreach (var battle in displayBattles)
+            {
                 Battles.Add(battle);
+            }
         }
     }
 }

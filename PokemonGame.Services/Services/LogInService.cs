@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using PokemonGame.Services.Data.DataCache;
-using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
 
@@ -22,17 +19,21 @@ namespace PokemonGame.Services.Handler
         public bool Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
                 return false;
+            }
 
             UserData user = provider.GetUserByName(username);
             if (user == null)
+            {
                 return false;
+            }
 
             int hash = HashPassword(password);
             return user.Password == hash;
         }
 
-        
+
 
         // CHECK EXISTS
         public bool UserExists(string username)

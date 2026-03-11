@@ -1,8 +1,6 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using PokemonGame.Services.Data.DataCache;
-using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
@@ -18,20 +16,25 @@ namespace PokemonGame.Services.Handler
 
         public bool UserNameExists(string userName)
         {
-            if(string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName))
+            {
                 return false;
+            }
 
-            return  provider.UserExists(userName);
+            return provider.UserExists(userName);
 
         }
 
         public bool CreateUser(string userName, string password)
         {
             if (UserNameExists(userName))
+            {
                 return false;
+            }
+
             var hashedPassword = HashPassword(password);
 
-             provider.CreateUser(userName,hashedPassword);
+            provider.CreateUser(userName, hashedPassword);
             return true;
         }
 

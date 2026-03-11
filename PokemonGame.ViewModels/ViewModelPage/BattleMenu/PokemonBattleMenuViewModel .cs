@@ -1,8 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.ViewModels.ViewModelHelper;
-using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
@@ -17,7 +16,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public ICommand DirectionCommand { get; }
         public ICommand ConfirmCommand { get; }
 
-        public PokemonBattleMenuViewModel(NavigationStore navigationStore,NavigationStore navigation)
+        public PokemonBattleMenuViewModel(NavigationStore navigationStore, NavigationStore navigation)
         {
             _NavigationStore = navigationStore;
             MenuSelection = new MenuSelectionViewModel();
@@ -43,10 +42,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             switch (direction)
             {
-                case "Up": if (row > 0) row--; break;
-                case "Down": if (row < 1) row++; break;
-                case "Left": if (col > 0) col--; break;
-                case "Right": if (col < 1) col++; break;
+                case "Up": if (row > 0) { row--; } break;
+                case "Down": if (row < 1) { row++; } break;
+                case "Left": if (col > 0) { col--; } break;
+                case "Right": if (col < 1) { col++; } break;
             }
 
             MenuSelection.SelectedRow = row;

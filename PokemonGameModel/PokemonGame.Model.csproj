@@ -11,4 +11,10 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Model\BattleSystem\Bot\" />
+	  <Folder Include="Model\BattleSystem\Player\" />
+	  <Folder Include="Model\Map\" />
+	</ItemGroup>
+
 </Project>
