@@ -6,10 +6,10 @@
 // Note: MoveCategory and MoveTarget enums live in Enums/MovesEnum/MoveStateEnums.cs.
 
 using PokemonGame.Enums.MovesEnum;
-using PokemonGame.Interface;
 using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Interface.Move;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Services.Enums.PokemonEnum;
 
