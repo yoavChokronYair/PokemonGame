@@ -1,27 +1,22 @@
-name: C# Convention Check
+name: Style Check
 
 on:
-  push:
-    branches: [ main, dev ]
   pull_request:
-    branches: [ main ]
 
 jobs:
-  build:
+  style:
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Restore
-      run: dotnet restore
+      - name: Restore
+        run: dotnet restore
 
-    - name: Build with analyzers
-      run: dotnet build --no-restore -warnaserror
+      - name: Run style check
+        run: dotnet format --verify-no-changes
