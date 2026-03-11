@@ -7,7 +7,7 @@ using PokemonGame.Model.Model.Helper;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
-    public class PokemonStatCalculatorHelper 
+    public class PokemonStatCalculatorHelper
     {
         public int HP { get; set; }
         public int Attack { get; set; }
@@ -40,18 +40,24 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             foreach (var ev in evs)
             {
                 if (ev < 0 || ev > 255)
+                {
                     throw new ArgumentOutOfRangeException(nameof(evs), "Each EV must be between 0 and 255.");
+                }
             }
 
             if (total > 510)
+            {
                 throw new ArgumentOutOfRangeException(nameof(evs), "Total EVs cannot exceed 510.");
+            }
         }
         private static void ValidateIVs(params int[] ivs)
         {
             foreach (var iv in ivs)
             {
                 if (iv < 0 || iv > 31)
+                {
                     throw new ArgumentOutOfRangeException(nameof(ivs), "Each IV must be between 0 and 31.");
+                }
             }
         }
         public static int CalculateHP(int baseStat, int iv, int ev, int level)

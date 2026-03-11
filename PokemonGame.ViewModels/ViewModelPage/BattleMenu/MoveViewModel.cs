@@ -41,6 +41,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             set { if (type != value) { type = value; OnPropertyChanged(nameof(Type)); } }
         }
 
-        
+
     }
 }

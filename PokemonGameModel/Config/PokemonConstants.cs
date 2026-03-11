@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Core.Config
+﻿namespace PokemonGame.Core.Config
 {
     public static class PokemonConstants
     {
@@ -18,7 +14,7 @@ namespace PokemonGame.Core.Config
         public const int BoxCapacity = 30;
         #endregion
 
-       // public static readonly PBESettings PBESettings;
-       
+        // public static readonly PBESettings PBESettings;
+
     }
 }

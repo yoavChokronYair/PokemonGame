@@ -6,8 +6,6 @@
 // IEffect interface lives in Interface/Move/IEffect.cs.
 // NOTE: Chance uses RandomHelper.NextBool — no inline new Random() in this file.
 
-using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
@@ -22,7 +20,11 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         private readonly List<IEffect> effects;
         public Sequence(List<IEffect> effects) { this.effects = effects; }
         public Sequence(params IEffect[] effects) { this.effects = new List<IEffect>(effects); }
-        public void Apply(BattleState battle) { foreach (var effect in effects) effect.Apply(battle); }
+        public void Apply(BattleState battle) { foreach (var effect in effects)
+            {
+                effect.Apply(battle);
+            }
+        }
     }
 
     internal class Conditional : IEffect
@@ -40,8 +42,14 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
         public void Apply(BattleState battle)
         {
-            if (condition.Check(battle)) onPass.Apply(battle);
-            else onFail?.Apply(battle);
+            if (condition.Check(battle))
+            {
+                onPass.Apply(battle);
+            }
+            else
+            {
+                onFail?.Apply(battle);
+            }
         }
     }
 
@@ -61,7 +69,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle)
         {
             if (RandomHelper.NextBool(probability))
+            {
                 effect.Apply(battle);
+            }
         }
     }
 
@@ -281,7 +291,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         {
             var battler = target.Resolve(battle);
             foreach (var (stat, stages) in changes)
+            {
                 battler.ChangeStatStage(stat, stages);
+            }
         }
     }
 

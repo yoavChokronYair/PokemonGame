@@ -2,9 +2,6 @@
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Model.Model.Helper.PokemonHelper;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonGame.Model.Model.Helper.Decorator
 {
@@ -72,7 +69,11 @@ namespace PokemonGame.Model.Model.Helper.Decorator
         }
 
         public bool IsLocked => turnsLocked > 0;
-        public void Tick() { if (turnsLocked > 0) turnsLocked--; }
+        public void Tick() { if (turnsLocked > 0)
+            {
+                turnsLocked--;
+            }
+        }
 
         public void Execute(BattleState battle)
         {

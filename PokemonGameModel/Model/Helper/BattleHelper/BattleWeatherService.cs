@@ -31,7 +31,10 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 
         public void TickWeather()
         {
-            if (CurrentWeather == Weather.None) return;
+            if (CurrentWeather == Weather.None)
+            {
+                return;
+            }
 
             WeatherTurnsRemaining--;
             if (WeatherTurnsRemaining <= 0)
@@ -42,9 +45,13 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             }
 
             if (CurrentWeather == Weather.Sandstorm)
+            {
                 ApplyWeatherDamage("sandstorm");
+            }
             else if (CurrentWeather == Weather.Hail)
+            {
                 ApplyWeatherDamage("hail");
+            }
         }
         public bool IsWeatherActive(Weather weather) => CurrentWeather == weather && WeatherTurnsRemaining > 0;
         private void ApplyWeatherDamage(string source)

@@ -8,13 +8,8 @@
 // Note: All battle enums (Stat, StatusCondition, VolatileStatus) live in Enums/Battle/BattleEnums.cs.
 
 using PokemonGame.Enums;
-using PokemonGame.Model.Helper;
-using PokemonGame.Core.Model.Helper.MathHelper;
-using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Interface;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model.Helper;
+using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {

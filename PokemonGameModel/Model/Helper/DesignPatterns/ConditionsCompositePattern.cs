@@ -5,7 +5,6 @@
 // ICondition<T> and ITarget interfaces live in Interface/Move/IConditionAndTarget.cs.
 // NOTE: Probability uses RandomHelper — no inline new Random() anywhere in this file.
 
-using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;

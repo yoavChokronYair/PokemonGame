@@ -59,11 +59,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private void LoadProfile(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
+            {
                 return;
+            }
 
             var user = _handler.GetUser(username);
             if (user == null)
+            {
                 return;
+            }
 
             UserName = user.UserName;
             DisplayName = user.UserName; // defaults to username; extend later with a DisplayName column

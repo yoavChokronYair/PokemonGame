@@ -1,7 +1,4 @@
 ﻿using PokemonGame.Model.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
@@ -34,10 +31,20 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             foreach (var key in screens.Keys.ToList())
             {
                 screens[key]--;
-                if (screens[key] <= 0) screens.Remove(key);
+                if (screens[key] <= 0)
+                {
+                    screens.Remove(key);
+                }
             }
-            if (IsSafeguardActive && --SafeguardTurns <= 0) IsSafeguardActive = false;
-            if (IsMistActive && --MistTurns <= 0) IsMistActive = false;
+            if (IsSafeguardActive && --SafeguardTurns <= 0)
+            {
+                IsSafeguardActive = false;
+            }
+
+            if (IsMistActive && --MistTurns <= 0)
+            {
+                IsMistActive = false;
+            }
         }
     }
 

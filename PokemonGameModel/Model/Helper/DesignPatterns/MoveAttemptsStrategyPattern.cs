@@ -7,8 +7,6 @@
 // Layer: Domain/Move — move attempt implementations.
 // IAttempt interface lives in Interface/Move/IAttempt.cs.
 
-using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
@@ -38,9 +36,13 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Execute(BattleState battle)
         {
             if (accuracy.Check(battle))
+            {
                 onHit?.Apply(battle);
+            }
             else
+            {
                 onMiss?.Apply(battle);
+            }
 
             after?.Apply(battle);
         }
@@ -72,7 +74,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
                 bool hitLanded = attempt is Attempt a && a.accuracy.Check(battle);
                 attempt.Execute(battle);
                 if (stopOnMiss && !hitLanded)
+                {
                     return;
+                }
             }
         }
     }
@@ -108,9 +112,13 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             for (int i = 0; i < hitCount; i++)
             {
                 if (accuracy.Check(battle))
+                {
                     onEachHit.Apply(battle);
+                }
                 else
+                {
                     onEachMiss?.Apply(battle);
+                }
             }
 
             after?.Apply(battle);
@@ -174,7 +182,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             user.DecrementRampage();
 
             if (!user.IsRampaging())
+            {
                 afterRampage.Apply(battle);
+            }
         }
     }
 }

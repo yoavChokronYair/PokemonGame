@@ -6,7 +6,6 @@
 // INumber interface lives in Interface/Move/INumber.cs.
 // NOTE: Between and Weighted use RandomHelper — no inline new Random() in this file.
 
-using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
@@ -39,7 +38,11 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public double Evaluate(BattleState battle)
         {
             double d = denominator.Evaluate(battle);
-            if (d == 0) return 0;
+            if (d == 0)
+            {
+                return 0;
+            }
+
             return numerator.Evaluate(battle) / d;
         }
     }
@@ -82,7 +85,10 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             foreach (var (value, weight) in entries)
             {
                 cumulative += weight;
-                if (roll <= cumulative) return value;
+                if (roll <= cumulative)
+                {
+                    return value;
+                }
             }
             return entries.Last().value;
         }

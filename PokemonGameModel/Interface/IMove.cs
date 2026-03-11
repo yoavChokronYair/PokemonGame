@@ -1,8 +1,5 @@
 // Layer: Interface — contract definition only, no logic or implementations here.
-using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Interface
 {
@@ -10,5 +7,5 @@ namespace PokemonGame.Model.Interface
     {
         void Execute(BattleState battle);
     }
-    
+
 }

@@ -1,8 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
+using Microsoft.Data.Sqlite;
 
 namespace PokemonGame.Services.Data.ConnectionsService
 {
@@ -27,7 +24,9 @@ namespace PokemonGame.Services.Data.ConnectionsService
             using var reader = cmd.ExecuteReader();
 
             if (!reader.Read())
+            {
                 return default!;
+            }
 
             return MapReaderToObject<T>(reader);
         }
@@ -75,7 +74,9 @@ namespace PokemonGame.Services.Data.ConnectionsService
         private static void AddParameters(SqliteCommand cmd, object parameters)
         {
             if (parameters == null)
+            {
                 return;
+            }
 
             foreach (var prop in parameters.GetType().GetProperties())
             {
@@ -96,11 +97,15 @@ namespace PokemonGame.Services.Data.ConnectionsService
             foreach (var prop in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (!columnNames.Contains(prop.Name))
+                {
                     continue;
+                }
 
                 var value = reader[prop.Name];
                 if (value == DBNull.Value)
+                {
                     continue;
+                }
 
                 var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 
@@ -118,49 +123,79 @@ namespace PokemonGame.Services.Data.ConnectionsService
         private static object ConvertValue(object value, Type targetType)
         {
             if (targetType == typeof(string))
+            {
                 return value.ToString();
+            }
 
             if (targetType == typeof(bool))
+            {
                 return Convert.ToInt64(value) != 0;
+            }
 
             if (targetType == typeof(byte))
+            {
                 return (byte)Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(sbyte))
+            {
                 return (sbyte)Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(short))
+            {
                 return (short)Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(ushort))
+            {
                 return (ushort)Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(int))
+            {
                 return (int)Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(uint))
+            {
                 return (uint)Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(long))
+            {
                 return Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(ulong))
+            {
                 return (ulong)Convert.ToInt64(value);
+            }
 
             if (targetType == typeof(float))
+            {
                 return (float)Convert.ToDouble(value);
+            }
 
             if (targetType == typeof(double))
+            {
                 return Convert.ToDouble(value);
+            }
 
             if (targetType == typeof(decimal))
+            {
                 return (decimal)Convert.ToDouble(value);
+            }
 
             if (targetType == typeof(DateTime))
+            {
                 return DateTime.Parse(value.ToString()!);
+            }
 
             if (targetType == typeof(Guid))
+            {
                 return Guid.Parse(value.ToString()!);
+            }
 
             // Fallback for any other type
             return Convert.ChangeType(value, targetType);
