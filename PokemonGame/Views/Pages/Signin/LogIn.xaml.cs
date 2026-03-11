@@ -23,13 +23,7 @@ namespace PokemonGame.Views.Pages.SignIn
     {
         public LogIn()
         {
-            InitializeComponent();
-            
-
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
+            InitializeComponent();            
         }
     }
 }

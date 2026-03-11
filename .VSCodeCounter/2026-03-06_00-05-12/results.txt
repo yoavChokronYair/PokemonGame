@@ -1,0 +1,286 @@
+Date : 2026-03-06 00:05:12
+Directory : c:\Users\yoav\source\repos\PokemonGame
+Total : 182 files,  8772 codes, 1125 comments, 1143 blanks, all 11040 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C#       |        154 |      5,813 |      1,062 |        946 |      7,821 |
+| XML      |         22 |      2,539 |         63 |        192 |      2,794 |
+| JSON     |          6 |        420 |          0 |          5 |        425 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                        | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                           |        182 |      8,772 |      1,125 |      1,143 |     11,040 |
+| PokemonGame                                                                                                                 |         44 |      3,194 |        167 |        306 |      3,667 |
+| PokemonGame (Files)                                                                                                         |          6 |      1,347 |         11 |         42 |      1,400 |
+| PokemonGame.Services                                                                                                        |         48 |      1,689 |         55 |        286 |      2,030 |
+| PokemonGame.Services (Files)                                                                                                |          1 |         34 |          0 |          7 |         41 |
+| PokemonGame.Services\Data                                                                                                   |         36 |      1,006 |         36 |        224 |      1,266 |
+| PokemonGame.Services\Data\ConnectionsService                                                                                |          2 |         94 |         20 |         32 |        146 |
+| PokemonGame.Services\Data\DataCache                                                                                         |          5 |        271 |         14 |         72 |        357 |
+| PokemonGame.Services\Data\DataProvider                                                                                      |          5 |        223 |          0 |         50 |        273 |
+| PokemonGame.Services\Data\DataProvider\SQLite                                                                               |          5 |        223 |          0 |         50 |        273 |
+| PokemonGame.Services\Data\GameData                                                                                          |         19 |        337 |          2 |         49 |        388 |
+| PokemonGame.Services\Data\GameData (Files)                                                                                  |          1 |         13 |          0 |          3 |         16 |
+| PokemonGame.Services\Data\GameData\Items                                                                                    |          1 |         25 |          0 |          2 |         27 |
+| PokemonGame.Services\Data\GameData\MapData                                                                                  |          3 |         58 |          0 |         10 |         68 |
+| PokemonGame.Services\Data\GameData\Move                                                                                     |          1 |         17 |          0 |          2 |         19 |
+| PokemonGame.Services\Data\GameData\NpcData                                                                                  |          2 |         60 |          2 |          5 |         67 |
+| PokemonGame.Services\Data\GameData\Pokemon                                                                                  |          6 |         87 |          0 |         14 |        101 |
+| PokemonGame.Services\Data\GameData\User                                                                                     |          5 |         77 |          0 |         13 |         90 |
+| PokemonGame.Services\Data\GameData\User (Files)                                                                             |          3 |         38 |          0 |          6 |         44 |
+| PokemonGame.Services\Data\GameData\User\OnlinePlayer                                                                        |          2 |         39 |          0 |          7 |         46 |
+| PokemonGame.Services\Data\Interfaces                                                                                        |          5 |         81 |          0 |         21 |        102 |
+| PokemonGame.Services\Factory                                                                                                |          1 |         38 |          5 |          7 |         50 |
+| PokemonGame.Services\Services                                                                                               |          4 |        191 |         14 |         43 |        248 |
+| PokemonGame.Services\resources                                                                                              |          6 |        420 |          0 |          5 |        425 |
+| PokemonGame.Services\resources\Items                                                                                        |          1 |         20 |          0 |          0 |         20 |
+| PokemonGame.Services\resources\Maps                                                                                         |          2 |        210 |          0 |          2 |        212 |
+| PokemonGame.Services\resources\Npc                                                                                          |          2 |        142 |          0 |          2 |        144 |
+| PokemonGame.Services\resources\Player                                                                                       |          1 |         48 |          0 |          1 |         49 |
+| PokemonGame.ViewModels                                                                                                      |         23 |        923 |        216 |        196 |      1,335 |
+| PokemonGame.ViewModels (Files)                                                                                              |          3 |         63 |        171 |         22 |        256 |
+| PokemonGame.ViewModels\Store                                                                                                |          1 |         10 |          0 |          2 |         12 |
+| PokemonGame.ViewModels\ViewModelHelper                                                                                      |          5 |         88 |          0 |         11 |         99 |
+| PokemonGame.ViewModels\ViewModelHelper (Files)                                                                              |          4 |         76 |          0 |         11 |         87 |
+| PokemonGame.ViewModels\ViewModelHelper\Service                                                                              |          1 |         12 |          0 |          0 |         12 |
+| PokemonGame.ViewModels\ViewModelPage                                                                                        |         14 |        762 |         45 |        161 |        968 |
+| PokemonGame.ViewModels\ViewModelPage\BattleMenu                                                                             |          5 |        215 |         32 |         50 |        297 |
+| PokemonGame.ViewModels\ViewModelPage\OnlineBattle                                                                           |          6 |        233 |          6 |         45 |        284 |
+| PokemonGame.ViewModels\ViewModelPage\SignUp                                                                                 |          3 |        314 |          7 |         66 |        387 |
+| PokemonGameModel                                                                                                            |         65 |      2,918 |        687 |        338 |      3,943 |
+| PokemonGameModel (Files)                                                                                                    |          2 |         23 |          0 |          6 |         29 |
+| PokemonGameModel\Config                                                                                                     |          4 |        199 |         14 |         34 |        247 |
+| PokemonGameModel\Domain                                                                                                     |         11 |        169 |          0 |         12 |        181 |
+| PokemonGameModel\Domain\Map                                                                                                 |          3 |         55 |          0 |          2 |         57 |
+| PokemonGameModel\Domain\Move                                                                                                |          1 |         19 |          0 |          1 |         20 |
+| PokemonGameModel\Domain\Pokemon                                                                                             |          7 |         95 |          0 |          9 |        104 |
+| PokemonGameModel\Enums                                                                                                      |         17 |      1,118 |         36 |         39 |      1,193 |
+| PokemonGameModel\Enums (Files)                                                                                              |          5 |         80 |          3 |         10 |         93 |
+| PokemonGameModel\Enums\MovesEnum                                                                                            |          4 |        251 |         14 |         10 |        275 |
+| PokemonGameModel\Enums\PokemonEnum                                                                                          |          8 |        787 |         19 |         19 |        825 |
+| PokemonGameModel\Interface                                                                                                  |          9 |        130 |          9 |         28 |        167 |
+| PokemonGameModel\Model                                                                                                      |         22 |      1,279 |        628 |        219 |      2,126 |
+| PokemonGameModel\Model\BattleSystem                                                                                         |          3 |         39 |        381 |         32 |        452 |
+| PokemonGameModel\Model\BattleSystem\Bot                                                                                     |          2 |         24 |        277 |         24 |        325 |
+| PokemonGameModel\Model\BattleSystem\Player                                                                                  |          1 |         15 |        104 |          8 |        127 |
+| PokemonGameModel\Model\Helper                                                                                               |          7 |        479 |        231 |         91 |        801 |
+| PokemonGameModel\Model\Helper (Files)                                                                                       |          1 |        111 |          1 |         20 |        132 |
+| PokemonGameModel\Model\Helper\BattleHelper                                                                                  |          1 |         13 |        162 |         32 |        207 |
+| PokemonGameModel\Model\Helper\DataHelper                                                                                    |          3 |        207 |          7 |          8 |        222 |
+| PokemonGameModel\Model\Helper\DataHelper\MoveHelper                                                                         |          1 |        124 |          6 |          3 |        133 |
+| PokemonGameModel\Model\Helper\DataHelper\PokemonData                                                                        |          2 |         83 |          1 |          5 |         89 |
+| PokemonGameModel\Model\Helper\MathHelper                                                                                    |          2 |        148 |         61 |         31 |        240 |
+| PokemonGameModel\Model\Map                                                                                                  |          2 |        152 |          3 |         23 |        178 |
+| PokemonGameModel\Model\Pkmn                                                                                                 |          9 |        465 |         10 |         59 |        534 |
+| PokemonGameModel\Model\Pkmn (Files)                                                                                         |          6 |        410 |          4 |         41 |        455 |
+| PokemonGameModel\Model\Pkmn\Interface                                                                                       |          3 |         55 |          6 |         18 |         79 |
+| PokemonGameModel\Model\PokemonCreation                                                                                      |          1 |        144 |          3 |         14 |        161 |
+| PokemonGameUnitTests                                                                                                        |          2 |         48 |          0 |         17 |         65 |
+| PokemonGameUnitTests (Files)                                                                                                |          1 |         23 |          0 |          7 |         30 |
+| PokemonGameUnitTests\DBTests                                                                                                |          1 |         25 |          0 |         10 |         35 |
+| PokemonGame\Converters                                                                                                      |          5 |         99 |          0 |         16 |        115 |
+| PokemonGame\Properties                                                                                                      |          3 |         76 |         56 |         24 |        156 |
+| PokemonGame\Themes                                                                                                          |          1 |        180 |         10 |         12 |        202 |
+| PokemonGame\Views                                                                                                           |         29 |      1,492 |         90 |        212 |      1,794 |
+| PokemonGame\Views\Controls                                                                                                  |          3 |        129 |          4 |         31 |        164 |
+| PokemonGame\Views\Pages                                                                                                     |         22 |      1,220 |         77 |        161 |      1,458 |
+| PokemonGame\Views\Pages\OnlineBattlePage                                                                                    |          2 |         96 |          6 |          9 |        111 |
+| PokemonGame\Views\Pages\OnlineBattlePages                                                                                   |         14 |        759 |         51 |        110 |        920 |
+| PokemonGame\Views\Pages\SignIn                                                                                              |          6 |        365 |         20 |         42 |        427 |
+| PokemonGame\Views\Windows                                                                                                   |          4 |        143 |          9 |         20 |        172 |
++-----------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                    | language | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\ConnectionsService\ISQLiteConnectionService.cs             | C#       |         13 |         13 |          5 |         31 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\ConnectionsService\SQLiteConnectionService.cs              | C#       |         81 |          7 |         27 |        115 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataCache\BattleCacheService.cs                            | C#       |         41 |          1 |         11 |         53 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataCache\MoveCacheService.cs                              | C#       |         36 |          2 |          8 |         46 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataCache\OnlinePlayerCacheService.cs                      | C#       |         72 |          4 |         19 |         95 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataCache\PokemonCacheService.cs                           | C#       |         72 |          2 |         18 |         92 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataCache\UserCacheService.cs                              | C#       |         50 |          5 |         16 |         71 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataProvider\SQLite\SQLiteBattleRepository .cs             | C#       |         55 |          0 |          9 |         64 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataProvider\SQLite\SQLiteMoveRepository.cs                | C#       |         30 |          0 |          8 |         38 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataProvider\SQLite\SQLiteOnlinePlayerRepository .cs       | C#       |         54 |          0 |         10 |         64 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataProvider\SQLite\SQLitePokemonRepository.cs             | C#       |         53 |          0 |         15 |         68 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\DataProvider\SQLite\SQLiteUserRepository.cs                | C#       |         31 |          0 |          8 |         39 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\AbilityData.cs                                    | C#       |         13 |          0 |          3 |         16 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Items\PokeballData.cs                             | C#       |         25 |          0 |          2 |         27 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\MapData\RouteMapData.cs                           | C#       |         25 |          0 |          3 |         28 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\MapData\TownMapData.cs                            | C#       |         14 |          0 |          3 |         17 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\MapData\WorldData.cs                              | C#       |         19 |          0 |          4 |         23 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Move\MoveData.cs                                  | C#       |         17 |          0 |          2 |         19 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\NpcData\RivalData.cs                              | C#       |         38 |          2 |          4 |         44 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\NpcData\TrainerData.cs                            | C#       |         22 |          0 |          1 |         23 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Pokemon\BaseStatsData.cs                          | C#       |         32 |          0 |          3 |         35 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Pokemon\EggMoveData.cs                            | C#       |         11 |          0 |          2 |         13 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Pokemon\EvolutionData.cs                          | C#       |         15 |          0 |          3 |         18 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Pokemon\LevelUpMoveData.cs                        | C#       |          9 |          0 |          2 |         11 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Pokemon\PokemonData.cs                            | C#       |          8 |          0 |          1 |          9 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\Pokemon\PokemonFormData.cs                        | C#       |         12 |          0 |          3 |         15 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\User\BattlePlayerData.cs                          | C#       |         13 |          0 |          2 |         15 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\User\OnlinePlayer\BattleData.cs                   | C#       |         26 |          0 |          3 |         29 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\User\OnlinePlayer\OnlineFriend.cs                 | C#       |         13 |          0 |          4 |         17 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\User\StoryPlayerData.cs                           | C#       |         13 |          0 |          2 |         15 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\GameData\User\UserData.cs                                  | C#       |         12 |          0 |          2 |         14 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\Interfaces\IBattleRepository.cs                            | C#       |         15 |          0 |          3 |         18 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\Interfaces\IMoveRepository.cs                              | C#       |         15 |          0 |          4 |         19 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\Interfaces\IOnlinePlayerRepository.cs                      | C#       |         15 |          0 |          3 |         18 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\Interfaces\IPokemonRepository.cs                           | C#       |         22 |          0 |          8 |         30 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Data\Interfaces\IUserRepository.cs                              | C#       |         14 |          0 |          3 |         17 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Factory\ServiceFactory.cs                                       | C#       |         38 |          5 |          7 |         50 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\PokemonGame.Services.csproj                                     | XML      |         34 |          0 |          7 |         41 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Services\BattleHistoryService.cs                                | C#       |         64 |          5 |         12 |         81 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Services\GameModeChooserService.cs                              | C#       |         43 |          5 |         11 |         59 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Services\LogInService.cs                                        | C#       |         45 |          4 |         11 |         60 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\Services\SignUpService.cs                                       | C#       |         39 |          0 |          9 |         48 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\resources\Items\Pokeballs.json                                  | JSON     |         20 |          0 |          0 |         20 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\resources\Maps\Maps.Json                                        | JSON     |          0 |          0 |          1 |          1 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\resources\Maps\TownMaps.json                                    | JSON     |        210 |          0 |          1 |        211 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\resources\Npc\Rivals.json                                       | JSON     |         69 |          0 |          1 |         70 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\resources\Npc\Trainers.json                                     | JSON     |         73 |          0 |          1 |         74 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.Services\resources\Player\Players.json                                   | JSON     |         48 |          0 |          1 |         49 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\MainWindowViewModel.cs                                        | C#       |         22 |          2 |          6 |         30 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\PokemonGame.ViewModels.csproj                                 | XML      |         27 |          0 |          6 |         33 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\Store\UserStore.cs                                            | C#       |         10 |          0 |          2 |         12 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelHelper\CommandBase.cs                                | C#       |         20 |          0 |          3 |         23 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelHelper\NavigateCommand.cs                            | C#       |         20 |          0 |          3 |         23 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelHelper\NavigationStore.cs                            | C#       |         22 |          0 |          3 |         25 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelHelper\Service\IDialogService.cs                     | C#       |         12 |          0 |          0 |         12 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelHelper\ViewModelBase.cs                              | C#       |         14 |          0 |          2 |         16 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\BattleMenu\MenuItemViewModel.cs                 | C#       |         27 |          0 |          5 |         32 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\BattleMenu\MenuSelectionViewModel.cs            | C#       |         21 |          0 |          4 |         25 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\BattleMenu\MoveViewModel.cs                     | C#       |         38 |          0 |          9 |         47 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\BattleMenu\PokemonBattleMenuViewModel .cs       | C#       |         54 |         14 |         16 |         84 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\BattleMenu\PokemonBattleMovesetMenuViewModel.cs | C#       |         75 |         18 |         16 |        109 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\OnlineBattle\HistoryBattleViewModel.cs          | C#       |         31 |          4 |         10 |         45 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\OnlineBattle\OnlineBattleShellViewModel .cs     | C#       |         21 |          1 |          6 |         28 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\OnlineBattle\OnlineFriendsViewModel.cs          | C#       |         30 |          1 |          6 |         37 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\OnlineBattle\ProfileViewModel.cs                | C#       |         49 |          0 |          5 |         54 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\OnlineBattle\SideMenuViewModel.cs               | C#       |         49 |          0 |          9 |         58 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\OnlineBattle\TeamSelectViewModel.cs             | C#       |         53 |          0 |          9 |         62 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\SignUp\GameModeChooserViewModel .cs             | C#       |        143 |          4 |         31 |        178 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\SignUp\LogInViewModel.cs                        | C#       |         69 |          1 |         12 |         82 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\ViewModelPage\SignUp\SignUpViewModel .cs                      | C#       |        102 |          2 |         23 |        127 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame.ViewModels\WildPokemonBattleViewModel.cs                                 | C#       |         14 |        169 |         10 |        193 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Config\NatureHelper.cs                                              | C#       |         40 |          0 |          8 |         48 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Config\PokemonConstants.cs                                          | C#       |         19 |          1 |          5 |         25 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Config\TypeEffectivenessChartConstants.cs                           | C#       |         15 |          0 |          2 |         17 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Config\TypeEffectivenessChartHelper.cs                              | C#       |        125 |         13 |         19 |        157 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Map\RouteMapData.cs                                          | C#       |         23 |          0 |          0 |         23 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Map\TownMapData.cs                                           | C#       |         14 |          0 |          0 |         14 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Map\Worldata.cs                                              | C#       |         18 |          0 |          2 |         20 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Move\MoveData.cs                                             | C#       |         19 |          0 |          1 |         20 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Pokemon\AbilityData.cs                                       | C#       |         11 |          0 |          1 |         12 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Pokemon\BaseStatsData.cs                                     | C#       |         29 |          0 |          1 |         30 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Pokemon\EggMoveData.cs                                       | C#       |         12 |          0 |          2 |         14 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Pokemon\EvolutionData.cs                                     | C#       |         16 |          0 |          2 |         18 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Pokemon\LevelUpMoveData.cs                                   | C#       |         10 |          0 |          3 |         13 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Pokemon\PokemonData.cs                                       | C#       |          8 |          0 |          0 |          8 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Domain\Pokemon\PokemonFormData.cs                                   | C#       |          9 |          0 |          0 |          9 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\BotLevel.cs                                                   | C#       |         11 |          0 |          2 |         13 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\Direction.cs                                                  | C#       |         10 |          0 |          1 |         11 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\MovesEnum\MoveEffectType.cs                                   | C#       |        175 |          0 |          2 |        177 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\MovesEnum\MoveFlagType.cs                                     | C#       |         41 |         11 |          2 |         54 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\MovesEnum\MoveTargetType.cs                                   | C#       |         22 |          0 |          3 |         25 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\MovesEnum\MovesCategoryType.cs                                | C#       |         13 |          3 |          3 |         19 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\NatureType.cs                                                 | C#       |         11 |          0 |          1 |         12 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\AbillityType.cs                                   | C#       |         82 |          2 |          5 |         89 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\EggGroupType.cs                                   | C#       |         25 |          0 |          2 |         27 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\EvoMethodType.cs                                  | C#       |         38 |          5 |          2 |         45 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\GenderRatioType.cs                                | C#       |         16 |          7 |          2 |         25 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\GenderType.cs                                     | C#       |         13 |          4 |          2 |         19 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\GrowthRateType.cs                                 | C#       |         18 |          0 |          2 |         20 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\MoveNameType.cs                                   | C#       |        570 |          1 |          2 |        573 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\PokemonEnum\PokemonType.cs                                    | C#       |         25 |          0 |          2 |         27 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\StatusType.cs                                                 | C#       |         34 |          3 |          3 |         40 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Enums\TileType.cs                                                   | C#       |         14 |          0 |          3 |         17 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\IBotBattle.cs                                             | C#       |         16 |          3 |          2 |         21 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\ICatchable.cs                                             | C#       |         13 |          0 |          2 |         15 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\IEvolvable.cs                                             | C#       |         13 |          0 |          2 |         15 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\IMove.cs                                                  | C#       |         11 |          0 |          2 |         13 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\IMoveResult.cs                                            | C#       |         16 |          0 |          2 |         18 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\IPartyPokemon.cs                                          | C#       |         15 |          0 |          6 |         21 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\IStatusAffectable.cs                                      | C#       |         14 |          0 |          3 |         17 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\ITrainer.cs                                               | C#       |         23 |          6 |          7 |         36 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Interface\ITyeable.cs                                               | C#       |          9 |          0 |          2 |         11 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\BattleSystem\Bot\RivalBot.cs                                  | C#       |         11 |        163 |         16 |        190 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\BattleSystem\Bot\WildPokemonBot.cs                            | C#       |         13 |        114 |          8 |        135 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\BattleSystem\Player\PlayerPokemonBot.cs                       | C#       |         15 |        104 |          8 |        127 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Helper\BattleHelper\BattleCaculaterHelper.cs                  | C#       |         13 |        162 |         32 |        207 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Helper\DataHelper\MoveHelper\MoveHelper.cs                    | C#       |        124 |          6 |          3 |        133 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Helper\DataHelper\PokemonData\EvolutionHelper.cs              | C#       |          9 |          1 |          3 |         13 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Helper\DataHelper\PokemonData\LevelUpMovesHelper.cs           | C#       |         74 |          0 |          2 |         76 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Helper\MathHelper\PokemonStatCalculatorHelper.cs              | C#       |         61 |          0 |          6 |         67 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Helper\MathHelper\RNGHelper.cs                                | C#       |         87 |         61 |         25 |        173 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Helper\MethodHelper.cs                                        | C#       |        111 |          1 |         20 |        132 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Map\Tile.cs                                                   | C#       |         14 |          0 |          2 |         16 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Map\WorldMap.cs                                               | C#       |        138 |          3 |         21 |        162 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\BoxMoveset.cs                                            | C#       |         70 |          1 |          9 |         80 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\BoxPokemon.cs                                            | C#       |         88 |          0 |         12 |        100 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\EvsAndIvs.cs                                             | C#       |         74 |          0 |          6 |         80 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\Friendship.cs                                            | C#       |         47 |          0 |          4 |         51 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\Interface\IPBEPokemon.cs                                 | C#       |         25 |          6 |         16 |         47 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\Interface\IPBESpeciesForm.cs                             | C#       |          9 |          0 |          2 |         11 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\Interface\IPBEStatCollection.cs                          | C#       |         21 |          0 |          0 |         21 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\Moveset.cs                                               | C#       |         80 |          1 |          5 |         86 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\Pkmn\Pokerus.cs                                               | C#       |         51 |          2 |          5 |         58 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Model\PokemonCreation\PartyPokemon.cs                               | C#       |        144 |          3 |         14 |        161 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\PokemonGame.Model.csproj                                            | XML      |         11 |          0 |          4 |         15 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameModel\Program.cs                                                          | C#       |         12 |          0 |          2 |         14 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameUnitTests\DBTests\SQLiteDataProviderTests.cs                              | C#       |         25 |          0 |         10 |         35 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGameUnitTests\PokemonGame.Tests.csproj                                        | XML      |         23 |          0 |          7 |         30 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\App.xaml                                                                 | XML      |         63 |          2 |          8 |         73 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\App.xaml.cs                                                              | C#       |         92 |          3 |         19 |        114 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Converters\BoolToVisibilityConverter.cs                                  | C#       |         18 |          0 |          3 |         21 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Converters\InverseBoolToVisibilityConverter.cs                           | C#       |         18 |          0 |          4 |         22 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Converters\NullToBoolConverter .cs                                       | C#       |         21 |          0 |          3 |         24 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Converters\OnlineStatusConverter.cs                                      | C#       |         21 |          0 |          3 |         24 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Converters\WinnerTextConverter.cs                                        | C#       |         21 |          0 |          3 |         24 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\MainWindow.xaml                                                          | XML      |         33 |          2 |         11 |         46 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\MainWindow.xaml.cs                                                       | C#       |         21 |          4 |          4 |         29 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\PokemonGame.Views.csproj                                                 | XML      |        577 |          0 |          0 |        577 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\PokemonGame.csproj                                                       | XML      |        561 |          0 |          0 |        561 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Properties\AssemblyInfo.cs                                               | C#       |         20 |         24 |          9 |         53 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Properties\Resources.Designer.cs                                         | C#       |         40 |         23 |          9 |         72 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Properties\Settings.Designer.cs                                          | C#       |         16 |          9 |          6 |         31 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Themes\Generic.xaml                                                      | XML      |        180 |         10 |         12 |        202 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Controls\BoardBackground.cs                                        | C#       |         27 |          0 |          6 |         33 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Controls\DialogService .cs                                         | C#       |         54 |          3 |         13 |         70 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Controls\PasswordHelper.cs                                         | C#       |         48 |          1 |         12 |         61 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePage\BatlleMenuPage.xaml                         | XML      |         72 |          3 |          7 |         82 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePage\BatlleMenuPage.xaml.cs                      | C#       |         24 |          3 |          2 |         29 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\BattleMenuPage.xaml                        | XML      |         64 |          4 |         16 |         84 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\BattleMenuPage.xaml.cs                     | C#       |         24 |          3 |          4 |         31 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\HistoryBattlePage.xaml                     | XML      |        115 |          3 |         11 |        129 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\HistoryBattlePage.xaml.cs                  | C#       |         26 |          3 |          3 |         32 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\OnlineBattleShell.xaml                     | XML      |         41 |          4 |         12 |         57 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\OnlineBattleShell.xaml.cs                  | C#       |         24 |          3 |          2 |         29 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\OnlineFriendsPage.xaml                     | XML      |         60 |          4 |          9 |         73 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\OnlineFriendsPage.xaml.cs                  | C#       |         26 |          3 |          3 |         32 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\ProfilePage.xaml                           | XML      |         58 |          4 |         16 |         78 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\ProfilePage.xaml.cs                        | C#       |         26 |          3 |          2 |         31 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\SideMenu.xaml                              | XML      |         62 |          2 |         12 |         76 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\SideMenu.xaml.cs                           | C#       |         24 |          3 |          3 |         30 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\TeamSelectPage.xaml                        | XML      |        185 |          9 |         14 |        208 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\OnlineBattlePages\TeamSelectPage.xaml.cs                     | C#       |         24 |          3 |          3 |         30 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\SignIn\GameModeChooser.xaml                                  | XML      |         66 |          2 |         10 |         78 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\SignIn\GameModeChooser.xaml.cs                               | C#       |         26 |          3 |          2 |         31 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\SignIn\LogIn.xaml                                            | XML      |         84 |          4 |         13 |        101 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\SignIn\LogIn.xaml.cs                                         | C#       |         25 |          3 |          2 |         30 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\SignIn\SignUp.xaml                                           | XML      |        130 |          4 |          8 |        142 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Pages\SignIn\SignUp.xaml.cs                                        | C#       |         34 |          4 |          7 |         45 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Windows\InputDialog.xaml                                           | XML      |         46 |          3 |          4 |         53 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Windows\InputDialog.xaml.cs                                        | C#       |         22 |          0 |          4 |         26 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Windows\SelectionDialog.xaml                                       | XML      |         47 |          3 |          5 |         55 |
+| c:\Users\yoav\source\repos\PokemonGame\PokemonGame\Views\Windows\SelectionDialog.xaml.cs                                    | C#       |         28 |          3 |          7 |         38 |
+| Total                                                                                                                       |          |      8,772 |      1,125 |      1,143 |     11,040 |
++-----------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

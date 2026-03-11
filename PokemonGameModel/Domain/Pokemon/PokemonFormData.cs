@@ -1,4 +1,4 @@
-﻿namespace PokemonGame.Model.Domain.Pokemon
+﻿ namespace PokemonGame.Model.Domain.Pokemon
 {
     public class PokemonFormData
     {

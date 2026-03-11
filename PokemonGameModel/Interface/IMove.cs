@@ -1,12 +1,10 @@
-﻿using PokemonGame.Services.Enums.PokemonEnum;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Interface
 {
-    public interface IMove
+    internal interface IMove
     {
-        string Name { get; }
-        int Power { get; }
-        int Accuracy { get; }
-        PokemonType Type { get; }
+        void Execute(BattleDomain battle);
     }
 }
