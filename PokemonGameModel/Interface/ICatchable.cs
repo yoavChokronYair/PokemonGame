@@ -1,3 +1,4 @@
+// Layer: Interface — contract definition only, no logic or implementations here.
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;

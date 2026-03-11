@@ -1,3 +1,4 @@
+// Layer: Interface — contract definition only, no logic or implementations here.
 ﻿using PokemonGame.Core.Model.Helper.BattleHelper;
 using PokemonGame.Model.PokemonCreation;
 

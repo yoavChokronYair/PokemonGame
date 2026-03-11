@@ -1,3 +1,4 @@
+// Layer: Interface — contract definition only, no logic or implementations here.
 ﻿using PokemonGame.Core.Model.Pkmn;
 using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
