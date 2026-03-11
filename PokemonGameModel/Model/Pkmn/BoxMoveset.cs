@@ -1,3 +1,6 @@
+// Design: Collection / Container class (storage snapshot).
+// Layer: Model/Pkmn — PC box moveset without active PP tracking (only PPUps stored).
+// Constructed from a Moveset when a Pokemon is deposited.
 ﻿using PokemonGame.Core.Config;
 using PokemonGame.Model.Domain.Move;
 

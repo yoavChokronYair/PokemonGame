@@ -1,3 +1,5 @@
+// Design: Value Object with bit-packed storage.
+// Layer: Model/Pkmn — Pokerus strain (upper 4 bits) and days remaining (lower 4 bits).
 ﻿using PokemonGame.Model.Helper;
 using PokemonGame.Model.PokemonCreation;
 using System;

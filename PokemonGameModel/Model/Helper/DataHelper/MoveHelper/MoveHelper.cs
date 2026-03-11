@@ -1,3 +1,6 @@
+// Design: Static helper (pure predicate functions, no state).
+// Layer: Model/Helper/DataHelper — queries move metadata from MoveEffectType and MoveTargetType enums.
+// Methods: HasSecondaryEffects, IsHPDrainMove, IsMultiHitMove, IsRecoilMove, IsWeatherMove, IsSpreadMove.
 ﻿using PokemonGame.Services.Enums.MovesEnum;
 using System;
 using System.Collections.Generic;

@@ -1,51 +1,32 @@
-﻿using PokemonGame.Model.Helper;
-using PokemonGame.Model.PokemonCreation;
-using System;
-using System.Collections.Generic;
-using System.Text;
+// Design: Static lookup table for friendship event bonuses.
+// Layer: Model/Pkmn — maps FriendshipEvent to bonus arrays by happiness tier (3 tiers).
+// Note: FriendshipEvent enum moved to Enums/PokemonEnum/PokemonEnums.cs.
+
+using PokemonGame.Enums.PokemonEnum;
 
 namespace PokemonGame.Core.Model.Pkmn
 {
     internal static class Friendship
     {
-        public enum Event : byte
-        {
-            Walking,
-            LevelUpBattle,
-            Vitamin,
-            Wing,
-            TMHM,
-            BattleItem,
-            Faint_L30,
-            Faint_GE30,
-            Powder,
-            EnergyRoot,
-            RevivalHerb,
-            FriendshipBerry,
-            LeagueBattle
-        }
-
-        private static sbyte[] GetEventBonuses(Event e)
+        private static sbyte[] GetEventBonuses(FriendshipEvent e)
         {
             switch (e)
             {
-                case Event.Walking: return new sbyte[3] { +2, +2, +1 };
-                case Event.LevelUpBattle: return new sbyte[3] { +5, +4, +3 };
-                case Event.Vitamin: return new sbyte[3] { +5, +3, +2 };
-                case Event.Wing: return new sbyte[3] { +3, +2, +1 };
-                case Event.TMHM: return new sbyte[3] { +1, +1, +0 };
-                case Event.BattleItem: return new sbyte[3] { +1, +1, +0 };
-                case Event.Faint_L30: return new sbyte[3] { -1, -1, -1 };
-                case Event.Faint_GE30: return new sbyte[3] { -5, -5, -10 };
-                case Event.Powder: return new sbyte[3] { -5, -5, -10 };
-                case Event.EnergyRoot: return new sbyte[3] { -10, -10, -15 };
-                case Event.RevivalHerb: return new sbyte[3] { -15, -15, -20 };
-                case Event.FriendshipBerry: return new sbyte[3] { +10, +5, +2 };
-                case Event.LeagueBattle: return new sbyte[3] { +5, +4, +3 };
+                case FriendshipEvent.Walking:         return new sbyte[3] { +2, +2, +1 };
+                case FriendshipEvent.LevelUpBattle:   return new sbyte[3] { +5, +4, +3 };
+                case FriendshipEvent.Vitamin:         return new sbyte[3] { +5, +3, +2 };
+                case FriendshipEvent.Wing:            return new sbyte[3] { +3, +2, +1 };
+                case FriendshipEvent.TMHM:            return new sbyte[3] { +1, +1, +0 };
+                case FriendshipEvent.BattleItem:      return new sbyte[3] { +1, +1, +0 };
+                case FriendshipEvent.Faint_L30:       return new sbyte[3] { -1, -1, -1 };
+                case FriendshipEvent.Faint_GE30:      return new sbyte[3] { -5, -5, -10 };
+                case FriendshipEvent.Powder:          return new sbyte[3] { -5, -5, -10 };
+                case FriendshipEvent.EnergyRoot:      return new sbyte[3] { -10, -10, -15 };
+                case FriendshipEvent.RevivalHerb:     return new sbyte[3] { -15, -15, -20 };
+                case FriendshipEvent.FriendshipBerry: return new sbyte[3] { +10, +5, +2 };
+                case FriendshipEvent.LeagueBattle:    return new sbyte[3] { +5, +4, +3 };
             }
             throw new Exception();
         }
-
-       
     }
 }

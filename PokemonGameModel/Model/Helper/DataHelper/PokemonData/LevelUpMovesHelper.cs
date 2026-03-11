@@ -1,3 +1,6 @@
+// Design: Static helper (pure functions over domain collections).
+// Layer: Model/Helper/DataHelper — queries List<LevelUpMoveData> for learnable moves.
+// Methods: CanLearnMoveEventually, GetAllLearnableMoves, GetMoveAtLevel, GetNextMove, GetDefaultMoves.
 ﻿using PokemonGame.Core.Config;
 using PokemonGame.Services.Enums.PokemonEnum;
 using PokemonGame.Model.Domain.Pokemon;

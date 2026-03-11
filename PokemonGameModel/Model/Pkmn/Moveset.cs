@@ -1,3 +1,6 @@
+// Design: Collection / Container class.
+// Layer: Model/Pkmn — active party moveset with per-slot PP and PP Ups tracking.
+// MovesetSlot: holds one move, its current PP, and PP Up count.
 ﻿using PokemonGame.Core.Config;
 using PokemonGame.Model.Domain.Move;
 using System;

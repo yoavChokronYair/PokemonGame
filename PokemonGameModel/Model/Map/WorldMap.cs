@@ -1,3 +1,6 @@
+// Design: Builder pattern — constructs the world grid from domain data.
+// Layer: Model/Map — builds Tile[,] grids and places maps in the world layout.
+// Refactor opportunity: CreateRouteTiles and CreateTownTiles share identical tile-fill logic.
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Helper;

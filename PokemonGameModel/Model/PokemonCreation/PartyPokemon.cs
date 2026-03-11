@@ -1,27 +1,23 @@
-﻿using PokemonGame.Core.Config;
+// Design: Entity + Static Factory pattern.
+// OOP: implements IPartyPokemon, IPBEPokemon, IPBESpeciesForm.
+// Layer: Model/PokemonCreation — active party slot with full stats, HP, status, and moveset.
+// Note: AbilityType enum moved to Enums/PokemonEnum/PokemonEnums.cs.
+// Note: CreatePlayerOwnedMon is the static factory for player-owned Pokemon.
+
+using PokemonGame.Core.Config;
 using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Core.Model.Pkmn;
-using PokemonGame.Core.Model.Pkmn.Interface;
 using PokemonGame.Enums;
+using PokemonGame.Enums.PokemonEnum;
 using PokemonGame.Interface;
-using PokemonGame.Services.Enums.PokemonEnum;
-
+using PokemonGame.Interface.Pokemon;
 using PokemonGame.Model.Domain.Pokemon;
-
+using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.PokemonCreation
 {
-    //TODO: add more generations 
-    public enum AbilityType : byte
-    {
-        Ability1,
-        Ability2,
-        AbilityH,
-        NonStandard
-    }
     internal sealed class PartyPokemon : IPartyPokemon
     {
-        //TODO: abillity type change logic
         public string MetLocation { get; set; }
         public byte MetLevel { get; set; }
         public DateTime MetDate { get; set; }
@@ -54,7 +50,7 @@ namespace PokemonGame.Model.PokemonCreation
         public EVs EffortValues { get; set; }
         public IVs IndividualValues { get; set; }
 
-        public uint PID { get; private set; } // Currently only used for Spinda spots, characteristic, and Wurmple evolution
+        public uint PID { get; private set; }
         public bool IsEgg { get; set; }
 
         #region PBE
@@ -68,13 +64,13 @@ namespace PokemonGame.Model.PokemonCreation
         Moveset IPartyPokemon.Moveset => Moveset;
         #endregion
 
-
         private PartyPokemon(PokemonData species, PokemonFormData form, byte level)
         {
             Species = species;
             Form = form;
             Level = level;
         }
+
         public PartyPokemon(BoxPokemon other)
         {
             PID = other.PID;
@@ -102,19 +98,20 @@ namespace PokemonGame.Model.PokemonCreation
 
         public static PartyPokemon CreatePlayerOwnedMon(PokemonData species, PokemonFormData form, byte level, BaseStatsData baseStats)
         {
-            RNGHelper RNGHelper = RNGHelper.GenerateRandomPokemonIdentity();
+            PokemonGame.Core.Model.Helper.MathHelper.RNGHelper rngHelper =
+                PokemonGame.Core.Model.Helper.MathHelper.RNGHelper.GenerateRandomPokemonIdentity();
             var p = new PartyPokemon(species, form, level);
-            p.PID = RNGHelper.PID;
+            p.PID = rngHelper.PID;
             p.SetEmptyPokerus();
             p.SetDefaultNickname();
-            p.Shiny = RNGHelper.IsShiny();
+            p.Shiny = rngHelper.IsShiny();
             var bs = baseStats;
             p.SetDefaultFriendship(bs);
             p.EXP = bs.BaseExpYield;
             p.AbilType = AbilityType.Ability1;
             p.Ability = bs.Ability1;
-            p.Gender = RNGHelper.GenerateGender(bs.GenderRatio);
-            p.Nature = RNGHelper.GenerateNature();
+            p.Gender = rngHelper.GenerateGender(bs.GenderRatio);
+            p.Nature = rngHelper.GenerateNature();
             p.Moveset = new Moveset();
             p.EffortValues = new EVs();
             p.IndividualValues = new IVs();
@@ -123,34 +120,25 @@ namespace PokemonGame.Model.PokemonCreation
             p.SetHPToMaxHP();
             return p;
         }
-        private void SetDefaultFriendship(BaseStatsData bs)
-        {
-            Friendship = bs.BaseFriendship;
-        }
-        private void SetEmptyPokerus()
-        {
-            Pokerus = new Pokerus(true);
-        }
-        private void SetDefaultNickname()
-        {
-            Nickname = Species.SpeciesName;
-        }
-        public void SetHPToMaxHP()
-        {
-            HP = MaxHP;
-        }
+
+        private void SetDefaultFriendship(BaseStatsData bs) { Friendship = bs.BaseFriendship; }
+        private void SetEmptyPokerus() { Pokerus = new Pokerus(true); }
+        private void SetDefaultNickname() { Nickname = Species.SpeciesName; }
+
+        public void SetHPToMaxHP() { HP = MaxHP; }
+
         public void HealStatus()
         {
             Status1 = default;
             SleepTurns = 0;
         }
+
         public void HealMoves()
         {
             for (int i = 0; i < PokemonConstants.NumMoves; i++)
-            {
                 Moveset[i].SetMaxPP();
-            }
         }
+
         public void HealFully()
         {
             SetHPToMaxHP();

@@ -1,3 +1,7 @@
+// Design: Static factory + Instance value object.
+// Layer: Model/Helper/MathHelper — game-specific RNG (PID, IVs, nature, gender, shininess).
+// Uses RandomHelper for all random number generation — no inline new Random() here.
+// Instance holds PID/TID/SID for shiny and gender checks.
 ﻿using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Services.Enums.PokemonEnum;

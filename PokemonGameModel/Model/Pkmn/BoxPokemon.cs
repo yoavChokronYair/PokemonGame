@@ -1,10 +1,16 @@
-﻿using PokemonGame.Core.Model.Helper.MathHelper;
-using PokemonGame.Core.Model.Pkmn.Interface;
-using PokemonGame.Enums;
+// Design: Entity + Static Factory pattern.
+// Layer: Model/Pkmn — PC storage representation of a Pokemon (no active battle stats).
+// OOP: implements IPBESpeciesForm (Interface/Pokemon/).
+// CreateDaycareEgg: static factory for egg creation via RNGHelper.
+// Note: AbilityType comes from Enums/PokemonEnum/PokemonEnums.cs.
+// Note: IPBESpeciesForm comes from Interface/Pokemon/ (not Model/Pkmn/Interface/).
+
+using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Enums.PokemonEnum;
+using PokemonGame.Interface.Pokemon;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.PokemonCreation;
 using PokemonGame.Services.Enums.PokemonEnum;
-
 
 namespace PokemonGame.Core.Model.Pkmn
 {
@@ -38,10 +44,10 @@ namespace PokemonGame.Core.Model.Pkmn
         public IVs IndividualValues { get; set; }
 
         PokemonData IPBESpeciesForm.Species => throw new NotImplementedException();
-
         PokemonFormData IPBESpeciesForm.Form => throw new NotImplementedException();
 
         private BoxPokemon() { }
+
         public BoxPokemon(PartyPokemon other)
         {
             IsEgg = other.IsEgg;
@@ -68,12 +74,15 @@ namespace PokemonGame.Core.Model.Pkmn
             IndividualValues = other.IndividualValues;
         }
 
-        public static BoxPokemon CreateDaycareEgg(PokemonData species, PokemonFormData form, GenderType gender, byte cycles, byte level, uint exp, bool shiny,
-            NatureType nature, (AbilityType Type,AbilityData Abil) ability, IVs ivs, BoxMoveset moves)
+        public static BoxPokemon CreateDaycareEgg(
+            PokemonData species, PokemonFormData form, GenderType gender,
+            byte cycles, byte level, uint exp, bool shiny,
+            NatureType nature, (AbilityType Type, AbilityData Abil) ability,
+            IVs ivs, BoxMoveset moves)
         {
-            RNGHelper RNGHelper = RNGHelper.GenerateRandomPokemonIdentity();
+            RNGHelper rngHelper = RNGHelper.GenerateRandomPokemonIdentity();
             var p = new BoxPokemon();
-            p.PID = (uint)RNGHelper.PID;
+            p.PID = (uint)rngHelper.PID;
             p.Pokerus = new Pokerus(true);
             p.IsEgg = true;
             p.Level = level;
@@ -95,6 +104,4 @@ namespace PokemonGame.Core.Model.Pkmn
             return p;
         }
     }
-
-   
 }

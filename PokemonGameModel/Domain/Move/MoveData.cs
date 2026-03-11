@@ -1,3 +1,5 @@
+// Design: Data Transfer Object / struct-like record.
+// Layer: Domain — raw move data mapped from SQLite (name, type, power, accuracy, flags, etc.).
 ﻿using PokemonGame.Services.Enums.MovesEnum;
 using PokemonGame.Services.Enums.PokemonEnum;
 

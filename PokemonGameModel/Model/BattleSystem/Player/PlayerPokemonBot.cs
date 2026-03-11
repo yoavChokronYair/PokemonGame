@@ -1,3 +1,6 @@
+// Design: Strategy pattern — AI battle decision making.
+// Layer: Model/BattleSystem — chooses moves, switches Pokemon, handles turns.
+// Status: stub, all logic commented out pending PokemonDomain integration.
 ﻿using PokemonGame.Core.Model.Helper.BattleHelper;
 using PokemonGame.Enums;
 using PokemonGame.Model.PokemonCreation;

@@ -1,3 +1,5 @@
+// Design: Data Transfer Object — struct-like, properties only, no logic.
+// Layer: Domain — maps one SQLite row to an easy-to-use C# object.
 ﻿using PokemonGame.Enums;
 
 namespace PokemonGame.Model.Domain.Map

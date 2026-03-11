@@ -1,7 +1,19 @@
-﻿using PokemonGame.Interface;
-using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Move;
+// Design: Entity — represents one Pokemon in an active battle.
+// Holds: identity, computed final stats, stat stages, HP, status, moves, charge/rampage state.
+// OOP: Encapsulation — all HP/status/stage mutation is through public methods.
+// Note: Nature enum was removed — use NatureType from Enums/NatureType.cs.
+// Note: NatureModifier class was removed — use NatureHelper.GetNatureModifiers (DataHelper).
+// Note: CalcHP/CalcStat delegate to PokemonStatCalculatorHelper (MathHelper) — no duplication.
+// Note: ApplyStatus uses RandomHelper for sleep duration — no inline new Random().
+// Note: All battle enums (Stat, StatusCondition, VolatileStatus) live in Enums/Battle/BattleEnums.cs.
+
+using PokemonGame.Enums;
+using PokemonGame.Enums.Battle;
+using PokemonGame.Interface;
+using PokemonGame.Interface.Move;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Helper.DataHelper;
+using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.Domain.Pokemon
@@ -29,48 +41,6 @@ namespace PokemonGame.Model.Domain.Pokemon
         }
     }
 
-    // ── Nature (affects stat multipliers) ────────────────────────────────────
-
-    public enum Nature
-    {
-        Hardy,   // neutral
-        Lonely, Brave, Adamant, Naughty,            // +Atk
-        Bold, Relaxed, Impish, Lax,                 // +Def
-        Timid, Hasty, Jolly, Naive,                 // +Spe
-        Modest, Mild, Quiet, Rash,                  // +SpAtk
-        Calm, Gentle, Sassy, Careful,               // +SpDef
-        Bashful, Docile, Quirky, Serious             // neutral
-    }
-
-    public static class NatureModifier
-    {
-        // Returns (boostedStat, hinderedStat) — null means neutral
-        public static (Stat? boosted, Stat? hindered) GetModifiers(Nature nature) => nature switch
-        {
-            Nature.Lonely => (Stat.Attack, Stat.Defense),
-            Nature.Brave => (Stat.Attack, Stat.Speed),
-            Nature.Adamant => (Stat.Attack, Stat.SpecialAttack),
-            Nature.Naughty => (Stat.Attack, Stat.SpecialDefense),
-            Nature.Bold => (Stat.Defense, Stat.Attack),
-            Nature.Relaxed => (Stat.Defense, Stat.Speed),
-            Nature.Impish => (Stat.Defense, Stat.SpecialAttack),
-            Nature.Lax => (Stat.Defense, Stat.SpecialDefense),
-            Nature.Timid => (Stat.Speed, Stat.Attack),
-            Nature.Hasty => (Stat.Speed, Stat.Defense),
-            Nature.Jolly => (Stat.Speed, Stat.SpecialAttack),
-            Nature.Naive => (Stat.Speed, Stat.SpecialDefense),
-            Nature.Modest => (Stat.SpecialAttack, Stat.Attack),
-            Nature.Mild => (Stat.SpecialAttack, Stat.Defense),
-            Nature.Quiet => (Stat.SpecialAttack, Stat.Speed),
-            Nature.Rash => (Stat.SpecialAttack, Stat.SpecialDefense),
-            Nature.Calm => (Stat.SpecialDefense, Stat.Attack),
-            Nature.Gentle => (Stat.SpecialDefense, Stat.Defense),
-            Nature.Sassy => (Stat.SpecialDefense, Stat.Speed),
-            Nature.Careful => (Stat.SpecialDefense, Stat.SpecialAttack),
-            _ => (null, null) // neutral natures
-        };
-    }
-
     // ── Pokemon Domain ────────────────────────────────────────────────────────
 
     internal class PokemonDomain
@@ -81,14 +51,14 @@ namespace PokemonGame.Model.Domain.Pokemon
         public PokemonType PrimaryType { get; }
         public PokemonType? SecondaryType { get; }
         public int Level { get; }
-        public Nature Nature { get; }
+        public NatureType Nature { get; }
 
         // ── Stats ─────────────────────────────────────────────────────────────
         public BaseStats Base { get; }
-        private readonly int[] ivs = new int[6]; // 0–31
-        private readonly int[] evs = new int[6]; // 0–252
+        private readonly int[] ivs = new int[6];
+        private readonly int[] evs = new int[6];
 
-        // Computed final stats (calculated once on construction)
+        // Computed final stats (delegated to PokemonStatCalculatorHelper)
         public int MaxHP { get; }
         public int BaseAttack { get; }
         public int BaseDefense { get; }
@@ -126,8 +96,14 @@ namespace PokemonGame.Model.Domain.Pokemon
         public bool IsRampaging { get; private set; }
         public int RampageTurnsLeft { get; private set; }
 
-        // ── Last damage taken (for Bide, Counter, Mirror Coat) ───────────────
+        // ── Last damage (for Bide, Counter, Mirror Coat) ─────────────────────
         public int LastDamageTaken { get; private set; }
+        public int LastDamageDealt { get; private set; }
+
+        // ── Bide State ────────────────────────────────────────────────────────
+        public bool IsBiding { get; private set; }
+        public int BideTurnsLeft { get; private set; }
+        public int BideStoredDamage { get; private set; }
 
         // ── Constructor ───────────────────────────────────────────────────────
 
@@ -137,7 +113,7 @@ namespace PokemonGame.Model.Domain.Pokemon
             PokemonType primaryType,
             PokemonType? secondaryType,
             int level,
-            Nature nature,
+            NatureType nature,
             BaseStats baseStats,
             List<IMove> moves,
             int[]? ivs = null,
@@ -155,66 +131,18 @@ namespace PokemonGame.Model.Domain.Pokemon
             this.ivs = ivs ?? new int[] { 31, 31, 31, 31, 31, 31 };
             this.evs = evs ?? new int[] { 0, 0, 0, 0, 0, 0 };
 
-            // Calculate final stats using Gen 3+ formulas
-            MaxHP = CalcHP();
-            BaseAttack = CalcStat(Base.Attack, Stat.Attack, 0);
-            BaseDefense = CalcStat(Base.Defense, Stat.Defense, 1);
-            BaseSpecialAttack = CalcStat(Base.SpecialAttack, Stat.SpecialAttack, 2);
-            BaseSpecialDefense = CalcStat(Base.SpecialDefense, Stat.SpecialDefense, 3);
-            BaseSpeed = CalcStat(Base.Speed, Stat.Speed, 4);
+            // Delegate to PokemonStatCalculatorHelper — no duplicate formula here.
+            var natureModifiers = NatureHelper.GetNatureModifiers(nature);
+            MaxHP = PokemonStatCalculatorHelper.CalculateHP(Base.HP, this.ivs[0], this.evs[0], level);
+            BaseAttack = PokemonStatCalculatorHelper.CalculateStat(Base.Attack, this.ivs[1], this.evs[1], level, natureModifiers.atk);
+            BaseDefense = PokemonStatCalculatorHelper.CalculateStat(Base.Defense, this.ivs[2], this.evs[2], level, natureModifiers.def);
+            BaseSpecialAttack = PokemonStatCalculatorHelper.CalculateStat(Base.SpecialAttack, this.ivs[3], this.evs[3], level, natureModifiers.spAtk);
+            BaseSpecialDefense = PokemonStatCalculatorHelper.CalculateStat(Base.SpecialDefense, this.ivs[4], this.evs[4], level, natureModifiers.spDef);
+            BaseSpeed = PokemonStatCalculatorHelper.CalculateStat(Base.Speed, this.ivs[5], this.evs[5], level, natureModifiers.speed);
 
             CurrentHP = MaxHP;
         }
 
-        // ── Stat Calculation (Gen 3+ formula) ────────────────────────────────
-
-        private int CalcHP()
-        {
-            // HP = floor((2 * Base + IV + floor(EV/4)) * Level / 100) + Level + 10
-            return (int)Math.Floor((2.0 * Base.HP + ivs[0] + Math.Floor(evs[0] / 4.0))
-                   * Level / 100.0) + Level + 10;
-        }
-
-        private int CalcStat(int baseStat, Stat stat, int index)
-        {
-            // Stat = floor((floor((2 * Base + IV + floor(EV/4)) * Level / 100) + 5) * nature)
-            double raw = Math.Floor((2.0 * baseStat + ivs[index] + Math.Floor(evs[index] / 4.0))
-                         * Level / 100.0) + 5;
-
-            var (boosted, hindered) = NatureModifier.GetModifiers(Nature);
-            if (boosted == stat) raw *= 1.1;
-            if (hindered == stat) raw *= 0.9;
-
-            return (int)Math.Floor(raw);
-        }
-
-        // ── Last Damage Dealt (for Drain, Recoil calculations) ───────────────────
-        public int LastDamageDealt { get; private set; }
-
-        // Call this when the pokemon deals damage to someone else
-        public void RegisterDamageDealt(int amount)
-            => LastDamageDealt = amount;
-
-        // ── Bide State ────────────────────────────────────────────────────────────
-        public bool IsBiding { get; private set; }
-        public int BideTurnsLeft { get; private set; }
-        public int BideStoredDamage { get; private set; }
-
-        public void StartBide(int turns)
-        {
-            IsBiding = true;
-            BideTurnsLeft = turns;
-            BideStoredDamage = 0;
-        }
-
-        public void AccumulateBideDamage(int damage)
-            => BideStoredDamage += damage;
-
-        public void DecrementBide()
-        {
-            if (--BideTurnsLeft <= 0)
-                IsBiding = false;
-        }
         // ── Effective Stat (applies battle stages) ────────────────────────────
 
         public int GetEffectiveStat(Stat stat)
@@ -231,29 +159,16 @@ namespace PokemonGame.Model.Domain.Pokemon
 
             int stage = statStages[stat];
 
-            // Paralysis halves speed
-            if (stat == Stat.Speed && Status == StatusCondition.Paralysis)
-                baseStat /= 2;
-
-            // Burn halves attack
-            if (stat == Stat.Attack && Status == StatusCondition.Burn)
-                baseStat /= 2;
+            if (stat == Stat.Speed && Status == StatusCondition.Paralysis) baseStat /= 2;
+            if (stat == Stat.Attack && Status == StatusCondition.Burn) baseStat /= 2;
 
             double multiplier = stage switch
             {
-                -6 => 2.0 / 8,
-                -5 => 2.0 / 7,
-                -4 => 2.0 / 6,
-                -3 => 2.0 / 5,
-                -2 => 2.0 / 4,
-                -1 => 2.0 / 3,
+                -6 => 2.0 / 8, -5 => 2.0 / 7, -4 => 2.0 / 6,
+                -3 => 2.0 / 5, -2 => 2.0 / 4, -1 => 2.0 / 3,
                 0 => 1.0,
-                +1 => 3.0 / 2,
-                +2 => 4.0 / 2,
-                +3 => 5.0 / 2,
-                +4 => 6.0 / 2,
-                +5 => 7.0 / 2,
-                +6 => 8.0 / 2,
+                +1 => 3.0 / 2, +2 => 4.0 / 2, +3 => 5.0 / 2,
+                +4 => 6.0 / 2, +5 => 7.0 / 2, +6 => 8.0 / 2,
                 _ => 1.0
             };
 
@@ -279,8 +194,9 @@ namespace PokemonGame.Model.Domain.Pokemon
             CurrentHP = Math.Max(0, CurrentHP - amount);
         }
 
-        public void RestoreHP(int amount)
-            => CurrentHP = Math.Min(MaxHP, CurrentHP + amount);
+        public void RestoreHP(int amount) => CurrentHP = Math.Min(MaxHP, CurrentHP + amount);
+
+        public void RegisterDamageDealt(int amount) => LastDamageDealt = amount;
 
         // ── Status Manipulation ───────────────────────────────────────────────
 
@@ -294,13 +210,14 @@ namespace PokemonGame.Model.Domain.Pokemon
             return true;
         }
 
+        // Sleep duration uses RandomHelper — no inline new Random().
         public void ApplyStatus(StatusCondition status, int turns = 0)
         {
             if (!CanApplyStatus(status)) return;
             Status = status;
             ToxicCounter = 0;
             if (status == StatusCondition.Sleep)
-                SleepTurns = turns > 0 ? turns : new Random().Next(1, 4);
+                SleepTurns = turns > 0 ? turns : RandomHelper.Next(1, 4);
         }
 
         public void ClearStatus()
@@ -318,46 +235,34 @@ namespace PokemonGame.Model.Domain.Pokemon
                 volatileStatuses[status] = turns;
         }
 
-        public bool HasVolatileStatus(VolatileStatus status)
-            => volatileStatuses.ContainsKey(status);
-
-        public void RemoveVolatileStatus(VolatileStatus status)
-            => volatileStatuses.Remove(status);
+        public bool HasVolatileStatus(VolatileStatus status) => volatileStatuses.ContainsKey(status);
+        public void RemoveVolatileStatus(VolatileStatus status) => volatileStatuses.Remove(status);
 
         // ── Type Helpers ──────────────────────────────────────────────────────
 
-        public bool HasType(PokemonType type)
-            => PrimaryType == type || SecondaryType == type;
+        public bool HasType(PokemonType type) => PrimaryType == type || SecondaryType == type;
 
         // ── Move Helpers ──────────────────────────────────────────────────────
 
-        public void CopyMove(IMove? move)
-            => LastUsedMove = move;
+        public void CopyMove(IMove? move) => LastUsedMove = move;
 
         // ── Charge / Rampage ──────────────────────────────────────────────────
 
-        public void BeginCharge(IAttempt release)
-        {
-            IsCharging = true;
-            ChargeRelease = release;
-        }
-
-        public void EndCharge()
-        {
-            IsCharging = false;
-            ChargeRelease = null;
-        }
-
-        public void BeginRampage(int turns)
-        {
-            IsRampaging = true;
-            RampageTurnsLeft = turns;
-        }
-
+        public void BeginCharge(IAttempt release) { IsCharging = true; ChargeRelease = release; }
+        public void EndCharge() { IsCharging = false; ChargeRelease = null; }
+        public void BeginRampage(int turns) { IsRampaging = true; RampageTurnsLeft = turns; }
         public void DecrementRampage()
         {
-            if (--RampageTurnsLeft <= 0)
-                IsRampaging = false;
+            if (--RampageTurnsLeft <= 0) IsRampaging = false;
+        }
+
+        // ── Bide ──────────────────────────────────────────────────────────────
+
+        public void StartBide(int turns) { IsBiding = true; BideTurnsLeft = turns; BideStoredDamage = 0; }
+        public void AccumulateBideDamage(int damage) => BideStoredDamage += damage;
+        public void DecrementBide()
+        {
+            if (--BideTurnsLeft <= 0) IsBiding = false;
         }
 
         // ── Force Switch ──────────────────────────────────────────────────────
@@ -368,7 +273,6 @@ namespace PokemonGame.Model.Domain.Pokemon
             volatileStatuses.Clear();
             IsCharging = false;
             IsRampaging = false;
-            // Actual party swap is handled by BattleDomain / trainer logic
             battle.Log($"{Name} was forced out!");
         }
 
