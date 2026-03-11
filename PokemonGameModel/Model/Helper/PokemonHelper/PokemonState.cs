@@ -121,7 +121,9 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public void EndCharge() { state.IsCharging = false; state.ChargeRelease = null; }
         public bool IsCharging() => state.IsCharging;
         public void BeginRampage(int turns) { state.IsRampaging = true; state.RampageTurnsLeft = turns; }
-        public void DecrementRampage() { if (--state.RampageTurnsLeft <= 0)
+        public void DecrementRampage()
+        {
+            if (--state.RampageTurnsLeft <= 0)
             {
                 state.IsRampaging = false;
             }
@@ -131,7 +133,9 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         // --- Bide ---
         public void StartBide(int turns) { state.IsBiding = true; state.BideTurnsLeft = turns; state.BideStoredDamage = 0; }
         public void AccumulateBideDamage(int damage) => state.BideStoredDamage += damage;
-        public void DecrementBide() { if (--state.BideTurnsLeft <= 0)
+        public void DecrementBide()
+        {
+            if (--state.BideTurnsLeft <= 0)
             {
                 state.IsBiding = false;
             }

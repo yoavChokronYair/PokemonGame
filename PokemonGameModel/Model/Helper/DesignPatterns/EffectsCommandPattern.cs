@@ -20,7 +20,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         private readonly List<IEffect> effects;
         public Sequence(List<IEffect> effects) { this.effects = effects; }
         public Sequence(params IEffect[] effects) { this.effects = new List<IEffect>(effects); }
-        public void Apply(BattleState battle) { foreach (var effect in effects)
+        public void Apply(BattleState battle)
+        {
+            foreach (var effect in effects)
             {
                 effect.Apply(battle);
             }
