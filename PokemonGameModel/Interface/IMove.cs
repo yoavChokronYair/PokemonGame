@@ -3,7 +3,7 @@ using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Interface
 {
-    internal interface IMove
+    public interface IMove
     {
         void Execute(BattleDomain battle);
     }

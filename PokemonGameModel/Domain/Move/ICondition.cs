@@ -9,6 +9,20 @@ namespace PokemonGame.Model.Domain.Move
         //and(t),or(t),not(t),probality(t)
         public bool Check(T entity);
     }
+    public class Probability : ICondition<BattleDomain>
+    {
+        private readonly double probability;
+        private Random random = new Random();
+
+        public Probability(double probability)
+        {
+            this.probability = probability;
+        }
+        public bool Check(BattleDomain entity)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public interface ITarget
     {
         //for effects as well

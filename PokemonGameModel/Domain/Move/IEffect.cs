@@ -2,50 +2,48 @@
 
 namespace PokemonGame.Model.Domain.Move
 {
+    //TODO:create all things needed for here
     public interface IEffect
     {
         public void Apply(BattleDomain battle);
     }
+
+    #region Combinators
+
     public class Sequence : IEffect
     {
-        public List<IEffect> effects;
+        private readonly List<IEffect> effects;
 
         public Sequence(List<IEffect> effects)
         {
             this.effects = effects;
         }
 
+        // Convenience constructor for inline usage: new Sequence(effect1, effect2, ...)
+        public Sequence(params IEffect[] effects)
+        {
+            this.effects = new List<IEffect>(effects);
+        }
+
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            foreach (var effect in effects)
+                effect.Apply(battle);
         }
     }
-    public class Probability : ICondition<BattleDomain>
-    {
-        private readonly double probability;
-        private Random random = new Random();
 
-        public Probability(double probability)
-        {
-            this.probability = probability;
-        }
-        public bool Check(BattleDomain entity)
-        {
-            throw new NotImplementedException();
-        }
-    }
-    //more effects
-    public class Conditions : IEffect
+    public class Conditional : IEffect
     {
         private readonly ICondition<BattleDomain> condition;
         private readonly IEffect onPass;
-        private readonly IEffect onFail;
+        private readonly IEffect? onFail;
 
-        public Conditions(
+        public Conditional(
             ICondition<BattleDomain> condition,
             IEffect onPass,
-            IEffect onFail = null)
+            IEffect? onFail = null)
         {
+            this.condition = condition;
             this.onPass = onPass;
             this.onFail = onFail;
         }
@@ -53,123 +51,466 @@ namespace PokemonGame.Model.Domain.Move
         public void Apply(BattleDomain battle)
         {
             if (condition.Check(battle))
-            {
-                onPass?.Apply(battle);
-            }
+                onPass.Apply(battle);
             else
-            {
                 onFail?.Apply(battle);
-            }
         }
     }
+
+    // Applies effect with a percentage chance — e.g. 30% burn on Fire Blast
+    public class Chance : IEffect
+    {
+        private readonly double probability; // 0.0 to 1.0
+        private readonly IEffect effect;
+        private static readonly Random rng = new();
+
+        public Chance(double probability, IEffect effect)
+        {
+            this.probability = probability;
+            this.effect = effect;
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            if (rng.NextDouble() < probability)
+                effect.Apply(battle);
+        }
+    }
+
+    #endregion
+
+    // Does nothing — useful as a default/null-safe placeholder
     public class NoEffect : IEffect
     {
-
-        public void Apply(BattleDomain battle)
-        {
-            throw new NotImplementedException();
-        }
+        public void Apply(BattleDomain battle) { }
     }
+
+    // ── Damage ────────────────────────────────────────────────────────────────
+
+    // Damage computed from a formula (handles type, stat, STAB, etc. externally)
     public class FormulaDamage : IEffect
     {
-        public INumber number;
-        public FormulaDamage(INumber effect)
+        private readonly ITarget target;
+        private readonly INumber power;
+
+        public FormulaDamage(ITarget target, INumber power)
         {
-            this.number = effect;
+            this.target = target;
+            this.power = power;
         }
 
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            var battler = target.Resolve(battle);
+            double damage = power.Evaluate(battle);
+            battler.TakeDamage((int)damage);
         }
     }
-    public class Faint : IEffect
+
+    // Fixed damage ignoring stats — e.g. Seismic Toss, Dragon Rage
+    public class DirectDamage : IEffect
     {
-        public ITarget target;
+        private readonly ITarget target;
+        private readonly INumber amount;
+
+        public DirectDamage(ITarget target, INumber amount)
+        {
+            this.target = target;
+            this.amount = amount;
+        }
+
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            var battler = target.Resolve(battle);
+            battler.TakeDamage((int)amount.Evaluate(battle));
         }
     }
-    public class Drain : IEffect
-    {
-        public ITarget target;
-        public INumber drainNumber;
-        public void Apply(BattleDomain battle)
-        {
-            throw new NotImplementedException();
-        }
-    }
+
+    // One-hit KO — Fissure, Horn Drill, Guillotine
     public class OHKO : IEffect
     {
-        public ITarget target;
+        private readonly ITarget target;
 
-        public void Apply(BattleDomain battle)
-        {
-            throw new NotImplementedException();
-        }
-    }
-    public class Paralyzed : IEffect
-    {
-        public ITarget target;
-
-        public Paralyzed(ITarget target)
+        public OHKO(ITarget target)
         {
             this.target = target;
         }
 
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            var battler = target.Resolve(battle);
+            battler.TakeDamage(battler.CurrentHP);
         }
     }
+
+    // Damage that also heals the user — Drain Punch, Giga Drain
+    public class Drain : IEffect
+    {
+        private readonly ITarget damageTarget;
+        private readonly ITarget healTarget;
+        private readonly INumber drainAmount; // e.g. new Quotient(lastDamage, new Exactly(2))
+
+        public Drain(ITarget damageTarget, ITarget healTarget, INumber drainAmount)
+        {
+            this.damageTarget = damageTarget;
+            this.healTarget = healTarget;
+            this.drainAmount = drainAmount;
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            var victim = damageTarget.Resolve(battle);
+            var user = healTarget.Resolve(battle);
+            int amount = (int)drainAmount.Evaluate(battle);
+            victim.TakeDamage(amount);
+            user.RestoreHP(amount);
+        }
+    }
+
+    // Self-damage on miss or recoil — High Jump Kick crash, Jump Kick
+    public class CrashDamage : IEffect
+    {
+        private readonly ITarget target;
+        private readonly INumber amount;
+
+        public CrashDamage(ITarget target, INumber amount)
+        {
+            this.target = target;
+            this.amount = amount;
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            var battler = target.Resolve(battle);
+            battler.TakeDamage((int)amount.Evaluate(battle));
+        }
+    }
+
+    // Recoil damage to the user — Double-Edge, Flare Blitz
+    public class Recoil : IEffect
+    {
+        private readonly ITarget target;
+        private readonly INumber amount; // e.g. Quotient(LastDamageDealt, Exactly(3))
+
+        public Recoil(ITarget target, INumber amount)
+        {
+            this.target = target;
+            this.amount = amount;
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            var battler = target.Resolve(battle);
+            battler.TakeDamage((int)amount.Evaluate(battle));
+        }
+    }
+
+    // ── HP ────────────────────────────────────────────────────────────────────
+
     public class RestoreHP : IEffect
     {
-        public ITarget target;
-        public INumber restoredHP;
+        private readonly ITarget target;
+        private readonly INumber amount;
 
-        public void Apply(BattleDomain battle)
-        {
-            throw new NotImplementedException();
-        }
-    }
-    public class CrashDamaged : IEffect
-    {
-        public ITarget target;
-        public INumber crashedDamage;
-
-        public CrashDamaged(ITarget target, INumber crashedDamage)
+        public RestoreHP(ITarget target, INumber amount)
         {
             this.target = target;
-            this.crashedDamage = crashedDamage;
+            this.amount = amount;
         }
 
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            var battler = target.Resolve(battle);
+            battler.RestoreHP((int)amount.Evaluate(battle));
         }
     }
-    public class DirectDamaged : IEffect
+
+    public class Faint : IEffect
     {
-        public ITarget target;
-        public INumber directDamage;
+        private readonly ITarget target;
+
+        public Faint(ITarget target)
+        {
+            this.target = target;
+        }
 
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            var battler = target.Resolve(battle);
+            battler.TakeDamage(battler.CurrentHP);
         }
     }
-    public class AttackStatChanges : IEffect
+
+    // ── Status Conditions ─────────────────────────────────────────────────────
+
+    public class Paralyze : IEffect
     {
-        public ITarget target;
-        public INumber statChanged;
+        private readonly ITarget target;
+
+        public Paralyze(ITarget target)
+        {
+            this.target = target;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ApplyStatus(StatusCondition.Paralysis);
+    }
+
+    public class Burn : IEffect
+    {
+        private readonly ITarget target;
+
+        public Burn(ITarget target)
+        {
+            this.target = target;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ApplyStatus(StatusCondition.Burn);
+    }
+
+    public class Poison : IEffect
+    {
+        private readonly ITarget target;
+        private readonly bool toxic; // toxic = badly poisoned (damage grows each turn)
+
+        public Poison(ITarget target, bool toxic = false)
+        {
+            this.target = target;
+            this.toxic = toxic;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ApplyStatus(toxic ? StatusCondition.Toxic : StatusCondition.Poison);
+    }
+
+    public class Sleep : IEffect
+    {
+        private readonly ITarget target;
+        private readonly Between turns; // random sleep duration
+
+        public Sleep(ITarget target, int minTurns = 1, int maxTurns = 3)
+        {
+            this.target = target;
+            this.turns = new Between(minTurns, maxTurns);
+        }
 
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            var battler = target.Resolve(battle);
+            int duration = (int)turns.Evaluate(battle);
+            battler.ApplyStatus(StatusCondition.Sleep, duration);
         }
     }
 
+    public class Freeze : IEffect
+    {
+        private readonly ITarget target;
 
+        public Freeze(ITarget target)
+        {
+            this.target = target;
+        }
 
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ApplyStatus(StatusCondition.Freeze);
+    }
+
+    public class Confuse : IEffect
+    {
+        private readonly ITarget target;
+        private readonly Between turns;
+
+        public Confuse(ITarget target, int minTurns = 1, int maxTurns = 4)
+        {
+            this.target = target;
+            this.turns = new Between(minTurns, maxTurns);
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            int duration = (int)turns.Evaluate(battle);
+            target.Resolve(battle).ApplyVolatileStatus(VolatileStatus.Confusion, duration);
+        }
+    }
+
+    public class Flinch : IEffect
+    {
+        private readonly ITarget target;
+
+        public Flinch(ITarget target)
+        {
+            this.target = target;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ApplyVolatileStatus(VolatileStatus.Flinch);
+    }
+
+    // ── Stat Changes ──────────────────────────────────────────────────────────
+
+    public class StatChange : IEffect
+    {
+        private readonly ITarget target;
+        private readonly Stat stat;
+        private readonly int stages; // positive = buff, negative = debuff
+
+        public StatChange(ITarget target, Stat stat, int stages)
+        {
+            this.target = target;
+            this.stat = stat;
+            this.stages = stages;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ChangeStatStage(stat, stages);
+    }
+
+    // Changes multiple stats at once — e.g. Swords Dance (+2 Atk), Shell Smash
+    public class MultiStatChange : IEffect
+    {
+        private readonly ITarget target;
+        private readonly List<(Stat stat, int stages)> changes;
+
+        public MultiStatChange(ITarget target, List<(Stat stat, int stages)> changes)
+        {
+            this.target = target;
+            this.changes = changes;
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            var battler = target.Resolve(battle);
+            foreach (var (stat, stages) in changes)
+                battler.ChangeStatStage(stat, stages);
+        }
+    }
+
+    public class ResetStats : IEffect
+    {
+        private readonly ITarget target;
+
+        public ResetStats(ITarget target)
+        {
+            this.target = target;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ResetStatStages();
+    }
+
+    // ── Field / Battle-wide ───────────────────────────────────────────────────
+
+    // Hazards — Stealth Rock, Spikes, Toxic Spikes
+    public class SetHazard : IEffect
+    {
+        private readonly BattleSide side;
+        private readonly Hazard hazard;
+
+        public SetHazard(BattleSide side, Hazard hazard)
+        {
+            this.side = side;
+            this.hazard = hazard;
+        }
+
+        public void Apply(BattleDomain battle)
+            => battle.GetSide(side).AddHazard(hazard);
+    }
+
+    // Screens — Reflect, Light Screen, Aurora Veil
+    public class SetScreen : IEffect
+    {
+        private readonly BattleSide side;
+        private readonly Screen screen;
+        private readonly int turns;
+
+        public SetScreen(BattleSide side, Screen screen, int turns = 5)
+        {
+            this.side = side;
+            this.screen = screen;
+            this.turns = turns;
+        }
+
+        public void Apply(BattleDomain battle)
+            => battle.GetSide(side).ActivateScreen(screen, turns);
+    }
+
+    // Weather — Sunny Day, Rain Dance, Sandstorm, Hail
+    public class SetWeather : IEffect
+    {
+        private readonly Weather weather;
+        private readonly int turns;
+
+        public SetWeather(Weather weather, int turns = 5)
+        {
+            this.weather = weather;
+            this.turns = turns;
+        }
+
+        public void Apply(BattleDomain battle)
+            => battle.SetWeather(weather, turns);
+    }
+
+    // ── Utility ───────────────────────────────────────────────────────────────
+
+    // Forces the target to switch out — Roar, Whirlwind, Dragon Tail
+    public class ForceSwitch : IEffect
+    {
+        private readonly ITarget target;
+
+        public ForceSwitch(ITarget target)
+        {
+            this.target = target;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ForceSwitch(battle);
+    }
+
+    // Cure status condition — Aromatherapy, Heal Bell, Lum Berry
+    public class CureStatus : IEffect
+    {
+        private readonly ITarget target;
+
+        public CureStatus(ITarget target)
+        {
+            this.target = target;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).ClearStatus();
+    }
+
+    // Copy opponent's last used move — Mimic, Copycat
+    public class CopyLastMove : IEffect
+    {
+        private readonly ITarget copyFrom;
+
+        public CopyLastMove(ITarget copyFrom)
+        {
+            this.copyFrom = copyFrom;
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            var source = copyFrom.Resolve(battle);
+            battle.ActiveUser.CopyMove(source.LastUsedMove);
+        }
+    }
+
+    // Store damage this turn to release next turn — Bide
+    public class StoreAndRelease : IEffect
+    {
+        private readonly ITarget target;
+        private readonly int chargeTurns;
+
+        public StoreAndRelease(ITarget target, int chargeTurns = 2)
+        {
+            this.target = target;
+            this.chargeTurns = chargeTurns;
+        }
+
+        public void Apply(BattleDomain battle)
+            => target.Resolve(battle).StartBide(chargeTurns);
+    }
 }

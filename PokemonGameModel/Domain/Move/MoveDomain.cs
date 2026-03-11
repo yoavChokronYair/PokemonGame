@@ -2,52 +2,187 @@
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Services.Enums.PokemonEnum;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
 
 namespace PokemonGame.Model.Domain.Move
 {
+    public enum MoveCategory { Physical, Special, Status }
+    public enum MoveTarget { Opponent, Self, Both, AllOpponents, AllAllies }
+
     internal class MoveDomain : IMove
     {
-        public IAttampt attampt { get; set; }
-        public string name;
-        public PokemonType element;
+        public string Name { get; }
+        public PokemonType Element { get; }
+        public MoveCategory Category { get; }
+        public MoveTarget Target { get; }
+        public int PP { get; private set; }
+        public int MaxPP { get; }
+        public IAttempt Attempt { get; }
 
-        public MoveDomain(string name, PokemonType element,IAttampt attampt)
+        public MoveDomain(
+            string name,
+            PokemonType element,
+            MoveCategory category,
+            IAttempt attempt,
+            int pp = 10,
+            MoveTarget target = MoveTarget.Opponent)
         {
-            this.attampt = attampt;
-            this.name = name;
-            this.element = element;
+            Name = name;
+            Element = element;
+            Category = category;
+            Attempt = attempt;
+            PP = pp;
+            MaxPP = pp;
+            Target = target;
         }
 
         public void Execute(BattleDomain battle)
         {
-            throw new NotImplementedException();
-        }
-    }
-    //wrapper
+            if (PP <= 0)
+            {
+                battle.Log($"{Name} has no PP left!");
+                return;
+            }
 
+            PP--;
+            battle.RegisterMove(this);
+            battle.Log($"{battle.ActiveUser.Name} used {Name}!");
+            Attempt.Execute(battle);
+        }
+
+        public void RestorePP(int amount)
+            => PP = Math.Min(PP + amount, MaxPP);
+
+        public bool HasPP => PP > 0;
+    }
+
+    // Blocks execution if a battle-level condition is not met
+    // e.g. can't use a fire move in heavy rain, can't use sleep moves on already-asleep target
     internal class WithPrecondition : IMove
     {
-        public ICondition<BattleDomain> condition { get; set; }
-        public IMove move;
+        private readonly ICondition<BattleDomain> condition;
+        private readonly IMove move;
+        private readonly string? failMessage;
+
+        public WithPrecondition(
+            ICondition<BattleDomain> condition,
+            IMove move,
+            string? failMessage = null)
+        {
+            this.condition = condition;
+            this.move = move;
+            this.failMessage = failMessage;
+        }
 
         public void Execute(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            if (!condition.Check(battle))
+            {
+                battle.Log(failMessage ?? "But it failed!");
+                return;
+            }
+
+            move.Execute(battle);
         }
     }
-    //wrapper
+
+    // Blocks execution if the user pokemon itself doesn't meet a condition
+    // e.g. can't use a move while paralyzed/frozen, can't use Fly if already airborne
     internal class WithApplicability : IMove
     {
-        public ICondition<PokemonData> condition { get; set; }
-        public IMove move;
+        private readonly ICondition<PokemonData> condition;
+        private readonly IMove move;
+        private readonly string? failMessage;
+
+        public WithApplicability(
+            ICondition<PokemonData> condition,
+            IMove move,
+            string? failMessage = null)
+        {
+            this.condition = condition;
+            this.move = move;
+            this.failMessage = failMessage;
+        }
 
         public void Execute(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            if (!condition.Check(battle.ActiveUser))
+            {
+                battle.Log(failMessage ?? "But it failed!");
+                return;
+            }
+
+            move.Execute(battle);
+        }
+    }
+
+    // Disables a move after use for N turns — e.g. Disable, Encore lock
+    internal class WithDisable : IMove
+    {
+        private readonly IMove move;
+        private readonly int lockTurns;
+        private int turnsLocked = 0;
+
+        public WithDisable(IMove move, int lockTurns)
+        {
+            this.move = move;
+            this.lockTurns = lockTurns;
+        }
+
+        public bool IsLocked => turnsLocked > 0;
+
+        public void Tick() { if (turnsLocked > 0) turnsLocked--; }
+
+        public void Execute(BattleDomain battle)
+        {
+            if (IsLocked)
+            {
+                battle.Log("The move is disabled!");
+                return;
+            }
+
+            move.Execute(battle);
+            turnsLocked = lockTurns;
+        }
+    }
+
+    // Overrides type effectiveness — e.g. Scrappy lets Normal hit Ghost,
+    // or a move that is "always treated as super effective"
+    internal class WithTypeOverride : IMove
+    {
+        private readonly IMove move;
+        private readonly PokemonType overrideType;
+
+        public WithTypeOverride(IMove move, PokemonType overrideType)
+        {
+            this.move = move;
+            this.overrideType = overrideType;
+        }
+
+        public void Execute(BattleDomain battle)
+        {
+            battle.ActiveTypeOverride = overrideType;
+            move.Execute(battle);
+            battle.ActiveTypeOverride = null;
+        }
+    }
+
+    // Executes a follow-up move automatically after the main move
+    // e.g. Relic Song transforms Meloetta, U-turn forces a switch after damage
+    internal class WithFollowUp : IMove
+    {
+        private readonly IMove main;
+        private readonly IEffect followUp;
+
+        public WithFollowUp(IMove main, IEffect followUp)
+        {
+            this.main = main;
+            this.followUp = followUp;
+        }
+
+        public void Execute(BattleDomain battle)
+        {
+            main.Execute(battle);
+            followUp.Apply(battle);
         }
     }
 }

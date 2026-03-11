@@ -22,6 +22,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
                     new Probability(0.45),
                     new FormulaDamage
                     (
+                        new DefenderTarget(),
                         new Exactly(40)
                     ),
                     null,
@@ -37,11 +38,15 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
                     new Sequence(
                         new List<IEffect>
                         {
-                            new FormulaDamage(new Exactly(85)),
+                            new FormulaDamage
+                            (
+                                new DefenderTarget(),
+                                new Exactly(85)
+                            ),
 
-                            new Conditions(
+                            new Conditional(
                                 new Probability(0.3),
-                                new Paralyzed(new DefenderTarget())
+                                new Paralyze(new DefenderTarget())
                             )
                         }
                     ),
@@ -60,19 +65,31 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
                     {
                         new Attempt(
                             new Probability(0.4),
-                            new FormulaDamage(new Exactly(10)),
+                            new FormulaDamage
+                            (
+                                new DefenderTarget(),
+                                new Exactly(10)
+                            ),
                             null,
                             null
                         ),
                         new Attempt(
                             new Probability(0.4),
-                            new FormulaDamage(new Exactly(20)),
+                            new FormulaDamage
+                            (
+                                new DefenderTarget(),
+                                new Exactly(10)
+                            ),
                             null,
                             null
                         ),
                         new Attempt(
                             new Probability(0.4),
-                            new FormulaDamage(new Exactly(30)),
+                            new FormulaDamage
+                            (
+                                new DefenderTarget(),
+                                new Exactly(10)
+                            ),
                             null,
                             null
                         )
@@ -85,8 +102,12 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
                 new Attempt
                 (
                     new Probability(0.4),
-                    new FormulaDamage(new Exactly(100)),
-                    new CrashDamaged
+                    new FormulaDamage
+                    (
+                        new DefenderTarget(),
+                        new Exactly(100)
+                    ),
+                    new CrashDamage
                     (
                         new AttackerTarget(),
                         new Product
