@@ -6,9 +6,9 @@
 // IEffect interface lives in Interface/Move/IEffect.cs.
 // NOTE: Chance uses RandomHelper.NextBool — no inline new Random() in this file.
 
-using PokemonGame.Enums.Battle;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;

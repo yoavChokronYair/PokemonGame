@@ -2,7 +2,7 @@
 // Extracted from BattleDomain.cs — do not redefine these elsewhere.
 // Used by: BattleDomain, PokemonDomain, IEffect, ICondition, INumber
 
-namespace PokemonGame.Enums.Battle
+namespace PokemonGame.Model.Enums
 {
     public enum Weather { None, Sun, Rain, Sandstorm, Hail, HeavyRain, HarshSunlight, StrongWinds }
     public enum BattleSide { Attacker, Defender }

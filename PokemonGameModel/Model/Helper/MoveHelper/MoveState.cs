@@ -1,5 +1,4 @@
-﻿using PokemonGame.Enums.MovesEnum;
-using PokemonGame.Model.Domain.Move;
+﻿using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;

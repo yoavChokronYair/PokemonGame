@@ -1,4 +1,4 @@
-﻿using PokemonGame.Enums.Battle;
+﻿using PokemonGame.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;

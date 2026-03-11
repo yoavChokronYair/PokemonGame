@@ -1,5 +1,4 @@
-﻿using PokemonGame.Enums.Battle;
-using PokemonGame.Model.Domain.Battle;
+﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;

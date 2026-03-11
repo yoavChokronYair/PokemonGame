@@ -1,5 +1,5 @@
-﻿using PokemonGame.Enums.Battle;
-using PokemonGame.Model.Domain.Pokemon;
+﻿using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
