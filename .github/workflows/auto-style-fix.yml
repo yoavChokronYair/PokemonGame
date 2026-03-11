@@ -14,6 +14,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0         # fetch full history
+          ref: ${{ github.head_ref }}  # checkout the PR branch
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -32,4 +34,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git add .
           git diff --cached --quiet || git commit -m "Auto fix code style"
-          git push
+          git push origin HEAD  # push to the current PR branch
