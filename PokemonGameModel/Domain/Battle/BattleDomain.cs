@@ -69,6 +69,8 @@ namespace PokemonGame.Model.Domain.Battle
         // Alias — IEffect/INumber classes refer to "user" and "opponent"
         public PokemonDomain ActiveUser => Attacker;
         public PokemonDomain ActiveOpponent => Defender;
+        public PokemonType? ActiveTypeOverride { get; set; } = null;
+
 
         // Side states (hazards, screens)
         public BattleSideState AttackerSide { get; } = new();
@@ -119,6 +121,9 @@ namespace PokemonGame.Model.Domain.Battle
             DefenderSide.Tick();
             ApplyEndOfTurnStatus(Attacker);
             ApplyEndOfTurnStatus(Defender);
+            if (Attacker.IsBiding) Attacker.DecrementBide();
+            if (Defender.IsBiding) Defender.DecrementBide();
+
         }
 
         public void SwitchAttackerDefender()

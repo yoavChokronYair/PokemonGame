@@ -188,6 +188,33 @@ namespace PokemonGame.Model.Domain.Pokemon
             return (int)Math.Floor(raw);
         }
 
+        // ── Last Damage Dealt (for Drain, Recoil calculations) ───────────────────
+        public int LastDamageDealt { get; private set; }
+
+        // Call this when the pokemon deals damage to someone else
+        public void RegisterDamageDealt(int amount)
+            => LastDamageDealt = amount;
+
+        // ── Bide State ────────────────────────────────────────────────────────────
+        public bool IsBiding { get; private set; }
+        public int BideTurnsLeft { get; private set; }
+        public int BideStoredDamage { get; private set; }
+
+        public void StartBide(int turns)
+        {
+            IsBiding = true;
+            BideTurnsLeft = turns;
+            BideStoredDamage = 0;
+        }
+
+        public void AccumulateBideDamage(int damage)
+            => BideStoredDamage += damage;
+
+        public void DecrementBide()
+        {
+            if (--BideTurnsLeft <= 0)
+                IsBiding = false;
+        }
         // ── Effective Stat (applies battle stages) ────────────────────────────
 
         public int GetEffectiveStat(Stat stat)

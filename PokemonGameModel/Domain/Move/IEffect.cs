@@ -3,14 +3,14 @@
 namespace PokemonGame.Model.Domain.Move
 {
     //TODO:create all things needed for here
-    public interface IEffect
+    internal interface IEffect
     {
         public void Apply(BattleDomain battle);
     }
 
     #region Combinators
 
-    public class Sequence : IEffect
+     internal class Sequence : IEffect
     {
         private readonly List<IEffect> effects;
 
@@ -32,7 +32,7 @@ namespace PokemonGame.Model.Domain.Move
         }
     }
 
-    public class Conditional : IEffect
+    internal class Conditional : IEffect
     {
         private readonly ICondition<BattleDomain> condition;
         private readonly IEffect onPass;
@@ -58,7 +58,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Applies effect with a percentage chance — e.g. 30% burn on Fire Blast
-    public class Chance : IEffect
+    internal class Chance : IEffect
     {
         private readonly double probability; // 0.0 to 1.0
         private readonly IEffect effect;
@@ -80,7 +80,7 @@ namespace PokemonGame.Model.Domain.Move
     #endregion
 
     // Does nothing — useful as a default/null-safe placeholder
-    public class NoEffect : IEffect
+    internal class NoEffect : IEffect
     {
         public void Apply(BattleDomain battle) { }
     }
@@ -88,7 +88,7 @@ namespace PokemonGame.Model.Domain.Move
     // ── Damage ────────────────────────────────────────────────────────────────
 
     // Damage computed from a formula (handles type, stat, STAB, etc. externally)
-    public class FormulaDamage : IEffect
+    internal class FormulaDamage : IEffect
     {
         private readonly ITarget target;
         private readonly INumber power;
@@ -101,14 +101,16 @@ namespace PokemonGame.Model.Domain.Move
 
         public void Apply(BattleDomain battle)
         {
-            var battler = target.Resolve(battle);
-            double damage = power.Evaluate(battle);
-            battler.TakeDamage((int)damage);
+            var defender = target.Resolve(battle);
+            int amount = (int)power.Evaluate(battle);
+            defender.TakeDamage(amount);
+            battle.ActiveUser.RegisterDamageDealt(amount); // track for Drain/Recoil
+            battle.LastDamageDealt = amount;               // track on battle for Counter
         }
     }
 
     // Fixed damage ignoring stats — e.g. Seismic Toss, Dragon Rage
-    public class DirectDamage : IEffect
+    internal class DirectDamage : IEffect
     {
         private readonly ITarget target;
         private readonly INumber amount;
@@ -121,13 +123,16 @@ namespace PokemonGame.Model.Domain.Move
 
         public void Apply(BattleDomain battle)
         {
-            var battler = target.Resolve(battle);
-            battler.TakeDamage((int)amount.Evaluate(battle));
+            var defender = target.Resolve(battle);
+            int amount = (int)this.amount.Evaluate(battle);
+            defender.TakeDamage(amount);
+            battle.ActiveUser.RegisterDamageDealt(amount);
+            battle.LastDamageDealt = amount;
         }
     }
 
     // One-hit KO — Fissure, Horn Drill, Guillotine
-    public class OHKO : IEffect
+    internal class OHKO : IEffect
     {
         private readonly ITarget target;
 
@@ -144,7 +149,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Damage that also heals the user — Drain Punch, Giga Drain
-    public class Drain : IEffect
+    internal class Drain : IEffect
     {
         private readonly ITarget damageTarget;
         private readonly ITarget healTarget;
@@ -168,7 +173,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Self-damage on miss or recoil — High Jump Kick crash, Jump Kick
-    public class CrashDamage : IEffect
+    internal class CrashDamage : IEffect
     {
         private readonly ITarget target;
         private readonly INumber amount;
@@ -187,7 +192,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Recoil damage to the user — Double-Edge, Flare Blitz
-    public class Recoil : IEffect
+    internal class Recoil : IEffect
     {
         private readonly ITarget target;
         private readonly INumber amount; // e.g. Quotient(LastDamageDealt, Exactly(3))
@@ -207,7 +212,7 @@ namespace PokemonGame.Model.Domain.Move
 
     // ── HP ────────────────────────────────────────────────────────────────────
 
-    public class RestoreHP : IEffect
+    internal class RestoreHP : IEffect
     {
         private readonly ITarget target;
         private readonly INumber amount;
@@ -225,7 +230,7 @@ namespace PokemonGame.Model.Domain.Move
         }
     }
 
-    public class Faint : IEffect
+    internal class Faint : IEffect
     {
         private readonly ITarget target;
 
@@ -243,7 +248,7 @@ namespace PokemonGame.Model.Domain.Move
 
     // ── Status Conditions ─────────────────────────────────────────────────────
 
-    public class Paralyze : IEffect
+    internal class Paralyze : IEffect
     {
         private readonly ITarget target;
 
@@ -256,7 +261,7 @@ namespace PokemonGame.Model.Domain.Move
             => target.Resolve(battle).ApplyStatus(StatusCondition.Paralysis);
     }
 
-    public class Burn : IEffect
+    internal class Burn : IEffect
     {
         private readonly ITarget target;
 
@@ -269,7 +274,7 @@ namespace PokemonGame.Model.Domain.Move
             => target.Resolve(battle).ApplyStatus(StatusCondition.Burn);
     }
 
-    public class Poison : IEffect
+    internal class Poison : IEffect
     {
         private readonly ITarget target;
         private readonly bool toxic; // toxic = badly poisoned (damage grows each turn)
@@ -284,7 +289,7 @@ namespace PokemonGame.Model.Domain.Move
             => target.Resolve(battle).ApplyStatus(toxic ? StatusCondition.Toxic : StatusCondition.Poison);
     }
 
-    public class Sleep : IEffect
+    internal class Sleep : IEffect
     {
         private readonly ITarget target;
         private readonly Between turns; // random sleep duration
@@ -303,7 +308,7 @@ namespace PokemonGame.Model.Domain.Move
         }
     }
 
-    public class Freeze : IEffect
+    internal class Freeze : IEffect
     {
         private readonly ITarget target;
 
@@ -316,7 +321,7 @@ namespace PokemonGame.Model.Domain.Move
             => target.Resolve(battle).ApplyStatus(StatusCondition.Freeze);
     }
 
-    public class Confuse : IEffect
+    internal class Confuse : IEffect
     {
         private readonly ITarget target;
         private readonly Between turns;
@@ -334,7 +339,7 @@ namespace PokemonGame.Model.Domain.Move
         }
     }
 
-    public class Flinch : IEffect
+    internal class Flinch : IEffect
     {
         private readonly ITarget target;
 
@@ -349,7 +354,7 @@ namespace PokemonGame.Model.Domain.Move
 
     // ── Stat Changes ──────────────────────────────────────────────────────────
 
-    public class StatChange : IEffect
+    internal class StatChange : IEffect
     {
         private readonly ITarget target;
         private readonly Stat stat;
@@ -367,7 +372,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Changes multiple stats at once — e.g. Swords Dance (+2 Atk), Shell Smash
-    public class MultiStatChange : IEffect
+    internal class MultiStatChange : IEffect
     {
         private readonly ITarget target;
         private readonly List<(Stat stat, int stages)> changes;
@@ -386,7 +391,7 @@ namespace PokemonGame.Model.Domain.Move
         }
     }
 
-    public class ResetStats : IEffect
+    internal class ResetStats : IEffect
     {
         private readonly ITarget target;
 
@@ -402,7 +407,7 @@ namespace PokemonGame.Model.Domain.Move
     // ── Field / Battle-wide ───────────────────────────────────────────────────
 
     // Hazards — Stealth Rock, Spikes, Toxic Spikes
-    public class SetHazard : IEffect
+    internal class SetHazard : IEffect
     {
         private readonly BattleSide side;
         private readonly Hazard hazard;
@@ -418,7 +423,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Screens — Reflect, Light Screen, Aurora Veil
-    public class SetScreen : IEffect
+    internal class SetScreen : IEffect
     {
         private readonly BattleSide side;
         private readonly Screen screen;
@@ -436,7 +441,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Weather — Sunny Day, Rain Dance, Sandstorm, Hail
-    public class SetWeather : IEffect
+    internal class SetWeather : IEffect
     {
         private readonly Weather weather;
         private readonly int turns;
@@ -454,7 +459,7 @@ namespace PokemonGame.Model.Domain.Move
     // ── Utility ───────────────────────────────────────────────────────────────
 
     // Forces the target to switch out — Roar, Whirlwind, Dragon Tail
-    public class ForceSwitch : IEffect
+    internal class ForceSwitch : IEffect
     {
         private readonly ITarget target;
 
@@ -468,7 +473,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Cure status condition — Aromatherapy, Heal Bell, Lum Berry
-    public class CureStatus : IEffect
+    internal class CureStatus : IEffect
     {
         private readonly ITarget target;
 
@@ -482,7 +487,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Copy opponent's last used move — Mimic, Copycat
-    public class CopyLastMove : IEffect
+    internal class CopyLastMove : IEffect
     {
         private readonly ITarget copyFrom;
 
@@ -499,7 +504,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Store damage this turn to release next turn — Bide
-    public class StoreAndRelease : IEffect
+    internal class StoreAndRelease : IEffect
     {
         private readonly ITarget target;
         private readonly int chargeTurns;

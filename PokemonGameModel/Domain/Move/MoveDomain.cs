@@ -89,12 +89,12 @@ namespace PokemonGame.Model.Domain.Move
     // e.g. can't use a move while paralyzed/frozen, can't use Fly if already airborne
     internal class WithApplicability : IMove
     {
-        private readonly ICondition<PokemonData> condition;
+        private readonly ICondition<PokemonDomain> condition;
         private readonly IMove move;
         private readonly string? failMessage;
 
         public WithApplicability(
-            ICondition<PokemonData> condition,
+            ICondition<PokemonDomain> condition,
             IMove move,
             string? failMessage = null)
         {

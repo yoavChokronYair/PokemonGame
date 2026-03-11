@@ -3,14 +3,14 @@
 namespace PokemonGame.Model.Domain.Move
 {
     //TODO:change to actually working battler pokemon
-    public interface INumber
+    internal interface INumber
     {
         public double Evaluate(BattleDomain battle);
     }
 
     #region Combinators
 
-    public class Product : INumber
+    internal class Product : INumber
     {
         private readonly INumber left;
         private readonly INumber right;
@@ -25,7 +25,7 @@ namespace PokemonGame.Model.Domain.Move
             => left.Evaluate(battle) * right.Evaluate(battle);
     }
 
-    public class Sum : INumber
+    internal class Sum : INumber
     {
         private readonly INumber left;
         private readonly INumber right;
@@ -40,7 +40,7 @@ namespace PokemonGame.Model.Domain.Move
             => left.Evaluate(battle) + right.Evaluate(battle);
     }
 
-    public class Quotient : INumber
+    internal class Quotient : INumber
     {
         private readonly INumber numerator;
         private readonly INumber denominator;
@@ -62,7 +62,7 @@ namespace PokemonGame.Model.Domain.Move
     #endregion
 
     // A fixed constant value — e.g. Exactly(40) for a base 40 power move
-    public class Exactly : INumber
+    internal class Exactly : INumber
     {
         private readonly double value;
 
@@ -75,7 +75,7 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Uniform random in [min, max] — e.g. damage roll variance
-    public class Between : INumber
+    internal class Between : INumber
     {
         private readonly double min;
         private readonly double max;
@@ -93,7 +93,7 @@ namespace PokemonGame.Model.Domain.Move
 
     // Weighted random pick from a list of (value, weight) pairs
     // e.g. Weighted { (2, 35%), (3, 35%), (4, 15%), (5, 15%) } for multi-hit
-    public class Weighted : INumber
+    internal class Weighted : INumber
     {
         private readonly List<(double value, double weight)> entries;
         private static readonly Random rng = new();
@@ -117,7 +117,7 @@ namespace PokemonGame.Model.Domain.Move
         }
     }
 
-    public class MaxHP : INumber
+    internal class MaxHP : INumber
     {
         private readonly ITarget target;
 
@@ -130,7 +130,7 @@ namespace PokemonGame.Model.Domain.Move
             => target.Resolve(battle).MaxHP;
     }
 
-    public class CurrentHP : INumber
+    internal class CurrentHP : INumber
     {
         private readonly ITarget target;
 
@@ -143,7 +143,7 @@ namespace PokemonGame.Model.Domain.Move
             => target.Resolve(battle).CurrentHP;
     }
 
-    public class Level : INumber
+    internal class Level : INumber
     {
         private readonly ITarget target;
 
@@ -156,7 +156,7 @@ namespace PokemonGame.Model.Domain.Move
             => target.Resolve(battle).Level;
     }
 
-    public class LastDamageDealt : INumber
+    internal class LastDamageDealt : INumber
     {
         private readonly ITarget target;
 
