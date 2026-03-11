@@ -1,6 +1,5 @@
 ﻿using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Interfaces;
-using System.Collections.Generic;
 
 namespace PokemonGame.Services.Data.DataCache
 {
@@ -20,11 +19,15 @@ namespace PokemonGame.Services.Data.DataCache
         public UserData? GetUserByName(string username, bool useCache = true)
         {
             if (useCache && _userCache.TryGetValue(username, out var user))
+            {
                 return user;
+            }
 
             user = _repository.LoadUserByName(username);
             if (user != null && useCache)
+            {
                 _userCache[username] = user;
+            }
 
             return user;
         }
@@ -33,7 +36,9 @@ namespace PokemonGame.Services.Data.DataCache
         public bool UserExists(string username, bool useCache = true)
         {
             if (useCache && _userCache.ContainsKey(username))
+            {
                 return true;
+            }
 
             return _repository.UserExists(username);
         }
@@ -44,7 +49,9 @@ namespace PokemonGame.Services.Data.DataCache
             var user = _repository.CreateUser(username, passwordHash);
 
             if (useCache)
+            {
                 _userCache[username] = user;
+            }
 
             return user;
         }
@@ -53,7 +60,9 @@ namespace PokemonGame.Services.Data.DataCache
         public List<UserData> GetAllUsers(bool useCache = true)
         {
             if (useCache && _userCache.Count > 0)
+            {
                 return new List<UserData>(_userCache.Values);
+            }
 
             var allUsers = _repository.GetAllUsers();
 
@@ -61,7 +70,9 @@ namespace PokemonGame.Services.Data.DataCache
             {
                 _userCache.Clear();
                 foreach (var u in allUsers)
+                {
                     _userCache[u.UserName] = u;
+                }
             }
 
             return allUsers;

@@ -2,17 +2,25 @@
 {
     public sealed class MoveData
     {
+        public int MoveID { get; set; }         // DB column: MoveID (primary key)
         public string MoveName { get; set; }
-        public int Type { get; set; }//should be enum in model
-        public int Category { get; set; }//should be enum in model
+
+        // DB stores these as TEXT
+        public string Type { get; set; }
+        public string Category { get; set; }
+
         public sbyte Priority { get; set; }
-        public byte pPTier { get; set; }
+        public byte PPTier { get; set; }        // DB column: PPTier (not pPTier)
         public byte MovePower { get; set; }
         public byte MoveAccuracy { get; set; }
-        public int Effect { get; set; }//should be enum in model
-        public int EffectParam { get; set; }
-        public int Targets { get; set; }//should be enum in model
-        public int Flags { get; set; }//should be enum in model
 
+        // DB stores these as TEXT
+        public string Effect { get; set; }
+
+        public int EffectParam { get; set; }
+
+        // DB stores these as TEXT
+        public string Targets { get; set; }
+        public string Flags { get; set; }
     }
 }
