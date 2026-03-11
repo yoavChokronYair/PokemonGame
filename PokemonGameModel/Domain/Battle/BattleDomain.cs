@@ -17,8 +17,8 @@ namespace PokemonGame.Model.Domain.Battle
     // ── Battle Domain ─────────────────────────────────────────────────────────
     internal class BattleDomain
     {
-        public Model.Helper.PokemonHelper.PokemonState? Attacker { get; set; }
-        public Model.Helper.PokemonHelper.PokemonState? Defender { get; set; }
+        public PokemonState Attacker { get; set; }
+        public PokemonState Defender { get; set; }
 
         public BattleSideState AttackerSide { get; } = new();
         public BattleSideState DefenderSide { get; } = new();
