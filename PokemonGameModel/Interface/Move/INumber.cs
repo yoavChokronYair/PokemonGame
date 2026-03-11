@@ -2,11 +2,12 @@
 // Used for dynamic values: damage power, hit count, HP amounts, etc.
 
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Interface.Move
 {
     internal interface INumber
     {
-        double Evaluate(BattleDomain battle);
+        double Evaluate(BattleState battle);
     }
 }

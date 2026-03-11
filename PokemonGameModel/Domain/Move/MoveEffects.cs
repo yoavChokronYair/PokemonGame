@@ -11,6 +11,7 @@ using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Domain.Move
 {
@@ -21,23 +22,23 @@ namespace PokemonGame.Model.Domain.Move
         private readonly List<IEffect> effects;
         public Sequence(List<IEffect> effects) { this.effects = effects; }
         public Sequence(params IEffect[] effects) { this.effects = new List<IEffect>(effects); }
-        public void Apply(BattleDomain battle) { foreach (var effect in effects) effect.Apply(battle); }
+        public void Apply(BattleState battle) { foreach (var effect in effects) effect.Apply(battle); }
     }
 
     internal class Conditional : IEffect
     {
-        private readonly ICondition<BattleDomain> condition;
+        private readonly ICondition<BattleState> condition;
         private readonly IEffect onPass;
         private readonly IEffect? onFail;
 
-        public Conditional(ICondition<BattleDomain> condition, IEffect onPass, IEffect? onFail = null)
+        public Conditional(ICondition<BattleState> condition, IEffect onPass, IEffect? onFail = null)
         {
             this.condition = condition;
             this.onPass = onPass;
             this.onFail = onFail;
         }
 
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             if (condition.Check(battle)) onPass.Apply(battle);
             else onFail?.Apply(battle);
@@ -57,7 +58,7 @@ namespace PokemonGame.Model.Domain.Move
             this.effect = effect;
         }
 
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             if (RandomHelper.NextBool(probability))
                 effect.Apply(battle);
@@ -68,7 +69,7 @@ namespace PokemonGame.Model.Domain.Move
 
     internal class NoEffect : IEffect
     {
-        public void Apply(BattleDomain battle) { }
+        public void Apply(BattleState battle) { }
     }
 
     // ── Damage ────────────────────────────────────────────────────────────────
@@ -80,12 +81,12 @@ namespace PokemonGame.Model.Domain.Move
 
         public FormulaDamage(ITarget target, INumber power) { this.target = target; this.power = power; }
 
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var defender = target.Resolve(battle);
             int amount = (int)power.Evaluate(battle);
             defender.TakeDamage(amount);
-            battle.ActiveUser.RegisterDamageDealt(amount);
+            battle.Attacker.RegisterDamageDealt(amount);
             battle.LastDamageDealt = amount;
         }
     }
@@ -98,12 +99,12 @@ namespace PokemonGame.Model.Domain.Move
 
         public DirectDamage(ITarget target, INumber amount) { this.target = target; this.amount = amount; }
 
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var defender = target.Resolve(battle);
             int amt = (int)this.amount.Evaluate(battle);
             defender.TakeDamage(amt);
-            battle.ActiveUser.RegisterDamageDealt(amt);
+            battle.Attacker.RegisterDamageDealt(amt);
             battle.LastDamageDealt = amt;
         }
     }
@@ -113,7 +114,7 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly ITarget target;
         public OHKO(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var battler = target.Resolve(battle);
             battler.TakeDamage(battler.CurrentHP);
@@ -134,7 +135,7 @@ namespace PokemonGame.Model.Domain.Move
             this.drainAmount = drainAmount;
         }
 
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var victim = damageTarget.Resolve(battle);
             var user = healTarget.Resolve(battle);
@@ -150,7 +151,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly ITarget target;
         private readonly INumber amount;
         public CrashDamage(ITarget target, INumber amount) { this.target = target; this.amount = amount; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).TakeDamage((int)amount.Evaluate(battle));
+        public void Apply(BattleState battle) => target.Resolve(battle).TakeDamage((int)amount.Evaluate(battle));
     }
 
     // Recoil damage to the user — Double-Edge, Flare Blitz.
@@ -159,7 +160,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly ITarget target;
         private readonly INumber amount;
         public Recoil(ITarget target, INumber amount) { this.target = target; this.amount = amount; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).TakeDamage((int)amount.Evaluate(battle));
+        public void Apply(BattleState battle) => target.Resolve(battle).TakeDamage((int)amount.Evaluate(battle));
     }
 
     // ── HP ────────────────────────────────────────────────────────────────────
@@ -169,14 +170,14 @@ namespace PokemonGame.Model.Domain.Move
         private readonly ITarget target;
         private readonly INumber amount;
         public RestoreHP(ITarget target, INumber amount) { this.target = target; this.amount = amount; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).RestoreHP((int)amount.Evaluate(battle));
+        public void Apply(BattleState battle) => target.Resolve(battle).RestoreHP((int)amount.Evaluate(battle));
     }
 
     internal class Faint : IEffect
     {
         private readonly ITarget target;
         public Faint(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var battler = target.Resolve(battle);
             battler.TakeDamage(battler.CurrentHP);
@@ -189,14 +190,14 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly ITarget target;
         public Paralyze(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ApplyStatus(StatusCondition.Paralysis);
+        public void Apply(BattleState battle) => target.Resolve(battle).ApplyStatus(StatusCondition.Paralysis);
     }
 
     internal class Burn : IEffect
     {
         private readonly ITarget target;
         public Burn(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ApplyStatus(StatusCondition.Burn);
+        public void Apply(BattleState battle) => target.Resolve(battle).ApplyStatus(StatusCondition.Burn);
     }
 
     internal class Poison : IEffect
@@ -204,7 +205,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly ITarget target;
         private readonly bool toxic;
         public Poison(ITarget target, bool toxic = false) { this.target = target; this.toxic = toxic; }
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
             => target.Resolve(battle).ApplyStatus(toxic ? StatusCondition.Toxic : StatusCondition.Poison);
     }
 
@@ -220,7 +221,7 @@ namespace PokemonGame.Model.Domain.Move
             this.turns = new Between(minTurns, maxTurns);
         }
 
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var battler = target.Resolve(battle);
             int duration = (int)turns.Evaluate(battle);
@@ -232,7 +233,7 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly ITarget target;
         public Freeze(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ApplyStatus(StatusCondition.Freeze);
+        public void Apply(BattleState battle) => target.Resolve(battle).ApplyStatus(StatusCondition.Freeze);
     }
 
     internal class Confuse : IEffect
@@ -246,7 +247,7 @@ namespace PokemonGame.Model.Domain.Move
             this.turns = new Between(minTurns, maxTurns);
         }
 
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             int duration = (int)turns.Evaluate(battle);
             target.Resolve(battle).ApplyVolatileStatus(VolatileStatus.Confusion, duration);
@@ -257,7 +258,7 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly ITarget target;
         public Flinch(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ApplyVolatileStatus(VolatileStatus.Flinch);
+        public void Apply(BattleState battle) => target.Resolve(battle).ApplyVolatileStatus(VolatileStatus.Flinch);
     }
 
     // ── Stat Changes ──────────────────────────────────────────────────────────
@@ -268,7 +269,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly Stat stat;
         private readonly int stages;
         public StatChange(ITarget target, Stat stat, int stages) { this.target = target; this.stat = stat; this.stages = stages; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ChangeStatStage(stat, stages);
+        public void Apply(BattleState battle) => target.Resolve(battle).ChangeStatStage(stat, stages);
     }
 
     internal class MultiStatChange : IEffect
@@ -276,7 +277,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly ITarget target;
         private readonly List<(Stat stat, int stages)> changes;
         public MultiStatChange(ITarget target, List<(Stat stat, int stages)> changes) { this.target = target; this.changes = changes; }
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var battler = target.Resolve(battle);
             foreach (var (stat, stages) in changes)
@@ -288,7 +289,7 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly ITarget target;
         public ResetStats(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ResetStatStages();
+        public void Apply(BattleState battle) => target.Resolve(battle).ResetStatStages();
     }
 
     // ── Field / Battle-wide ───────────────────────────────────────────────────
@@ -298,7 +299,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly BattleSide side;
         private readonly Hazard hazard;
         public SetHazard(BattleSide side, Hazard hazard) { this.side = side; this.hazard = hazard; }
-        public void Apply(BattleDomain battle) => battle.GetSide(side).AddHazard(hazard);
+        public void Apply(BattleState battle) => battle.GetSide(side).AddHazard(hazard);
     }
 
     internal class SetScreen : IEffect
@@ -307,7 +308,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly Screen screen;
         private readonly int turns;
         public SetScreen(BattleSide side, Screen screen, int turns = 5) { this.side = side; this.screen = screen; this.turns = turns; }
-        public void Apply(BattleDomain battle) => battle.GetSide(side).ActivateScreen(screen, turns);
+        public void Apply(BattleState battle) => battle.GetSide(side).ActivateScreen(screen, turns);
     }
 
     internal class SetWeather : IEffect
@@ -315,7 +316,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly Weather weather;
         private readonly int turns;
         public SetWeather(Weather weather, int turns = 5) { this.weather = weather; this.turns = turns; }
-        public void Apply(BattleDomain battle) => battle.SetWeather(weather, turns);
+        public void Apply(BattleState battle) => battle.WeatherService.SetWeather(weather, turns);
     }
 
     // ── Utility ───────────────────────────────────────────────────────────────
@@ -324,24 +325,24 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly ITarget target;
         public ForceSwitch(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ForceSwitch(battle);
+        public void Apply(BattleState battle) => target.Resolve(battle).ForceSwitch(battle);
     }
 
     internal class CureStatus : IEffect
     {
         private readonly ITarget target;
         public CureStatus(ITarget target) { this.target = target; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).ClearStatus();
+        public void Apply(BattleState battle) => target.Resolve(battle).ClearStatus();
     }
 
     internal class CopyLastMove : IEffect
     {
         private readonly ITarget copyFrom;
         public CopyLastMove(ITarget copyFrom) { this.copyFrom = copyFrom; }
-        public void Apply(BattleDomain battle)
+        public void Apply(BattleState battle)
         {
             var source = copyFrom.Resolve(battle);
-            battle.ActiveUser.CopyMove(source.LastUsedMove);
+            battle.Attacker.CopyMove(source.LastUsedMove);
         }
     }
 
@@ -350,6 +351,6 @@ namespace PokemonGame.Model.Domain.Move
         private readonly ITarget target;
         private readonly int chargeTurns;
         public StoreAndRelease(ITarget target, int chargeTurns = 2) { this.target = target; this.chargeTurns = chargeTurns; }
-        public void Apply(BattleDomain battle) => target.Resolve(battle).StartBide(chargeTurns);
+        public void Apply(BattleState battle) => target.Resolve(battle).StartBide(chargeTurns);
     }
 }

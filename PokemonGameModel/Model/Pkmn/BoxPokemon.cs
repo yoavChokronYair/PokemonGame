@@ -6,6 +6,7 @@
 // Note: IPBESpeciesForm comes from Interface/Pokemon/ (not Model/Pkmn/Interface/).
 
 using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Enums;
 using PokemonGame.Enums.PokemonEnum;
 using PokemonGame.Interface.Pokemon;
 using PokemonGame.Model.Domain.Pokemon;

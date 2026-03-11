@@ -15,6 +15,8 @@ using PokemonGame.Model.Helper;
 using PokemonGame.Model.Helper.DataHelper;
 using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Services.Enums.PokemonEnum;
+using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -267,13 +269,13 @@ namespace PokemonGame.Model.Domain.Pokemon
 
         // ── Force Switch ──────────────────────────────────────────────────────
 
-        public void ForceSwitch(BattleDomain battle)
+        public void ForceSwitch(BattleState battle)
         {
             ResetStatStages();
             volatileStatuses.Clear();
             IsCharging = false;
             IsRampaging = false;
-            battle.Log($"{Name} was forced out!");
+            battle.Logger.Log($"{Name} was forced out!");
         }
 
         public override string ToString() => $"{Name} (Lv.{Level}) {CurrentHP}/{MaxHP} HP [{Status}]";

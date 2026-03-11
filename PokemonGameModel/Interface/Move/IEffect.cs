@@ -2,11 +2,12 @@
 // Every battle action (damage, status, stat change, etc.) implements IEffect.
 
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Interface.Move
 {
     internal interface IEffect
     {
-        void Apply(BattleDomain battle);
+        void Apply(BattleState battle);
     }
 }

@@ -10,6 +10,7 @@ using PokemonGame.Interface;
 using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.Domain.Move
@@ -41,17 +42,17 @@ namespace PokemonGame.Model.Domain.Move
             Target = target;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             if (PP <= 0)
             {
-                battle.Log($"{Name} has no PP left!");
+                battle.Logger.Log($"{Name} has no PP left!");
                 return;
             }
 
             PP--;
             battle.RegisterMove(this);
-            battle.Log($"{battle.ActiveUser.Name} used {Name}!");
+            battle.Logger.Log($"{battle.Attacker.Name} used {Name}!");
             Attempt.Execute(battle);
         }
 
@@ -63,22 +64,22 @@ namespace PokemonGame.Model.Domain.Move
     // e.g. can't use a fire move in heavy rain, can't sleep an already-asleep target.
     internal class WithPrecondition : IMove
     {
-        private readonly ICondition<BattleDomain> condition;
+        private readonly ICondition<BattleState> condition;
         private readonly IMove move;
         private readonly string? failMessage;
 
-        public WithPrecondition(ICondition<BattleDomain> condition, IMove move, string? failMessage = null)
+        public WithPrecondition(ICondition<BattleState> condition, IMove move, string? failMessage = null)
         {
             this.condition = condition;
             this.move = move;
             this.failMessage = failMessage;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             if (!condition.Check(battle))
             {
-                battle.Log(failMessage ?? "But it failed!");
+                battle.Logger.Log(failMessage ?? "But it failed!");
                 return;
             }
             move.Execute(battle);
@@ -100,11 +101,11 @@ namespace PokemonGame.Model.Domain.Move
             this.failMessage = failMessage;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
-            if (!condition.Check(battle.ActiveUser))
+            if (!condition.Check(battle.Attacker))
             {
-                battle.Log(failMessage ?? "But it failed!");
+                battle.Logger.Log(failMessage ?? "But it failed!");
                 return;
             }
             move.Execute(battle);
@@ -127,11 +128,11 @@ namespace PokemonGame.Model.Domain.Move
         public bool IsLocked => turnsLocked > 0;
         public void Tick() { if (turnsLocked > 0) turnsLocked--; }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             if (IsLocked)
             {
-                battle.Log("The move is disabled!");
+                battle.Logger.Log("The move is disabled!");
                 return;
             }
             move.Execute(battle);
@@ -151,7 +152,7 @@ namespace PokemonGame.Model.Domain.Move
             this.overrideType = overrideType;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             battle.ActiveTypeOverride = overrideType;
             move.Execute(battle);
@@ -172,7 +173,7 @@ namespace PokemonGame.Model.Domain.Move
             this.followUp = followUp;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             main.Execute(battle);
             followUp.Apply(battle);

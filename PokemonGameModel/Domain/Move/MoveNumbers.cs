@@ -9,6 +9,7 @@
 using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Domain.Move
 {
@@ -19,7 +20,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly INumber left;
         private readonly INumber right;
         public Product(INumber left, INumber right) { this.left = left; this.right = right; }
-        public double Evaluate(BattleDomain battle) => left.Evaluate(battle) * right.Evaluate(battle);
+        public double Evaluate(BattleState battle) => left.Evaluate(battle) * right.Evaluate(battle);
     }
 
     internal class Sum : INumber
@@ -27,7 +28,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly INumber left;
         private readonly INumber right;
         public Sum(INumber left, INumber right) { this.left = left; this.right = right; }
-        public double Evaluate(BattleDomain battle) => left.Evaluate(battle) + right.Evaluate(battle);
+        public double Evaluate(BattleState battle) => left.Evaluate(battle) + right.Evaluate(battle);
     }
 
     internal class Quotient : INumber
@@ -35,7 +36,7 @@ namespace PokemonGame.Model.Domain.Move
         private readonly INumber numerator;
         private readonly INumber denominator;
         public Quotient(INumber numerator, INumber denominator) { this.numerator = numerator; this.denominator = denominator; }
-        public double Evaluate(BattleDomain battle)
+        public double Evaluate(BattleState battle)
         {
             double d = denominator.Evaluate(battle);
             if (d == 0) return 0;
@@ -50,7 +51,7 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly double value;
         public Exactly(double value) { this.value = value; }
-        public double Evaluate(BattleDomain battle) => value;
+        public double Evaluate(BattleState battle) => value;
     }
 
     // Uniform random in [min, max] — uses RandomHelper, no new Random().
@@ -61,7 +62,7 @@ namespace PokemonGame.Model.Domain.Move
 
         public Between(double min, double max) { this.min = min; this.max = max; }
 
-        public double Evaluate(BattleDomain battle)
+        public double Evaluate(BattleState battle)
             => RandomHelper.NextDouble() * (max - min) + min;
     }
 
@@ -73,7 +74,7 @@ namespace PokemonGame.Model.Domain.Move
 
         public Weighted(List<(double value, double weight)> entries) { this.entries = entries; }
 
-        public double Evaluate(BattleDomain battle)
+        public double Evaluate(BattleState battle)
         {
             double total = entries.Sum(e => e.weight);
             double roll = RandomHelper.NextDouble() * total;
@@ -93,27 +94,27 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly ITarget target;
         public MaxHP(ITarget target) { this.target = target; }
-        public double Evaluate(BattleDomain battle) => target.Resolve(battle).MaxHP;
+        public double Evaluate(BattleState battle) => target.Resolve(battle).MaxHP;
     }
 
     internal class CurrentHP : INumber
     {
         private readonly ITarget target;
         public CurrentHP(ITarget target) { this.target = target; }
-        public double Evaluate(BattleDomain battle) => target.Resolve(battle).CurrentHP;
+        public double Evaluate(BattleState battle) => target.Resolve(battle).CurrentHP;
     }
 
     internal class Level : INumber
     {
         private readonly ITarget target;
         public Level(ITarget target) { this.target = target; }
-        public double Evaluate(BattleDomain battle) => target.Resolve(battle).Level;
+        public double Evaluate(BattleState battle) => target.Resolve(battle).Level;
     }
 
     internal class LastDamageDealt : INumber
     {
         private readonly ITarget target;
         public LastDamageDealt(ITarget target) { this.target = target; }
-        public double Evaluate(BattleDomain battle) => target.Resolve(battle).LastDamageDealt;
+        public double Evaluate(BattleState battle) => target.Resolve(battle).LastDamageDealt;
     }
 }

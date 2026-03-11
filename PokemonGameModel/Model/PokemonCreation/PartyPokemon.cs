@@ -110,8 +110,8 @@ namespace PokemonGame.Model.PokemonCreation
             p.EXP = bs.BaseExpYield;
             p.AbilType = AbilityType.Ability1;
             p.Ability = bs.Ability1;
-            p.Gender = rngHelper.GenerateGender(bs.GenderRatio);
-            p.Nature = rngHelper.GenerateNature();
+            p.Gender = RNGHelper.GenerateGender(bs.GenderRatio);
+            p.Nature = RNGHelper.GenerateNature();
             p.Moveset = new Moveset();
             p.EffortValues = new EVs();
             p.IndividualValues = new IVs();

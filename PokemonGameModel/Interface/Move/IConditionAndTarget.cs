@@ -4,6 +4,7 @@
 
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Interface.Move
 {
@@ -16,6 +17,6 @@ namespace PokemonGame.Interface.Move
     // Resolves which Pokemon is the target for an effect or condition
     internal interface ITarget
     {
-        PokemonDomain Resolve(BattleDomain battle);
+        PokemonDomain Resolve(BattleState battle);
     }
 }

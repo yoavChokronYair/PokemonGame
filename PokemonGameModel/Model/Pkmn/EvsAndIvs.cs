@@ -2,7 +2,7 @@
 // IVs: random values generated via RandomHelper if not specified.
 // EVs: implements IPBEStatCollection for battle engine access.
 // Layer: Model/Pkmn.
-﻿using PokemonGame.Core.Model.Pkmn.Interface;
+using PokemonGame.Interface.Pokemon;
 using PokemonGame.Model.Helper;
 using System;
 using System.Collections.Generic;

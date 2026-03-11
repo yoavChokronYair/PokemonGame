@@ -10,6 +10,7 @@
 using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Domain.Move
 {
@@ -17,13 +18,13 @@ namespace PokemonGame.Model.Domain.Move
     // e.g. Flamethrower: accuracy check → damage + 10% burn chance, crash on miss.
     internal class Attempt : IAttempt
     {
-        public ICondition<BattleDomain> accuracy { get; set; }
+        public ICondition<BattleState> accuracy { get; set; }
         public IEffect? onHit;
         public IEffect? onMiss;
         public IEffect? after;
 
         public Attempt(
-            ICondition<BattleDomain> accuracy,
+            ICondition<BattleState> accuracy,
             IEffect? onHit = null,
             IEffect? onMiss = null,
             IEffect? after = null)
@@ -34,7 +35,7 @@ namespace PokemonGame.Model.Domain.Move
             this.after = after;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             if (accuracy.Check(battle))
                 onHit?.Apply(battle);
@@ -64,7 +65,7 @@ namespace PokemonGame.Model.Domain.Move
             this.stopOnMiss = stopOnMiss;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             foreach (var attempt in attempts)
             {
@@ -80,14 +81,14 @@ namespace PokemonGame.Model.Domain.Move
     // e.g. Bullet Seed (2-5 hits), Double Kick (always 2), Fury Attack.
     internal class Combo : IAttempt
     {
-        private readonly ICondition<BattleDomain> accuracy;
+        private readonly ICondition<BattleState> accuracy;
         private readonly INumber hits;
         private readonly IEffect onEachHit;
         private readonly IEffect? onEachMiss;
         private readonly IEffect? after;
 
         public Combo(
-            ICondition<BattleDomain> accuracy,
+            ICondition<BattleState> accuracy,
             INumber hits,
             IEffect onEachHit,
             IEffect? onEachMiss = null,
@@ -100,7 +101,7 @@ namespace PokemonGame.Model.Domain.Move
             this.after = after;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
             int hitCount = (int)hits.Evaluate(battle);
 
@@ -129,16 +130,16 @@ namespace PokemonGame.Model.Domain.Move
             this.releaseAttempt = releaseAttempt;
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
-            if (!battle.ActiveUser.IsCharging)
+            if (!battle.Attacker.IsCharging)
             {
                 chargeEffect.Apply(battle);
-                battle.ActiveUser.BeginCharge(this);
+                battle.Attacker.BeginCharge(this);
             }
             else
             {
-                battle.ActiveUser.EndCharge();
+                battle.Attacker.EndCharge();
                 releaseAttempt.Execute(battle);
             }
         }
@@ -159,9 +160,9 @@ namespace PokemonGame.Model.Domain.Move
             this.duration = new Between(minTurns, maxTurns);
         }
 
-        public void Execute(BattleDomain battle)
+        public void Execute(BattleState battle)
         {
-            var user = battle.ActiveUser;
+            var user = battle.Attacker;
 
             if (!user.IsRampaging)
             {

@@ -10,6 +10,7 @@ using PokemonGame.Interface.Move;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Services.Enums.PokemonEnum;
 
 namespace PokemonGame.Model.Domain.Move
@@ -53,23 +54,23 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Convenience alias — most common usage is against BattleDomain.
-    internal class Probability : Probability<BattleDomain>
+    internal class Probability : Probability<BattleState>
     {
         public Probability(double probability) : base(probability) { }
     }
 
     // ── Battle Conditions ─────────────────────────────────────────────────────
 
-    internal class IsWeatherActive : ICondition<BattleDomain>
+    internal class IsWeatherActive : ICondition<BattleState>
     {
         private readonly Weather weather;
         public IsWeatherActive(Weather weather) { this.weather = weather; }
-        public bool Check(BattleDomain battle) => battle.IsWeatherActive(weather);
+        public bool Check(BattleState battle) => battle.WeatherService.IsWeatherActive(weather);
     }
 
-    internal class IsBattleOver : ICondition<BattleDomain>
+    internal class IsBattleOver : ICondition<BattleState>
     {
-        public bool Check(BattleDomain battle) => battle.IsBattleOver;
+        public bool Check(BattleState battle) => battle.IsBattleOver;
     }
 
     // ── Pokemon Conditions ────────────────────────────────────────────────────
@@ -113,18 +114,18 @@ namespace PokemonGame.Model.Domain.Move
     }
 
     // Adapter: wraps a PokemonDomain condition so it can be used as ICondition<BattleDomain>.
-    internal class UserCondition : ICondition<BattleDomain>
+    internal class UserCondition : ICondition<BattleState>
     {
         private readonly ICondition<PokemonDomain> inner;
         public UserCondition(ICondition<PokemonDomain> inner) { this.inner = inner; }
-        public bool Check(BattleDomain battle) => inner.Check(battle.ActiveUser);
+        public bool Check(BattleState battle) => inner.Check(battle.Attacker);
     }
 
-    internal class OpponentCondition : ICondition<BattleDomain>
+    internal class OpponentCondition : ICondition<BattleState>
     {
         private readonly ICondition<PokemonDomain> inner;
         public OpponentCondition(ICondition<PokemonDomain> inner) { this.inner = inner; }
-        public bool Check(BattleDomain battle) => inner.Check(battle.ActiveOpponent);
+        public bool Check(BattleState battle) => inner.Check(battle.Attacker);
     }
 
     // ── Target Implementations ────────────────────────────────────────────────
@@ -132,12 +133,12 @@ namespace PokemonGame.Model.Domain.Move
 
     internal class AttackerTarget : ITarget
     {
-        public PokemonDomain Resolve(BattleDomain battle) => battle.ActiveUser;
+        public PokemonDomain Resolve(BattleState battle) => battle.Attacker;
     }
 
     internal class DefenderTarget : ITarget
     {
-        public PokemonDomain Resolve(BattleDomain battle) => battle.ActiveOpponent;
+        public PokemonDomain Resolve(BattleState battle) => battle.Attacker;
     }
 
     // Always resolves to a specific pokemon regardless of attacker/defender roles.
@@ -146,6 +147,6 @@ namespace PokemonGame.Model.Domain.Move
     {
         private readonly PokemonDomain pokemon;
         public SpecificTarget(PokemonDomain pokemon) { this.pokemon = pokemon; }
-        public PokemonDomain Resolve(BattleDomain battle) => pokemon;
+        public PokemonDomain Resolve(BattleState battle) => pokemon;
     }
 }

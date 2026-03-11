@@ -6,6 +6,8 @@ using PokemonGame.Enums.PokemonEnum;
 using PokemonGame.Interface.Pokemon;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Core.Model.Pkmn;
+using PokemonGame.Services.Enums.PokemonEnum;
+using PokemonGame.Enums;
 
 namespace PokemonGame.Interface.Pokemon
 {
