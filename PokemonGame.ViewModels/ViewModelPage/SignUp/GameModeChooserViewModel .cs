@@ -1,15 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
@@ -69,7 +65,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
             if (currentUser == null)
             {
-                await _dialogService.ShowError("Error", "User not found. Please create an account first.");
+                await _dialogService.ShowErrorAsync("Error", "User not found. Please create an account first.");
                 return;
             }
 
@@ -81,7 +77,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
             if (users.Count > 0)
             {
-                selectedUser = await _dialogService.ShowSelection(
+                selectedUser = await _dialogService.ShowSelectionAsync(
                     "Quick Login",
                     "Select your username: \n*cancel to create a new account",
                     users
@@ -90,38 +86,42 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
             if (string.IsNullOrWhiteSpace(selectedUser))
             {
-                bool createNew = await _dialogService.ShowConfirm(
+                bool createNew = await _dialogService.ShowConfirmAsync(
                     "Create Account",
                     "No account selected. Do you want to create a new account?"
                 );
 
                 if (!createNew)
+                {
                     return;
+                }
 
-                selectedUser = await _dialogService.ShowInput("Create Account", "Enter a username:");
+                selectedUser = await _dialogService.ShowInputAsync("Create Account", "Enter a username:");
                 if (string.IsNullOrWhiteSpace(selectedUser))
+                {
                     return;
+                }
 
                 bool created = _handler.AddOnlineModePlayer(selectedUser, currentUser);
                 if (!created)
                 {
-                    await _dialogService.ShowError("Error", "Username already exists. Try another one.");
+                    await _dialogService.ShowErrorAsync("Error", "Username already exists. Try another one.");
                     return;
                 }
 
-                await _dialogService.ShowSuccess("Success", $"Account '{selectedUser}' created successfully!");
+                await _dialogService.ShowSuccessAsync("Success", $"Account '{selectedUser}' created successfully!");
             }
 
             if (_handler.OnlinePlayerLogIn(Username, currentUser))
             {
-                await _dialogService.ShowSuccess("Success", $"Logged in successfully as '{Username}'!");
+                await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{Username}'!");
 
                 // ✅ Use NavigateCommand instead of setting CurrentViewModel manually
                 NavigateToSideMenuCommand.Execute(null);
             }
             else
             {
-                await _dialogService.ShowError("Error", $"Failed to log in as '{Username}'.");
+                await _dialogService.ShowErrorAsync("Error", $"Failed to log in as '{Username}'.");
             }
         }
 
@@ -131,47 +131,55 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                                 .FirstOrDefault(u => u.UserName == Username);
 
             if (currentUser == null)
+            {
                 return;
+            }
 
             var users = _handler.GetAllOnlinePlayers(currentUser)
                                 .Select(u => u.Name)
                                 .ToList();
 
-            string? selectedUser = await _dialogService.ShowSelection(
+            string? selectedUser = await _dialogService.ShowSelectionAsync(
                 "Select Account",
                 "Choose your username:",
                 users
             );
 
             if (string.IsNullOrWhiteSpace(selectedUser))
+            {
                 return;
+            }
 
             await OnOnlineModeAsync();
         }
 
         private async Task OnCreateAccountAsync()
         {
-            string? newUser = await _dialogService.ShowInput("Create Account", "Choose a username:");
+            string? newUser = await _dialogService.ShowInputAsync("Create Account", "Choose a username:");
             if (string.IsNullOrWhiteSpace(newUser))
+            {
                 return;
+            }
 
             var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
                                 .FirstOrDefault(u => u.UserName == Username);
 
             if (currentUser == null)
+            {
                 return;
+            }
 
             if (_handler.AddOnlineModePlayer(newUser, currentUser))
             {
                 Username = newUser;
-                await _dialogService.ShowSuccess("Success", $"Account '{newUser}' created! You can now log in.");
+                await _dialogService.ShowSuccessAsync("Success", $"Account '{newUser}' created! You can now log in.");
 
                 // ✅ Navigate using NavigateCommand
                 NavigateToSideMenuCommand.Execute(null);
             }
             else
             {
-                await _dialogService.ShowError("Error", "Username already taken.");
+                await _dialogService.ShowErrorAsync("Error", "Username already taken.");
             }
         }
     }

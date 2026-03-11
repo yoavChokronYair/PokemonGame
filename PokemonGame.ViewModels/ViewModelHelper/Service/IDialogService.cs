@@ -2,11 +2,11 @@
 {
     public interface IDialogService
     {
-        Task<bool> ShowConfirm(string title, string message);
-        Task ShowMessage(string message);
-        Task ShowError(string title, string message);
-        Task ShowSuccess(string title, string message);
-        Task<string> ShowInput(string title, string message, string defaultValue = "");
-        Task<string> ShowSelection(string title, string message, IEnumerable<string> options);
+        Task<bool> ShowConfirmAsync(string title, string message);
+        Task ShowMessageAsync(string message);
+        Task ShowErrorAsync(string title, string message);
+        Task ShowSuccessAsync(string title, string message);
+        Task<string> ShowInputAsync(string title, string message, string defaultValue = "");
+        Task<string> ShowSelectionAsync(string title, string message, IEnumerable<string> options);
     }
 }

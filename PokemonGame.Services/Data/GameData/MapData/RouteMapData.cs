@@ -20,8 +20,8 @@ namespace PokemonGame.Services.Data.GameData.MapData
         public string? Name { get; set; }
         public int MinLevel { get; set; }
         public int MaxLevel { get; set; }
-        public double Rarity {  get; set; }
+        public double Rarity { get; set; }
         public string? Environment { get; set; }
     }
-    
+
 }

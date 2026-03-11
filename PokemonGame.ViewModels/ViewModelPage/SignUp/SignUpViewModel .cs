@@ -1,13 +1,8 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services;
-using PokemonGame.Services.Data.DataProvider;
+﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Input;
 
 
 namespace PokemonGame.ViewModels.ViewModelPage.SignUp
@@ -25,7 +20,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private string _confirmPassword = string.Empty;
         private string _statusMessage = string.Empty;
 
-        public SignUpViewModel(UserStore userStore, NavigationStore navigationStore,Func<LogInViewModel> createLogInViewModel,Func<GameModeChooserViewModel> createGameChooserViewModel)
+        public SignUpViewModel(UserStore userStore, NavigationStore navigationStore, Func<LogInViewModel> createLogInViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel)
         {
             _userStore = userStore;
             NavigationStore = navigationStore;

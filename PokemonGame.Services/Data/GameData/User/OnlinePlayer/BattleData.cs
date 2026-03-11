@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Services.Data.GameData.User.OnlinePlayer
+﻿namespace PokemonGame.Services.Data.GameData.User.OnlinePlayer
 {
     public class BattleData
     {

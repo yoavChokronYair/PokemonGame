@@ -1,53 +1,76 @@
-﻿using PokemonGame.ViewModels.ViewModelHelper;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
+using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class ProfileViewModel : ViewModelBase
     {
-        private string displayName;
+        private readonly ProfileService _handler;
+
+        private string _displayName = string.Empty;
         public string DisplayName
         {
-            get => displayName;
+            get => _displayName;
             set
             {
-                if (displayName != value)
+                if (_displayName != value)
                 {
-                    displayName = value;
+                    _displayName = value;
                     OnPropertyChanged(nameof(DisplayName));
                 }
             }
         }
 
-        private string userName;
+        private string _userName = string.Empty;
         public string UserName
         {
-            get => userName;
+            get => _userName;
             set
             {
-                if (userName != value)
+                if (_userName != value)
                 {
-                    userName = value;
+                    _userName = value;
                     OnPropertyChanged(nameof(UserName));
                 }
             }
         }
 
-        private bool isDarkMode;
+        private bool _isDarkMode;
         public bool IsDarkMode
         {
-            get => isDarkMode;
+            get => _isDarkMode;
             set
             {
-                if (isDarkMode != value)
+                if (_isDarkMode != value)
                 {
-                    isDarkMode = value;
+                    _isDarkMode = value;
                     OnPropertyChanged(nameof(IsDarkMode));
                 }
             }
         }
-    }
 
+        public ProfileViewModel(UserStore userStore)
+        {
+            _handler = new ProfileService();
+            LoadProfile(userStore.Username);
+        }
+
+        private void LoadProfile(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return;
+            }
+
+            var user = _handler.GetUser(username);
+            if (user == null)
+            {
+                return;
+            }
+
+            UserName = user.UserName;
+            DisplayName = user.UserName; // defaults to username; extend later with a DisplayName column
+        }
+    }
 }
