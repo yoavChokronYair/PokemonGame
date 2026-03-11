@@ -6,8 +6,6 @@
 // MethodHelper: placeholder (empty, reserved for future general helpers).
 // Layer: Model/Helper — foundational utilities, no domain dependencies.
 
-using System;
-
 namespace PokemonGame.Model.Helper
 {
     public static class MethodHelper
@@ -46,22 +44,46 @@ namespace PokemonGame.Model.Helper
     {
         public static int Clamp(int value, int min, int max)
         {
-            if (value < min) return min;
-            if (value > max) return max;
+            if (value < min)
+            {
+                return min;
+            }
+
+            if (value > max)
+            {
+                return max;
+            }
+
             return value;
         }
 
         public static double Clamp(double value, double min, double max)
         {
-            if (value < min) return min;
-            if (value > max) return max;
+            if (value < min)
+            {
+                return min;
+            }
+
+            if (value > max)
+            {
+                return max;
+            }
+
             return value;
         }
 
         public static float Clamp(float value, float min, float max)
         {
-            if (value < min) return min;
-            if (value > max) return max;
+            if (value < min)
+            {
+                return min;
+            }
+
+            if (value > max)
+            {
+                return max;
+            }
+
             return value;
         }
 
@@ -71,7 +93,10 @@ namespace PokemonGame.Model.Helper
         public static T Choose<T>(T[] items)
         {
             if (items == null || items.Length == 0)
+            {
                 throw new ArgumentException("Array cannot be null or empty.", nameof(items));
+            }
+
             return items[RandomHelper.Next(0, items.Length)];
         }
     }
@@ -81,7 +106,11 @@ namespace PokemonGame.Model.Helper
     {
         public static void SetCenter2DArray<T>(T[,] array, T value)
         {
-            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
             int rows = array.GetLength(0);
             int cols = array.GetLength(1);
             array[rows / 2, cols / 2] = value;
@@ -89,15 +118,25 @@ namespace PokemonGame.Model.Helper
 
         public static T? FindIn2DArray<T>(T[,] array, Func<T, bool> predicate) where T : class
         {
-            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
             int rows = array.GetLength(0);
             int cols = array.GetLength(1);
             for (int r = 0; r < rows; r++)
+            {
                 for (int c = 0; c < cols; c++)
                 {
                     T item = array[r, c];
-                    if (item != null && predicate(item)) return item;
+                    if (item != null && predicate(item))
+                    {
+                        return item;
+                    }
                 }
+            }
+
             return null;
         }
 
@@ -106,9 +145,16 @@ namespace PokemonGame.Model.Helper
             int rows = array.GetLength(0);
             int cols = array.GetLength(1);
             for (int r = 0; r < rows; r++)
+            {
                 for (int c = 0; c < cols; c++)
+                {
                     if (array[r, c] != null && predicate(array[r, c]!))
+                    {
                         return (r, c);
+                    }
+                }
+            }
+
             return null;
         }
     }

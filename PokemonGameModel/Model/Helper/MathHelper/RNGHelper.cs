@@ -2,9 +2,8 @@
 // Layer: Model/Helper/MathHelper — game-specific RNG (PID, IVs, nature, gender, shininess).
 // Uses RandomHelper for all random number generation — no inline new Random() here.
 // Instance holds PID/TID/SID for shiny and gender checks.
-﻿using PokemonGame.Enums;
+using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
-using System;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -47,7 +46,9 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         {
             // If base IV is defined (>= 0), use it directly
             if (baseIV.HasValue && baseIV.Value >= 0)
+            {
                 return baseIV.Value;
+            }
 
             // Otherwise, random IV between 0 and 31
             return RandomHelper.Next(0, 32);
@@ -81,7 +82,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             return (NatureType)values.GetValue(RandomHelper.Next(0, values.Length));
         }
 
-        
+
 
 
         // ----------------------------
@@ -113,7 +114,10 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         public bool IsFemale(double femaleRatio)
         {
             // Genderless
-            if (femaleRatio < 0) return false;
+            if (femaleRatio < 0)
+            {
+                return false;
+            }
 
             // PID determines gender
             int genderThreshold = (int)(femaleRatio * 256);
@@ -140,7 +144,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             uint pid = GeneratePID();
             return new RNGHelper(pid, tid, sid);
         }
-      
+
 
     }
 }

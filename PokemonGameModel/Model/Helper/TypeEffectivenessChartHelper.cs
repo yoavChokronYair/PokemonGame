@@ -132,9 +132,13 @@ namespace PokemonGame.Model.Model.Helper
                 foreach (var defType in defenderTypes)
                 {
                     if (_chart.TryGetValue((atkType, defType), out var multiplier))
+                    {
                         totalMultiplier *= multiplier;
+                    }
                     else
+                    {
                         totalMultiplier *= TypeEffectivenessChartConstants.normal;
+                    }
                 }
             }
 
@@ -152,7 +156,10 @@ namespace PokemonGame.Model.Model.Helper
         {
             double total = 1.0;
             foreach (var defender in defenderTypes)
+            {
                 total *= GetMoveEffectiveness(attackType, defender);
+            }
+
             return total;
         }
     }

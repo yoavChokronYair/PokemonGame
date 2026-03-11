@@ -1,10 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
 using Moq;
-
-using System.Collections.Generic;
-using Xunit;
-using Microsoft.Data.Sqlite;
-using PokemonGame.Services.Data.DataProvider;
 using PokemonGame.Services.Data.ConnectionsService;
 
 
@@ -17,7 +12,7 @@ namespace PokemonGame.Tests.DBTests
         public SQLiteDataProviderTests()
         {
 
-           
+
         }
 
         [Fact]
@@ -29,6 +24,6 @@ namespace PokemonGame.Tests.DBTests
             conn.Close();
         }
 
-     
+
     }
 }

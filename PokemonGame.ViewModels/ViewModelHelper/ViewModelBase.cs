@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Input;
+﻿using System.ComponentModel;
 
 namespace PokemonGame.ViewModels.ViewModelHelper
 {

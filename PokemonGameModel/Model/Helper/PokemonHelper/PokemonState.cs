@@ -1,12 +1,8 @@
-﻿using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Pokemon;
+﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonGame.Model.Model.Helper.PokemonHelper
 {
@@ -50,20 +46,42 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         // --- Status ---
         public bool CanApplyStatus(StatusCondition newStatus)
         {
-            if (state.Status != StatusCondition.None) return false;
-            if (newStatus == StatusCondition.Burn && HasType(PokemonType.Fire)) return false;
-            if (newStatus == StatusCondition.Freeze && HasType(PokemonType.Ice)) return false;
-            if (newStatus == StatusCondition.Poison && (HasType(PokemonType.Poison) || HasType(PokemonType.Steel))) return false;
+            if (state.Status != StatusCondition.None)
+            {
+                return false;
+            }
+
+            if (newStatus == StatusCondition.Burn && HasType(PokemonType.Fire))
+            {
+                return false;
+            }
+
+            if (newStatus == StatusCondition.Freeze && HasType(PokemonType.Ice))
+            {
+                return false;
+            }
+
+            if (newStatus == StatusCondition.Poison && (HasType(PokemonType.Poison) || HasType(PokemonType.Steel)))
+            {
+                return false;
+            }
+
             return true;
         }
         public StatusCondition PokemonStatusCondition() => state.Status;
         public void ApplyStatus(StatusCondition status, int turns = 0)
         {
-            if (!CanApplyStatus(status)) return;
+            if (!CanApplyStatus(status))
+            {
+                return;
+            }
+
             state.Status = status;
             state.ToxicCounter = 0;
             if (status == StatusCondition.Sleep)
+            {
                 state.SleepTurns = turns > 0 ? turns : RandomHelper.Next(1, 4);
+            }
         }
 
         public void ClearStatus()
@@ -84,7 +102,9 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public void ApplyVolatileStatus(VolatileStatus status, int turns = 0)
         {
             if (!state.VolatileStatuses.ContainsKey(status))
+            {
                 state.VolatileStatuses[status] = turns;
+            }
         }
 
         public bool HasVolatileStatus(VolatileStatus status) => state.VolatileStatuses.ContainsKey(status);
@@ -101,13 +121,21 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public void EndCharge() { state.IsCharging = false; state.ChargeRelease = null; }
         public bool IsCharging() => state.IsCharging;
         public void BeginRampage(int turns) { state.IsRampaging = true; state.RampageTurnsLeft = turns; }
-        public void DecrementRampage() { if (--state.RampageTurnsLeft <= 0) state.IsRampaging = false; }
+        public void DecrementRampage() { if (--state.RampageTurnsLeft <= 0)
+            {
+                state.IsRampaging = false;
+            }
+        }
         public bool IsRampaging() => state.IsRampaging;
 
         // --- Bide ---
         public void StartBide(int turns) { state.IsBiding = true; state.BideTurnsLeft = turns; state.BideStoredDamage = 0; }
         public void AccumulateBideDamage(int damage) => state.BideStoredDamage += damage;
-        public void DecrementBide() { if (--state.BideTurnsLeft <= 0) state.IsBiding = false; }
+        public void DecrementBide() { if (--state.BideTurnsLeft <= 0)
+            {
+                state.IsBiding = false;
+            }
+        }
 
         // --- Stat stages ---
         public int GetEffectiveStat(Stat stat)
@@ -125,8 +153,15 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
             int stage = state.StatStages[stat];
 
             // Apply status modifiers
-            if (stat == Stat.Speed && state.Status == StatusCondition.Paralysis) baseStat /= 2;
-            if (stat == Stat.Attack && state.Status == StatusCondition.Burn) baseStat /= 2;
+            if (stat == Stat.Speed && state.Status == StatusCondition.Paralysis)
+            {
+                baseStat /= 2;
+            }
+
+            if (stat == Stat.Attack && state.Status == StatusCondition.Burn)
+            {
+                baseStat /= 2;
+            }
 
             // Stage multiplier
             double multiplier = stage switch
@@ -156,7 +191,9 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public void ResetStatStages()
         {
             foreach (var key in state.StatStages.Keys.ToList())
+            {
                 state.StatStages[key] = 0;
+            }
         }
 
         // --- Force switch / reset ---

@@ -1,9 +1,6 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
-using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PokemonGame.Services.Data.DataProvider.SQLite
 {
@@ -20,7 +17,7 @@ namespace PokemonGame.Services.Data.DataProvider.SQLite
         {
             _db.Execute(
                 "INSERT INTO BattlePlayer (UserID, Name, Level) VALUES (@uid, @name, 1);",
-                new { uid = user.UserID, name = username});
+                new { uid = user.UserID, name = username });
 
             return _db.QuerySingle<BattlePlayerData>(
                 "SELECT * FROM BattlePlayer WHERE BattlePlayerID = last_insert_rowid();");

@@ -16,7 +16,9 @@ namespace PokemonGame.Services.Handler
         public UserData? GetUser(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
+            {
                 return null;
+            }
 
             return _userCache.GetUserByName(username);
         }

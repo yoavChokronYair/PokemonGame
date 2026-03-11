@@ -4,7 +4,6 @@
 // Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
-using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
@@ -30,6 +29,6 @@ namespace PokemonGame.Model.Domain.Battle
 
         // You can also optionally store immutable references to services if you want,
         // or keep them separate in a "BattleDomain" wrapper
-        
+
     }
 }

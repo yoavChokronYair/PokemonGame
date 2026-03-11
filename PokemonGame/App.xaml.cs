@@ -1,11 +1,11 @@
-﻿using PokemonGame.ViewModels;
+﻿using System;
+using System.Windows;
+using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
-using System;
-using System.Windows;
 
 namespace PokemonGame
 {

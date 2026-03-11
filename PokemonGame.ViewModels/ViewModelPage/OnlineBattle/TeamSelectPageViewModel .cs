@@ -1,12 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows.Data;
-using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
@@ -171,7 +168,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         // --- Filter predicate ---
         private bool FilterPokemon(object obj)
         {
-            if (obj is not PokemonViewModel pokemon) return false;
+            if (obj is not PokemonViewModel pokemon)
+            {
+                return false;
+            }
 
             bool matchesSearch = string.IsNullOrWhiteSpace(SearchText)
                 || pokemon.Name.ToLower().Contains(SearchText.ToLower());
@@ -191,7 +191,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private void OnPlacePokemon(PokemonViewModel pokemon)
         {
             if (SelectedSlot == null || pokemon == null)
+            {
                 return;
+            }
 
             SelectedSlot.Pokemon = pokemon;
             SelectedSlot = null;
@@ -200,7 +202,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private void OnClearSlot()
         {
-            if (SelectedSlot == null) return;
+            if (SelectedSlot == null)
+            {
+                return;
+            }
+
             SelectedSlot.Pokemon = null;
             SelectedSlot = null;
             ShowPokemonPanel = false;
@@ -210,14 +216,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             int index = Teams.IndexOf(SelectedTeam);
             if (index > 0)
+            {
                 SelectedTeam = Teams[index - 1];
+            }
         }
 
         private void OnNextTeam()
         {
             int index = Teams.IndexOf(SelectedTeam);
             if (index < Teams.Count - 1)
+            {
                 SelectedTeam = Teams[index + 1];
+            }
         }
 
         private void OnToggleFilters()

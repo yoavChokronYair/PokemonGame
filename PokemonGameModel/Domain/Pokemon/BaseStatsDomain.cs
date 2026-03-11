@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Model.Domain.Pokemon
+﻿namespace PokemonGame.Model.Domain.Pokemon
 {
     public class BaseStats
     {

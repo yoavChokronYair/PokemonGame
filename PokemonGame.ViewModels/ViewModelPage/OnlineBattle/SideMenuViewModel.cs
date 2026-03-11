@@ -1,6 +1,5 @@
-﻿using PokemonGame.ViewModels.ViewModelHelper;
-using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {

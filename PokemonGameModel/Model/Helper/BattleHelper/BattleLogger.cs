@@ -4,8 +4,6 @@
 // Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
-using PokemonGame.Model.Domain.Pokemon;
-
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
     internal class BattleLogger
@@ -15,5 +13,5 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public void Log(string message) => battleLog.Add(message);
     }
 
-   
+
 }

@@ -5,11 +5,7 @@
 // Layer: Domain — move execution model.
 // Note: MoveCategory and MoveTarget enums live in Enums/MovesEnum/MoveStateEnums.cs.
 
-using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Move
 {

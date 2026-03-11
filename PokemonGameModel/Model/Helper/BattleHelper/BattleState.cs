@@ -1,11 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {

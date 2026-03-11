@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Services.Data.DataCache;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Factory;
-using System.Collections.Generic;
 
 namespace PokemonGame.Services.Handler
 {
