@@ -1,11 +1,8 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {

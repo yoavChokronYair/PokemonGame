@@ -2,7 +2,7 @@
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
-    public class MenuSelectionViewModel :ViewModelBase
+    public class MenuSelectionViewModel : ViewModelBase
     {
         public int Rows => 2;
         public int Columns => 2;
