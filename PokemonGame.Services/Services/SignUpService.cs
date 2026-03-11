@@ -7,11 +7,11 @@ namespace PokemonGame.Services.Handler
 {
     public class SignUpService
     {
-        private readonly UserCacheService provider;
+        private readonly UserCacheService _provider;
 
         public SignUpService()
         {
-            provider = ServiceFactory.Instance.UserCache;
+            _provider = ServiceFactory.Instance.UserCache;
         }
 
         public bool UserNameExists(string userName)
@@ -21,7 +21,7 @@ namespace PokemonGame.Services.Handler
                 return false;
             }
 
-            return provider.UserExists(userName);
+            return _provider.UserExists(userName);
 
         }
 
@@ -34,7 +34,7 @@ namespace PokemonGame.Services.Handler
 
             var hashedPassword = HashPassword(password);
 
-            provider.CreateUser(userName, hashedPassword);
+            _provider.CreateUser(userName, hashedPassword);
             return true;
         }
 

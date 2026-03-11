@@ -52,28 +52,28 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     // e.g. Triple Kick — each kick has independent accuracy.
     internal class Cascade : IAttempt
     {
-        private readonly List<IAttempt> attempts;
-        private readonly bool stopOnMiss;
+        private readonly List<IAttempt> _attempts;
+        private readonly bool _stopOnMiss;
 
         public Cascade(List<IAttempt> attempts, bool stopOnMiss = true)
         {
-            this.attempts = attempts;
-            this.stopOnMiss = stopOnMiss;
+            _attempts = attempts;
+            _stopOnMiss = stopOnMiss;
         }
 
         public Cascade(bool stopOnMiss = true, params IAttempt[] attempts)
         {
-            this.attempts = new List<IAttempt>(attempts);
-            this.stopOnMiss = stopOnMiss;
+            _attempts = new List<IAttempt>(attempts);
+            _stopOnMiss = stopOnMiss;
         }
 
         public void Execute(BattleState battle)
         {
-            foreach (var attempt in attempts)
+            foreach (var attempt in _attempts)
             {
                 bool hitLanded = attempt is Attempt a && a.accuracy.Check(battle);
                 attempt.Execute(battle);
-                if (stopOnMiss && !hitLanded)
+                if (_stopOnMiss && !hitLanded)
                 {
                     return;
                 }
@@ -85,11 +85,11 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     // e.g. Bullet Seed (2-5 hits), Double Kick (always 2), Fury Attack.
     internal class Combo : IAttempt
     {
-        private readonly ICondition<BattleState> accuracy;
-        private readonly INumber hits;
-        private readonly IEffect onEachHit;
-        private readonly IEffect? onEachMiss;
-        private readonly IEffect? after;
+        private readonly ICondition<BattleState> _accuracy;
+        private readonly INumber _hits;
+        private readonly IEffect _onEachHit;
+        private readonly IEffect? _onEachMiss;
+        private readonly IEffect? _after;
 
         public Combo(
             ICondition<BattleState> accuracy,
@@ -98,30 +98,30 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             IEffect? onEachMiss = null,
             IEffect? after = null)
         {
-            this.accuracy = accuracy;
-            this.hits = hits;
-            this.onEachHit = onEachHit;
-            this.onEachMiss = onEachMiss;
-            this.after = after;
+            _accuracy = accuracy;
+            _hits = hits;
+            _onEachHit = onEachHit;
+            _onEachMiss = onEachMiss;
+            _after = after;
         }
 
         public void Execute(BattleState battle)
         {
-            int hitCount = (int)hits.Evaluate(battle);
+            int hitCount = (int)_hits.Evaluate(battle);
 
             for (int i = 0; i < hitCount; i++)
             {
-                if (accuracy.Check(battle))
+                if (_accuracy.Check(battle))
                 {
-                    onEachHit.Apply(battle);
+                    _onEachHit.Apply(battle);
                 }
                 else
                 {
-                    onEachMiss?.Apply(battle);
+                    _onEachMiss?.Apply(battle);
                 }
             }
 
-            after?.Apply(battle);
+            _after?.Apply(battle);
         }
     }
 
@@ -129,26 +129,26 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     // e.g. Solar Beam (charge → fire), Fly (vanish → strike), Skull Bash.
     internal class Charge : IAttempt
     {
-        private readonly IEffect chargeEffect;
-        private readonly IAttempt releaseAttempt;
+        private readonly IEffect _chargeEffect;
+        private readonly IAttempt _releaseAttempt;
 
         public Charge(IEffect chargeEffect, IAttempt releaseAttempt)
         {
-            this.chargeEffect = chargeEffect;
-            this.releaseAttempt = releaseAttempt;
+            _chargeEffect = chargeEffect;
+            _releaseAttempt = releaseAttempt;
         }
 
         public void Execute(BattleState battle)
         {
             if (!battle.Attacker.IsCharging())
             {
-                chargeEffect.Apply(battle);
+                _chargeEffect.Apply(battle);
                 battle.Attacker.BeginCharge(this);
             }
             else
             {
                 battle.Attacker.EndCharge();
-                releaseAttempt.Execute(battle);
+                _releaseAttempt.Execute(battle);
             }
         }
     }
@@ -157,15 +157,15 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     // e.g. Outrage (2-3 turns → confusion), Petal Dance, Thrash.
     internal class Rampage : IAttempt
     {
-        private readonly IAttempt attack;
-        private readonly Between duration;
-        private readonly IEffect afterRampage;
+        private readonly IAttempt _attack;
+        private readonly Between _duration;
+        private readonly IEffect _afterRampage;
 
         public Rampage(IAttempt attack, IEffect afterRampage, int minTurns = 2, int maxTurns = 3)
         {
-            this.attack = attack;
-            this.afterRampage = afterRampage;
-            this.duration = new Between(minTurns, maxTurns);
+            _attack = attack;
+            _afterRampage = afterRampage;
+            _duration = new Between(minTurns, maxTurns);
         }
 
         public void Execute(BattleState battle)
@@ -174,16 +174,16 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
             if (!user.IsRampaging())
             {
-                int turns = (int)duration.Evaluate(battle);
+                int turns = (int)_duration.Evaluate(battle);
                 user.BeginRampage(turns);
             }
 
-            attack.Execute(battle);
+            _attack.Execute(battle);
             user.DecrementRampage();
 
             if (!user.IsRampaging())
             {
-                afterRampage.Apply(battle);
+                _afterRampage.Apply(battle);
             }
         }
     }

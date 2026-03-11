@@ -7,25 +7,25 @@ namespace PokemonGame.Model.Model.Helper.Decorator
 {
     internal class WithPrecondition : IMove
     {
-        private readonly ICondition<BattleState> condition;
-        private readonly IMove move;
-        private readonly string? failMessage;
+        private readonly ICondition<BattleState> _condition;
+        private readonly IMove _move;
+        private readonly string? _failMessage;
 
         public WithPrecondition(ICondition<BattleState> condition, IMove move, string? failMessage = null)
         {
-            this.condition = condition;
-            this.move = move;
-            this.failMessage = failMessage;
+            _condition = condition;
+            _move = move;
+            _failMessage = failMessage;
         }
 
         public void Execute(BattleState battle)
         {
-            if (!condition.Check(battle))
+            if (!_condition.Check(battle))
             {
-                battle.Logger.Log(failMessage ?? "But it failed!");
+                battle.Logger.Log(_failMessage ?? "But it failed!");
                 return;
             }
-            move.Execute(battle);
+            _move.Execute(battle);
         }
     }
 
@@ -33,47 +33,47 @@ namespace PokemonGame.Model.Model.Helper.Decorator
     // e.g. can't move while paralyzed/frozen, can't use Fly if already airborne.
     internal class WithApplicability : IMove
     {
-        private readonly ICondition<PokemonState> condition;
-        private readonly IMove move;
-        private readonly string? failMessage;
+        private readonly ICondition<PokemonState> _condition;
+        private readonly IMove _move;
+        private readonly string? _failMessage;
 
         public WithApplicability(ICondition<PokemonState> condition, IMove move, string? failMessage = null)
         {
-            this.condition = condition;
-            this.move = move;
-            this.failMessage = failMessage;
+            _condition = condition;
+            _move = move;
+            _failMessage = failMessage;
         }
 
         public void Execute(BattleState battle)
         {
-            if (!condition.Check(battle.Attacker))
+            if (!_condition.Check(battle.Attacker))
             {
-                battle.Logger.Log(failMessage ?? "But it failed!");
+                battle.Logger.Log(_failMessage ?? "But it failed!");
                 return;
             }
-            move.Execute(battle);
+            _move.Execute(battle);
         }
     }
 
     // Disables a move after use for N turns — e.g. Disable, Encore lock.
     internal class WithDisable : IMove
     {
-        private readonly IMove move;
-        private readonly int lockTurns;
-        private int turnsLocked = 0;
+        private readonly IMove _move;
+        private readonly int _lockTurns;
+        private int _turnsLocked = 0;
 
         public WithDisable(IMove move, int lockTurns)
         {
-            this.move = move;
-            this.lockTurns = lockTurns;
+            _move = move;
+            _lockTurns = lockTurns;
         }
 
-        public bool IsLocked => turnsLocked > 0;
+        public bool IsLocked => _turnsLocked > 0;
         public void Tick()
         {
-            if (turnsLocked > 0)
+            if (_turnsLocked > 0)
             {
-                turnsLocked--;
+                _turnsLocked--;
             }
         }
 
@@ -84,27 +84,27 @@ namespace PokemonGame.Model.Model.Helper.Decorator
                 battle.Logger.Log("The move is disabled!");
                 return;
             }
-            move.Execute(battle);
-            turnsLocked = lockTurns;
+            _move.Execute(battle);
+            _turnsLocked = _lockTurns;
         }
     }
 
     // Overrides type effectiveness — e.g. Scrappy lets Normal hit Ghost.
     internal class WithTypeOverride : IMove
     {
-        private readonly IMove move;
-        private readonly PokemonType overrideType;
+        private readonly IMove _move;
+        private readonly PokemonType _overrideType;
 
         public WithTypeOverride(IMove move, PokemonType overrideType)
         {
-            this.move = move;
-            this.overrideType = overrideType;
+            _move = move;
+            _overrideType = overrideType;
         }
 
         public void Execute(BattleState battle)
         {
-            battle.ActiveTypeOverride = overrideType;
-            move.Execute(battle);
+            battle.ActiveTypeOverride = _overrideType;
+            _move.Execute(battle);
             battle.ActiveTypeOverride = null;
         }
     }
@@ -113,19 +113,19 @@ namespace PokemonGame.Model.Model.Helper.Decorator
     // e.g. Relic Song transforms Meloetta, U-turn forces a switch after damage.
     internal class WithFollowUp : IMove
     {
-        private readonly IMove main;
-        private readonly IEffect followUp;
+        private readonly IMove _main;
+        private readonly IEffect _followUp;
 
         public WithFollowUp(IMove main, IEffect followUp)
         {
-            this.main = main;
-            this.followUp = followUp;
+            _main = main;
+            _followUp = followUp;
         }
 
         public void Execute(BattleState battle)
         {
-            main.Execute(battle);
-            followUp.Apply(battle);
+            _main.Execute(battle);
+            _followUp.Apply(battle);
         }
     }
 }
