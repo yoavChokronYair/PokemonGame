@@ -1,0 +1,26 @@
+root = true
+
+[*.cs]
+
+# Naming conventions
+dotnet_naming_rule.private_fields_camel_case.severity = warning
+dotnet_naming_rule.private_fields_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_camel_case.style = camel_case_style
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+
+
+# Formatting / spacing
+csharp_prefer_braces = true:warning
+dotnet_sort_system_directives_first = true:warning
+
+
+# Unused imports
+dotnet_diagnostic.IDE0005.severity = warning
+
+
+# Magic numbers
+dotnet_diagnostic.CA1502.severity = warning
