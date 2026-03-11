@@ -10,9 +10,30 @@ namespace PokemonGame.Model.Domain.Move
         //product,sum,quotient 
         public double Evaluate(BattleDomain battle);
     }
+    public class Product : INumber
+    {
+        private readonly INumber left;
+        private readonly INumber right;
+
+        public Product(INumber left, INumber right)
+        {
+            this.left = left;
+            this.right = right;
+        }
+
+        public double Evaluate(BattleDomain battle)
+        {
+            return left.Evaluate(battle) * right.Evaluate(battle);
+        }
+    }
     public class Exactly : INumber
     {
         public double exactDamaged;
+
+        public Exactly(double exactDamaged)
+        {
+            this.exactDamaged = exactDamaged;
+        }
 
         public double Evaluate(BattleDomain battle)
         {
@@ -43,6 +64,11 @@ namespace PokemonGame.Model.Domain.Move
     public class MaxHP: INumber
     {
         public ITarget target;
+
+        public MaxHP(ITarget target)
+        {
+            this.target = target;
+        }
 
         public double Evaluate(BattleDomain battle)
         {

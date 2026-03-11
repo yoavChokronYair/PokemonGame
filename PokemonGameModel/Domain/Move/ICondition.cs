@@ -7,7 +7,7 @@ namespace PokemonGame.Model.Domain.Move
     public interface ICondition<T>
     {
         //and(t),or(t),not(t),probality(t)
-        public bool check(T entity);
+        public bool Check(T entity);
     }
     public interface ITarget
     {

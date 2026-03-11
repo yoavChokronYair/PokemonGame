@@ -7,8 +7,8 @@ namespace PokemonGame.Model.Domain.Battle
 {
     public class BattleDomain
     {
-        private PokemonData attacker { get; set; }
-        private PokemonData defender { get; set; }
+        public PokemonData attacker { get; set; }
+        public PokemonData defender { get; set; }
         public void init(PokemonData pokemonData, PokemonData pokemonData1)
         {
             this.attacker = pokemonData;

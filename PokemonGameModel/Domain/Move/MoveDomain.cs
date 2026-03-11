@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Interface;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Services.Enums.PokemonEnum;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -12,7 +13,14 @@ namespace PokemonGame.Model.Domain.Move
     {
         public IAttampt attampt { get; set; }
         public string name;
-        public Element element;
+        public PokemonType element;
+
+        public MoveDomain(string name, PokemonType element,IAttampt attampt)
+        {
+            this.attampt = attampt;
+            this.name = name;
+            this.element = element;
+        }
 
         public void Execute(BattleDomain battle)
         {

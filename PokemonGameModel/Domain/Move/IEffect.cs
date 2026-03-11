@@ -9,7 +9,27 @@ namespace PokemonGame.Model.Domain.Move
     public class Sequence : IEffect
     {
         public List<IEffect> effects;
+
+        public Sequence(List<IEffect> effects)
+        {
+            this.effects = effects;
+        }
+
         public void Apply(BattleDomain battle)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class Probability : ICondition<BattleDomain>
+    {
+        private readonly double probability;
+        private Random random = new Random();
+
+        public Probability(double probability)
+        {
+            this.probability = probability;
+        }
+        public bool Check(BattleDomain entity)
         {
             throw new NotImplementedException();
         }
@@ -17,18 +37,29 @@ namespace PokemonGame.Model.Domain.Move
     //more effects
     public class Conditions : IEffect
     {
-        public void onPass()
-        {
+        private readonly ICondition<BattleDomain> condition;
+        private readonly IEffect onPass;
+        private readonly IEffect onFail;
 
-        }
-        public void onFail()
+        public Conditions(
+            ICondition<BattleDomain> condition,
+            IEffect onPass,
+            IEffect onFail = null)
         {
-
+            this.onPass = onPass;
+            this.onFail = onFail;
         }
-        public ICondition<BattleDomain> condition;
+
         public void Apply(BattleDomain battle)
         {
-            throw new NotImplementedException();
+            if (condition.Check(battle))
+            {
+                onPass?.Apply(battle);
+            }
+            else
+            {
+                onFail?.Apply(battle);
+            }
         }
     }
     public class NoEffect : IEffect
@@ -42,6 +73,10 @@ namespace PokemonGame.Model.Domain.Move
     public class FormulaDamage : IEffect
     {
         public INumber number;
+        public FormulaDamage(INumber effect)
+        {
+            this.number = effect;
+        }
 
         public void Apply(BattleDomain battle)
         {
@@ -78,6 +113,11 @@ namespace PokemonGame.Model.Domain.Move
     {
         public ITarget target;
 
+        public Paralyzed(ITarget target)
+        {
+            this.target = target;
+        }
+
         public void Apply(BattleDomain battle)
         {
             throw new NotImplementedException();
@@ -93,10 +133,27 @@ namespace PokemonGame.Model.Domain.Move
             throw new NotImplementedException();
         }
     }
+    public class CrashDamaged : IEffect
+    {
+        public ITarget target;
+        public INumber crashedDamage;
+
+        public CrashDamaged(ITarget target, INumber crashedDamage)
+        {
+            this.target = target;
+            this.crashedDamage = crashedDamage;
+        }
+
+        public void Apply(BattleDomain battle)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class DirectDamaged : IEffect
     {
         public ITarget target;
         public INumber directDamage;
+
         public void Apply(BattleDomain battle)
         {
             throw new NotImplementedException();

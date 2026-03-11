@@ -45,6 +45,7 @@ namespace PokemonGame.Model.Helper
     }
     public static class MathHelper
     {
+        
         public static int Clamp(int value, int min, int max)
         {
             if (value < min) return min;
