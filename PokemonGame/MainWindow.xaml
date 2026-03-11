@@ -34,7 +34,10 @@
             <DataTemplate DataType="{x:Type onlinevm:OnlineBattleShellViewModel}">
                 <onlineview:OnlineBattleShell />
             </DataTemplate>
-           
+            <DataTemplate DataType="{x:Type onlinevm:TeamSelectPageViewModel}">
+                <onlineview:TeamSelectPage />
+            </DataTemplate>
+
 
 
         </Grid.Resources>

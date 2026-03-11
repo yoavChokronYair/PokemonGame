@@ -1,10 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using PokemonGame.ViewModels.ViewModelHelper;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
@@ -26,7 +23,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             //MoveList = new ObservableCollection<MoveViewModel>(wildPokemonBattleView.MoveList);
             while (MoveList.Count < 4)
+            {
                 MoveList.Add(new MoveViewModel { BaseName = "-", CurrentPP = 0 });
+            }
 
             MenuSelection = new MenuSelectionViewModel();
             UpdateSelectedMove();
@@ -69,19 +68,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             switch (direction)
             {
-                case "Up": if (row > 0) row--; break;
-                case "Down": if (row < 1) row++; break;
-                case "Left": if (col > 0) col--; break;
-                case "Right": if (col < 1) col++; break;
+                case "Up": if (row > 0) { row--; } break;
+                case "Down": if (row < 1) { row++; } break;
+                case "Left": if (col > 0) { col--; } break;
+                case "Right": if (col < 1) { col++; } break;
             }
 
             int index = row * 2 + col;
             if (index >= MoveList.Count || MoveList[index].BaseName == "-")
+            {
                 return;
+            }
 
             MenuSelection.SelectedRow = row;
             MenuSelection.SelectedCol = col;
-            
+
             UpdateSelectedMove();
         }
 
@@ -90,11 +91,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         //    int index = MenuSelection.SelectedRow * 2 + MenuSelection.SelectedCol;
         //    var selectedMove = MoveList[index];
         //    if (selectedMove.BaseName == "-") return;
-            
+
         //    await wildPokemonBattleView.MakeMove(selectedMove.BaseName);
         //    if(wildPokemonBattleView._PageNavigationStore.CurrentViewModel != wildPokemonBattleView._mainWindow)
         //    {
-                
+
         //        _NavigationStore.CurrentViewModel = (new PokemonBattleMenuViewModel(_NavigationStore, wildPokemonBattleView._PageNavigationStore, wildPokemonBattleView));
         //    }
 
