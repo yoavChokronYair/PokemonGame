@@ -14,7 +14,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     // Single move attempt — hits or misses, with optional after effect.
     // e.g. Flamethrower: accuracy check → damage + 10% burn chance, crash on miss.
-    internal class Attempt : IAttempt
+    public class Attempt : IAttempt
     {
         public ICondition<BattleState> accuracy { get; set; }
         public IEffect? onHit;
@@ -50,7 +50,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // Runs multiple attempts in sequence, stops if any miss (or all, depending on move).
     // e.g. Triple Kick — each kick has independent accuracy.
-    internal class Cascade : IAttempt
+    public class Cascade : IAttempt
     {
         private readonly List<IAttempt> _attempts;
         private readonly bool _stopOnMiss;
@@ -83,7 +83,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // Hits multiple times in one turn — each hit rolls accuracy independently.
     // e.g. Bullet Seed (2-5 hits), Double Kick (always 2), Fury Attack.
-    internal class Combo : IAttempt
+    public class Combo : IAttempt
     {
         private readonly ICondition<BattleState> _accuracy;
         private readonly INumber _hits;
@@ -127,7 +127,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // Two-turn move — charge turn then release turn.
     // e.g. Solar Beam (charge → fire), Fly (vanish → strike), Skull Bash.
-    internal class Charge : IAttempt
+    public class Charge : IAttempt
     {
         private readonly IEffect _chargeEffect;
         private readonly IAttempt _releaseAttempt;
@@ -155,7 +155,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // Locks the user into repeating the same move for several turns.
     // e.g. Outrage (2-3 turns → confusion), Petal Dance, Thrash.
-    internal class Rampage : IAttempt
+    public class Rampage : IAttempt
     {
         private readonly IAttempt _attack;
         private readonly Between _duration;

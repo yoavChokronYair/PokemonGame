@@ -6,7 +6,7 @@
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
-    internal class BattleLogger
+    public class BattleLogger
     {
         private readonly List<string> _battleLog = new();
         public IReadOnlyList<string> BattleLog => _battleLog;

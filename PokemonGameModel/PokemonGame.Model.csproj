@@ -8,13 +8,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <Compile Remove="Model\BattleSystem\**" />
+	  <Compile Remove="Model\Map\**" />
+	  <EmbeddedResource Remove="Model\BattleSystem\**" />
+	  <EmbeddedResource Remove="Model\Map\**" />
+	  <None Remove="Model\BattleSystem\**" />
+	  <None Remove="Model\Map\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Model\BattleSystem\Bot\" />
-	  <Folder Include="Model\BattleSystem\Player\" />
-	  <Folder Include="Model\Map\" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 </Project>
