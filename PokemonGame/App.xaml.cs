@@ -5,6 +5,7 @@ using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
+using PokemonGame.ViewModels.ViewModelPage.Summery;
 
 namespace PokemonGame
 {
@@ -21,7 +22,7 @@ namespace PokemonGame
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            _navigationStore.CurrentViewModel = CreateLogInViewModel();
+            _navigationStore.CurrentViewModel = CreateMoveSummaryViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
@@ -105,5 +106,10 @@ namespace PokemonGame
         {
             return new ProfileViewModel(_userStore);
         }
+        private MoveSummaryViewModel CreateMoveSummaryViewModel()
+        {
+            return new MoveSummaryViewModel();
+        }
+
     }
 }

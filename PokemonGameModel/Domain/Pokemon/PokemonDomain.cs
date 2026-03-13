@@ -39,11 +39,11 @@ namespace PokemonGame.Model.Domain.Pokemon
 
         // Stat stages
         public Dictionary<Stat, int> StatStages { get; set; } = new()
-    {
-        { Stat.Attack, 0 }, { Stat.Defense, 0 },
-        { Stat.SpecialAttack, 0 }, { Stat.SpecialDefense, 0 },
-        { Stat.Speed, 0 }, { Stat.Accuracy, 0 }, { Stat.Evasion, 0 }
-    };
+        {
+            { Stat.Attack, 0 }, { Stat.Defense, 0 },
+            { Stat.SpecialAttack, 0 }, { Stat.SpecialDefense, 0 },
+            { Stat.Speed, 0 }, { Stat.Accuracy, 0 }, { Stat.Evasion, 0 }
+        };
 
         // HP
         public int CurrentHP { get; set; }

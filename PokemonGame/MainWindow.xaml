@@ -9,6 +9,8 @@
     xmlns:onlineview="clr-namespace:PokemonGame.Views.Pages.OnlineBattlePages"
     xmlns:onlinevm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.OnlineBattle;assembly=PokemonGame.ViewModels"
     xmlns:signinvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.SignUp;assembly=PokemonGame.ViewModels"
+    xmlns:summeryview="clr-namespace:PokemonGame.Views.Pages.Summery"
+    xmlns:summeryvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.Summery;assembly=PokemonGame.ViewModels"
     Title="MainWindow"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -37,7 +39,9 @@
             <DataTemplate DataType="{x:Type onlinevm:TeamSelectPageViewModel}">
                 <onlineview:TeamSelectPage />
             </DataTemplate>
-
+            <DataTemplate DataType="{x:Type summeryvm:MoveSummaryViewModel}">
+                <summeryview:MoveSummaryPage />
+            </DataTemplate>
 
 
         </Grid.Resources>
