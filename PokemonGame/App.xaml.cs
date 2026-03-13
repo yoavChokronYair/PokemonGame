@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -89,7 +88,7 @@ namespace PokemonGame
 
         private HistoryBattleViewModel CreateHistoryViewModel()
         {
-            return new HistoryBattleViewModel();
+            return new HistoryBattleViewModel(_userStore);
         }
 
         private OnlineFriendsViewModel CreateFriendsViewModel()

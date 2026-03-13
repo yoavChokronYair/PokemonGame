@@ -1,16 +1,16 @@
-﻿using PokemonGame.Services.Data.DataCache;
-using PokemonGame.Services.Data.GameData.Pokemon;
+﻿using PokemonGame.Services.Data.GameData.Pokemon;
+using PokemonGame.Services.Data.Repositories.SQLite;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class TeamSelectService
     {
-        private readonly PokemonCacheService _pokemonCache;
+        private readonly SQLitePokemonRepository _pokemonCache;
 
         public TeamSelectService()
         {
-            _pokemonCache = ServiceFactory.Instance.PokemonCache;
+            _pokemonCache = ServiceFactory.Instance.PokemonRepository;
         }
 
         public List<PokemonData> GetAllPokemon()
@@ -20,7 +20,7 @@ namespace PokemonGame.Services.Handler
 
         public BaseStatsData GetBaseStats(int pokemonID)
         {
-            return _pokemonCache.GetBaseStats(pokemonID);
+            return _pokemonCache.LoadBaseStatsData(pokemonID);
         }
     }
 }
