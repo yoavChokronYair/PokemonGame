@@ -1,6 +1,8 @@
 ﻿using PokemonGame.Services.Data.GameData.Move;
+using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Data.Repositories.SQLite;
 using PokemonGame.Services.Factory;
+using System.Collections.Generic;
 
 namespace PokemonGame.Services.Handler
 {
@@ -35,7 +37,13 @@ namespace PokemonGame.Services.Handler
             _visitedAttempts.Clear();
 
             var attempts = _repo.LoadAttemptsForMove(move.Id);
-            var tree = new MoveTree { Move = move };
+            var tree = new MoveTree
+            {
+                Move = move,
+                Priority = move.Priority,
+                CritStage = move.CritStage,
+                Description = move.Description,
+            };
 
             foreach (var attempt in attempts)
                 tree.Attempts.Add(BuildAttempt(attempt));

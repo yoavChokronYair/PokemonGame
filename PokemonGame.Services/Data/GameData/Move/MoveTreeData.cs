@@ -134,6 +134,9 @@ namespace PokemonGame.Services.Data.GameData.Move
     public class MoveTree
     {
         public MoveData Move { get; set; } = null!;
+        public int Priority { get; set; }
+        public int CritStage { get; set; }
+        public string Description { get; set; } = string.Empty;
         public List<MoveAttempt> Attempts { get; set; } = new();
     }
 }

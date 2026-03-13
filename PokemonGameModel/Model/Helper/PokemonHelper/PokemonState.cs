@@ -6,7 +6,7 @@ using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Model.Helper.PokemonHelper
 {
-    internal class PokemonState
+    public class PokemonState
     {
         private readonly PokemonDomain _state;
 

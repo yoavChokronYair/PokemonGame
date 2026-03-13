@@ -3,142 +3,154 @@
     public sealed class MoveData
     {
         public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;  // PokemonType enum value
-        public string Element { get; set; } = string.Empty;  // MoveCategory enum value
-        public string Category { get; set; } = string.Empty;  // MoveTarget enum value
+        public string Name { get; set; } = string.Empty;
+        public string Element { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
         public string Target { get; set; } = "Opponent";
         public int PP { get; set; }
+        public int Priority { get; set; }       // move priority bracket (e.g. +1 = Quick Attack, -6 = Trick Room)
+        public int CritStage { get; set; }      // bonus crit stages (0 = normal, 1 = high-crit moves)
+        public string Description { get; set; } = string.Empty;
+
+        // FK children
+        public List<AttemptRow> Attempts { get; set; } = new();
     }
+
     public sealed class MoveNumberData
     {
         public int Id { get; set; }
         public string Type { get; set; } = string.Empty;
-        public double? ExactValue { get; set; }   // Exactly
-        public double? RangeMin { get; set; }   // Between
-        public double? RangeMax { get; set; }   // Between
-        public int? LeftNumberId { get; set; }   // Product / Sum / Quotient
-        public int? RightNumberId { get; set; }   // Product / Sum / Quotient
-        public string? Target { get; set; }   // MaxHP / CurrentHP / Level / LastDamageDealt
+        public double? ExactValue { get; set; }
+        public double? RangeMin { get; set; }
+        public double? RangeMax { get; set; }
+        public int? LeftNumberId { get; set; }
+        public int? RightNumberId { get; set; }
+        public string? Target { get; set; }
+
+        // FK children
+        public List<MoveWeightedEntryData> WeightedEntries { get; set; } = new();  // Weighted type only
+        public MoveNumberData? LeftNumber { get; set; }                             // Product / Sum / Quotient
+        public MoveNumberData? RightNumber { get; set; }                            // Product / Sum / Quotient
     }
+
     public class MoveWeightedEntryData
     {
         public int Id { get; set; }
-        public int NumberId { get; set; }   // FK → numbers.id
+        public int NumberId { get; set; }
         public double Value { get; set; }
         public double Weight { get; set; }
     }
+
     public class ConditionRow
     {
         public int Id { get; set; }
         public string Type { get; set; } = string.Empty;
-        public double? Probability { get; set; }   // Probability
-        public string? Weather { get; set; }   // IsWeatherActive
-        public string? Status { get; set; }   // HasStatus
-        public string? VolatileStatus { get; set; }   // HasVolatile
-        public double? HpFraction { get; set; }   // HPBelow
-        public string? PokemonType { get; set; }   // HasType
-        public int? LeftConditionId { get; set; }   // And / Or
-        public int? RightConditionId { get; set; }   // And / Or
-        public int? InnerConditionId { get; set; }   // Not / UserCondition / OpponentCondition
+        public double? Probability { get; set; }
+        public string? Weather { get; set; }
+        public string? Status { get; set; }
+        public string? VolatileStatus { get; set; }
+        public double? HpFraction { get; set; }
+        public string? PokemonType { get; set; }
+        public int? LeftConditionId { get; set; }
+        public int? RightConditionId { get; set; }
+        public int? InnerConditionId { get; set; }
+
+        // FK children
+        public ConditionRow? LeftCondition { get; set; }   // And / Or
+        public ConditionRow? RightCondition { get; set; }  // And / Or
+        public ConditionRow? InnerCondition { get; set; }  // Not / UserCondition / OpponentCondition
     }
+
     public class EffectRow
     {
         public int Id { get; set; }
         public string Type { get; set; } = string.Empty;
-
-        // Shared ---------------------------------------------------
-        public string? Target { get; set; }   // Attacker / Defender
-
-        // Damage / Healing -----------------------------------------
-        public int? NumberId { get; set; }   // FK → numbers.id
-        public string? HealTarget { get; set; }   // Drain only
-
-        // Chance ---------------------------------------------------
+        public string? Target { get; set; }
+        public int? NumberId { get; set; }
+        public string? HealTarget { get; set; }
         public double? ChanceProbability { get; set; }
-        public int? ChildEffectId { get; set; }   // FK → effects.id
-
-        // Conditional ----------------------------------------------
-        public int? ConditionId { get; set; }   // FK → conditions.id
-        public int? OnPassEffectId { get; set; }   // FK → effects.id
-        public int? OnFailEffectId { get; set; }   // FK → effects.id  (nullable)
-
-        // StatChange -----------------------------------------------
-        public string? Stat { get; set; }   // Stat enum value
+        public int? ChildEffectId { get; set; }
+        public int? ConditionId { get; set; }
+        public int? OnPassEffectId { get; set; }
+        public int? OnFailEffectId { get; set; }
+        public string? Stat { get; set; }
         public int? StatStages { get; set; }
-
-        // Sleep ----------------------------------------------------
         public int? SleepMinTurns { get; set; }
         public int? SleepMaxTurns { get; set; }
-
-        // Confuse --------------------------------------------------
         public int? ConfuseMinTurns { get; set; }
         public int? ConfuseMaxTurns { get; set; }
-
-        // Poison ---------------------------------------------------
-        public int IsToxic { get; set; } = 0;  // 0 = Poison, 1 = Toxic
-
-        // Field effects --------------------------------------------
-        public string? Weather { get; set; }   // Weather enum value
+        public int IsToxic { get; set; } = 0;
+        public string? Weather { get; set; }
         public int? WeatherTurns { get; set; }
-        public string? Screen { get; set; }   // Screen enum value
+        public string? Screen { get; set; }
         public int? ScreenTurns { get; set; }
-        public string? BattleSide { get; set; }   // BattleSide enum value
-        public string? Hazard { get; set; }   // Hazard enum value
-
-        // StoreAndRelease (Bide) -----------------------------------
+        public string? BattleSide { get; set; }
+        public string? Hazard { get; set; }
         public int? ChargeTurns { get; set; }
+
+        // FK children
+        public MoveNumberData? Number { get; set; }              // damage / heal formula
+        public EffectRow? ChildEffect { get; set; }              // Chance
+        public ConditionRow? Condition { get; set; }             // Conditional
+        public EffectRow? OnPassEffect { get; set; }             // Conditional
+        public EffectRow? OnFailEffect { get; set; }             // Conditional
+        public List<SequenceStepRow> SequenceSteps { get; set; } = new();       // Sequence
+        public List<MultiStatChangeRow> MultiStatChanges { get; set; } = new(); // MultiStatChange
     }
+
     public class SequenceStepRow
     {
-        public int SequenceEffectId { get; set; }   // FK → effects.id  (the Sequence parent)
-        public int StepOrder { get; set; }   // 0-based position
-        public int ChildEffectId { get; set; }   // FK → effects.id
+        public int SequenceEffectId { get; set; }
+        public int StepOrder { get; set; }
+        public int ChildEffectId { get; set; }
+
+        // FK children
+        public EffectRow? ChildEffect { get; set; }
     }
+
     public class MultiStatChangeRow
     {
         public int Id { get; set; }
-        public int EffectId { get; set; }   // FK → effects.id
-        public string Stat { get; set; } = string.Empty;  // Stat enum value
+        public int EffectId { get; set; }
+        public string Stat { get; set; } = string.Empty;
         public int Stages { get; set; }
     }
+
     public class AttemptRow
     {
         public int Id { get; set; }
-        public int MoveId { get; set; }   // FK → moves.id
+        public int MoveId { get; set; }
         public string Type { get; set; } = string.Empty;
-
-        // Attempt + Combo ------------------------------------------
         public double? AccuracyValue { get; set; }
-
-        // Attempt --------------------------------------------------
-        public int? OnHitEffectId { get; set; }   // FK → effects.id
-        public int? OnMissEffectId { get; set; }   // FK → effects.id
-        public int? AfterEffectId { get; set; }   // FK → effects.id
-
-        // Cascade --------------------------------------------------
-        public int StopOnMiss { get; set; } = 1;  // 1 = true
-
-        // Combo ----------------------------------------------------
-        public int? HitsNumberId { get; set; }   // FK → numbers.id
-
-        // Charge ---------------------------------------------------
-        public int? ChargeEffectId { get; set; }   // FK → effects.id
-        public int? ReleaseAttemptId { get; set; }   // FK → attempts.id (self-ref)
-
-        // Rampage --------------------------------------------------
+        public int? OnHitEffectId { get; set; }
+        public int? OnMissEffectId { get; set; }
+        public int? AfterEffectId { get; set; }
+        public int StopOnMiss { get; set; } = 1;
+        public int? HitsNumberId { get; set; }
+        public int? ChargeEffectId { get; set; }
+        public int? ReleaseAttemptId { get; set; }
         public int? RampageMinTurns { get; set; }
         public int? RampageMaxTurns { get; set; }
-        public int? AfterRampageEffectId { get; set; }   // FK → effects.id
+        public int? AfterRampageEffectId { get; set; }
+
+        // FK children
+        public EffectRow? OnHitEffect { get; set; }
+        public EffectRow? OnMissEffect { get; set; }
+        public EffectRow? AfterEffect { get; set; }
+        public MoveNumberData? HitsNumber { get; set; }          // Combo: how many hits
+        public EffectRow? ChargeEffect { get; set; }             // Charge
+        public AttemptRow? ReleaseAttempt { get; set; }          // Charge: self-ref
+        public EffectRow? AfterRampageEffect { get; set; }       // Rampage
+        public List<CascadeStepRow> CascadeSteps { get; set; } = new();  // Cascade
     }
 
-    /// <summary>
-    /// Maps to the <c>cascade_steps</c> table.
-    /// Each row is one ordered sub-attempt inside a <c>Cascade</c> attempt.
-    /// </summary>
     public class CascadeStepRow
     {
-        public int CascadeAttemptId { get; set; }   // FK → attempts.id  (the Cascade parent)
-        public int StepOrder { get; set; }   // 0-based position
-        public int ChildAttemptId { get; set; }   // FK → attempts.id
+        public int CascadeAttemptId { get; set; }
+        public int StepOrder { get; set; }
+        public int ChildAttemptId { get; set; }
+
+        // FK children
+        public AttemptRow? ChildAttempt { get; set; }
     }
 }

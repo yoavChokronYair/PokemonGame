@@ -15,7 +15,7 @@ namespace PokemonGame.Model.Domain.Pokemon
 {
     // ── Pokemon Domain ────────────────────────────────────────────────────────
 
-    internal class PokemonDomain
+    public class PokemonDomain
     {
         public string Name { get; set; } = string.Empty;
         public int PokedexNumber { get; set; }

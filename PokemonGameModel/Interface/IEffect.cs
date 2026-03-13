@@ -5,7 +5,7 @@ using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Interface
 {
-    internal interface IEffect
+    public interface IEffect
     {
         void Apply(BattleState battle);
     }
