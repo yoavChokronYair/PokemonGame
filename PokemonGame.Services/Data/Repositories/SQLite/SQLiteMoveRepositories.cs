@@ -21,8 +21,76 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         // ── Move (flat) ───────────────────────────────────────────────────────────
 
         public MoveData LoadMoveData(string moveName) =>
-            GetCached(moveName, () => _db.QuerySingle<MoveData>(
-                "SELECT * FROM moves WHERE name = @name", new { name = moveName }));
+        GetCached(moveName, () => _db.QuerySingle<MoveData>(
+            @"SELECT id AS Id, name AS Name, element AS Element, category AS Category, 
+                     target AS Target, pp AS PP, priority AS Priority, 
+                     crit_stage AS CritStage, description AS Description 
+              FROM moves WHERE name = @name", new { name = moveName }));
+
+        public List<AttemptRow> LoadAttemptsForMove(int moveId)
+        {
+            var rows = _db.Query<AttemptRow>(
+                @"SELECT id AS Id, move_id AS MoveId, type AS Type, 
+                     accuracy_value AS AccuracyValue, on_hit_effect_id AS OnHitEffectId, 
+                     on_miss_effect_id AS OnMissEffectId, after_effect_id AS AfterEffectId, 
+                     stop_on_miss AS StopOnMiss, hits_number_id AS HitsNumberId, 
+                     charge_effect_id AS ChargeEffectId, release_attempt_id AS ReleaseAttemptId, 
+                     rampage_min_turns AS RampageMinTurns, rampage_max_turns AS RampageMaxTurns, 
+                     after_rampage_effect_id AS AfterRampageEffectId
+              FROM attempts WHERE move_id = @id", new { id = moveId }).ToList();
+
+            foreach (var r in rows) _attemptCache[r.Id] = r;
+            return rows;
+        }
+
+        public EffectRow? LoadEffect(int id)
+        {
+            if (_effectCache.TryGetValue(id, out var cached)) return cached;
+            var row = _db.QuerySingle<EffectRow?>(
+                @"SELECT id AS Id, type AS Type, target AS Target, number_id AS NumberId, 
+                     heal_target AS HealTarget, chance_probability AS ChanceProbability, 
+                     child_effect_id AS ChildEffectId, condition_id AS ConditionId, 
+                     on_pass_effect_id AS OnPassEffectId, on_fail_effect_id AS OnFailEffectId, 
+                     stat AS Stat, stat_stages AS StatStages, sleep_min_turns AS SleepMinTurns, 
+                     sleep_max_turns AS SleepMaxTurns, confuse_min_turns AS ConfuseMinTurns, 
+                     confuse_max_turns AS ConfuseMaxTurns, is_toxic AS IsToxic, 
+                     weather AS Weather, weather_turns AS WeatherTurns, screen AS Screen, 
+                     screen_turns AS ScreenTurns, battle_side AS BattleSide, 
+                     hazard AS Hazard, charge_turns AS ChargeTurns 
+              FROM effects WHERE id = @id", new { id });
+
+            if (row != null) _effectCache[id] = row;
+            return row;
+        }
+
+        public ConditionRow? LoadCondition(int id)
+        {
+            if (_conditionCache.TryGetValue(id, out var cached)) return cached;
+            var row = _db.QuerySingle<ConditionRow?>(
+                @"SELECT id AS Id, type AS Type, probability AS Probability, weather AS Weather, 
+                     status AS Status, volatile_status AS VolatileStatus, 
+                     hp_fraction AS HpFraction, pokemon_type AS PokemonType, 
+                     left_condition_id AS LeftConditionId, right_condition_id AS RightConditionId, 
+                     inner_condition_id AS InnerConditionId
+              FROM conditions WHERE id = @id", new { id });
+
+            if (row != null) _conditionCache[id] = row;
+            return row;
+        }
+
+        public MoveNumberData? LoadNumber(int id)
+        {
+            if (_numberCache.TryGetValue(id, out var cached)) return cached;
+            var row = _db.QuerySingle<MoveNumberData?>(
+                @"SELECT id AS Id, type AS Type, exact_value AS ExactValue, 
+                     range_min AS RangeMin, range_max AS RangeMax, 
+                     left_number_id AS LeftNumberId, right_number_id AS RightNumberId, 
+                     target AS Target
+              FROM numbers WHERE id = @id", new { id });
+
+            if (row != null) _numberCache[id] = row;
+            return row;
+        }
 
         public List<MoveData> GetAllMoves() =>
             GetAllCached(
@@ -31,15 +99,7 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
 
         // ── Numbers ───────────────────────────────────────────────────────────────
 
-        public MoveNumberData? LoadNumber(int id)
-        {
-            if (_numberCache.TryGetValue(id, out var cached)) return cached;
-            var row = _db.QuerySingle<MoveNumberData?>(
-                "SELECT * FROM numbers WHERE id = @id", new { id });
-            if (row != null) _numberCache[id] = row;
-            return row;
-        }
-
+        
         public List<MoveWeightedEntryData> LoadWeightedEntries(int numberId)
         {
             if (_weightedCache.TryGetValue(numberId, out var cached)) return cached;
@@ -51,25 +111,11 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
 
         // ── Conditions ────────────────────────────────────────────────────────────
 
-        public ConditionRow? LoadCondition(int id)
-        {
-            if (_conditionCache.TryGetValue(id, out var cached)) return cached;
-            var row = _db.QuerySingle<ConditionRow?>(
-                "SELECT * FROM conditions WHERE id = @id", new { id });
-            if (row != null) _conditionCache[id] = row;
-            return row;
-        }
+        
 
         // ── Effects ───────────────────────────────────────────────────────────────
 
-        public EffectRow? LoadEffect(int id)
-        {
-            if (_effectCache.TryGetValue(id, out var cached)) return cached;
-            var row = _db.QuerySingle<EffectRow?>(
-                "SELECT * FROM effects WHERE id = @id", new { id });
-            if (row != null) _effectCache[id] = row;
-            return row;
-        }
+        
 
         public List<SequenceStepRow> LoadSequenceSteps(int sequenceEffectId)
         {
@@ -92,13 +138,7 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
 
         // ── Attempts ─────────────────────────────────────────────────────────────
 
-        public List<AttemptRow> LoadAttemptsForMove(int moveId)
-        {
-            var rows = _db.Query<AttemptRow>(
-                "SELECT * FROM attempts WHERE move_id = @id", new { id = moveId }).ToList();
-            foreach (var r in rows) _attemptCache[r.Id] = r;
-            return rows;
-        }
+        
 
         public AttemptRow? LoadAttempt(int id)
         {

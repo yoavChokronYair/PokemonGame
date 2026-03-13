@@ -8,11 +8,9 @@
         public string Category { get; set; } = string.Empty;
         public string Target { get; set; } = "Opponent";
         public int PP { get; set; }
-        public int Priority { get; set; }       // move priority bracket (e.g. +1 = Quick Attack, -6 = Trick Room)
-        public int CritStage { get; set; }      // bonus crit stages (0 = normal, 1 = high-crit moves)
+        public int Priority { get; set; }
+        public int CritStage { get; set; }
         public string Description { get; set; } = string.Empty;
-
-        // FK children
         public List<AttemptRow> Attempts { get; set; } = new();
     }
 
@@ -61,6 +59,25 @@
         public ConditionRow? InnerCondition { get; set; }  // Not / UserCondition / OpponentCondition
     }
 
+    public class AttemptRow
+    {
+        public int Id { get; set; }
+        public int MoveId { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public double? AccuracyValue { get; set; }
+        public int? OnHitEffectId { get; set; }
+        public int? OnMissEffectId { get; set; }
+        public int? AfterEffectId { get; set; }
+        public int StopOnMiss { get; set; }
+        public int? HitsNumberId { get; set; }
+        public int? ChargeEffectId { get; set; }
+        public int? ReleaseAttemptId { get; set; }
+        public int? RampageMinTurns { get; set; }
+        public int? RampageMaxTurns { get; set; }
+        public int? AfterRampageEffectId { get; set; }
+        public List<CascadeStepRow> CascadeSteps { get; set; } = new();
+    }
+
     public class EffectRow
     {
         public int Id { get; set; }
@@ -79,7 +96,7 @@
         public int? SleepMaxTurns { get; set; }
         public int? ConfuseMinTurns { get; set; }
         public int? ConfuseMaxTurns { get; set; }
-        public int IsToxic { get; set; } = 0;
+        public int IsToxic { get; set; }
         public string? Weather { get; set; }
         public int? WeatherTurns { get; set; }
         public string? Screen { get; set; }
@@ -87,15 +104,6 @@
         public string? BattleSide { get; set; }
         public string? Hazard { get; set; }
         public int? ChargeTurns { get; set; }
-
-        // FK children
-        public MoveNumberData? Number { get; set; }              // damage / heal formula
-        public EffectRow? ChildEffect { get; set; }              // Chance
-        public ConditionRow? Condition { get; set; }             // Conditional
-        public EffectRow? OnPassEffect { get; set; }             // Conditional
-        public EffectRow? OnFailEffect { get; set; }             // Conditional
-        public List<SequenceStepRow> SequenceSteps { get; set; } = new();       // Sequence
-        public List<MultiStatChangeRow> MultiStatChanges { get; set; } = new(); // MultiStatChange
     }
 
     public class SequenceStepRow
@@ -116,33 +124,7 @@
         public int Stages { get; set; }
     }
 
-    public class AttemptRow
-    {
-        public int Id { get; set; }
-        public int MoveId { get; set; }
-        public string Type { get; set; } = string.Empty;
-        public double? AccuracyValue { get; set; }
-        public int? OnHitEffectId { get; set; }
-        public int? OnMissEffectId { get; set; }
-        public int? AfterEffectId { get; set; }
-        public int StopOnMiss { get; set; } = 1;
-        public int? HitsNumberId { get; set; }
-        public int? ChargeEffectId { get; set; }
-        public int? ReleaseAttemptId { get; set; }
-        public int? RampageMinTurns { get; set; }
-        public int? RampageMaxTurns { get; set; }
-        public int? AfterRampageEffectId { get; set; }
-
-        // FK children
-        public EffectRow? OnHitEffect { get; set; }
-        public EffectRow? OnMissEffect { get; set; }
-        public EffectRow? AfterEffect { get; set; }
-        public MoveNumberData? HitsNumber { get; set; }          // Combo: how many hits
-        public EffectRow? ChargeEffect { get; set; }             // Charge
-        public AttemptRow? ReleaseAttempt { get; set; }          // Charge: self-ref
-        public EffectRow? AfterRampageEffect { get; set; }       // Rampage
-        public List<CascadeStepRow> CascadeSteps { get; set; } = new();  // Cascade
-    }
+    
 
     public class CascadeStepRow
     {

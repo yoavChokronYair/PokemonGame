@@ -17,13 +17,16 @@ namespace PokemonGame.ViewModels.Translators
     // Neither the model nor the services know this class exists.
     public class MoveTranslator
     {
-        private readonly MoveService _moveService;
+        private readonly IMoveService _moveService;
 
         public MoveTranslator()
         {
             _moveService = new MoveService();
         }
-
+        public MoveTranslator(IMoveService moveService)
+        {
+            _moveService = moveService;
+        }
         // ── Public entry point ───────────────────────────────────────────────
 
         public MoveDomain Translate(string moveName)

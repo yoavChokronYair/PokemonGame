@@ -1,15 +1,18 @@
 ﻿using PokemonGame.Services.Data.GameData.Move;
-using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Data.Repositories.SQLite;
 using PokemonGame.Services.Factory;
-using System.Collections.Generic;
 
 namespace PokemonGame.Services.Handler
 {
     // Assembles a fully hydrated MoveTree from flat DB rows.
     // Call GetMove("Flamethrower") and get the entire tree back —
     // no dangling IDs, every child already resolved.
-    public class MoveService
+    public interface IMoveService
+    {
+        MoveTree? GetMove(string name);
+    }
+  
+    public class MoveService: IMoveService
     {
         private readonly SQLiteMoveRepository _repo;
 
@@ -28,7 +31,7 @@ namespace PokemonGame.Services.Handler
 
         public MoveTree? GetMove(string name)
         {
-            var move = _repo.LoadMoveData(name);
+                var move = _repo.LoadMoveData(name);
             if (move == null) return null;
 
             // Reset visited sets per call so each tree build is independent
