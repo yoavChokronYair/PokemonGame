@@ -16,13 +16,17 @@ namespace PokemonGame.Services.Handler
 
         public List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player)
         {
-            if (player == null) return new List<BattleHistoryEntryData>();
+            if (player == null)
+            {
+                return new List<BattleHistoryEntryData>();
+            }
+
             return _battles.GetBattleHistory(player);
         }
 
-        public List<BattleDisplayData> GetBattleHistoryDisplay(string name,string user)
+        public List<BattleDisplayData> GetBattleHistoryDisplay(string name, string user)
         {
-            var player = ServiceFactory.Instance.OnlinePlayerRepository.LoadOnlinePlayerByName(name,ServiceFactory.Instance.UserRepository.LoadUserByName(user).UserID);
+            var player = ServiceFactory.Instance.OnlinePlayerRepository.LoadOnlinePlayerByName(name, ServiceFactory.Instance.UserRepository.LoadUserByName(user).UserID);
             var history = _battles.GetBattleHistory(player);
             var displayList = new List<BattleDisplayData>();
 

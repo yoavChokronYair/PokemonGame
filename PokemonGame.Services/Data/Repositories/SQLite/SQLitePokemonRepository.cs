@@ -54,7 +54,11 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         // Small helpers so the extra dictionaries read the same as the base class methods
         private static T GetOrSet<T>(Dictionary<int, T> cache, int key, Func<T> fetch) where T : class
         {
-            if (cache.TryGetValue(key, out var cached)) return cached;
+            if (cache.TryGetValue(key, out var cached))
+            {
+                return cached;
+            }
+
             var value = fetch();
             cache[key] = value;
             return value;
@@ -62,9 +66,17 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
 
         private static List<T> GetOrSetAll<T>(Dictionary<int, T> cache, Func<List<T>> fetch, Func<T, int> keySelector)
         {
-            if (cache.Count > 0) return new List<T>(cache.Values);
+            if (cache.Count > 0)
+            {
+                return new List<T>(cache.Values);
+            }
+
             var all = fetch();
-            foreach (var item in all) cache[keySelector(item)] = item;
+            foreach (var item in all)
+            {
+                cache[keySelector(item)] = item;
+            }
+
             return all;
         }
     }

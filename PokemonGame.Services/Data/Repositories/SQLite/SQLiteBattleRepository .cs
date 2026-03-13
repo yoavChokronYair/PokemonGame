@@ -27,7 +27,11 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         public List<PokemonData> GetBattleTeamPokemonForPlayer(int battleID, int battlePlayerID)
         {
             var key = (battleID, battlePlayerID);
-            if (_teamCache.TryGetValue(key, out var cached)) return cached;
+            if (_teamCache.TryGetValue(key, out var cached))
+            {
+                return cached;
+            }
+
             var team = _db.Query<PokemonData>(@"
                 SELECT p.PokemonID, p.SpeciesName
                 FROM BattleTeamPokemon btp

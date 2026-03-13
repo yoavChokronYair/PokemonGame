@@ -17,7 +17,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             _historyHandler = new BattleHistoryService();
             _player = player;
             if (player != null)
+            {
                 LoadBattles();
+            }
             else
             {
                 Console.WriteLine("error");
@@ -27,8 +29,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private void LoadBattles()
         {
             Battles.Clear();
-            foreach (var battle in _historyHandler.GetBattleHistoryDisplay(_player.BattlePlayerID,_player.Username))
+            foreach (var battle in _historyHandler.GetBattleHistoryDisplay(_player.BattlePlayerID, _player.Username))
+            {
                 Battles.Add(battle);
+            }
         }
     }
 }

@@ -11,10 +11,10 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         private static string Key(string username, int userID) => $"{username}_{userID}";
 
         public BattlePlayerData? LoadOnlinePlayerByName(string username, int UserID) =>
-            GetCached(Key(username,UserID), () => _db.QuerySingle<BattlePlayerData?>(
+            GetCached(Key(username, UserID), () => _db.QuerySingle<BattlePlayerData?>(
                 "SELECT * FROM BattlePlayer WHERE Name = @name AND UserID = @uid",
                 new { name = username, uid = UserID }));
-        
+
 
         public bool OnlinePlayerExists(string username, UserData user) =>
             ExistsCached(Key(username, user.UserID), () => LoadOnlinePlayerByName(username, user.UserID) != null);

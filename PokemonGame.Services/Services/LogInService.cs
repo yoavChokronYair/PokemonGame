@@ -18,10 +18,15 @@ namespace PokemonGame.Services.Handler
         public bool Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
                 return false;
+            }
 
             var user = _users.LoadUserByName(username);
-            if (user == null) return false;
+            if (user == null)
+            {
+                return false;
+            }
 
             return user.Password == HashPassword(password);
         }

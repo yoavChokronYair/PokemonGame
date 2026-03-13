@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
@@ -88,10 +86,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                     "Create Account",
                     "No account selected. Do you want to create a new account?");
 
-                if (!createNew) return;
+                if (!createNew)
+                {
+                    return;
+                }
 
                 selectedUser = await _dialogService.ShowInputAsync("Create Account", "Enter a username:");
-                if (string.IsNullOrWhiteSpace(selectedUser)) return;
+                if (string.IsNullOrWhiteSpace(selectedUser))
+                {
+                    return;
+                }
 
                 bool created = _handler.AddOnlineModePlayer(selectedUser, currentUser);
                 if (!created)
@@ -118,7 +122,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private async Task OnQuickLoginAsync()
         {
             var currentUser = _loginService.GetUser(Username);
-            if (currentUser == null) return;
+            if (currentUser == null)
+            {
+                return;
+            }
 
             var users = _handler.GetAllOnlinePlayers(currentUser)
                                 .Select(u => u.Name)
@@ -129,7 +136,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 "Choose your username:",
                 users);
 
-            if (string.IsNullOrWhiteSpace(selectedUser)) return;
+            if (string.IsNullOrWhiteSpace(selectedUser))
+            {
+                return;
+            }
 
             await OnOnlineModeAsync();
         }
@@ -137,10 +147,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private async Task OnCreateAccountAsync()
         {
             string? newUser = await _dialogService.ShowInputAsync("Create Account", "Choose a username:");
-            if (string.IsNullOrWhiteSpace(newUser)) return;
+            if (string.IsNullOrWhiteSpace(newUser))
+            {
+                return;
+            }
 
             var currentUser = _loginService.GetUser(Username);
-            if (currentUser == null) return;
+            if (currentUser == null)
+            {
+                return;
+            }
 
             if (_handler.AddOnlineModePlayer(newUser, currentUser))
             {

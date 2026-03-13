@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace PokemonGame.Services.Data.GameData.Move
+﻿namespace PokemonGame.Services.Data.GameData.Move
 {
     // ── Assembled Number ─────────────────────────────────────────────────────────
     // Fully resolved - children already hydrated, no dangling IDs

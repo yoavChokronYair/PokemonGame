@@ -11,7 +11,10 @@ namespace PokemonGame.Tests
     {
         public MoveTree? GetMove(string name)
         {
-            if (name != "Flamethrower") return null;
+            if (name != "Flamethrower")
+            {
+                return null;
+            }
 
             var move = new MoveData
             {

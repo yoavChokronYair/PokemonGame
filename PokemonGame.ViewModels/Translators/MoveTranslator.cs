@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using PokemonGame.Model.Domain.Move;
+﻿using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
@@ -35,8 +32,10 @@ namespace PokemonGame.ViewModels.Translators
                 ?? throw new InvalidOperationException($"Move '{moveName}' not found.");
 
             if (tree.Attempts.Count != 1)
+            {
                 throw new InvalidOperationException(
                     $"Move '{moveName}' has {tree.Attempts.Count} root attempts — expected exactly 1.");
+            }
 
             var move = tree.Move;
 
@@ -212,7 +211,10 @@ namespace PokemonGame.ViewModels.Translators
         private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum
         {
             if (Enum.TryParse<TEnum>(value, ignoreCase: true, out var result))
+            {
                 return result;
+            }
+
             throw new InvalidOperationException($"Cannot parse '{value}' as {typeof(TEnum).Name}");
         }
     }

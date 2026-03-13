@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using PokemonGame.Services.Data.GameData.Move;
-using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -67,7 +66,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.Summery
                     .FirstOrDefault(e => e?.Type == "FormulaDamage" || e?.Type == "DirectDamage");
 
                 if (damageEffect?.Number?.ExactValue != null)
+                {
                     return damageEffect.Number.ExactValue.ToString();
+                }
 
                 return "---";
             }

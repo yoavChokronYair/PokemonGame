@@ -11,17 +11,33 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
 
         protected TValue? GetCached(TKey key, Func<TValue?> fetch)
         {
-            if (_cache.TryGetValue(key, out var cached)) return cached;
+            if (_cache.TryGetValue(key, out var cached))
+            {
+                return cached;
+            }
+
             var value = fetch();
-            if (value != null) _cache[key] = value;
+            if (value != null)
+            {
+                _cache[key] = value;
+            }
+
             return value;
         }
 
         protected List<TValue> GetAllCached(Func<List<TValue>> fetch, Func<TValue, TKey> keySelector)
         {
-            if (_cache.Count > 0) return new List<TValue>(_cache.Values);
+            if (_cache.Count > 0)
+            {
+                return new List<TValue>(_cache.Values);
+            }
+
             var all = fetch();
-            foreach (var item in all) _cache[keySelector(item)] = item;
+            foreach (var item in all)
+            {
+                _cache[keySelector(item)] = item;
+            }
+
             return all;
         }
 

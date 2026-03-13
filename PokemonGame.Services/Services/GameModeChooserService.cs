@@ -15,15 +15,27 @@ namespace PokemonGame.Services.Handler
 
         public bool AddOnlineModePlayer(string username, UserData user)
         {
-            if (string.IsNullOrWhiteSpace(username)) return false;
-            if (UserExists(username, user)) return false;
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
+
+            if (UserExists(username, user))
+            {
+                return false;
+            }
+
             _onlinePlayers.CreateOnlinePlayer(username, user);
             return true;
         }
 
         public bool OnlinePlayerLogIn(string username, UserData user)
         {
-            if (string.IsNullOrWhiteSpace(username)) return false;
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
+
             return GetOnlinePlayer(username, user) != null;
         }
 
