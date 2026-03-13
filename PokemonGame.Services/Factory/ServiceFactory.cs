@@ -12,6 +12,7 @@ namespace PokemonGame.Services.Factory
         internal SQLitePokemonRepository PokemonRepository { get; }
         internal SQLiteOnlinePlayerRepository OnlinePlayerRepository { get; }
         internal SQLiteBattleRepository BattleRepository { get; }
+        internal SQLiteMoveRepository MoveRepository { get; }
 
         private ServiceFactory()
         {
@@ -22,6 +23,7 @@ namespace PokemonGame.Services.Factory
             PokemonRepository = new SQLitePokemonRepository(db);
             OnlinePlayerRepository = new SQLiteOnlinePlayerRepository(db);
             BattleRepository = new SQLiteBattleRepository(db);
+            MoveRepository = new SQLiteMoveRepository(db);
         }
     }
 }
