@@ -8,6 +8,7 @@
         public const int MaxLevel = 100;
         public const int EggHatchLevel = 1;
         public const int HatchFriendship = 120;
+        public const int IvsAndEvsNum = 6;
 
         #region Boxes
         public const int NumBoxes = 22;

@@ -1,526 +1,469 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="PokemonGameDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="3879"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="BattleTeamPokemon" custom_title="0" dock_id="4" table="4,17:mainBattleTeamPokemon"/><table title="BattlePlayer" custom_title="0" dock_id="4" table="4,12:mainBattlePlayer"/><dock_state state="000000ff00000000fd0000000100000002000005bb0000038ffc0100000002fc000000000000046c0000000000fffffffa000000000100000007fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fc00000000000005bb0000011e00fffffffa000000010100000003fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000011e00fffffffb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000011e00ffffff000005bb0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Ability" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="57"/><column index="2" value="76"/><column index="3" value="107"/><column index="4" value="58"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="50"/><column index="3" value="85"/><column index="4" value="38"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleTeam" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="87"/><column index="2" value="56"/><column index="3" value="92"/><column index="4" value="62"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleTeamPokemon" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="88"/><column index="2" value="75"/><column index="3" value="35"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Encounter" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="78"/><column index="2" value="59"/><column index="3" value="62"/><column index="4" value="83"/><column index="5" value="49"/><column index="6" value="46"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="PokemonForm" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="50"/><column index="2" value="69"/><column index="3" value="75"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="StoryPlayer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="57"/><column index="2" value="50"/><column index="3" value="85"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="UserFriend" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="48"/><column index="2" value="83"/><column index="3" value="54"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="70"/><column index="3" value="85"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="create database">PRAGMA foreign_keys = OFF;
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="PokemonGameDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="7057"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="sqlite_sequence" custom_title="0" dock_id="4" table="4,15:mainsqlite_sequence"/><table title="moves" custom_title="0" dock_id="4" table="4,5:mainmoves"/><dock_state state="000000ff00000000fd0000000100000002000005bb00000394fc0100000002fc000000000000046c0000000000fffffffa000000000100000007fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fc00000000000005bb0000015d00fffffffa000000010100000003fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000015d00fffffffb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000015d00ffffff000005bb0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="UserFriend" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="50"/><column index="2" value="85"/><column index="3" value="55"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="70"/><column index="3" value="85"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="conditions" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="33"/><column index="3" value="68"/><column index="4" value="54"/><column index="5" value="43"/><column index="6" value="90"/><column index="7" value="72"/><column index="8" value="91"/><column index="9" value="105"/><column index="10" value="113"/><column index="11" value="115"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="items" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="39"/><column index="3" value="57"/><column index="4" value="36"/><column index="5" value="70"/><column index="6" value="91"/><column index="7" value="60"/><column index="8" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="117"/><column index="3" value="70"/><column index="4" value="70"/><column index="5" value="70"/><column index="6" value="29"/><column index="7" value="49"/><column index="8" value="64"/><column index="9" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="148"/><column index="2" value="31"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="create database*">-- ============================================================
+-- PokemonGameDB - Full Schema
+-- ============================================================
+-- Re-runnable: drops everything then recreates clean.
+-- Drop order is strictly children before parents.
+-- ============================================================
 
--- DROP TABLES
+PRAGMA foreign_keys = OFF;
+
+-- ============================================================
+-- DROP ALL
+-- ============================================================
+
+-- Game world (existing)
+DROP TABLE IF EXISTS BattleTeamPokemon;
+DROP TABLE IF EXISTS BattleTeam;
+DROP TABLE IF EXISTS Battle;
 DROP TABLE IF EXISTS BattlePlayer;
-DROP TABLE IF EXISTS Connection;
-DROP TABLE IF EXISTS Details;
-DROP TABLE IF EXISTS EggMove;
-DROP TABLE IF EXISTS Encounter;
-DROP TABLE IF EXISTS Events;
-DROP TABLE IF EXISTS Ability;
-DROP TABLE IF EXISTS Evolution;
-DROP TABLE IF EXISTS PokemonForm;
-DROP TABLE IF EXISTS FlagsDetailsMap;
-DROP TABLE IF EXISTS LevelUpMove;
-DROP TABLE IF EXISTS Map;
-DROP TABLE IF EXISTS ObjSprites;
-DROP TABLE IF EXISTS Objs;
-DROP TABLE IF EXISTS Pokemon;
-DROP TABLE IF EXISTS BaseStats;
-DROP TABLE IF EXISTS ScriptTiles;
+DROP TABLE IF EXISTS UserFriend;
 DROP TABLE IF EXISTS StoryPlayer;
 DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Warps;
-DROP Table IF EXISTS Move;
-DROP Table IF EXISTS UserFriend;
-DROP Table IF EXISTS Battle;
-DROP Table IF EXISTS BattleTeam;
-DROP Table IF EXISTS BattleTeamPokemon;
+-- 1. DROP Bridge Tables (Dependents)
+DROP TABLE IF EXISTS levelup_moves;
+DROP TABLE IF EXISTS machine_moves;
+DROP TABLE IF EXISTS egg_moves;
+DROP TABLE IF EXISTS tutor_moves;
+DROP TABLE IF EXISTS pokemon_stats;
+DROP TABLE IF EXISTS breeding;
+DROP TABLE IF EXISTS pokedex_data;
+DROP TABLE IF EXISTS battler_pokemon;
+-- 2. DROP Master Tables
+DROP TABLE IF EXISTS pokemon_general;
+DROP TABLE IF EXISTS abilities;
+DROP TABLE IF EXISTS items;
+DROP TABLE IF EXISTS team_members;
+DROP TABLE IF EXISTS teams;
 
 PRAGMA foreign_keys = ON;
 
--- CREATE TABLES WITH FOREIGN KEYS
-
-
-CREATE TABLE BattlePlayer (
-    BattlePlayerID INTEGER PRIMARY KEY,
-	BattleID INTEGER,
-    UserID INTEGER,
-    Name TEXT,
-    Level INTEGER,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
-
-
-CREATE TABLE Connection (
-    ConnectionID INTEGER PRIMARY KEY,
-    Direction TEXT,
-    Map TEXT,
-    Offset INTEGER,
-	MapID INTEGER,
-    FOREIGN KEY (MapID) REFERENCES Map(MapID)
-);
-
-CREATE TABLE Details (
-    DetailsID INTEGER PRIMARY KEY,
-    Section TEXT,
-    Weather TEXT,
-    Music TEXT,
-	MapID INTEGER,
-	FOREIGN KEY (MapID) REFERENCES Map(MapID)
-
-);
-
-CREATE TABLE EggMove (
-    MoveID INTEGER,
-	PokemonID INTEGER,
-    FOREIGN KEY (PokemonID) REFERENCES Pokemon(PokemonID),
-    FOREIGN KEY (MoveID) REFERENCES Move(MoveID)
-
-	
-);
-
-CREATE TABLE Encounter (
-    EncounterID INTEGER PRIMARY KEY,
-    minLevel INTEGER,
-    MaxLevel INTEGER,
-    SpeciesName TEXT,
-    Chance REAL,
-	MapID INTEGER,
-    FOREIGN KEY (MapID) REFERENCES Map(MapID)
-);
-
-CREATE TABLE Events (
-    EventID INTEGER PRIMARY KEY
-);
-
-CREATE TABLE Evolution (
-	PokemonID INTEGER,
-	BabySpeciesName TEXT,
-    SpeciesName TEXT,
-	Method TEXT,
-	FormID INTEGER,
-	LevelRequired INTEGER,
-    FOREIGN KEY (PokemonID) REFERENCES Pokemon(PokemonID),
-    FOREIGN KEY (SpeciesName) REFERENCES Pokemon(SpeciesName),
-    FOREIGN KEY (BabySpeciesName) REFERENCES Pokemon(SpeciesName),
-    FOREIGN KEY (FormID) REFERENCES PokemonForm(FormID)
-);
-CREATE Table Ability(
-	AbilityID INTEGER PRIMARY KEY,
-	AbilityName TEXT,
-	AbilityDescription TEXT,
-	Category INTEGER
-);
-CREATE TABLE PokemonForm(
-	FormID INTEGER PRIMARY KEY,
-	FormName TEXT,
-	PokemonID INTEGER,	
-	FOREIGN KEY (PokemonID) REFERENCES Pokemon(PokemonID)
-);
-CREATE TABLE FlagsDetailsMap (
-    FlagID INTEGER PRIMARY KEY,
-    Bike BOOLEAN,
-    DayTint BOOLEAN,
-    Dig_EscapeRope BOOLEAN,
-    Fly BOOLEAN,
-    ShowMapName BOOLEAN,
-    Teleport BOOLEAN,
-	DetailsID INTEGER,
-	FOREIGN KEY (DetailsID) REFERENCES Details(DetailsID)
-
-);
-
-CREATE TABLE LevelUpMove (
-    MoveID INTEGER,
-    Level INTEGER,
-	PokemonID INTEGER,
-    PRIMARY KEY (MoveID, Level),
-    FOREIGN KEY (PokemonID) REFERENCES Pokemon(PokemonID),
-    FOREIGN KEY (MoveID) REFERENCES Move(MoveID)
-	
-);
-
-CREATE TABLE Map (
-    MapID INTEGER PRIMARY KEY,
-    Name TEXT
-);
-
-CREATE TABLE ObjSprites (
-    ObjSpriteID INTEGER PRIMARY KEY,
-    Name TEXT,
-    Sprite BLOB,
-    Width INTEGER,
-    Height INTEGER,
-    ShadowX INTEGER,
-    ShadowY INTEGER,
-    ShadowW INTEGER,
-    ShadowH INTEGER
-);
-
-CREATE TABLE Objs (
-    ObjID INTEGER PRIMARY KEY,
-	EventID INTEGER,
-    X INTEGER,
-    Y INTEGER,
-    Elevation INTEGER,
-    Sprite INTEGER,
-    MovementType TEXT,
-    MovementX INTEGER,
-    MovementY INTEGER,
-    TrainerType TEXT,
-    TrainerSight INTEGER,
-    ScriptID INTEGER,
-    Flag INTEGER,
-    FOREIGN KEY (EventID) REFERENCES Events(EventID),
-    FOREIGN KEY (Flag) REFERENCES FlagsDetailsMap(FlagID)
-);
-
-CREATE TABLE Pokemon (
-    PokemonID INTEGER PRIMARY KEY,
-	SpeciesName UNIQUE	
-);
-CREATE Table BaseStats(
-	PokemonID INTEGER,
-    HP INTEGER,
-    Attack INTEGER,
-    Defense INTEGER,
-    SpAttack INTEGER,
-    SpDefense INTEGER,
-    Speed INTEGER,
-    Type1 TEXT,
-    Type2 TEXT,
-    CatchRate INTEGER,
-    EggCycles INTEGER,
-    BaseFriendship INTEGER,
-    GenderRatio TEXT,
-    GrowthRate TEXT,
-    BaseEXPYield INTEGER,
-    EggGroup1 TEXT,
-    EggGroup2 TEXT,
-    Ability1ID INTEGER,
-    Ability2ID INTEGER,
-    AbilityHID INTEGER,
-    FleeRate REAL,
-    Weight REAL,
-	FOREIGN KEY (PokemonID) REFERENCES Pokemon(PokemonID),
-	FOREIGN KEY (Ability1ID) REFERENCES Ability(AbilityID),
-    FOREIGN KEY (Ability2ID) REFERENCES Ability(AbilityID),
-    FOREIGN KEY (AbilityHID) REFERENCES Ability(AbilityID)
-
-
-);
-CREATE TABLE ScriptTiles (
-    ScruptTileID INTEGER PRIMARY KEY,
-    X INTEGER,
-    Y INTEGER,
-    Var TEXT,
-    VarValue TEXT,
-    VarConditional TEXT,
-    ScriptID INTEGER,
-    EventID INTEGER,
-    FOREIGN KEY (EventID) REFERENCES Events(EventID)
-);
-
-CREATE TABLE StoryPlayer (
-    PlayerID INTEGER PRIMARY KEY,
-    UserID INTEGER,
-	Name TEXT,
-	FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
+-- ============================================================
+-- GAME WORLD TABLES  (unchanged from original)
+-- ============================================================
 
 CREATE TABLE Users (
-    UserID INTEGER PRIMARY KEY,
+    UserID   INTEGER PRIMARY KEY,
     UserName TEXT,
     Password INT
 );
 
-CREATE TABLE Warps (
-    WarpsID INTEGER PRIMARY KEY,
-	MapID INTEGER,
-    X INTEGER,
-    Y INTEGER,
-    Elevation INTEGER,
-    DestMap TEXT,
-    DestX INTEGER,
-    DestY INTEGER,
-    DestElevation INTEGER,
-    FOREIGN KEY (MapID) REFERENCES Map(MapID)
-);
-CREATE TABLE Move(
-	MoveID INTEGER PRIMARY Key,
-	MoveName TEXT,
-	Type TEXT,
-	Category TEXT,
-	Priority INTEGER,
-	PPTier INTEGER,
-	MovePower INTEGER,
-	MoveAccuracy INTEGER,
-	Effect TEXT,
-	EffectParam INTEGER,
-	Targets TEXT,
-	Flags TEXT
-);
 CREATE TABLE UserFriend (
-    UserID INTEGER,
+    UserID       INTEGER,
     FriendUserID INTEGER,
-    IsOnline BOOLEAN,
+    IsOnline     BOOLEAN,
     PRIMARY KEY (UserID, FriendUserID),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (UserID)       REFERENCES Users(UserID),
     FOREIGN KEY (FriendUserID) REFERENCES Users(UserID)
 );
-CREATE TABLE Battle (
-    BattleID INTEGER PRIMARY KEY,
-    WinnerBattlePlayerID INTEGER,
-    BattleDate TEXT NOT NULL,
 
-    FOREIGN KEY (WinnerBattlePlayerID)
-        REFERENCES BattlePlayer(BattlePlayerID)
+CREATE TABLE StoryPlayer (
+    PlayerID INTEGER PRIMARY KEY,
+    UserID   INTEGER,
+    Name     TEXT,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+
+CREATE TABLE BattlePlayer (
+    BattlePlayerID INTEGER PRIMARY KEY AUTOINCREMENT,
+    BattleID       INTEGER, -- Links to your active Battle session
+    UserID         INTEGER REFERENCES Users(UserID),
+    team_id        INTEGER REFERENCES teams(id), -- The team they are using
+    Name           TEXT,
+    Level          INTEGER,
+    -- Tracks which Pokemon is currently out on the field
+    active_pokemon_id INTEGER REFERENCES battler_pokemon(pokemonID) 
+);
+
+CREATE TABLE Battle (
+    BattleID              INTEGER PRIMARY KEY,
+    WinnerBattlePlayerID  INTEGER,
+    BattleDate            TEXT NOT NULL,
+    FOREIGN KEY (WinnerBattlePlayerID) REFERENCES BattlePlayer(BattlePlayerID)
 );
 
 CREATE TABLE BattleTeam (
-    BattleTeamID INTEGER PRIMARY KEY,
-    BattleID INTEGER NOT NULL,
+    BattleTeamID   INTEGER PRIMARY KEY,
+    BattleID       INTEGER NOT NULL,
     BattlePlayerID INTEGER NOT NULL,
-    TeamSlot INTEGER NOT NULL,
-
-    FOREIGN KEY (BattleID)
-        REFERENCES Battle(BattleID),
-
-    FOREIGN KEY (BattlePlayerID)
-        REFERENCES BattlePlayer(BattlePlayerID)
+    TeamSlot       INTEGER NOT NULL,
+    FOREIGN KEY (BattleID)       REFERENCES Battle(BattleID),
+    FOREIGN KEY (BattlePlayerID) REFERENCES BattlePlayer(BattlePlayerID)
 );
+
 CREATE TABLE BattleTeamPokemon (
     BattleTeamID INTEGER NOT NULL,
-    PokemonID INTEGER NOT NULL,
-    Slot INTEGER NOT NULL,
-
+    PokemonID    INTEGER NOT NULL,
+    Slot         INTEGER NOT NULL,
     PRIMARY KEY (BattleTeamID, Slot),
-
-    FOREIGN KEY (BattleTeamID)
-        REFERENCES BattleTeam(BattleTeamID),
-
-    FOREIGN KEY (PokemonID)
-        REFERENCES Pokemon(PokemonID)
+    FOREIGN KEY (BattleTeamID) REFERENCES BattleTeam(BattleTeamID),
+    FOREIGN KEY (PokemonID)    REFERENCES Pokemon(PokemonID)
 );
 
+CREATE TABLE abilities (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    name            TEXT NOT NULL UNIQUE,
+    description     TEXT,
+    effect_id       INTEGER REFERENCES effects(id),
+    condition_id    INTEGER REFERENCES conditions(id)
+);
 
-</sql><sql name="Add one value to table*">PRAGMA foreign_keys = ON;
+CREATE TABLE pokemon_general (
+    pokedexID       INTEGER PRIMARY KEY,
+    name            TEXT NOT NULL,
+    firstAbilityID  INTEGER REFERENCES abilities(id),
+    secondAbilityID INTEGER REFERENCES abilities(id),
+    hiddenAbilityID INTEGER REFERENCES abilities(id),
+    type1           TEXT NOT NULL,
+    type2           TEXT,
+    catchrate       INTEGER,
+    genderRatio     REAL,
+    base_friendship INTEGER,
+    firstItem       TEXT,
+    secondItem      TEXT,
+    pokemonEvoID    INTEGER,
+    Evolevel        INTEGER,
+    evo_method      TEXT DEFAULT 'Level', -- e.g., 'Level', 'Stone', 'Trade', 'Friendship'
+	evo_itemID      INTEGER REFERENCES items(id)  -- Link for Stone evolutions
+);
+CREATE TABLE pokemon_stats (
+    pokedexID   INTEGER NOT NULL REFERENCES pokemon_general(pokedexID),
+    isEVYield   INTEGER NOT NULL CHECK (isEVYield IN (0, 1)), 
+    hp          INTEGER NOT NULL DEFAULT 0,
+    attack      INTEGER NOT NULL DEFAULT 0,
+    defense     INTEGER NOT NULL DEFAULT 0,
+    spAtk       INTEGER NOT NULL DEFAULT 0,
+    spDef       INTEGER NOT NULL DEFAULT 0,
+    speed       INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (pokedexID, isEVYield)
+);
+
+CREATE TABLE breeding (
+    pokedexID             INTEGER PRIMARY KEY REFERENCES pokemon_general(pokedexID),
+    eggGroup              TEXT,
+    hatchTime             INTEGER,
+    height                REAL,
+    weight                REAL,
+    baseExperienceYield   INTEGER,
+    levelingRate          TEXT
+);
+
+CREATE TABLE pokedex_data (
+    pokedexID         INTEGER PRIMARY KEY REFERENCES pokemon_general(pokedexID),
+    color             TEXT,
+    footprint         TEXT,
+    shape             TEXT,
+    nextEvolution     TEXT,
+    previousEvolution TEXT,
+    entries           TEXT
+);
+CREATE TABLE levelup_moves (
+    pokedexID INTEGER NOT NULL REFERENCES pokemon_general(pokedexID),
+    moveID    INTEGER NOT NULL REFERENCES moves(id),
+    level     INTEGER NOT NULL,
+    PRIMARY KEY (pokedexID, moveID, level)
+);
+
+CREATE TABLE machine_moves (
+    machineID   TEXT NOT NULL, -- e.g., 'TM01'
+    moveID      INTEGER NOT NULL REFERENCES moves(id),
+    pokedexID   INTEGER NOT NULL REFERENCES pokemon_general(pokedexID),
+    PRIMARY KEY (machineID, pokedexID)
+);
+
+CREATE TABLE egg_moves (
+    pokedexID   INTEGER NOT NULL REFERENCES pokemon_general(pokedexID),
+    moveID      INTEGER NOT NULL REFERENCES moves(id),
+    PRIMARY KEY (pokedexID, moveID)
+);
+
+CREATE TABLE tutor_moves (
+    pokedexID   INTEGER NOT NULL REFERENCES pokemon_general(pokedexID),
+    moveID      INTEGER NOT NULL REFERENCES moves(id),
+    tutor_location TEXT,
+    PRIMARY KEY (pokedexID, moveID)
+);
+CREATE TABLE items (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    name            TEXT NOT NULL UNIQUE,
+    category        TEXT, -- e.g., 'Medicine', 'Pokeball', 'Held Item', 'Key Item'
+    price           INTEGER DEFAULT 0,
+    description     TEXT,
+    is_consumable   INTEGER DEFAULT 1, -- 1 for Potion, 0 for Leftovers/Key Items
+    -- Logic Links
+    effect_id       INTEGER REFERENCES effects(id),
+    condition_id    INTEGER REFERENCES conditions(id)
+);
+CREATE TABLE battler_pokemon (
+    pokemonID   INTEGER PRIMARY KEY AUTOINCREMENT, -- Unique ID for this specific instance
+    pokedexID   INTEGER NOT NULL REFERENCES pokemon_general(pokedexID),
+    abilityID   INTEGER NOT NULL REFERENCES abilities(id),
+    itemID      INTEGER REFERENCES items(id),
+    
+    -- Aesthetic/Status
+    shiny       INTEGER DEFAULT 0, -- 0 for normal, 1 for shiny
+    gender      TEXT CHECK(gender IN ('Male', 'Female', 'Genderless')),
+    level       INTEGER DEFAULT 50, -- Standard PvP level
+    
+    -- Moves (Linking to your existing moves table)
+    move1ID     INTEGER NOT NULL REFERENCES moves(id),
+    move2ID     INTEGER REFERENCES moves(id),
+    move3ID     INTEGER REFERENCES moves(id),
+    move4ID     INTEGER REFERENCES moves(id),
+
+    -- Stats (Stored as individual integers for easy calculation)
+    iv_hp       INTEGER DEFAULT 31, iv_atk  INTEGER DEFAULT 31,
+    iv_def       INTEGER DEFAULT 31, iv_spAtk INTEGER DEFAULT 31,
+    iv_spDef     INTEGER DEFAULT 31, iv_speed INTEGER DEFAULT 31,
+    
+    ev_hp       INTEGER DEFAULT 0,  ev_atk  INTEGER DEFAULT 0,
+    ev_def       INTEGER DEFAULT 0,  ev_spAtk INTEGER DEFAULT 0,
+    ev_spDef     INTEGER DEFAULT 0,  ev_speed INTEGER DEFAULT 0,
+    
+    nature      TEXT DEFAULT 'Hardy' -- Affects final stat calculation
+);
+CREATE TABLE teams (
+    team_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES Users(UserID) ON DELETE CASCADE,
+    team_name   TEXT NOT NULL DEFAULT 'New Team',
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, team_name) -- Prevents a user from having two teams with the same name
+);
 
--- =========================
--- USERS
--- =========================
-INSERT OR IGNORE INTO Users (UserID, UserName, Password)
-VALUES
-(1, 'TestUser', 123),
-(2, 'OpponentUser', 456);
-
--- =========================
--- STORY PLAYER
--- =========================
-INSERT OR IGNORE INTO StoryPlayer (PlayerID, UserID, Name)
-VALUES
-(1, 1, 'HeroPlayer');
-
--- =========================
--- FRIEND RELATIONSHIP
--- =========================
-INSERT OR IGNORE INTO UserFriend (UserID, FriendUserID, IsOnline)
-VALUES
-(1, 2, 1);
-
-PRAGMA foreign_keys = ON;
-
--- =========================
--- MORE POKÉMON FOR TESTING
--- =========================
-INSERT OR IGNORE INTO Pokemon (PokemonID, SpeciesName)
-VALUES
-(3, 'Charmander'),
-(4, 'Charmeleon'),
-(5, 'Squirtle'),
-(6, 'Wartortle'),
-(7, 'Pidgey'),
-(8, 'Pidgeotto');
--- =========================
--- ABILITIES
--- =========================
-INSERT OR IGNORE INTO Ability (AbilityID, AbilityName, AbilityDescription, Category)
-VALUES
-(1, 'Overgrow', 'Boosts Grass moves', 1);
-
--- =========================
--- BASE STATS
--- =========================
-INSERT OR IGNORE INTO BaseStats
-(PokemonID, HP, Attack, Defense, SpAttack, SpDefense, Speed,
- Type1, Type2, CatchRate, EggCycles, BaseFriendship,
- GenderRatio, GrowthRate, BaseEXPYield,
- EggGroup1, EggGroup2,
- Ability1ID, Ability2ID, AbilityHID,
- FleeRate, Weight)
-VALUES
-(1, 45, 49, 49, 65, 65, 45,
- 'Grass', 'Poison', 45, 20, 70,
- 'MaleFemale', 'Medium', 64,
- 'Monster', 'Grass',
- 1, NULL, NULL,
- 0.1, 6.9);
-
--- =========================
--- POKEMON FORM
--- =========================
-INSERT OR IGNORE INTO PokemonForm (FormID, FormName, PokemonID)
-VALUES
-(1, 'Normal', 1);
-
--- =========================
--- EVOLUTION
--- =========================
-INSERT OR IGNORE INTO Evolution
-(PokemonID, BabySpeciesName, SpeciesName, Method, FormID, LevelRequired)
-VALUES
-(1, 'Bulbasaur', 'Ivysaur', 'LevelUp', 1, 16);
-
--- =========================
--- MOVE
--- =========================
-INSERT OR IGNORE INTO Move
-(MoveID, MoveName, Type, Category, Priority, PPTier,
- MovePower, MoveAccuracy, Effect, EffectParam, Targets, Flags)
-VALUES
-(1, 'Tackle', 'Normal', 'Physical', 0, 35, 40, 100, NULL, NULL, 'Single', NULL);
-
--- =========================
--- LEVEL UP MOVE
--- =========================
-INSERT OR IGNORE INTO LevelUpMove (MoveID, Level, PokemonID)
-VALUES
-(1, 1, 1);
-
--- =========================
--- EGG MOVE
--- =========================
-INSERT OR IGNORE INTO EggMove (MoveID, PokemonID)
-VALUES
-(1, 1);
-
--- =========================
--- MAP
--- =========================
-INSERT OR IGNORE INTO Map (MapID, Name)
-VALUES
-(1, 'TestMap');
-
--- =========================
--- CONNECTION
--- =========================
-INSERT OR IGNORE INTO Connection (ConnectionID, Direction, Map, Offset, MapID)
-VALUES
-(1, 'North', 'NextMap', 0, 1);
-
--- =========================
--- DETAILS
--- =========================
-INSERT OR IGNORE INTO Details (DetailsID, Section, Weather, Music, MapID)
-VALUES
-(1, 'MainArea', 'Sunny', 'MusicTrack1', 1);
-
--- =========================
--- FLAGS
--- =========================
-INSERT OR IGNORE INTO FlagsDetailsMap
-(FlagID, Bike, DayTint, Dig_EscapeRope, Fly, ShowMapName, Teleport, DetailsID)
-VALUES
-(1, 1, 0, 0, 1, 1, 0, 1);
-
--- =========================
--- EVENTS
--- =========================
-INSERT OR IGNORE INTO Events (EventID)
-VALUES (1);
-
--- =========================
--- OBJECT SPRITES
--- =========================
-INSERT OR IGNORE INTO ObjSprites
-(ObjSpriteID, Name, Sprite, Width, Height, ShadowX, ShadowY, ShadowW, ShadowH)
-VALUES
-(1, 'TreeSprite', NULL, 32, 32, 0, 0, 32, 32);
-
--- =========================
--- OBJECTS
--- =========================
-INSERT OR IGNORE INTO Objs
-(ObjID, EventID, X, Y, Elevation, Sprite, MovementType, MovementX, MovementY,
- TrainerType, TrainerSight, ScriptID, Flag)
-VALUES
-(1, 1, 10, 15, 0, 1, 'Static', 0, 0, NULL, NULL, NULL, 1);
-
--- =========================
--- SCRIPT TILES
--- =========================
-INSERT OR IGNORE INTO ScriptTiles
-(ScruptTileID, X, Y, Var, VarValue, VarConditional, ScriptID, EventID)
-VALUES
-(1, 5, 5, 'HasItem', 'Potion', 'Equals', 1, 1);
-
--- =========================
--- ENCOUNTER
--- =========================
-INSERT OR IGNORE INTO Encounter
-(EncounterID, MinLevel, MaxLevel, SpeciesName, Chance, MapID)
-VALUES
-(1, 2, 5, 'Bulbasaur', 0.2, 1);
-
--- =========================
--- WARPS
--- =========================
-INSERT OR IGNORE INTO Warps
-(WarpsID, MapID, X, Y, Elevation, DestMap, DestX, DestY, DestElevation)
-VALUES
-(1, 1, 10, 10, 0, 'NextMap', 5, 5, 0);
-
--- =========================
--- BATTLE
--- Winner will be set later
--- =========================
-INSERT OR IGNORE INTO Battle (BattleID, WinnerBattlePlayerID, BattleDate)
-VALUES (1, NULL, '2025-12-23');
-
--- =========================
--- BATTLE PLAYERS
--- =========================
-INSERT OR IGNORE INTO BattlePlayer (BattlePlayerID, BattleID, UserID, Name, Level)
-VALUES
-(1, 1, 1, 'BattleHero', 5),
-(2, 1, 2, 'BattleOpponent', 5);
-
--- =========================
--- UPDATE BATTLE WINNER
-UPDATE Battle SET WinnerBattlePlayerID = 1 WHERE BattleID = 1;
-
--- =========================
--- BATTLE TEAMS
--- =========================
-INSERT OR IGNORE INTO BattleTeam (BattleTeamID, BattleID, BattlePlayerID, TeamSlot)
-VALUES
-(1, 1, 1, 1),
-(2, 1, 2, 1);
-
--- =========================
--- BATTLE TEAM POKÉMON (TEAM OF UP TO 6)
--- =========================
-
--- Hero Team (BattlePlayerID = 1)
-INSERT OR IGNORE INTO BattleTeamPokemon (BattleTeamID, PokemonID, Slot)
-VALUES
-(1, 1, 1), -- Bulbasaur
-(1, 3, 2), -- Charmander
-(1, 5, 3), -- Squirtle
-(1, 7, 4), -- Pidgey
-(1, 2, 5), -- Ivysaur
-(1, 4, 6); -- Charmeleon
-
--- Opponent Team (BattlePlayerID = 2)
-INSERT OR IGNORE INTO BattleTeamPokemon (BattleTeamID, PokemonID, Slot)
-VALUES
-(2, 2, 1), -- Ivysaur
-(2, 4, 2), -- Charmeleon
-(2, 6, 3), -- Wartortle
-(2, 8, 4), -- Pidgeotto
-(2, 1, 5), -- Bulbasaur
-(2, 3, 6); -- Charmander</sql><sql name="check foregin keys">SELECT 
+CREATE TABLE team_members (
+    team_id      INTEGER NOT NULL REFERENCES teams(team_id) ON DELETE CASCADE,
+    pokemonID    INTEGER NOT NULL REFERENCES battler_pokemon(pokemonID) ON DELETE CASCADE,
+    slot_number  INTEGER NOT NULL CHECK (slot_number BETWEEN 1 AND 6),
+    PRIMARY KEY (team_id, slot_number)
+);
+-- ============================================================
+-- INDEXES
+-- ============================================================
+</sql><sql name="Add one value to table">PRAGMA foreign_keys = ON;
+
+-- =========================
+-- USERS
+-- =========================
+INSERT OR IGNORE INTO Users (UserID, UserName, Password)
+VALUES
+(1, 'TestUser', 123),
+(2, 'OpponentUser', 456);
+
+-- =========================
+-- STORY PLAYER
+-- =========================
+INSERT OR IGNORE INTO StoryPlayer (PlayerID, UserID, Name)
+VALUES
+(1, 1, 'HeroPlayer');
+
+-- =========================
+-- FRIEND RELATIONSHIP
+-- =========================
+INSERT OR IGNORE INTO UserFriend (UserID, FriendUserID, IsOnline)
+VALUES
+(1, 2, 1);
+
+-- =========================
+-- POKEMON
+-- =========================
+INSERT OR IGNORE INTO Pokemon (PokemonID, SpeciesName)
+VALUES
+(1, 'Bulbasaur'),
+(2, 'Ivysaur'),
+(3, 'Charmander'),
+(4, 'Charmeleon'),
+(5, 'Squirtle'),
+(6, 'Wartortle'),
+(7, 'Pidgey'),
+(8, 'Pidgeotto');
+
+-- =========================
+-- ABILITIES
+-- =========================
+INSERT OR IGNORE INTO Ability (AbilityID, AbilityName, AbilityDescription, Category)
+VALUES
+(1, 'Overgrow', 'Boosts Grass moves', 1);
+
+-- =========================
+-- BASE STATS
+-- =========================
+INSERT OR IGNORE INTO BaseStats
+(PokemonID, HP, Attack, Defense, SpAttack, SpDefense, Speed,
+ Type1, Type2, CatchRate, EggCycles, BaseFriendship,
+ GenderRatio, GrowthRate, BaseEXPYield,
+ EggGroup1, EggGroup2,
+ Ability1ID, Ability2ID, AbilityHID,
+ FleeRate, Weight)
+VALUES
+(1, 45, 49, 49, 65, 65, 45,
+ 'Grass', 'Poison', 45, 20, 70,
+ 'MaleFemale', 'Medium', 64,
+ 'Monster', 'Grass',
+ 1, NULL, NULL,
+ 0.1, 6.9);
+
+-- =========================
+-- POKEMON FORM
+-- =========================
+INSERT OR IGNORE INTO PokemonForm (FormID, FormName, PokemonID)
+VALUES
+(1, 'Normal', 1);
+
+-- =========================
+-- EVOLUTION
+-- =========================
+INSERT OR IGNORE INTO Evolution
+(PokemonID, BabySpeciesName, SpeciesName, Method, FormID, LevelRequired)
+VALUES
+(1, 'Bulbasaur', 'Ivysaur', 'LevelUp', 1, 16);
+
+-- =========================
+-- LEVEL UP MOVES
+-- (MoveID here matches moves.id in the new move system)
+-- =========================
+INSERT OR IGNORE INTO LevelUpMove (MoveID, Level, PokemonID)
+VALUES
+(1,  1,  1),   -- Bulbasaur  learns Tackle  at level 1
+(2,  3,  1),   -- Bulbasaur  learns Scratch at level 3
+(5,  7,  1),   -- Bulbasaur  learns Headbutt at level 7
+(100, 1, 3),   -- Charmander learns Scratch at level 1
+(99,  9, 3);   -- Charmander learns Ember   at level 9
+
+-- =========================
+-- EGG MOVES
+-- (MoveID here matches moves.id in the new move system)
+-- =========================
+INSERT OR IGNORE INTO EggMove (MoveID, PokemonID)
+VALUES
+(6,  1),   -- Bulbasaur  egg move: Body Slam
+(13, 3);   -- Charmander egg move: Skull Bash
+
+-- =========================
+-- MAP
+-- =========================
+INSERT OR IGNORE INTO Map (MapID, Name)
+VALUES
+(1, 'TestMap');
+
+-- =========================
+-- CONNECTION
+-- =========================
+INSERT OR IGNORE INTO Connection (ConnectionID, Direction, Map, Offset, MapID)
+VALUES
+(1, 'North', 'NextMap', 0, 1);
+
+-- =========================
+-- DETAILS
+-- =========================
+INSERT OR IGNORE INTO Details (DetailsID, Section, Weather, Music, MapID)
+VALUES
+(1, 'MainArea', 'Sunny', 'MusicTrack1', 1);
+
+-- =========================
+-- FLAGS
+-- =========================
+INSERT OR IGNORE INTO FlagsDetailsMap
+(FlagID, Bike, DayTint, Dig_EscapeRope, Fly, ShowMapName, Teleport, DetailsID)
+VALUES
+(1, 1, 0, 0, 1, 1, 0, 1);
+
+-- =========================
+-- EVENTS
+-- =========================
+INSERT OR IGNORE INTO Events (EventID)
+VALUES (1);
+
+-- =========================
+-- OBJECT SPRITES
+-- =========================
+INSERT OR IGNORE INTO ObjSprites
+(ObjSpriteID, Name, Sprite, Width, Height, ShadowX, ShadowY, ShadowW, ShadowH)
+VALUES
+(1, 'TreeSprite', NULL, 32, 32, 0, 0, 32, 32);
+
+-- =========================
+-- OBJECTS
+-- =========================
+INSERT OR IGNORE INTO Objs
+(ObjID, EventID, X, Y, Elevation, Sprite, MovementType, MovementX, MovementY,
+ TrainerType, TrainerSight, ScriptID, Flag)
+VALUES
+(1, 1, 10, 15, 0, 1, 'Static', 0, 0, NULL, NULL, NULL, 1);
+
+-- =========================
+-- SCRIPT TILES
+-- =========================
+INSERT OR IGNORE INTO ScriptTiles
+(ScruptTileID, X, Y, Var, VarValue, VarConditional, ScriptID, EventID)
+VALUES
+(1, 5, 5, 'HasItem', 'Potion', 'Equals', 1, 1);
+
+-- =========================
+-- ENCOUNTER
+-- =========================
+INSERT OR IGNORE INTO Encounter
+(EncounterID, minLevel, MaxLevel, SpeciesName, Chance, MapID)
+VALUES
+(1, 2, 5, 'Bulbasaur', 0.2, 1);
+
+-- =========================
+-- WARPS
+-- =========================
+INSERT OR IGNORE INTO Warps
+(WarpsID, MapID, X, Y, Elevation, DestMap, DestX, DestY, DestElevation)
+VALUES
+(1, 1, 10, 10, 0, 'NextMap', 5, 5, 0);
+
+-- =========================
+-- BATTLE
+-- =========================
+INSERT OR IGNORE INTO Battle (BattleID, WinnerBattlePlayerID, BattleDate)
+VALUES (1, NULL, '2025-12-23');
+
+-- =========================
+-- BATTLE PLAYERS
+-- =========================
+INSERT OR IGNORE INTO BattlePlayer (BattlePlayerID, BattleID, UserID, Name, Level)
+VALUES
+(1, 1, 1, 'BattleHero',     5),
+(2, 1, 2, 'BattleOpponent', 5);
+
+-- =========================
+-- UPDATE BATTLE WINNER
+-- =========================
+UPDATE Battle SET WinnerBattlePlayerID = 1 WHERE BattleID = 1;
+
+-- =========================
+-- BATTLE TEAMS
+-- =========================
+INSERT OR IGNORE INTO BattleTeam (BattleTeamID, BattleID, BattlePlayerID, TeamSlot)
+VALUES
+(1, 1, 1, 1),
+(2, 1, 2, 1);
+
+-- =========================
+-- BATTLE TEAM POKEMON
+-- =========================
+
+-- Hero Team
+INSERT OR IGNORE INTO BattleTeamPokemon (BattleTeamID, PokemonID, Slot)
+VALUES
+(1, 1, 1),   -- Bulbasaur
+(1, 3, 2),   -- Charmander
+(1, 5, 3),   -- Squirtle
+(1, 7, 4),   -- Pidgey
+(1, 2, 5),   -- Ivysaur
+(1, 4, 6);   -- Charmeleon
+
+-- Opponent Team
+INSERT OR IGNORE INTO BattleTeamPokemon (BattleTeamID, PokemonID, Slot)
+VALUES
+(2, 2, 1),   -- Ivysaur
+(2, 4, 2),   -- Charmeleon
+(2, 6, 3),   -- Wartortle
+(2, 8, 4),   -- Pidgeotto
+(2, 1, 5),   -- Bulbasaur
+(2, 3, 6);   -- Charmander</sql><sql name="check foregin keys">SELECT 
     fk.&quot;table&quot; AS parent_table,
     m.name AS child_table,
     fk.&quot;from&quot; AS child_column,
@@ -582,4 +525,288 @@ LEFT JOIN Move m ON m.MoveID = lum.MoveID
 
 -- EggMoves
 LEFT JOIN EggMove em ON em.PokemonID = p.PokemonID
-</sql><current_tab id="1"/></tab_sql></sqlb_project>
+</sql><sql name="SQL 5">
+CREATE TABLE moves (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    name        TEXT    NOT NULL UNIQUE,
+    element     TEXT    NOT NULL,                    -- PokemonType enum
+    category    TEXT    NOT NULL,                    -- Physical / Special / Status
+    target      TEXT    NOT NULL DEFAULT 'Opponent', -- MoveTarget enum
+    pp          INTEGER NOT NULL,
+    priority    INTEGER NOT NULL DEFAULT 0,
+    crit_stage  INTEGER NOT NULL DEFAULT 0,
+    description TEXT
+);
+
+CREATE TABLE numbers (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    type            TEXT    NOT NULL,
+    exact_value     REAL,
+    range_min       REAL,
+    range_max       REAL,
+    left_number_id  INTEGER REFERENCES numbers(id),
+    right_number_id INTEGER REFERENCES numbers(id),
+    target          TEXT
+);
+
+CREATE TABLE weighted_entries (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    number_id INTEGER NOT NULL REFERENCES numbers(id) ON DELETE CASCADE,
+    value     REAL    NOT NULL,
+    weight    REAL    NOT NULL
+);
+
+CREATE TABLE conditions (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    type               TEXT    NOT NULL,
+    probability        REAL,
+    weather            TEXT,
+    status             TEXT,
+    volatile_status    TEXT,
+    hp_fraction        REAL,
+    pokemon_type       TEXT,
+    left_condition_id  INTEGER REFERENCES conditions(id),
+    right_condition_id INTEGER REFERENCES conditions(id),
+    inner_condition_id INTEGER REFERENCES conditions(id)
+);
+
+CREATE TABLE effects (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    type               TEXT    NOT NULL,
+    target             TEXT,
+    number_id          INTEGER REFERENCES numbers(id),
+    heal_target        TEXT,
+    chance_probability REAL,
+    child_effect_id    INTEGER REFERENCES effects(id),
+    condition_id       INTEGER REFERENCES conditions(id),
+    on_pass_effect_id  INTEGER REFERENCES effects(id),
+    on_fail_effect_id  INTEGER REFERENCES effects(id),
+    stat               TEXT,
+    stat_stages        INTEGER,
+    sleep_min_turns    INTEGER,
+    sleep_max_turns    INTEGER,
+    confuse_min_turns  INTEGER,
+    confuse_max_turns  INTEGER,
+    is_toxic           INTEGER DEFAULT 0,
+    weather            TEXT,
+    weather_turns      INTEGER,
+    screen             TEXT,
+    screen_turns       INTEGER,
+    battle_side        TEXT,
+    hazard             TEXT,
+    charge_turns       INTEGER
+);
+
+CREATE TABLE sequence_steps (
+    sequence_effect_id INTEGER NOT NULL REFERENCES effects(id) ON DELETE CASCADE,
+    step_order         INTEGER NOT NULL,
+    child_effect_id    INTEGER NOT NULL REFERENCES effects(id),
+    PRIMARY KEY (sequence_effect_id, step_order)
+);
+
+CREATE TABLE multi_stat_changes (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    effect_id INTEGER NOT NULL REFERENCES effects(id) ON DELETE CASCADE,
+    stat      TEXT    NOT NULL,
+    stages    INTEGER NOT NULL
+);
+
+CREATE TABLE attempts (
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    move_id                 INTEGER NOT NULL REFERENCES moves(id) ON DELETE CASCADE,
+    type                    TEXT    NOT NULL,
+    accuracy_value          REAL,
+    on_hit_effect_id        INTEGER REFERENCES effects(id),
+    on_miss_effect_id       INTEGER REFERENCES effects(id),
+    after_effect_id         INTEGER REFERENCES effects(id),
+    stop_on_miss            INTEGER DEFAULT 1,
+    hits_number_id          INTEGER REFERENCES numbers(id),
+    charge_effect_id        INTEGER REFERENCES effects(id),
+    release_attempt_id      INTEGER REFERENCES attempts(id),
+    rampage_min_turns       INTEGER,
+    rampage_max_turns       INTEGER,
+    after_rampage_effect_id INTEGER REFERENCES effects(id)
+);
+
+CREATE TABLE cascade_steps (
+    cascade_attempt_id INTEGER NOT NULL REFERENCES attempts(id) ON DELETE CASCADE,
+    step_order         INTEGER NOT NULL,
+    child_attempt_id   INTEGER NOT NULL REFERENCES attempts(id),
+    PRIMARY KEY (cascade_attempt_id, step_order)
+);</sql><sql name="SQL 6">-- ============================================================
+-- Flamethrower
+-- ============================================================
+-- Move tree:
+--   Attempt (accuracy = 1.0, always hits)
+--     onHit → Sequence
+--               [0] FormulaDamage  (power=90, target=Defender)
+--               [1] Chance (10%)  → Burn (target=Defender)
+-- ============================================================
+
+PRAGMA foreign_keys = ON;
+
+-- ── Numbers ──────────────────────────────────────────────────
+
+INSERT INTO numbers (id, type, exact_value)
+    VALUES (1, 'Exactly', 90.0);                  -- base power
+
+-- ── Effects ──────────────────────────────────────────────────
+
+INSERT INTO effects (id, type, target, number_id)
+    VALUES (1, 'FormulaDamage', 'Defender', 1);   -- deal 90 damage
+
+INSERT INTO effects (id, type, target)
+    VALUES (2, 'Burn', 'Defender');               -- apply Burn status
+
+INSERT INTO effects (id, type, chance_probability, child_effect_id)
+    VALUES (3, 'Chance', 0.10, 2);                -- 10% chance → Burn
+
+INSERT INTO effects (id, type)
+    VALUES (4, 'Sequence');                       -- groups [FormulaDamage, Chance]
+
+INSERT INTO sequence_steps (sequence_effect_id, step_order, child_effect_id)
+    VALUES (4, 0, 1),                             -- [0] FormulaDamage
+           (4, 1, 3);                             -- [1] Chance(Burn)
+
+-- ── Move ─────────────────────────────────────────────────────
+
+INSERT INTO moves (id, name, element, category, target, pp, priority, crit_stage, description)
+    VALUES (1, 'Flamethrower', 'Fire', 'Special', 'Opponent', 15, 0, 0,
+            'The target is scorched with an intense blast of fire. It may also leave the target with a burn.');
+
+-- ── Attempt ──────────────────────────────────────────────────
+
+INSERT INTO attempts (id, move_id, type, accuracy_value, on_hit_effect_id)
+    VALUES (1, 1, 'Attempt', 1.0, 4);            -- always hits, onHit = Sequence
+
+-- ============================================================
+-- SELECT — full Flamethrower tree in one query
+-- ============================================================
+
+SELECT
+    m.name                          AS move,
+    m.element                       AS type,
+    m.category                      AS category,
+    m.pp                            AS pp,
+    m.priority                      AS priority,
+    m.crit_stage                    AS crit_stage,
+    m.description                   AS description,
+    a.type                          AS attempt_type,
+    a.accuracy_value                AS accuracy,
+    root.type                       AS root_effect,
+    step.step_order                 AS step,
+    child.type                      AS child_effect,
+    n.exact_value                   AS power,
+    child.chance_probability        AS chance_pct,
+    wrapped.type                    AS wrapped_effect
+FROM moves          m
+JOIN attempts       a       ON a.move_id               = m.id
+JOIN effects        root    ON root.id                 = a.on_hit_effect_id
+JOIN sequence_steps step    ON step.sequence_effect_id = root.id
+JOIN effects        child   ON child.id                = step.child_effect_id
+LEFT JOIN numbers   n       ON n.id                    = child.number_id
+LEFT JOIN effects   wrapped ON wrapped.id              = child.child_effect_id
+WHERE m.name = 'Flamethrower'
+ORDER BY step.step_order;</sql><sql name="SQL 7">CREATE TABLE Map (
+    MapID INTEGER PRIMARY KEY,
+    Name  TEXT
+);
+
+CREATE TABLE Details (
+    DetailsID INTEGER PRIMARY KEY,
+    Section   TEXT,
+    Weather   TEXT,
+    Music     TEXT,
+    MapID     INTEGER,
+    FOREIGN KEY (MapID) REFERENCES Map(MapID)
+);
+
+CREATE TABLE FlagsDetailsMap (
+    FlagID          INTEGER PRIMARY KEY,
+    Bike            BOOLEAN,
+    DayTint         BOOLEAN,
+    Dig_EscapeRope  BOOLEAN,
+    Fly             BOOLEAN,
+    ShowMapName     BOOLEAN,
+    Teleport        BOOLEAN,
+    DetailsID       INTEGER,
+    FOREIGN KEY (DetailsID) REFERENCES Details(DetailsID)
+);
+
+CREATE TABLE Connection (
+    ConnectionID INTEGER PRIMARY KEY,
+    Direction    TEXT,
+    Map          TEXT,
+    Offset       INTEGER,
+    MapID        INTEGER,
+    FOREIGN KEY (MapID) REFERENCES Map(MapID)
+);
+
+CREATE TABLE Encounter (
+    EncounterID INTEGER PRIMARY KEY,
+    minLevel    INTEGER,
+    MaxLevel    INTEGER,
+    SpeciesName TEXT,
+    Chance      REAL,
+    MapID       INTEGER,
+    FOREIGN KEY (MapID) REFERENCES Map(MapID)
+);
+
+CREATE TABLE Warps (
+    WarpsID       INTEGER PRIMARY KEY,
+    MapID         INTEGER,
+    X             INTEGER,
+    Y             INTEGER,
+    Elevation     INTEGER,
+    DestMap       TEXT,
+    DestX         INTEGER,
+    DestY         INTEGER,
+    DestElevation INTEGER,
+    FOREIGN KEY (MapID) REFERENCES Map(MapID)
+);
+
+CREATE TABLE Events (
+    EventID INTEGER PRIMARY KEY
+);
+
+CREATE TABLE ObjSprites (
+    ObjSpriteID INTEGER PRIMARY KEY,
+    Name        TEXT,
+    Sprite      BLOB,
+    Width       INTEGER,
+    Height      INTEGER,
+    ShadowX     INTEGER,
+    ShadowY     INTEGER,
+    ShadowW     INTEGER,
+    ShadowH     INTEGER
+);
+
+CREATE TABLE Objs (
+    ObjID        INTEGER PRIMARY KEY,
+    EventID      INTEGER,
+    X            INTEGER,
+    Y            INTEGER,
+    Elevation    INTEGER,
+    Sprite       INTEGER,
+    MovementType TEXT,
+    MovementX    INTEGER,
+    MovementY    INTEGER,
+    TrainerType  TEXT,
+    TrainerSight INTEGER,
+    ScriptID     INTEGER,
+    Flag         INTEGER,
+    FOREIGN KEY (EventID) REFERENCES Events(EventID),
+    FOREIGN KEY (Flag)    REFERENCES FlagsDetailsMap(FlagID)
+);
+
+CREATE TABLE ScriptTiles (
+    ScruptTileID     INTEGER PRIMARY KEY,
+    X                INTEGER,
+    Y                INTEGER,
+    Var              TEXT,
+    VarValue         TEXT,
+    VarConditional   TEXT,
+    ScriptID         INTEGER,
+    EventID          INTEGER,
+    FOREIGN KEY (EventID) REFERENCES Events(EventID)
+);</sql><current_tab id="0"/></tab_sql></sqlb_project>

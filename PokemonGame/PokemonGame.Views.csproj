@@ -153,6 +153,7 @@
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter .cs" />
     <Compile Include="Converters\OnlineStatusConverter.cs" />
+    <Compile Include="Converters\TypeToColorConverter.cs" />
     <Compile Include="Converters\WinnerTextConverter.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\Controls\DialogService .cs" />
@@ -186,6 +187,12 @@
     </Compile>
     <Compile Include="Views\Pages\SignIn\SignUp.xaml.cs">
       <DependentUpon>SignUp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\Summery\MoveSummaryPage.xaml.cs">
+      <DependentUpon>MoveSummaryPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\MoveSlotControl.xaml.cs">
+      <DependentUpon>MoveSlotControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
@@ -246,6 +253,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\SignIn\SignUp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\Summery\MoveSummaryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\MoveSlotControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

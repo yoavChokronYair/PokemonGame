@@ -4,7 +4,7 @@ using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
-    internal class BattleState
+    public class BattleState
     {
         private readonly BattleDomain _state;
         public BattleWeatherService WeatherService { get; }

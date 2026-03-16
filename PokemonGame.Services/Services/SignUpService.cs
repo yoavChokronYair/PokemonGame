@@ -1,17 +1,17 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using PokemonGame.Services.Data.DataCache;
+using PokemonGame.Services.Data.Repositories.SQLite;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class SignUpService
     {
-        private readonly UserCacheService _provider;
+        private readonly SQLiteUserRepository _provider;
 
         public SignUpService()
         {
-            _provider = ServiceFactory.Instance.UserCache;
+            _provider = ServiceFactory.Instance.UserRepository;
         }
 
         public bool UserNameExists(string userName)
