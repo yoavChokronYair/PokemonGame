@@ -2,7 +2,7 @@
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
-    internal class BattleTurnResolver
+    public class BattleTurnResolver
     {
         public bool AttackerMovesFirst(PokemonHelper.PokemonState attacker, PokemonHelper.PokemonState defender, int attackerPriority, int defenderPriority)
         {

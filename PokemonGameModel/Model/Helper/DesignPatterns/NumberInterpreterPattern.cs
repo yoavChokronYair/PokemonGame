@@ -14,7 +14,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     #region Combinators
 
-    internal class Product : INumber
+    public class Product : INumber
     {
         private readonly INumber _left;
         private readonly INumber _right;
@@ -22,7 +22,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public double Evaluate(BattleState battle) => _left.Evaluate(battle) * _right.Evaluate(battle);
     }
 
-    internal class Sum : INumber
+    public class Sum : INumber
     {
         private readonly INumber _left;
         private readonly INumber _right;
@@ -30,7 +30,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public double Evaluate(BattleState battle) => _left.Evaluate(battle) + _right.Evaluate(battle);
     }
 
-    internal class Quotient : INumber
+    public class Quotient : INumber
     {
         private readonly INumber _numerator;
         private readonly INumber _denominator;
@@ -50,7 +50,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     #endregion
 
     // A fixed constant value — e.g. Exactly(40) for a base 40 power move.
-    internal class Exactly : INumber
+    public class Exactly : INumber
     {
         private readonly double _value;
         public Exactly(double value) { _value = value; }
@@ -58,7 +58,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     }
 
     // Uniform random in [min, max] — uses RandomHelper, no new Random().
-    internal class Between : INumber
+    public class Between : INumber
     {
         private readonly double _min;
         private readonly double _max;
@@ -71,7 +71,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // Weighted random pick — e.g. { (2, 35%), (3, 35%), (4, 15%), (5, 15%) } for multi-hit.
     // Uses RandomHelper, no new Random().
-    internal class Weighted : INumber
+    public class Weighted : INumber
     {
         private readonly List<(double value, double weight)> _entries;
 
@@ -96,28 +96,28 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // ── Battle-state Accessors ────────────────────────────────────────────────
 
-    internal class MaxHP : INumber
+    public class MaxHP : INumber
     {
         private readonly ITarget _target;
         public MaxHP(ITarget target) { _target = target; }
         public double Evaluate(BattleState battle) => _target.Resolve(battle).MaxHP;
     }
 
-    internal class CurrentHP : INumber
+    public class CurrentHP : INumber
     {
         private readonly ITarget _target;
         public CurrentHP(ITarget target) { _target = target; }
         public double Evaluate(BattleState battle) => _target.Resolve(battle).CurrentHP;
     }
 
-    internal class Level : INumber
+    public class Level : INumber
     {
         private readonly ITarget _target;
         public Level(ITarget target) { _target = target; }
         public double Evaluate(BattleState battle) => _target.Resolve(battle).Level;
     }
 
-    internal class LastDamageDealt : INumber
+    public class LastDamageDealt : INumber
     {
         private readonly ITarget _target;
         public LastDamageDealt(ITarget target) { _target = target; }

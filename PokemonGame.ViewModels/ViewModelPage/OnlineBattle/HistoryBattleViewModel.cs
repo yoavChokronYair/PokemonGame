@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using PokemonGame.Services.Data.GameData.User;
-using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
@@ -9,36 +8,28 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     public class HistoryBattleViewModel : ViewModelBase
     {
         public ObservableCollection<BattleDisplayData> Battles { get; }
-
         private readonly BattleHistoryService _historyHandler;
+        private readonly UserStore _player;
 
-        public HistoryBattleViewModel()
+        public HistoryBattleViewModel(UserStore player)
         {
             Battles = new ObservableCollection<BattleDisplayData>();
-
-            var player = ServiceFactory.Instance.OnlinePlayerCache.GetOnlinePlayer("BattleHero",
-                ServiceFactory.Instance.UserCache.GetUserByName("TestUser"));
-
-            // Use the factory to get the public cache service
-            var battleCache = ServiceFactory.Instance.BattleCache;
-
-            // Create BattleHistoryService using the cached repository
             _historyHandler = new BattleHistoryService();
-
-            // Load the current online player
-            // var player = ServiceFactory.Instance.OnlinePlayerCache.GetOnlinePlayer(onlinePlayerName, currentUser);
+            _player = player;
             if (player != null)
             {
-                LoadBattles(player);
+                LoadBattles();
+            }
+            else
+            {
+                Console.WriteLine("error");
             }
         }
 
-        private void LoadBattles(BattlePlayerData player)
+        private void LoadBattles()
         {
             Battles.Clear();
-
-            var displayBattles = _historyHandler.GetBattleHistoryDisplay(player);
-            foreach (var battle in displayBattles)
+            foreach (var battle in _historyHandler.GetBattleHistoryDisplay(_player.BattlePlayerID, _player.Username))
             {
                 Battles.Add(battle);
             }

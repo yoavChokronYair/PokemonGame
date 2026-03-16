@@ -2,7 +2,7 @@
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
-    internal class BattleSideState
+    public class BattleSideState
     {
         // ── Side State (screens, hazards, etc.) ───────────────────────────────────
         private readonly Dictionary<Screen, int> _screens = new();

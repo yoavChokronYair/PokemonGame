@@ -8,7 +8,7 @@ using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
-    internal class BattleWeatherService
+    public class BattleWeatherService
     {
         private readonly BattleState _battle;
         private readonly BattleLogger _logger;
