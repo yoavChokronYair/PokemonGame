@@ -13,8 +13,8 @@
         </DataTemplate>
 
         <!--  Pages  -->
-        <DataTemplate DataType="{x:Type onlinevm:TeamViewModel}">
-            <local:TeamSelectPage />
+        <DataTemplate DataType="{x:Type onlinevm:TeamBuilderViewModel}">
+            <local:TeamBuilderPage />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type onlinevm:OnlineFriendsViewModel}">

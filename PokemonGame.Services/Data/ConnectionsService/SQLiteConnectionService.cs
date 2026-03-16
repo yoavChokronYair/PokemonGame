@@ -89,26 +89,30 @@ namespace PokemonGame.Services.Data.ConnectionsService
         {
             var result = new T();
 
-            var columnNames = new HashSet<string>(
-                Enumerable.Range(0, reader.FieldCount).Select(reader.GetName),
-                StringComparer.OrdinalIgnoreCase
-            );
+            // 1. Create a map of Case-Insensitive Column Names to the actual column names in the reader
+            var columnMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                columnMap[reader.GetName(i)] = reader.GetName(i);
+            }
 
             foreach (var prop in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (!columnNames.Contains(prop.Name))
+                // 2. Try to find the matching column name regardless of case
+                if (!columnMap.TryGetValue(prop.Name, out var actualColumnName))
                 {
                     continue;
                 }
 
-                var value = reader[prop.Name];
+                // 3. Use the ACTUAL column name from the database for the indexer
+                var value = reader[actualColumnName];
+
                 if (value == DBNull.Value)
                 {
                     continue;
                 }
 
                 var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-
                 prop.SetValue(result, ConvertValue(value, targetType));
             }
 

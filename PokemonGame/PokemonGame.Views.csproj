@@ -150,6 +150,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\IntEqualsConverter.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter .cs" />
@@ -173,8 +174,8 @@
     <Compile Include="Views\Pages\OnlineBattlePages\SideMenu.xaml.cs">
       <DependentUpon>SideMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\OnlineBattlePages\TeamSelectPage.xaml.cs">
-      <DependentUpon>TeamSelectPage.xaml</DependentUpon>
+    <Compile Include="Views\Pages\OnlineBattlePages\TeamBuilderPage.xaml.cs">
+      <DependentUpon>TeamBuilderPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\OnlineBattlePages\HistoryBattlePage.xaml.cs">
       <DependentUpon>HistoryBattlePage.xaml</DependentUpon>
@@ -194,8 +195,29 @@
     <Compile Include="Views\Pages\Summery\MoveSummaryPage.xaml.cs">
       <DependentUpon>MoveSummaryPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UserControls\EvIvEditorUserControl.xaml.cs">
+      <DependentUpon>EvIvEditorUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\ItemPickerUserControl.xaml.cs">
+      <DependentUpon>ItemPickerUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\MovePickerUserControl.xaml.cs">
+      <DependentUpon>MovePickerUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UserControls\MoveSlotControl.xaml.cs">
       <DependentUpon>MoveSlotControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\PokemonEditorUserControl.xaml.cs">
+      <DependentUpon>PokemonEditorUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\PokemonPickerUserControl.xaml.cs">
+      <DependentUpon>PokemonPickerUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\PokemonTableUserControl.xaml.cs">
+      <DependentUpon>PokemonTableUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\TeamBuilderUserControl.xaml.cs">
+      <DependentUpon>TeamBuilderUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
@@ -235,7 +257,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Pages\OnlineBattlePages\TeamSelectPage.xaml">
+    <Page Include="Views\Pages\OnlineBattlePages\TeamBuilderPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -263,7 +285,35 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\UserControls\EvIvEditorUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\ItemPickerUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\MovePickerUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\UserControls\MoveSlotControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\PokemonEditorUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\PokemonPickerUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\PokemonTableUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\TeamBuilderUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

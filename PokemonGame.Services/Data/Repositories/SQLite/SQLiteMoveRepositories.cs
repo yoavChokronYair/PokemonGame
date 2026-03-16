@@ -21,11 +21,11 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         // ── Move (flat) ───────────────────────────────────────────────────────────
 
         public MoveData LoadMoveData(string moveName) =>
-        GetCached(moveName, () => _db.QuerySingle<MoveData>(
-            @"SELECT id AS Id, name AS Name, element AS Element, category AS Category, 
-                     target AS Target, pp AS PP, priority AS Priority, 
-                     crit_stage AS CritStage, description AS Description 
-              FROM moves WHERE name = @name", new { name = moveName }));
+    GetCached(moveName, () => _db.QuerySingle<MoveData>(
+        @"SELECT id, name, element, category, target, pp, priority, 
+                 crit_stage, description 
+          FROM moves WHERE name = @name",
+        new { name = moveName }));
 
         public List<AttemptRow> LoadAttemptsForMove(int moveId)
         {

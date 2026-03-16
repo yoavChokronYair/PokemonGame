@@ -36,8 +36,8 @@
             <DataTemplate DataType="{x:Type onlinevm:OnlineBattleShellViewModel}">
                 <onlineview:OnlineBattleShell />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type onlinevm:TeamSelectPageViewModel}">
-                <onlineview:TeamSelectPage />
+            <DataTemplate DataType="{x:Type onlinevm:TeamBuilderViewModel}">
+                <onlineview:TeamBuilderPage />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type onlinevm:HistoryBattleViewModel}">

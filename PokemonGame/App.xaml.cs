@@ -98,9 +98,9 @@ namespace PokemonGame
             return new OnlineFriendsViewModel(_userStore,new DialogService());
         }
 
-        private TeamSelectPageViewModel CreateTeamSelectPageViewModel()
+        private TeamBuilderViewModel CreateTeamSelectPageViewModel()
         {
-            return new TeamSelectPageViewModel(_userStore);
+            return new TeamBuilderViewModel();
         }
 
         private ProfileViewModel CreateProfileViewModel()

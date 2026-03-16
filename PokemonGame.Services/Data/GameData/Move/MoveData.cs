@@ -11,7 +11,6 @@
         public int Priority { get; set; }
         public int CritStage { get; set; }
         public string Description { get; set; } = string.Empty;
-        public List<AttemptRow> Attempts { get; set; } = new();
     }
 
     public sealed class MoveNumberData

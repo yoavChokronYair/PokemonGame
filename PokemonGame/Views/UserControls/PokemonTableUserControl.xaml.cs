@@ -13,17 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PokemonGame.Views.Pages.OnlineBattlePages
+namespace PokemonGame.Views.UserControls
 {
     /// <summary>
-    /// Interaction logic for BattleTeamChooserPage.xaml
+    /// Interaction logic for PokemonTableUserControl.xaml
     /// </summary>
-    public partial class TeamSelectPage : Page
+    public partial class PokemonTableUserControl : UserControl
     {
-        public TeamSelectPage()
+        public PokemonTableUserControl()
         {
             InitializeComponent();
-
         }
     }
 }

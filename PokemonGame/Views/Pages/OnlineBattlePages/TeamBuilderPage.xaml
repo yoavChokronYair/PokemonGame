@@ -1,0 +1,395 @@
+﻿<Page
+    x:Class="PokemonGame.Views.Pages.OnlineBattlePages.TeamBuilderPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:PokemonGame.Views.UserControls"
+    xmlns:conv="clr-namespace:PokemonGame.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="900"
+    d:DesignWidth="740"
+    Background="#F0F4F8"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <conv:NullToVisibilityConverter x:Key="NullToVis" />
+        <conv:InverseNullToVisibilityConverter x:Key="InvNullToVis" />
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel
+            Width="716"
+            Margin="12"
+            HorizontalAlignment="Left">
+
+            <!--  ══ Team slot bar ══  -->
+            <Border
+                Margin="0,0,0,8"
+                Padding="10,8"
+                Background="White"
+                BorderBrush="#CCCCCC"
+                BorderThickness="1"
+                CornerRadius="6">
+                <StackPanel Orientation="Horizontal">
+
+                    <!--
+                        Team slots — clicking sets SelectedPokemon directly via ListBox binding.
+                        No CommandParameter needed.
+                    -->
+                    <ListBox
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemsSource="{Binding TeamSlots}"
+                        SelectedItem="{Binding SelectedPokemon, Mode=TwoWay}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="Margin" Value="3,0" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="BorderBrush" Value="#CCCCCC" />
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border
+                                                Padding="4"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="6">
+                                                <ContentPresenter />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#4A90D9" />
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#7AB8E8" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Width="72" HorizontalAlignment="Center">
+                                    <Image
+                                        Width="48"
+                                        Height="48"
+                                        HorizontalAlignment="Center"
+                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                        Source="{Binding SpriteImage}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="9"
+                                        Foreground="#333"
+                                        Text="{Binding Nickname}"
+                                        TextAlignment="Center"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!--  Add slot (opens pokemon picker)  -->
+                    <Button
+                        Width="80"
+                        Height="80"
+                        Margin="3,0"
+                        Background="#F5F5F5"
+                        BorderBrush="#DDDDDD"
+                        BorderThickness="2"
+                        Command="{Binding AddTeamSlotCommand}"
+                        Cursor="Hand"
+                        Visibility="{Binding AddTeamSlotCommand, Converter={StaticResource NullToVis}}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="6">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="#4A90D9" />
+                                        <Setter Property="Background" Value="#EEF4FF" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="26"
+                            Foreground="#AAAAAA"
+                            Text="+" />
+                    </Button>
+
+                    <!--  Remove selected  -->
+                    <Button
+                        Margin="12,0,0,0"
+                        Padding="8,4"
+                        VerticalAlignment="Center"
+                        Background="#FFF0F0"
+                        BorderBrush="#FFAAAA"
+                        BorderThickness="1"
+                        Command="{Binding RemoveFromTeamCommand}"
+                        Cursor="Hand"
+                        FontSize="11"
+                        Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
+                        <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!--  ══ Editor card ══  -->
+            <controls:PokemonEditorUserControl Margin="0,0,0,6" DataContext="{Binding}" />
+
+            <!--  ══ EV/IV panel (toggle by clicking Stats) ══  -->
+            <controls:EvIvEditorUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding}"
+                Visibility="{Binding IsEvIvPanelOpen, Converter={StaticResource BoolToVis}}" />
+
+            <!--  ══ Move picker ══  -->
+            <controls:MovePickerUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding}"
+                Visibility="{Binding IsMovePickerOpen, Converter={StaticResource BoolToVis}}" />
+
+            <!--  ══ Item picker ══  -->
+            <controls:ItemPickerUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding}"
+                Visibility="{Binding IsItemPickerOpen, Converter={StaticResource BoolToVis}}" />
+
+            <!--  ══ Pokemon picker ══  -->
+            <controls:PokemonPickerUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding}"
+                Visibility="{Binding IsPokemonPickerOpen, Converter={StaticResource BoolToVis}}" />
+
+            <!--  ══ Full Pokémon list ══  -->
+            <Border
+                Background="White"
+                BorderBrush="#CCCCCC"
+                BorderThickness="1"
+                CornerRadius="6">
+                <StackPanel>
+                    <!--  Header row  -->
+                    <Border
+                        Padding="10,6"
+                        Background="#F5F5F5"
+                        BorderBrush="#EEEEEE"
+                        BorderThickness="0,0,0,1"
+                        CornerRadius="6,6,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="38" />
+                                <ColumnDefinition Width="32" />
+                                <ColumnDefinition Width="130" />
+                                <ColumnDefinition Width="110" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Column="0"
+                                HorizontalAlignment="Center"
+                                FontSize="10"
+                                FontWeight="SemiBold"
+                                Foreground="#555"
+                                Text="#" />
+                            <TextBlock
+                                Grid.Column="2"
+                                FontSize="10"
+                                FontWeight="SemiBold"
+                                Foreground="#555"
+                                Text="Name" />
+                            <TextBlock
+                                Grid.Column="3"
+                                FontSize="10"
+                                FontWeight="SemiBold"
+                                Foreground="#555"
+                                Text="Type" />
+                            <TextBlock
+                                Grid.Column="4"
+                                FontSize="10"
+                                FontWeight="SemiBold"
+                                Foreground="#555"
+                                Text="Abilities" />
+                            <TextBlock
+                                Grid.Column="5"
+                                HorizontalAlignment="Center"
+                                FontSize="10"
+                                FontWeight="SemiBold"
+                                Foreground="#555"
+                                Text="HP   Atk   Def   SpA   SpD   Spe   BST" />
+                        </Grid>
+                    </Border>
+
+                    <!--
+                        Clicking a row sets SelectedPokemon directly — the setter in the VM
+                        resets all panels automatically.
+                    -->
+                    <ListBox
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemsSource="{Binding AllPokemon}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        SelectedItem="{Binding SelectedPokemon, Mode=TwoWay}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="10,5" />
+                                <Setter Property="BorderBrush" Value="#EEEEEE" />
+                                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                <Setter Property="Background" Value="White" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#E8F0FE" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F7FF" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="38" />
+                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="130" />
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="200" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="10"
+                                        Foreground="#AAA"
+                                        Text="{Binding PokedexId}" />
+                                    <Image
+                                        Grid.Column="1"
+                                        Width="28"
+                                        Height="28"
+                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                        Source="{Binding SpriteImage}" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
+                                        Foreground="#222"
+                                        Text="{Binding Name}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <ItemsControl
+                                        Grid.Column="3"
+                                        VerticalAlignment="Center"
+                                        ItemsSource="{Binding Types}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border
+                                                    Margin="1,0"
+                                                    Padding="4,1"
+                                                    Background="{Binding Color}"
+                                                    CornerRadius="3">
+                                                    <TextBlock
+                                                        FontSize="9"
+                                                        FontWeight="Bold"
+                                                        Foreground="White"
+                                                        Text="{Binding Name}" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                        <TextBlock
+                                            FontSize="11"
+                                            Foreground="#444"
+                                            Text="{Binding AbilityPrimary}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            FontSize="10"
+                                            FontStyle="Italic"
+                                            Foreground="#888"
+                                            Text="{Binding AbilityHidden}"
+                                            TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <UniformGrid
+                                        Grid.Column="5"
+                                        VerticalAlignment="Center"
+                                        Columns="7">
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="10"
+                                            Foreground="#555"
+                                            Text="{Binding HP}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="10"
+                                            Foreground="#555"
+                                            Text="{Binding Atk}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="10"
+                                            Foreground="#555"
+                                            Text="{Binding Def}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="10"
+                                            Foreground="#555"
+                                            Text="{Binding SpA}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="10"
+                                            Foreground="#555"
+                                            Text="{Binding SpD}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="10"
+                                            Foreground="#555"
+                                            Text="{Binding Spe}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="10"
+                                            FontWeight="Bold"
+                                            Foreground="#333"
+                                            Text="{Binding BST}" />
+                                    </UniformGrid>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

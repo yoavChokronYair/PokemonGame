@@ -25,6 +25,7 @@ namespace PokemonGame.Services.Factory
         internal SQLitePokemonRepository PokemonRepository { get; }
         internal SQLiteBattlerPokemonRepository BattlerPokemonRepository { get; }
         internal SQLiteMoveRepository MoveRepository { get; }
+        internal SQLitePokemonStatsRepository pokemonStatsRepository { get; }
 
         // Static Lookups (Cached)
         internal SQLiteAbilityRepository AbilityRepository { get; }
@@ -51,6 +52,7 @@ namespace PokemonGame.Services.Factory
             PokemonRepository = new SQLitePokemonRepository(db);
             BattlerPokemonRepository = new SQLiteBattlerPokemonRepository(db);
             MoveRepository = new SQLiteMoveRepository(db);
+            pokemonStatsRepository = new SQLitePokemonStatsRepository(db);
 
             AbilityRepository = new SQLiteAbilityRepository(db);
             ItemRepository = new SQLiteItemRepository(db);
