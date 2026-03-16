@@ -155,6 +155,7 @@
     <Compile Include="Converters\NullToBoolConverter .cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\OnlineStatusConverter.cs" />
+    <Compile Include="Converters\StatusColorConverter.cs" />
     <Compile Include="Converters\TypeToColorConverter.cs" />
     <Compile Include="Converters\WinnerTextConverter.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />

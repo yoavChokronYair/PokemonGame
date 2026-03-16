@@ -47,5 +47,18 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
 
             _db.Execute(query, new { p = playerID, f = friendID });
         }
+        // Check if a relationship (pending or accepted) exists
+        public bool RelationshipExists(int player1, int player2) =>
+            _db.QuerySingle<int>(
+                "SELECT COUNT(*) FROM BattlePlayerFriends WHERE (PlayerID = @p1 AND FriendPlayerID = @p2) OR (PlayerID = @p2 AND FriendPlayerID = @p1)",
+                new { p1 = player1, p2 = player2 }) > 0;
+
+        // Remove a friend or cancel a request
+        public void RemoveFriendship(int player1, int player2)
+        {
+            _db.Execute(
+                "DELETE FROM BattlePlayerFriends WHERE (PlayerID = @p1 AND FriendPlayerID = @p2) OR (PlayerID = @p2 AND FriendPlayerID = @p1)",
+                new { p1 = player1, p2 = player2 });
+        }
     }
 }

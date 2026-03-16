@@ -61,7 +61,13 @@
                     FontSize="13"
                     Foreground="Black"
                     Text="{Binding Password}" />
-
+                <!--  Status message  -->
+                <TextBlock
+                    Margin="0,10,0,0"
+                    FontSize="10"
+                    Foreground="Red"
+                    Text="{Binding StatusMessage}"
+                    TextWrapping="Wrap" />
                 <!--  Log In  -->
                 <Button
                     Margin="0,20,0,0"

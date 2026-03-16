@@ -7,62 +7,56 @@
 
     <Page.Resources>
         <conv:OnlineStatusConverter x:Key="OnlineStatusConverter" />
+        <conv:StatusColorConverter x:Key="StatusColorConverter" />
     </Page.Resources>
 
-    <Grid>
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  ADD FRIEND BUTTON  -->
         <Button
             Grid.Row="0"
-            Margin="20"
-            Padding="12,6"
+            Padding="10,5"
             HorizontalAlignment="Center"
             Command="{Binding AddFriendCommand}"
-            Content="Add Friend" />
+            Content="Add New Friend" />
 
-        <!--  FRIENDS LIST  -->
-        <ScrollViewer
-            Grid.Row="1"
-            Width="360"
-            Margin="10"
-            HorizontalAlignment="Center"
-            VerticalScrollBarVisibility="Auto">
-
+        <ScrollViewer Grid.Row="1" Margin="0,20,0,0">
             <ItemsControl ItemsSource="{Binding Friends}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border
-                            Margin="6"
-                            Padding="10"
-                            Background="#DDDDDD"
-                            CornerRadius="10">
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <!--  FRIEND INFO  -->
-                                <StackPanel>
+                            Margin="5"
+                            Padding="15"
+                            Background="#E0E0E0"
+                            CornerRadius="8">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Left">
                                     <TextBlock
                                         FontSize="16"
                                         FontWeight="Bold"
                                         Text="{Binding Username}" />
-                                    <TextBlock FontSize="12" Text="{Binding IsOnline, Converter={StaticResource OnlineStatusConverter}}" />
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="{Binding IsOnline, Converter={StaticResource StatusColorConverter}}"
+                                        Text="{Binding IsOnline, Converter={StaticResource OnlineStatusConverter}}" />
                                 </StackPanel>
 
-                                <!--  ACTION BUTTON  -->
-                                <Button
-                                    Grid.Column="1"
-                                    Margin="10,0,0,0"
-                                    Padding="8,4"
-                                    Content="Invite" />
-                            </Grid>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                    <Button
+                                        Margin="0,0,10,0"
+                                        Padding="10,0"
+                                        Command="{Binding InviteCommand}"
+                                        Content="Invite" />
+                                    <Button
+                                        Padding="10,0"
+                                        Background="#FFDCDC"
+                                        Command="{Binding RemoveCommand}"
+                                        Content="Remove" />
+                                </StackPanel>
+                            </DockPanel>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

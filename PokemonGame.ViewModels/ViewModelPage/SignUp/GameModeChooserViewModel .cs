@@ -109,13 +109,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
             if (_handler.OnlinePlayerLogIn(selectedUser, currentUser))
             {
-                await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{selectedUser}'!");
-                _userStore.BattlePlayerID = selectedUser;
-                NavigateToSideMenuCommand.Execute(null);
-            }
-            else
-            {
-                await _dialogService.ShowErrorAsync("Error", $"Failed to log in as '{selectedUser}'.");
+                var onlinePlayer = _handler.GetOnlinePlayer(selectedUser, _loginService.GetUser(this.Username));
+
+                if (onlinePlayer != null)
+                {
+                    _userStore.BattlePlayerID = onlinePlayer.BattlePlayerID;
+                    await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{selectedUser}'!");
+                    NavigateToSideMenuCommand.Execute(null);
+                }
+                else
+                {
+                    // Handle the edge case where login was valid but the record failed to fetch
+                    await _dialogService.ShowErrorAsync("Error", "Account verified, but profile data could not be retrieved.");
+                }
             }
         }
 

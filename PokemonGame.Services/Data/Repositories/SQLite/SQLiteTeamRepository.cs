@@ -14,7 +14,11 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         // Get a specific team by its unique ID
         public TeamData? GetTeamById(int teamID) =>
             _db.QuerySingle<TeamData>("SELECT * FROM teams WHERE id = @tid", new { tid = teamID });
-
+        // Fetch the team associated with a specific battle session
+        public TeamData? GetTeamByBattlePlayer(int battlePlayerID) =>
+            _db.QuerySingle<TeamData>(
+                "SELECT * FROM teams WHERE battle_player_id = @bpid",
+                new { bpid = battlePlayerID });
         // Create a new empty team
         public TeamData CreateTeam(string teamName, int userID)
         {

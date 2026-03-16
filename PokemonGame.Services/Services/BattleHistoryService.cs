@@ -1,70 +1,51 @@
-﻿using PokemonGame.Services.Data.GameData.User;
-using PokemonGame.Services.Data.GameData.User.OnlinePlayer;
-using PokemonGame.Services.Data.Repositories.SQLite;
-using PokemonGame.Services.Factory;
+﻿using PokemonGame.Services.Factory;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 
 namespace PokemonGame.Services.Handler
 {
     public class BattleHistoryService
     {
-        private readonly SQLiteBattleRepository _battles;
-
-        public BattleHistoryService()
+        public List<BattleDisplayData> GetBattleHistoryDisplay(int battlePlayerID, string username)
         {
-            _battles = ServiceFactory.Instance.BattleRepository;
-        }
-
-        public List<BattleHistoryEntryData> GetBattleHistory(BattlePlayerData player)
-        {
-            if (player == null)
-            {
-                return new List<BattleHistoryEntryData>();
-            }
-
-            return _battles.GetBattleHistory(player);
-        }
-
-        public List<BattleDisplayData> GetBattleHistoryDisplay(string name, string user)
-        {
-            var player = ServiceFactory.Instance.OnlinePlayerRepository.LoadOnlinePlayerByName(name, ServiceFactory.Instance.UserRepository.LoadUserByName(user).UserID);
-            var history = _battles.GetBattleHistory(player);
             var displayList = new List<BattleDisplayData>();
 
-            foreach (var entry in history)
+            // 1. Get all battles this player participated in
+            var records = ServiceFactory.Instance.BattleRepository.GetPlayerBattleHistory(battlePlayerID);
+
+            foreach (var record in records)
             {
-                var playerPokemon = _battles.GetBattleTeamPokemonForPlayer(entry.BattleID, player.BattlePlayerID)
-                    .Select(p => p.SpeciesName).Take(6).ToList();
+                // 2. Get both participants for this battle
+                var participants = ServiceFactory.Instance.ParticipantRepository.GetParticipantsForBattle(record.BattleID);
 
-                var opponent = _battles.GetOpponentPlayer(entry.BattleID, player.BattlePlayerID);
-                var opponentPokemon = opponent != null
-                    ? _battles.GetBattleTeamPokemonForPlayer(entry.BattleID, opponent.BattlePlayerID)
-                        .Select(p => p.SpeciesName).Take(6).ToList()
-                    : new List<string>();
+                var playerPart = participants.FirstOrDefault(p => p.BattlePlayerID == battlePlayerID);
+                var opponentPart = participants.FirstOrDefault(p => p.BattlePlayerID != battlePlayerID);
 
+                // 3. Construct the display object
                 displayList.Add(new BattleDisplayData
                 {
-                    BattleID = entry.BattleID,
-                    PlayerName = player.Name,
-                    OpponentName = entry.OpponentName,
-                    IsPlayerWinner = entry.IsWin,
-                    BattleDate = entry.BattleDate,
-                    PlayerPokemon = playerPokemon,
-                    OpponentPokemon = opponentPokemon
+                    BattleID = record.BattleID,
+                    PlayerName = username,
+                    OpponentName = opponentPart?.BattlePlayerID.ToString() ?? "Unknown", // Replace with real name lookup if available
+                    IsPlayerWinner = (record.WinnerBattlePlayerID == battlePlayerID),
+                    PlayerPokemon = GetPokemonNames(playerPart?.BattlePlayerID), // You'll need to link Team to Participant
+                    OpponentPokemon = GetPokemonNames(opponentPart?.BattlePlayerID)
                 });
             }
-
             return displayList;
         }
-    }
 
-    public class BattleDisplayData
-    {
-        public int BattleID { get; set; }
-        public string PlayerName { get; set; } = "";
-        public string OpponentName { get; set; } = "";
-        public bool IsPlayerWinner { get; set; }
-        public DateTime BattleDate { get; set; }
-        public List<string> PlayerPokemon { get; set; } = new();
-        public List<string> OpponentPokemon { get; set; } = new();
+        private List<string> GetPokemonNames(int? battlePlayerID)
+        {
+            if (battlePlayerID == null) return new List<string>();
+
+            // Logic: Find the Team linked to this BattlePlayerID, then get members
+            var team = ServiceFactory.Instance.TeamRepository.GetTeamByBattlePlayer(battlePlayerID.Value);
+            if (team == null) return new List<string>();
+
+            var members = ServiceFactory.Instance.TeamMemberRepository.GetTeamMembers(team.Id);
+
+            // Return Pokedex IDs (or names if you fetch species data)
+            return members.Select(m => $"Pokemon #{m.PokemonID}").ToList();
+        }
     }
 }

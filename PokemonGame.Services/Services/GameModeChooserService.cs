@@ -24,6 +24,13 @@ namespace PokemonGame.Services.Handler
             {
                 return false;
             }
+            var currentPlayers = GetAllOnlinePlayers(user);
+
+            // 2. Enforce the limit
+            if (currentPlayers.Count >= 3)
+            {
+                return false; // Or throw a custom Exception
+            }
 
             _onlinePlayers.CreateOnlinePlayer(username, user);
             return true;

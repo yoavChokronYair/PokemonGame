@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;

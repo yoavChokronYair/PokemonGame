@@ -81,7 +81,8 @@ namespace PokemonGame
                 CreateHistoryViewModel,
                 CreateFriendsViewModel,
                 CreateTeamSelectPageViewModel,
-                CreateProfileViewModel
+                CreateProfileViewModel,
+                CreateGameModeChooserViewModel
             );
         }
 
@@ -94,7 +95,7 @@ namespace PokemonGame
 
         private OnlineFriendsViewModel CreateFriendsViewModel()
         {
-            return new OnlineFriendsViewModel();
+            return new OnlineFriendsViewModel(_userStore,new DialogService());
         }
 
         private TeamSelectPageViewModel CreateTeamSelectPageViewModel()
