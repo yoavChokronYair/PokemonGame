@@ -307,7 +307,7 @@ namespace PokemonGame.Services.Handler
             }
 
             return condition;
-           
+
         }
     }
 }
