@@ -11,7 +11,7 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
 
         protected TValue? GetCached(TKey key, Func<TValue?> fetch)
         {
-            if (_cache.TryGetValue(key, out var cached))
+            if (_cache.TryGetValue(key, out var cached) && cached != null)
             {
                 return cached;
             }

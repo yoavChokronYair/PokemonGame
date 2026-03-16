@@ -22,7 +22,7 @@ namespace PokemonGame
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            _navigationStore.CurrentViewModel = CreateMoveSummaryViewModel();
+            _navigationStore.CurrentViewModel = CreateLogInViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
