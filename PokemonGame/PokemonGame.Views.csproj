@@ -151,7 +151,9 @@
     </ApplicationDefinition>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter .cs" />
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\OnlineStatusConverter.cs" />
     <Compile Include="Converters\TypeToColorConverter.cs" />
     <Compile Include="Converters\WinnerTextConverter.cs" />

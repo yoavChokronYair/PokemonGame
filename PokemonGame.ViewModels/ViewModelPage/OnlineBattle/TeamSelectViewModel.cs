@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
@@ -15,6 +16,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
             for (int i = 0; i < 6; i++)
             {
+                // No service needed here
                 Slots.Add(new PokemonSlotViewModel());
             }
         }
@@ -28,16 +30,37 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             get => _pokemon;
             set
             {
-                if (_pokemon != value)
+                if (SetProperty(ref _pokemon, value))
                 {
-                    _pokemon = value;
-                    OnPropertyChanged(nameof(Pokemon));
                     OnPropertyChanged(nameof(IsEmpty));
+                    LoadMockData(); // Now calls static data instead of service
                 }
             }
         }
 
         public bool IsEmpty => Pokemon == null;
+
+        public ObservableCollection<string> AvailableAbilities { get; } = new();
+        public ObservableCollection<string> AvailableItems { get; } = new();
+        public ObservableCollection<string> SelectedMoves { get; } = new() { "", "", "", "" };
+
+        public PokemonSlotViewModel() { }
+
+        private void LoadMockData()
+        {
+            AvailableAbilities.Clear();
+            AvailableItems.Clear();
+
+            if (Pokemon == null) return;
+
+            // Mock Data for testing the UI
+            AvailableAbilities.Add("Overgrow");
+            AvailableAbilities.Add("Chlorophyll");
+
+            AvailableItems.Add("Miracle Seed");
+            AvailableItems.Add("Leftovers");
+            AvailableItems.Add("Life Orb");
+        }
     }
 
     public class PokemonViewModel : ViewModelBase
@@ -53,5 +76,4 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             Type = type;
         }
     }
-
 }

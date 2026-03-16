@@ -10,7 +10,8 @@
     <Page.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
-        <conv:NullToBoolConverter x:Key="NullToBoolConverter" />
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <conv:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter" />
     </Page.Resources>
 
     <Grid Margin="20">
@@ -114,94 +115,40 @@
         <!--  RIGHT PANEL  -->
         <StackPanel Grid.Column="1" Margin="20,0,0,0">
 
-            <!--  Search Box  -->
-            <TextBox
-                Width="250"
-                Margin="0,0,0,10"
-                FontSize="14"
-                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.Style>
-                    <Style TargetType="TextBox">
-                        <Setter Property="Foreground" Value="Black" />
-                        <Style.Triggers>
-                            <Trigger Property="Text" Value="">
-                                <Setter Property="Foreground" Value="Gray" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-
-            <!--  Filter Toggle Button  -->
-            <Button
-                Width="120"
-                Margin="0,0,0,5"
-                Command="{Binding ToggleFiltersCommand}"
-                Content="Filter Types" />
-
-            <!--  Type Filters  -->
-            <ItemsControl ItemsSource="{Binding PokemonTypes}" Visibility="{Binding ShowFilters, Converter={StaticResource BoolToVisibilityConverter}}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
+            <ContentControl Grid.Column="1" Content="{Binding SelectedSlot}">
+                <ContentControl.ContentTemplate>
                     <DataTemplate>
-                        <Button
-                            Margin="4"
-                            Padding="4,2"
-                            Command="{Binding DataContext.FilterPokemonCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                            CommandParameter="{Binding}"
-                            Content="{Binding}" />
+                        <Grid>
+                            <StackPanel Visibility="{Binding Pokemon, Converter={StaticResource NullToVisibilityConverter}}">
+                                <TextBox Text="{Binding DataContext.SearchText, RelativeSource={RelativeSource AncestorType=Page}}" />
+                                <ItemsControl ItemsSource="{Binding DataContext.PokemonView, RelativeSource={RelativeSource AncestorType=Page}}" />
+                            </StackPanel>
+
+                            <StackPanel Visibility="{Binding Pokemon, Converter={StaticResource InverseNullToVisibilityConverter}}">
+                                <TextBlock
+                                    FontSize="20"
+                                    FontWeight="Bold"
+                                    Text="{Binding Pokemon.Name, StringFormat='Editing: {0}'}" />
+
+                                <TextBlock Text="Ability" />
+                                <ComboBox ItemsSource="{Binding AvailableAbilities}" SelectedItem="{Binding Ability}" />
+
+                                <TextBlock Text="Item" />
+                                <ComboBox ItemsSource="{Binding AvailableItems}" SelectedItem="{Binding Item}" />
+
+                                <TextBlock Text="Moves" />
+                                <ItemsControl ItemsSource="{Binding SelectedMoves}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding DataContext.AllPossibleMoves, RelativeSource={RelativeSource AncestorType=Page}}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Grid>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <!--  Pokémon List  -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding ShowPokemonPanel, Converter={StaticResource BoolToVisibilityConverter}}">
-                <ItemsControl ItemsSource="{Binding PokemonView}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel IsItemsHost="True" Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button
-                                Width="120"
-                                Margin="6"
-                                Padding="8"
-                                Background="#DDDDDD"
-                                BorderThickness="0"
-                                Command="{Binding DataContext.PlacePokemonCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                CommandParameter="{Binding}"
-                                Cursor="Hand">
-                                <StackPanel>
-                                    <Image
-                                        Width="72"
-                                        Height="72"
-                                        Source="{Binding Sprite}" />
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        FontWeight="Bold"
-                                        Text="{Binding Name}" />
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-            <Button
-                Width="120"
-                Margin="6"
-                Padding="8"
-                Background="#FFAAAA"
-                BorderThickness="0"
-                Command="{Binding ClearSlotCommand}"
-                Content="Clear Slot"
-                IsEnabled="{Binding SelectedSlot, Converter={StaticResource NullToBoolConverter}, ConverterParameter=True}" />
-
+                </ContentControl.ContentTemplate>
+            </ContentControl>
         </StackPanel>
     </Grid>
 </Page>

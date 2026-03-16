@@ -19,10 +19,12 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         public bool OnlinePlayerExists(string username, UserData user) =>
             ExistsCached(Key(username, user.UserID), () => LoadOnlinePlayerByName(username, user.UserID) != null);
 
+        // Use this when the player joins the lobby without a team yet
         public BattlePlayerData CreateOnlinePlayer(string username, UserData user)
         {
             _db.Execute("INSERT INTO BattlePlayer (UserID, Name, Level) VALUES (@uid, @name, 1);",
                 new { uid = user.UserID, name = username });
+
             return StoreAndReturn(Key(username, user.UserID), () =>
                 _db.QuerySingle<BattlePlayerData>("SELECT * FROM BattlePlayer WHERE BattlePlayerID = last_insert_rowid();"));
         }
