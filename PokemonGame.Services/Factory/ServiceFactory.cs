@@ -9,9 +9,7 @@ namespace PokemonGame.Services.Factory
         public static ServiceFactory Instance => _instance.Value;
 
         internal SQLiteUserRepository UserRepository { get; }
-        internal SQLitePokemonRepository PokemonRepository { get; }
         internal SQLiteOnlinePlayerRepository OnlinePlayerRepository { get; }
-        internal SQLiteBattleRepository BattleRepository { get; }
         internal SQLiteMoveRepository MoveRepository { get; }
 
         private ServiceFactory()
@@ -20,9 +18,7 @@ namespace PokemonGame.Services.Factory
                 "C:\\Users\\yoav\\Source\\Repos\\PokemonGame\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
 
             UserRepository = new SQLiteUserRepository(db);
-            PokemonRepository = new SQLitePokemonRepository(db);
             OnlinePlayerRepository = new SQLiteOnlinePlayerRepository(db);
-            BattleRepository = new SQLiteBattleRepository(db);
             MoveRepository = new SQLiteMoveRepository(db);
         }
     }

@@ -3,30 +3,41 @@ using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.Services.Data.Repositories.SQLite
 {
-    // Cache key is "username_userID" to avoid clashes between accounts.
     internal class SQLiteOnlinePlayerRepository : SQLiteRepository<string, BattlePlayerData>
     {
         internal SQLiteOnlinePlayerRepository(ISQLiteConnectionService db) : base(db) { }
 
         private static string Key(string username, int userID) => $"{username}_{userID}";
 
-        public BattlePlayerData? LoadOnlinePlayerByName(string username, int UserID) =>
-            GetCached(Key(username, UserID), () => _db.QuerySingle<BattlePlayerData?>(
+        // Loads a player persona and their current session stats
+        public BattlePlayerData? LoadOnlinePlayerByName(string username, int userID) =>
+            GetCached(Key(username, userID), () => _db.QuerySingle<BattlePlayerData>(
                 "SELECT * FROM BattlePlayer WHERE Name = @name AND UserID = @uid",
-                new { name = username, uid = UserID }));
-
+                new { name = username, uid = userID }));
 
         public bool OnlinePlayerExists(string username, UserData user) =>
             ExistsCached(Key(username, user.UserID), () => LoadOnlinePlayerByName(username, user.UserID) != null);
 
-        // Use this when the player joins the lobby without a team yet
+        // Creates a new mini-account with default level and clean history
         public BattlePlayerData CreateOnlinePlayer(string username, UserData user)
         {
-            _db.Execute("INSERT INTO BattlePlayer (UserID, Name, Level) VALUES (@uid, @name, 1);",
+            _db.Execute(@"
+                INSERT INTO BattlePlayer (UserID, Name, Level, Wins, Losses, CreatedAt) 
+                VALUES (@uid, @name, 5, 0, 0, datetime('now'));",
                 new { uid = user.UserID, name = username });
 
             return StoreAndReturn(Key(username, user.UserID), () =>
                 _db.QuerySingle<BattlePlayerData>("SELECT * FROM BattlePlayer WHERE BattlePlayerID = last_insert_rowid();"));
+        }
+
+        // Logic to update stats after a battle completes
+        public void UpdatePlayerStats(int battlePlayerID, bool won)
+        {
+            string query = won
+                ? "UPDATE BattlePlayer SET Wins = Wins + 1 WHERE BattlePlayerID = @id"
+                : "UPDATE BattlePlayer SET Losses = Losses + 1 WHERE BattlePlayerID = @id";
+
+            _db.Execute(query, new { id = battlePlayerID });
         }
 
         public List<BattlePlayerData> GetAllOnlinePlayers(UserData user) =>
@@ -34,9 +45,9 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
                 () => _db.Query<BattlePlayerData>("SELECT * FROM BattlePlayer WHERE UserID = @uid", new { uid = user.UserID }).ToList(),
                 p => Key(p.Name, user.UserID));
 
-        // Opponents change per-battle; not worth caching
+        // Opponents change per-battle; direct query for real-time data
         public BattlePlayerData? LoadOpponentPlayer(BattlePlayerData player, int battleID) =>
-            _db.QuerySingle<BattlePlayerData?>(@"
+            _db.QuerySingle<BattlePlayerData>(@"
                 SELECT bp.* FROM BattleTeam bt
                 JOIN BattlePlayer bp ON bp.BattlePlayerID = bt.BattlePlayerID
                 WHERE bt.BattleID = @battleID AND bt.BattlePlayerID != @playerID LIMIT 1;",
