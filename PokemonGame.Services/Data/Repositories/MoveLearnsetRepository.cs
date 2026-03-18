@@ -1,18 +1,18 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.Move;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteMoveLearnsetRepository
+    internal class MoveLearnsetRepository
     {
-        private readonly ISQLiteConnectionService _db;
+        private readonly IDbConnectionService _db;
 
         private Dictionary<int, List<LevelUpMoveData>>? _levelUpCache;
         private Dictionary<int, List<MachineMoveData>>? _machineCache;
         private Dictionary<int, List<EggMoveData>>? _eggCache;
         private Dictionary<int, List<TutorMoveData>>? _tutorCache;
 
-        internal SQLiteMoveLearnsetRepository(ISQLiteConnectionService db) => _db = db;
+        internal MoveLearnsetRepository(IDbConnectionService db) => _db = db;
 
         private void EnsureLoaded()
         {

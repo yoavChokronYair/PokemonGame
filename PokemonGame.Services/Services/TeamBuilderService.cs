@@ -1,22 +1,22 @@
 ﻿using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.Pokemon;
-using PokemonGame.Services.Data.Repositories.SQLite;
+using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class TeamBuilderService
     {
-        private readonly SQLitePokemonRepository _pokemon;
-        private readonly SQLiteAbilityRepository _abilities;
-        private readonly SQLiteItemRepository _items;
-        private readonly SQLiteMoveLearnsetRepository _learnsets;
-        private readonly SQLiteMoveRepository _moves;
-        private readonly SQLitePokemonStatsRepository _stats;
-        private readonly SQLiteTeamRepository _teams;
-        private readonly SQLiteTeamMemberRepository _teamMembers;
-        private readonly SQLiteBattlerPokemonRepository _battlerPokemon;
+        private readonly PokemonRepository _pokemon;
+        private readonly AbilityRepository _abilities;
+        private readonly ItemRepository _items;
+        private readonly MoveLearnsetRepository _learnsets;
+        private readonly MoveRepository _moves;
+        private readonly PokemonStatsRepository _stats;
+        private readonly TeamRepository _teams;
+        private readonly TeamMemberRepository _teamMembers;
+        private readonly BattlerPokemonRepository _battlerPokemon;
 
         // Move ID → Name lookup, built once on first use
         private Dictionary<int, string>? _moveNameCache;

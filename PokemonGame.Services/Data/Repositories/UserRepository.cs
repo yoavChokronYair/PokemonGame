@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.User;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteUserRepository : SQLiteRepository<string, UserData>
+    internal class UserRepository : SQLiteRepository<string, UserData>
     {
-        internal SQLiteUserRepository(ISQLiteConnectionService db) : base(db) { }
+        internal UserRepository(IDbConnectionService db) : base(db) { }
 
         public UserData? LoadUserByName(string username) =>
             GetCached(username, () => _db.QuerySingle<UserData?>(
@@ -18,8 +18,9 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         {
             _db.Execute("INSERT INTO Users (UserName, Password) VALUES (@UserName, @Password);",
                 new { UserName = username, Password = passwordHash });
+
             return StoreAndReturn(username, () =>
-                _db.QuerySingle<UserData>("SELECT * FROM Users WHERE UserID = last_insert_rowid();"));
+                _db.QuerySingle<UserData>("SELECT * FROM Users WHERE UserName = @UserName", new { UserName = username }));
         }
 
         public List<UserData> GetAllUsers() =>

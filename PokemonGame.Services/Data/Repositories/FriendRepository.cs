@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.User;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteFriendRepository : SQLiteRepository<string, BattlePlayerFriendData>
+    internal class FriendRepository : SQLiteRepository<string, BattlePlayerFriendData>
     {
-        internal SQLiteFriendRepository(ISQLiteConnectionService db) : base(db) { }
+        internal FriendRepository(IDbConnectionService db) : base(db) { }
 
         // Composite key to uniquely identify the relationship between two specific players
         private static string Key(int p1, int p2) => $"friend_{p1}_{p2}";

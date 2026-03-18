@@ -1,13 +1,13 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
     internal abstract class SQLiteRepository<TKey, TValue> where TValue : class
     {
-        protected readonly ISQLiteConnectionService _db;
+        protected readonly IDbConnectionService _db;
         private readonly Dictionary<TKey, TValue> _cache = new();
 
-        protected SQLiteRepository(ISQLiteConnectionService db) => _db = db;
+        protected SQLiteRepository(IDbConnectionService db) => _db = db;
 
         protected TValue? GetCached(TKey key, Func<TValue?> fetch)
         {

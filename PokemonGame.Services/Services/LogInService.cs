@@ -1,14 +1,14 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using PokemonGame.Services.Data.GameData.User;
-using PokemonGame.Services.Data.Repositories.SQLite;
+using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class LogInService
     {
-        private readonly SQLiteUserRepository _users;
+        private readonly UserRepository _users;
 
         public LogInService()
         {

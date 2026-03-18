@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.Pokemon;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLitePokemonRepository : SQLiteRepository<int, PokemonGeneral>
+    internal class PokemonRepository : SQLiteRepository<int, PokemonGeneral>
     {
-        internal SQLitePokemonRepository(ISQLiteConnectionService db) : base(db) { }
+        internal PokemonRepository(IDbConnectionService db) : base(db) { }
 
         // Fetch a single Pokemon's master data by Pokedex ID
         public PokemonGeneral? GetPokemonById(int pokedexID) =>

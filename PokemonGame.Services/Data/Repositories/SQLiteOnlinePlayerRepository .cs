@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.User;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteOnlinePlayerRepository : SQLiteRepository<string, BattlePlayerData>
+    internal class OnlinePlayerRepository : SQLiteRepository<string, BattlePlayerData>
     {
-        internal SQLiteOnlinePlayerRepository(ISQLiteConnectionService db) : base(db) { }
+        internal OnlinePlayerRepository(IDbConnectionService db) : base(db) { }
 
         private static string Key(string username, int userID) => $"{username}_{userID}";
 

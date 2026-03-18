@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteBattleRepository : SQLiteRepository<int, BattleRecordData>
+    internal class BattleRepository : SQLiteRepository<int, BattleRecordData>
     {
-        internal SQLiteBattleRepository(ISQLiteConnectionService db) : base(db) { }
+        internal BattleRepository(IDbConnectionService db) : base(db) { }
 
         // Records a new battle and returns the assigned BattleID
         public int CreateBattle(string battleDate)

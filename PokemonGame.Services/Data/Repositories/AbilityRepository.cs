@@ -1,14 +1,14 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.PokemonData;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteAbilityRepository
+    internal class AbilityRepository
     {
-        private readonly ISQLiteConnectionService _db;
+        private readonly IDbConnectionService _db;
         private Dictionary<int, AbilityData>? _cache;
 
-        internal SQLiteAbilityRepository(ISQLiteConnectionService db) => _db = db;
+        internal AbilityRepository(IDbConnectionService db) => _db = db;
 
         // Ensures the database is read into memory only once
         private void EnsureLoaded()

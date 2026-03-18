@@ -1,13 +1,13 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.Pokemon;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteBattlerPokemonRepository
+    internal class BattlerPokemonRepository
     {
-        private readonly ISQLiteConnectionService _db;
+        private readonly IDbConnectionService _db;
 
-        internal SQLiteBattlerPokemonRepository(ISQLiteConnectionService db) => _db = db;
+        internal BattlerPokemonRepository(IDbConnectionService db) => _db = db;
 
         // Fetch a specific instance of a Pokemon
         public BattlerPokemon? GetPokemonInstance(int pokemonID) =>

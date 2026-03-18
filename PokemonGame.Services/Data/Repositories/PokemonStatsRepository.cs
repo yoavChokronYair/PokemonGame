@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.PokemonData;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLitePokemonStatsRepository : SQLiteRepository<int, PokemonStatsData>
+    internal class PokemonStatsRepository : SQLiteRepository<int, PokemonStatsData>
     {
-        internal SQLitePokemonStatsRepository(ISQLiteConnectionService db) : base(db) { }
+        internal PokemonStatsRepository(IDbConnectionService db) : base(db) { }
 
         // Get both base stats and EV yields for a specific Pokémon
         public List<PokemonStatsData> GetStatsForPokemon(int pokedexID) =>

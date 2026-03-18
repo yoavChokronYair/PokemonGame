@@ -1,12 +1,12 @@
 ﻿using PokemonGame.Services.Data.GameData.User;
-using PokemonGame.Services.Data.Repositories.SQLite;
+using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class GameModeChooserService
     {
-        private readonly SQLiteOnlinePlayerRepository _onlinePlayers;
+        private readonly OnlinePlayerRepository _onlinePlayers;
 
         public GameModeChooserService()
         {

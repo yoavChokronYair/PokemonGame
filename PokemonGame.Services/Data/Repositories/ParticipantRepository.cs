@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteParticipantRepository : SQLiteRepository<int, BattleParticipantData>
+    internal class ParticipantRepository : SQLiteRepository<int, BattleParticipantData>
     {
-        internal SQLiteParticipantRepository(ISQLiteConnectionService db) : base(db) { }
+        internal ParticipantRepository(IDbConnectionService db) : base(db) { }
 
         // Records a participant's entry into a battle
         public void AddParticipant(int battleID, int battlePlayerID)

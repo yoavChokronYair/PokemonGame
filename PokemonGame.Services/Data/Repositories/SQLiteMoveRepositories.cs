@@ -2,9 +2,9 @@
 using PokemonGame.Services.Data.GameData.Move;
 
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteMoveRepository : SQLiteRepository<string, MoveData>
+    internal class MoveRepository : SQLiteRepository<string, MoveData>
     {
         // Secondary caches for sub-tables
         private readonly Dictionary<int, MoveNumberData> _numberCache = new();
@@ -16,7 +16,7 @@ namespace PokemonGame.Services.Data.Repositories.SQLite
         private readonly Dictionary<int, List<MoveWeightedEntryData>> _weightedCache = new();
         private readonly Dictionary<int, List<MultiStatChangeRow>> _multiStatCache = new();
 
-        internal SQLiteMoveRepository(ISQLiteConnectionService db) : base(db) { }
+        internal MoveRepository(IDbConnectionService db) : base(db) { }
 
         // ── Move (flat) ───────────────────────────────────────────────────────────
 

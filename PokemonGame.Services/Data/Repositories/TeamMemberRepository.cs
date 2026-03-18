@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 
-namespace PokemonGame.Services.Data.Repositories.SQLite
+namespace PokemonGame.Services.Data.Repositories
 {
-    internal class SQLiteTeamMemberRepository : SQLiteRepository<int, TeamMemberData>
+    internal class TeamMemberRepository : SQLiteRepository<int, TeamMemberData>
     {
-        internal SQLiteTeamMemberRepository(ISQLiteConnectionService db) : base(db) { }
+        internal TeamMemberRepository(IDbConnectionService db) : base(db) { }
 
         // Fetch all members for a specific team
         public List<TeamMemberData> GetTeamMembers(int teamID) =>

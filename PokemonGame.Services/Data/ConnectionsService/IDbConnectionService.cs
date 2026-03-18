@@ -1,6 +1,6 @@
 ﻿namespace PokemonGame.Services.Data.ConnectionsService
 {
-    public interface ISQLiteConnectionService
+    public interface IDbConnectionService
     {
         /// <summary>
         /// Executes a SQL query that returns a single row and maps it to an object of type T.

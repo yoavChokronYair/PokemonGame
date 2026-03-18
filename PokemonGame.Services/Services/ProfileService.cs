@@ -1,12 +1,12 @@
 ﻿using PokemonGame.Services.Data.GameData.User;
-using PokemonGame.Services.Data.Repositories.SQLite;
+using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class ProfileService
     {
-        private readonly SQLiteUserRepository _userCache;
+        private readonly UserRepository _userCache;
 
         public ProfileService()
         {

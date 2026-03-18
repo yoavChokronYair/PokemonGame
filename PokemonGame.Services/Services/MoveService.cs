@@ -1,5 +1,5 @@
 ﻿using PokemonGame.Services.Data.GameData.Move;
-using PokemonGame.Services.Data.Repositories.SQLite;
+using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
@@ -14,7 +14,7 @@ namespace PokemonGame.Services.Handler
 
     public class MoveService : IMoveService
     {
-        private readonly SQLiteMoveRepository _repo;
+        private readonly MoveRepository _repo;
 
         // Visited sets prevent infinite loops in self-referencing trees
         // (e.g. Charge → ReleaseAttempt → Charge)
