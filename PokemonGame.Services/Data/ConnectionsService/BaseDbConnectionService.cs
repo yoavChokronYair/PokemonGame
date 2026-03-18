@@ -3,13 +3,45 @@ using System.Reflection;
 
 namespace PokemonGame.Services.Data.ConnectionsService
 {
+    /// <summary>
+    /// Abstract base class for all database connection services.
+    /// Provides shared row-mapping and type-conversion logic so concrete
+    /// implementations only need to handle connection and parameter mechanics.
+    /// </summary>
+    /// <remarks>
+    /// Implements the Strategy pattern base: subclasses are interchangeable
+    /// behind <see cref="IDbConnectionService"/>. Uses Reflection internally
+    /// so that <see cref="MapReaderToObject{T}"/> works for any model class
+    /// without any per-type configuration.
+    /// </remarks>
     public abstract class BaseDbConnectionService : IDbConnectionService
     {
+        /// <inheritdoc/>
         public abstract T QuerySingle<T>(string sql, object parameters = null) where T : new();
+
+        /// <inheritdoc/>
         public abstract List<T> Query<T>(string sql) where T : new();
+
+        /// <inheritdoc/>
         public abstract List<T> Query<T>(string sql, object parameters) where T : new();
+
+        /// <inheritdoc/>
         public abstract int Execute(string sql, object parameters = null);
 
+        /// <summary>
+        /// Maps the current row of an <see cref="IDataReader"/> to a new instance of <typeparamref name="T"/>.
+        /// Property names are matched to column names case-insensitively via Reflection.
+        /// Properties with no matching column, or whose column value is <see cref="DBNull"/>, are left at their default.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The target type. Must have a public parameterless constructor.
+        /// Property names must match database column names (or SQL aliases).
+        /// </typeparam>
+        /// <param name="reader">
+        /// An open reader positioned on the row to map.
+        /// The reader is not advanced or closed by this method.
+        /// </param>
+        /// <returns>A new <typeparamref name="T"/> instance populated from the current row.</returns>
         protected static T MapReaderToObject<T>(IDataReader reader) where T : new()
         {
             var result = new T();
@@ -32,6 +64,22 @@ namespace PokemonGame.Services.Data.ConnectionsService
             return result;
         }
 
+        /// <summary>
+        /// Converts a raw value returned by a database driver to the requested CLR type.
+        /// </summary>
+        /// <remarks>
+        /// Database drivers do not return every numeric type directly.
+        /// SQLite returns <see langword="long"/> for all integers and
+        /// <see langword="double"/> for all real numbers. OleDb returns
+        /// <see langword="int"/> for Access Integer fields and
+        /// <see langword="double"/> for Currency/Number fields.
+        /// <see cref="Convert.ChangeType"/> fails for unsigned types and
+        /// <see langword="float"/>, so every numeric type is handled explicitly
+        /// via an intermediate <see langword="long"/> or <see langword="double"/> cast.
+        /// </remarks>
+        /// <param name="value">The raw value from the reader. Must not be <see cref="DBNull"/>.</param>
+        /// <param name="targetType">The unwrapped target CLR type (nullable types must already be unwrapped).</param>
+        /// <returns>The value converted to <paramref name="targetType"/>.</returns>
         protected static object ConvertValue(object value, Type targetType)
         {
             if (targetType == typeof(string)) return value.ToString();
