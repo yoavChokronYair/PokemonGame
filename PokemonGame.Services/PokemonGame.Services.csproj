@@ -8,34 +8,9 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <None Remove="resources\Maps\Maps.Json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="resources\Maps\Maps.Json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
 	  <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.0" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="System.Data.OleDb" Version="10.0.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="resources\Items\Pokeballs.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\Npc\Rivals.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\Npc\Trainers.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\Player\Players.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
