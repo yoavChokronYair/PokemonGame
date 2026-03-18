@@ -3,7 +3,7 @@ using PokemonGame.Services.Data.GameData.Pokemon;
 
 namespace PokemonGame.Services.Data.Repositories
 {
-    internal class PokemonRepository : SQLiteRepository<int, PokemonGeneral>
+    internal class PokemonRepository : DbRepository<int, PokemonGeneral>
     {
         internal PokemonRepository(IDbConnectionService db) : base(db) { }
 

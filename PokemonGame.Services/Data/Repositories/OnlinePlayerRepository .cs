@@ -3,7 +3,7 @@ using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.Services.Data.Repositories
 {
-    internal class OnlinePlayerRepository : SQLiteRepository<string, BattlePlayerData>
+    internal class OnlinePlayerRepository : DbRepository<string, BattlePlayerData>
     {
         internal OnlinePlayerRepository(IDbConnectionService db) : base(db) { }
 

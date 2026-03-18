@@ -37,7 +37,7 @@ namespace PokemonGame.Services.Factory
         private ServiceFactory()
         {
             var db = new SQLiteConnectionService(
-                "C:\\Users\\yoav\\Source\\Repos\\PokemonGame\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
+                "..\\..\\..\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
 
             // Initialize all repositories with the shared connection service
             UserRepository = new UserRepository(db);

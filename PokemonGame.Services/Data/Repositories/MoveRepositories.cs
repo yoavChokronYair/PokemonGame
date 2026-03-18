@@ -4,7 +4,7 @@ using PokemonGame.Services.Data.GameData.Move;
 
 namespace PokemonGame.Services.Data.Repositories
 {
-    internal class MoveRepository : SQLiteRepository<string, MoveData>
+    internal class MoveRepository : DbRepository<string, MoveData>
     {
         // Secondary caches for sub-tables
         private readonly Dictionary<int, MoveNumberData> _numberCache = new();

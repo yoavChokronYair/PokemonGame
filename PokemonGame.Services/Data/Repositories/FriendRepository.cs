@@ -3,7 +3,7 @@ using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.Services.Data.Repositories
 {
-    internal class FriendRepository : SQLiteRepository<string, BattlePlayerFriendData>
+    internal class FriendRepository : DbRepository<string, BattlePlayerFriendData>
     {
         internal FriendRepository(IDbConnectionService db) : base(db) { }
 

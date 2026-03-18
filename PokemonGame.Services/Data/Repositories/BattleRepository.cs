@@ -3,7 +3,7 @@ using PokemonGame.Services.Data.GameData.OnlineBattleData;
 
 namespace PokemonGame.Services.Data.Repositories
 {
-    internal class BattleRepository : SQLiteRepository<int, BattleRecordData>
+    internal class BattleRepository : DbRepository<int, BattleRecordData>
     {
         internal BattleRepository(IDbConnectionService db) : base(db) { }
 
