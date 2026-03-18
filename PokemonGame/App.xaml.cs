@@ -22,13 +22,42 @@ namespace PokemonGame
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            _navigationStore.CurrentViewModel = CreateLogInViewModel();
-            MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(_navigationStore)
-            };
-            MainWindow.Show();
             base.OnStartup(e);
+
+            #if DEBUG
+            var debugLogin = new DebugAutoLoginService();
+
+            if (debugLogin.AutoLogin())
+            {
+                
+                _userStore.Username = debugLogin.CurrentUserName;
+                _userStore.BattlePlayerID = debugLogin.CurrentPlayerID;
+
+                _navigationStore.CurrentViewModel = CreateOnlineBattleShellViewModel();
+
+                MainWindow = new MainWindow
+                {
+                    DataContext = new MainWindowViewModel(_navigationStore)
+                };
+                MainWindow.Show();
+            }
+            else
+            {
+                _navigationStore.CurrentViewModel = CreateLogInViewModel();
+                MainWindow = new MainWindow
+                {
+                    DataContext = new MainWindowViewModel(_navigationStore)
+                };
+                MainWindow.Show();
+            }
+            #else
+                _navigationStore.CurrentViewModel = CreateLogInViewModel();
+                MainWindow = new MainWindow
+                {
+                    DataContext = new MainWindowViewModel(_navigationStore)
+                };
+                MainWindow.Show();
+            #endif
         }
 
         // ---------------- ROOT NAVIGATION ----------------

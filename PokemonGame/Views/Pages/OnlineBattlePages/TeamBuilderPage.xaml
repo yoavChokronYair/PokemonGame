@@ -41,7 +41,7 @@
                         Background="Transparent"
                         BorderThickness="0"
                         ItemsSource="{Binding TeamSlots}"
-                        SelectedItem="{Binding SelectedPokemon, Mode=TwoWay}">
+                        SelectedItem="{Binding SelectedPokemon, Mode=OneWay}">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" />
@@ -110,7 +110,7 @@
                         BorderThickness="2"
                         Command="{Binding AddTeamSlotCommand}"
                         Cursor="Hand"
-                        Visibility="{Binding AddTeamSlotCommand, Converter={StaticResource NullToVis}}">
+                        Visibility="{Binding CanAddTeamSlot, Converter={StaticResource BoolToVis}}">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border
@@ -148,6 +148,32 @@
                         FontSize="11"
                         Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
                         <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
+                    </Button>
+                    <Button
+                        Margin="6,0,0,0"
+                        Padding="8,4"
+                        VerticalAlignment="Center"
+                        Background="#F0FFF0"
+                        BorderBrush="#88CC88"
+                        BorderThickness="1"
+                        Command="{Binding AddToTeamCommand}"
+                        Cursor="Hand"
+                        FontSize="11"
+                        Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
+                        <TextBlock Foreground="#336633" Text="✚ Add to Team" />
+                    </Button>
+                    <!--  Always-visible picker toggle  -->
+                    <Button
+                        Margin="6,0,0,0"
+                        Padding="8,4"
+                        VerticalAlignment="Center"
+                        Background="#F0F4FF"
+                        BorderBrush="#4A90D9"
+                        BorderThickness="1"
+                        Command="{Binding OpenPokemonPickerCommand}"
+                        Cursor="Hand"
+                        FontSize="11">
+                        <TextBlock Foreground="#4A90D9" Text="🔍 Browse Pokémon" />
                     </Button>
                 </StackPanel>
             </Border>

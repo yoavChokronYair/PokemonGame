@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.Pokemon;
@@ -23,21 +24,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             "Modest", "Mild",   "Quiet",   "Bashful", "Rash",
             "Calm",   "Gentle", "Sassy",   "Careful", "Quirky"
         };
+        public bool CanAddTeamSlot => TeamSlots.Count < 6;
 
         public List<string> GenderOptions { get; } = new List<string> { "—", "♂", "♀" };
 
-        // ── All available pokemon ─────────────────────────────────────────────
-        // PokemonDisplayEntry is the DTO defined in TeamBuilderService
+        // ── All available Pokémon ─────────────────────────────────────────────
         public ObservableCollection<PokemonDisplayEntry> AllPokemon { get; }
 
         // ── All held items ────────────────────────────────────────────────────
-        // ItemData is PokemonGame.Services.Data.GameData.ItemData
         public ObservableCollection<ItemData> AllItems { get; }
 
+
         // ── Team slots ────────────────────────────────────────────────────────
-        // Each slot is a BattlerPokemon extended with display fields via TeamSlotEntry
         public ObservableCollection<TeamSlotEntry> TeamSlots { get; }
-            = new ObservableCollection<TeamSlotEntry>();
 
         // ── Selected slot in team ─────────────────────────────────────────────
         private TeamSlotEntry _selectedPokemon;
@@ -65,11 +64,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             set
             {
                 if (SetProperty(ref _selectedItem, value) && value != null)
-                    ConfirmItemCommand.Execute(ConfirmItemCommand);
+                    ConfirmItemCommand.Execute(null);
             }
         }
 
-        // ── Selected pokemon in picker — auto-confirms on set ─────────────────
+        // ── Selected Pokémon in picker — auto-confirms on set ─────────────────
         private PokemonDisplayEntry _pickerPokemon;
         public PokemonDisplayEntry PickerPokemon
         {
@@ -77,19 +76,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             set
             {
                 if (SetProperty(ref _pickerPokemon, value) && value != null)
-                    ConfirmPokemonCommand.Execute(ConfirmPokemonCommand);
+                    ConfirmPokemonCommand.Execute(null);
             }
         }
 
         // ── Selected move in picker — auto-confirms on set ────────────────────
-        private string _selectedMove;
-        public string SelectedMove
+        private MoveDisplayEntry _selectedMove;
+        public MoveDisplayEntry SelectedMove
         {
             get => _selectedMove;
             set
             {
                 if (SetProperty(ref _selectedMove, value) && value != null)
-                    ConfirmMoveCommand.Execute(ConfirmMoveCommand);
+                    ConfirmMoveCommand.Execute(null);
             }
         }
 
@@ -142,10 +141,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public RelayCommand OpenPokemonPickerCommand { get; }
         public RelayCommand AddTeamSlotCommand { get; }
         public RelayCommand RemoveFromTeamCommand { get; }
+        public RelayCommand AddToTeamCommand { get; }
+
 
         // ── Constructor ───────────────────────────────────────────────────────
         public TeamBuilderViewModel()
         {
+            TeamSlots = new ObservableCollection<TeamSlotEntry>();
+            TeamSlots.CollectionChanged += (_, __) => OnPropertyChanged(nameof(CanAddTeamSlot));
+
             AllPokemon = new ObservableCollection<PokemonDisplayEntry>(
                 _service.GetAllPokemon());
 
@@ -212,23 +216,40 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 }
             });
 
+            // ConfirmPokemonCommand now just populates the editor, doesn't add to team
             ConfirmPokemonCommand = new RelayCommand(() =>
             {
                 if (PickerPokemon == null) return;
-                var slot = CreateSlot(PickerPokemon);
-                if (SelectedPokemon != null && TeamSlots.Contains(SelectedPokemon))
-                {
-                    int idx = TeamSlots.IndexOf(SelectedPokemon);
-                    TeamSlots[idx] = slot;
-                }
-                else if (TeamSlots.Count < 6)
-                {
-                    TeamSlots.Add(slot);
-                }
-                PickerPokemon = null;
+
+                var slot = new TeamSlotEntry(PickerPokemon);
+
+                // Debug: verify slot is created
+                System.Diagnostics.Debug.WriteLine($"Created slot for: {slot.Name}");
+
+                _selectedPokemon = slot;
+                OnPropertyChanged(nameof(SelectedPokemon));
+
+                System.Diagnostics.Debug.WriteLine($"SelectedPokemon is now: {_selectedPokemon?.Name ?? "NULL"}");
+
+                _pickerPokemon = null;
+                OnPropertyChanged(nameof(PickerPokemon));
+
                 IsPokemonPickerOpen = false;
-                SelectedPokemon = slot;
+
+                System.Diagnostics.Debug.WriteLine($"IsPokemonPickerOpen: {IsPokemonPickerOpen}");
+
+                AddToTeamCommand.NotifyCanExecuteChanged();
             });
+
+            // New command — commits the current edited slot to the team
+            AddToTeamCommand = new RelayCommand(() =>
+            {
+                if (SelectedPokemon == null) return;
+                if (TeamSlots.Contains(SelectedPokemon)) return; // already in team (editing existing)
+                if (TeamSlots.Count >= 6) return;
+                TeamSlots.Add(SelectedPokemon);
+            },
+            () => SelectedPokemon != null && !TeamSlots.Contains(SelectedPokemon) && TeamSlots.Count < 6);
 
             AddTeamSlotCommand = new RelayCommand(() =>
             {
@@ -242,6 +263,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 TeamSlots.Remove(SelectedPokemon);
                 SelectedPokemon = TeamSlots.Count > 0 ? TeamSlots[0] : null;
             });
+            IsPokemonPickerOpen = true;
         }
 
         // ── Helpers ───────────────────────────────────────────────────────────
@@ -255,18 +277,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             IsPokemonPickerOpen = false;
             SelectedMove = null;
         }
-
-        /// <summary>
-        /// Creates a fresh editable TeamSlotEntry from a picker template.
-        /// </summary>
-        private static TeamSlotEntry CreateSlot(PokemonDisplayEntry src) =>
-            new TeamSlotEntry(src);
     }
 
     // ── TeamSlotEntry ─────────────────────────────────────────────────────────
-    // Wraps PokemonDisplayEntry (read-only template data) with all the observable
+    // Wraps PokemonDisplayEntry (read-only template data) with all observable
     // editable fields the editor card binds to.
-    // Lives here because it is purely a ViewModel concern — no DB mapping needed.
 
     public class TeamSlotEntry : ViewModelBase
     {
@@ -276,7 +291,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public string Type1 { get; }
         public string? Type2 { get; }
         public List<string> Abilities { get; }
-        public List<string> AvailableMoves { get; }
+        public List<MoveDisplayEntry> AvailableMoves { get; }
         public int HP { get; }
         public int Atk { get; }
         public int Def { get; }
@@ -284,6 +299,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public int SpD { get; }
         public int Spe { get; }
         public int BST => HP + Atk + Def + SpA + SpD + Spe;
+        public BitmapImage SpriteImage { get; }
+        public List<TypeEntry> Types { get; }
 
         public TeamSlotEntry(PokemonDisplayEntry src)
         {
@@ -304,6 +321,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             SelectedAbility = src.Abilities.Count > 0 ? src.Abilities[0] : null;
             IvHP = 31; IvAtk = 31; IvDef = 31;
             IvSpA = 31; IvSpD = 31; IvSpe = 31;
+            SpriteImage = src.SpriteImage;
+            Types = src.Types;
         }
 
         // ── Editable fields ───────────────────────────────────────────────────
@@ -377,13 +396,42 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             set => SetProperty(ref _selectedAbility, value);
         }
 
-        // Moves
-        private string _move1; public string Move1 { get => _move1; set => SetProperty(ref _move1, value); }
-        private string _move2; public string Move2 { get => _move2; set => SetProperty(ref _move2, value); }
-        private string _move3; public string Move3 { get => _move3; set => SetProperty(ref _move3, value); }
-        private string _move4; public string Move4 { get => _move4; set => SetProperty(ref _move4, value); }
+        // ── Moves ─────────────────────────────────────────────────────────────
+        private MoveDisplayEntry _move1;
+        public MoveDisplayEntry Move1
+        {
+            get => _move1;
+            set { if (SetProperty(ref _move1, value)) OnPropertyChanged(nameof(Move1Display)); }
+        }
 
-        // EVs
+        private MoveDisplayEntry _move2;
+        public MoveDisplayEntry Move2
+        {
+            get => _move2;
+            set { if (SetProperty(ref _move2, value)) OnPropertyChanged(nameof(Move2Display)); }
+        }
+
+        private MoveDisplayEntry _move3;
+        public MoveDisplayEntry Move3
+        {
+            get => _move3;
+            set { if (SetProperty(ref _move3, value)) OnPropertyChanged(nameof(Move3Display)); }
+        }
+
+        private MoveDisplayEntry _move4;
+        public MoveDisplayEntry Move4
+        {
+            get => _move4;
+            set { if (SetProperty(ref _move4, value)) OnPropertyChanged(nameof(Move4Display)); }
+        }
+
+        // Display-only name strings for the editor card buttons
+        public string Move1Display => Move1?.Name ?? "— Move 1 —";
+        public string Move2Display => Move2?.Name ?? "— Move 2 —";
+        public string Move3Display => Move3?.Name ?? "— Move 3 —";
+        public string Move4Display => Move4?.Name ?? "— Move 4 —";
+
+        // ── EVs ───────────────────────────────────────────────────────────────
         private int _evHP;
         public int EvHP { get => _evHP; set { if (SetProperty(ref _evHP, value)) { OnPropertyChanged(nameof(FinalHP)); OnPropertyChanged(nameof(RemainingEvs)); } } }
         private int _evAtk;
@@ -399,7 +447,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         public int RemainingEvs => 510 - EvHP - EvAtk - EvDef - EvSpA - EvSpD - EvSpe;
 
-        // IVs
+        // ── IVs ───────────────────────────────────────────────────────────────
         private int _ivHP = 31; public int IvHP { get => _ivHP; set { if (SetProperty(ref _ivHP, value)) OnPropertyChanged(nameof(FinalHP)); } }
         private int _ivAtk = 31; public int IvAtk { get => _ivAtk; set { if (SetProperty(ref _ivAtk, value)) OnPropertyChanged(nameof(FinalAtk)); } }
         private int _ivDef = 31; public int IvDef { get => _ivDef; set { if (SetProperty(ref _ivDef, value)) OnPropertyChanged(nameof(FinalDef)); } }

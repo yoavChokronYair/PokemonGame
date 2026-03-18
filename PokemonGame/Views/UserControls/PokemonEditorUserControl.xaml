@@ -149,7 +149,7 @@
                             FontSize="10"
                             FontWeight="SemiBold"
                             Foreground="#1A6FCC"
-                            Text="{Binding SelectedPokemon.Name}"
+                            Text="{Binding SelectedPokemon.Name, Mode=OneWay}"
                             TextAlignment="Center"
                             TextDecorations="Underline"
                             TextWrapping="Wrap" />
@@ -248,7 +248,7 @@
                         Margin="0,0,0,6"
                         Command="{Binding OpenItemPickerCommand}"
                         Style="{StaticResource MoveBtn}">
-                        <TextBlock FontSize="11" Text="{Binding SelectedPokemon.HeldItem, FallbackValue='(click to choose)'}" />
+                        <TextBlock FontSize="11" Text="{Binding SelectedPokemon.HeldItemName, FallbackValue='(click to choose)'}" />
                     </Button>
 
                     <TextBlock Style="{StaticResource Lbl}" Text="Ability" />
@@ -275,22 +275,22 @@
                         Margin="0,0,0,4"
                         Command="{Binding OpenMoveSlot1Command}"
                         Style="{StaticResource MoveBtn}">
-                        <TextBlock Text="{Binding SelectedPokemon.Move1, FallbackValue='— Move 1 —'}" />
+                        <TextBlock Text="{Binding SelectedPokemon.Move1Display}" />
                     </Button>
                     <Button
                         Margin="0,0,0,4"
                         Command="{Binding OpenMoveSlot2Command}"
                         Style="{StaticResource MoveBtn}">
-                        <TextBlock Text="{Binding SelectedPokemon.Move2, FallbackValue='— Move 2 —'}" />
+                        <TextBlock Text="{Binding SelectedPokemon.Move2Display}" />
                     </Button>
                     <Button
                         Margin="0,0,0,4"
                         Command="{Binding OpenMoveSlot3Command}"
                         Style="{StaticResource MoveBtn}">
-                        <TextBlock Text="{Binding SelectedPokemon.Move3, FallbackValue='— Move 3 —'}" />
+                        <TextBlock Text="{Binding SelectedPokemon.Move3Display}" />
                     </Button>
                     <Button Command="{Binding OpenMoveSlot4Command}" Style="{StaticResource MoveBtn}">
-                        <TextBlock Text="{Binding SelectedPokemon.Move4, FallbackValue='— Move 4 —'}" />
+                        <TextBlock Text="{Binding SelectedPokemon.Move4Display}" />
                     </Button>
                 </StackPanel>
 
@@ -302,127 +302,151 @@
                         BorderThickness="0"
                         Command="{Binding ToggleEvIvCommand}"
                         Cursor="Hand">
-                        <StackPanel>
+                        <StackPanel Width="200">
                             <TextBlock Style="{StaticResource Hdr}" Text="Stats  ▾" />
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition Width="40" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     Grid.Column="0"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatLbl}"
-                                    Text="HP" />
+                                    Text="HP"
+                                    TextAlignment="Left" />
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#6DBE6D"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.HP}" />
+                                    Value="{Binding SelectedPokemon.HP, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.HP}" />
+                                    Text="{Binding SelectedPokemon.HP, Mode=OneWay}"
+                                    TextAlignment="Left" />
                             </Grid>
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition Width="40" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     Grid.Column="0"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatLbl}"
-                                    Text="Atk" />
+                                    Text="Atk"
+                                    TextAlignment="Left" />
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#E8855A"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.Atk}" />
+                                    Value="{Binding SelectedPokemon.Atk, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.Atk}" />
+                                    Text="{Binding SelectedPokemon.Atk, Mode=OneWay}"
+                                    TextAlignment="Left" />
                             </Grid>
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition Width="40" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     Grid.Column="0"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatLbl}"
-                                    Text="Def" />
+                                    Text="Def"
+                                    TextAlignment="Left" />
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#D4C85A"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.Def}" />
+                                    Value="{Binding SelectedPokemon.Def, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.Def}" />
+                                    Text="{Binding SelectedPokemon.Def, Mode=OneWay}"
+                                    TextAlignment="Left" />
                             </Grid>
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition Width="40" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     Grid.Column="0"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatLbl}"
-                                    Text="SpA" />
+                                    Text="SpA"
+                                    TextAlignment="Left" />
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#7BA7E0"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.SpA}" />
+                                    Value="{Binding SelectedPokemon.SpA, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.SpA}" />
+                                    Text="{Binding SelectedPokemon.SpA, Mode=OneWay}"
+                                    TextAlignment="Left" />
                             </Grid>
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition Width="40" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     Grid.Column="0"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatLbl}"
-                                    Text="SpD" />
+                                    Text="SpD"
+                                    TextAlignment="Left" />
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#78C8A8"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.SpD}" />
+                                    Value="{Binding SelectedPokemon.SpD, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.SpD}" />
+                                    Text="{Binding SelectedPokemon.SpD, Mode=OneWay}"
+                                    TextAlignment="Left" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition Width="40" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     Grid.Column="0"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatLbl}"
-                                    Text="Spe" />
+                                    Text="Spe"
+                                    TextAlignment="Left" />
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#C87DDB"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.Spe}" />
+                                    Value="{Binding SelectedPokemon.Spe, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
+                                    HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.Spe}" />
+                                    Text="{Binding SelectedPokemon.Spe, Mode=OneWay}"
+                                    TextAlignment="Left" />
                             </Grid>
                         </StackPanel>
                     </Button>

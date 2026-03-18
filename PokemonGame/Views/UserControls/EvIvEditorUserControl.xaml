@@ -13,30 +13,23 @@
         <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <conv:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter" />
 
-        <!--  Section title  -->
         <Style x:Key="SectionTitle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="#333333" />
         </Style>
-
-        <!--  Column header  -->
         <Style x:Key="ColHeader" TargetType="TextBlock">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="#555555" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
-
-        <!--  Row label (HP / Attack etc.)  -->
         <Style x:Key="RowLabel" TargetType="TextBlock">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="#444444" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
-
-        <!--  Base stat value  -->
         <Style x:Key="BaseVal" TargetType="TextBlock">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="Bold" />
@@ -46,8 +39,6 @@
             <Setter Property="TextAlignment" Value="Right" />
             <Setter Property="Margin" Value="3,0,4,0" />
         </Style>
-
-        <!--  EV TextBox  -->
         <Style x:Key="EvBox" TargetType="TextBox">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Width" Value="38" />
@@ -58,8 +49,6 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
-
-        <!--  IV TextBox  -->
         <Style x:Key="IvBox" TargetType="TextBox">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Width" Value="38" />
@@ -70,8 +59,6 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
-
-        <!--  Final stat value  -->
         <Style x:Key="FinalVal" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="Bold" />
@@ -80,8 +67,6 @@
             <Setter Property="Width" Value="36" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
-
-        <!--  EV Slider  -->
         <Style x:Key="EvSlider" TargetType="Slider">
             <Setter Property="Minimum" Value="0" />
             <Setter Property="Maximum" Value="252" />
@@ -99,7 +84,6 @@
         BorderBrush="#CCD0D8"
         BorderThickness="1"
         CornerRadius="4">
-
         <Grid>
 
             <!--  Empty state  -->
@@ -120,28 +104,20 @@
                     Padding="0,0,0,4"
                     BorderBrush="#B0B8C8"
                     BorderThickness="0,0,0,1">
-                    <TextBlock Style="{StaticResource SectionTitle}" Text="EVs" />
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="EVs / IVs" />
                 </Border>
 
                 <!--  Column headers  -->
                 <Grid Margin="0,0,0,4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65" />
-                        <!--  Stat name  -->
                         <ColumnDefinition Width="32" />
-                        <!--  Base value  -->
                         <ColumnDefinition Width="80" />
-                        <!--  Base bar  -->
                         <ColumnDefinition Width="44" />
-                        <!--  EV box  -->
                         <ColumnDefinition Width="*" />
-                        <!--  EV slider  -->
                         <ColumnDefinition Width="44" />
-                        <!--  IV box  -->
                         <ColumnDefinition Width="40" />
-                        <!--  Final stat  -->
                     </Grid.ColumnDefinitions>
-
                     <TextBlock
                         Grid.Column="0"
                         Margin="0,0,38,0"
@@ -176,7 +152,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Style="{StaticResource BaseVal}"
-                        Text="{Binding SelectedPokemon.HP}" />
+                        Text="{Binding SelectedPokemon.HP, Mode=OneWay}" />
                     <ProgressBar
                         Grid.Column="2"
                         Height="12"
@@ -186,7 +162,7 @@
                         Foreground="#78C840"
                         Maximum="255"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.HP}" />
+                        Value="{Binding SelectedPokemon.HP, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -204,7 +180,7 @@
                     <TextBlock
                         Grid.Column="6"
                         Style="{StaticResource FinalVal}"
-                        Text="{Binding SelectedPokemon.FinalHP}" />
+                        Text="{Binding SelectedPokemon.FinalHP, Mode=OneWay}" />
                 </Grid>
 
                 <!--  ── Attack ──  -->
@@ -225,7 +201,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Style="{StaticResource BaseVal}"
-                        Text="{Binding SelectedPokemon.Atk}" />
+                        Text="{Binding SelectedPokemon.Atk, Mode=OneWay}" />
                     <ProgressBar
                         Grid.Column="2"
                         Height="12"
@@ -235,7 +211,7 @@
                         Foreground="#C8C840"
                         Maximum="255"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.Atk}" />
+                        Value="{Binding SelectedPokemon.Atk, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -253,7 +229,7 @@
                     <TextBlock
                         Grid.Column="6"
                         Style="{StaticResource FinalVal}"
-                        Text="{Binding SelectedPokemon.FinalAtk}" />
+                        Text="{Binding SelectedPokemon.FinalAtk, Mode=OneWay}" />
                 </Grid>
 
                 <!--  ── Defense ──  -->
@@ -274,7 +250,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Style="{StaticResource BaseVal}"
-                        Text="{Binding SelectedPokemon.Def}" />
+                        Text="{Binding SelectedPokemon.Def, Mode=OneWay}" />
                     <ProgressBar
                         Grid.Column="2"
                         Height="12"
@@ -284,7 +260,7 @@
                         Foreground="#C8C840"
                         Maximum="255"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.Def}" />
+                        Value="{Binding SelectedPokemon.Def, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -302,7 +278,7 @@
                     <TextBlock
                         Grid.Column="6"
                         Style="{StaticResource FinalVal}"
-                        Text="{Binding SelectedPokemon.FinalDef}" />
+                        Text="{Binding SelectedPokemon.FinalDef, Mode=OneWay}" />
                 </Grid>
 
                 <!--  ── Sp. Atk ──  -->
@@ -323,7 +299,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Style="{StaticResource BaseVal}"
-                        Text="{Binding SelectedPokemon.SpA}" />
+                        Text="{Binding SelectedPokemon.SpA, Mode=OneWay}" />
                     <ProgressBar
                         Grid.Column="2"
                         Height="12"
@@ -333,7 +309,7 @@
                         Foreground="#E08030"
                         Maximum="255"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.SpA}" />
+                        Value="{Binding SelectedPokemon.SpA, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -351,7 +327,7 @@
                     <TextBlock
                         Grid.Column="6"
                         Style="{StaticResource FinalVal}"
-                        Text="{Binding SelectedPokemon.FinalSpA}" />
+                        Text="{Binding SelectedPokemon.FinalSpA, Mode=OneWay}" />
                 </Grid>
 
                 <!--  ── Sp. Def ──  -->
@@ -372,7 +348,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Style="{StaticResource BaseVal}"
-                        Text="{Binding SelectedPokemon.SpD}" />
+                        Text="{Binding SelectedPokemon.SpD, Mode=OneWay}" />
                     <ProgressBar
                         Grid.Column="2"
                         Height="12"
@@ -382,7 +358,7 @@
                         Foreground="#E08030"
                         Maximum="255"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.SpD}" />
+                        Value="{Binding SelectedPokemon.SpD, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -400,7 +376,7 @@
                     <TextBlock
                         Grid.Column="6"
                         Style="{StaticResource FinalVal}"
-                        Text="{Binding SelectedPokemon.FinalSpD}" />
+                        Text="{Binding SelectedPokemon.FinalSpD, Mode=OneWay}" />
                 </Grid>
 
                 <!--  ── Speed ──  -->
@@ -421,7 +397,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Style="{StaticResource BaseVal}"
-                        Text="{Binding SelectedPokemon.Spe}" />
+                        Text="{Binding SelectedPokemon.Spe, Mode=OneWay}" />
                     <ProgressBar
                         Grid.Column="2"
                         Height="12"
@@ -431,7 +407,7 @@
                         Foreground="#E83030"
                         Maximum="255"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.Spe}" />
+                        Value="{Binding SelectedPokemon.Spe, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -449,7 +425,7 @@
                     <TextBlock
                         Grid.Column="6"
                         Style="{StaticResource FinalVal}"
-                        Text="{Binding SelectedPokemon.FinalSpe}" />
+                        Text="{Binding SelectedPokemon.FinalSpe, Mode=OneWay}" />
                 </Grid>
 
                 <!--  ── Remaining EVs ──  -->
@@ -468,7 +444,7 @@
                         FontSize="11"
                         FontWeight="Bold"
                         Foreground="#333333"
-                        Text="{Binding SelectedPokemon.RemainingEvs}" />
+                        Text="{Binding SelectedPokemon.RemainingEvs, Mode=OneWay}" />
                 </StackPanel>
 
                 <!--  ── Nature ──  -->

@@ -37,7 +37,7 @@
                     <Run Text="Pick Move " />
                     <Run Foreground="#4A90D9" Text="{Binding ActiveMoveSlot}" />
                     <Run Text=" — " />
-                    <Run Foreground="#4A90D9" Text="{Binding SelectedPokemon.Name}" />
+                    <Run Foreground="#4A90D9" Text="{Binding SelectedPokemon.Name, Mode=OneWay}" />
                 </TextBlock>
             </Border>
 
@@ -168,24 +168,23 @@
                                 Padding="5,2"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Background="{Binding Type.Color}"
+                                Background="{Binding TypeColor}"
                                 CornerRadius="3">
                                 <TextBlock
                                     FontSize="9"
                                     FontWeight="Bold"
                                     Foreground="White"
-                                    Text="{Binding Type.Name}" />
+                                    Text="{Binding TypeName}" />
                             </Border>
 
                             <!--  Category icon  -->
-                            <Image
+                            <TextBlock
                                 Grid.Column="2"
-                                Width="32"
-                                Height="14"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                Source="{Binding CategoryImage}" />
+                                FontSize="10"
+                                Foreground="#555"
+                                Text="{Binding Category}" />
 
                             <!--  Power  -->
                             <StackPanel
