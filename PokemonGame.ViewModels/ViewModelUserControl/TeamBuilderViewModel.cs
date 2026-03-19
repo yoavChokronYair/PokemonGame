@@ -2,7 +2,10 @@
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
+using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
@@ -31,6 +34,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         // ── All held items ────────────────────────────────────────────────────
         public ObservableCollection<ItemData> AllItems { get; }
 
+        private readonly UserStore _userStore;
+
 
         // ── Team slots ────────────────────────────────────────────────────────
         public ObservableCollection<TeamSlotEntry> TeamSlots { get; }
@@ -52,6 +57,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             : SelectedPokemon?.AvailableMoves
                 .Where(m => m.Name.IndexOf(MoveSearchText, StringComparison.OrdinalIgnoreCase) >= 0)
               ?? Enumerable.Empty<MoveDisplayEntry>();
+
         private string _itemSearchText = string.Empty;
         public string ItemSearchText
         {
@@ -67,8 +73,53 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             string.IsNullOrWhiteSpace(ItemSearchText)
                 ? AllItems
                 : AllItems.Where(i => i.Name.IndexOf(ItemSearchText, StringComparison.OrdinalIgnoreCase) >= 0);
+        
+        private string _pokemonSearchText = string.Empty;
+        public string PokemonSearchText
+        {
+            get => _pokemonSearchText;
+            set
+            {
+                if (SetProperty(ref _pokemonSearchText, value))
+                    OnPropertyChanged(nameof(FilteredPokemons));
+            }
+        }
+
+        public IEnumerable<PokemonDisplayEntry> FilteredPokemons =>
+            string.IsNullOrWhiteSpace(PokemonSearchText)
+                ? AllPokemon
+                : AllPokemon.Where(i => i.Name.IndexOf(PokemonSearchText, StringComparison.OrdinalIgnoreCase) >= 0);
 
         // ── Selected slot in team ─────────────────────────────────────────────
+        private int _selectedSlotIndex = -1;
+        public int SelectedSlotIndex
+        {
+            get => _selectedSlotIndex;
+            set
+            {
+                if (SetProperty(ref _selectedSlotIndex, value) && value >= 0)
+                {
+                    var slot = TeamSlots[value];
+                    if (slot == null)
+                    {
+                        _selectedPokemon = null;
+                        OnPropertyChanged(nameof(SelectedPokemon));
+                        IsPokemonPickerOpen = true;
+                    }
+                    else
+                    {
+                        SelectedPokemon = slot;
+                    }
+
+                    _selectedSlotIndex = -1;
+                    OnPropertyChanged(nameof(SelectedSlotIndex));
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"SetProperty returned false — value unchanged or condition failed");
+                }
+            }
+        }
         private TeamSlotEntry _selectedPokemon;
         public TeamSlotEntry SelectedPokemon
         {
@@ -83,7 +134,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                     IsPokemonPickerOpen = false;
                     ActiveMoveSlot = 0;
                     OnPropertyChanged(nameof(FilteredMoves));
-
                 }
             }
         }
@@ -174,10 +224,35 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                     SelectedPokemon?.ApplyIvSpread(value);
             }
         }
+        // ── Team management ───────────────────────────────────────────────────────
+        private string _teamName = "My Team";
+        public string TeamName
+        {
+            get => _teamName;
+            set => SetProperty(ref _teamName, value);
+        }
 
+        private List<TeamData> _savedTeams = new List<TeamData>();
+        public List<TeamData> SavedTeams
+        {
+            get => _savedTeams;
+            set => SetProperty(ref _savedTeams, value);
+        }
+
+        private TeamData _selectedTeam;
+        public TeamData SelectedTeam
+        {
+            get => _selectedTeam;
+            set => SetProperty(ref _selectedTeam, value);
+        }
+
+        
 
         // ── Commands ──────────────────────────────────────────────────────────
         public RelayCommand ToggleEvIvCommand { get; }
+        public RelayCommand SaveTeamCommand { get; }
+        public RelayCommand LoadTeamCommand { get; }
+        public RelayCommand<TeamData> DeleteTeamCommand { get; }
         public RelayCommand OpenMoveSlot1Command { get; }
         public RelayCommand OpenMoveSlot2Command { get; }
         public RelayCommand OpenMoveSlot3Command { get; }
@@ -187,18 +262,39 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public RelayCommand ConfirmPokemonCommand { get; }
         public RelayCommand OpenItemPickerCommand { get; }
         public RelayCommand OpenPokemonPickerCommand { get; }
-        public RelayCommand AddTeamSlotCommand { get; }
         public RelayCommand RemoveFromTeamCommand { get; }
         public RelayCommand AddToTeamCommand { get; }
+        public RelayCommand<TeamSlotEntry> SelectSlotCommand { get; }
         public RelayCommand<string> ApplyIvSpreadCommand { get; }
 
 
 
         // ── Constructor ───────────────────────────────────────────────────────
-        public TeamBuilderViewModel()
+        public TeamBuilderViewModel(UserStore userStore)
         {
-            TeamSlots = new ObservableCollection<TeamSlotEntry>();
+            _userStore = userStore;
+            TeamSlots = new ObservableCollection<TeamSlotEntry>(new TeamSlotEntry[6]);
             TeamSlots.CollectionChanged += (_, __) => OnPropertyChanged(nameof(CanAddTeamSlot));
+            SelectSlotCommand = new RelayCommand<TeamSlotEntry>(slot =>
+            {
+                if (slot == null)
+                {
+                    _selectedSlotIndex = TeamSlots.IndexOf(slot); // -1 for null, handle below
+                                                                  // find first null slot index
+                    for (int i = 0; i < TeamSlots.Count; i++)
+                    {
+                        if (TeamSlots[i] == null) { _selectedSlotIndex = i; break; }
+                    }
+                    _selectedPokemon = null;
+                    OnPropertyChanged(nameof(SelectedPokemon));
+                    IsPokemonPickerOpen = true;
+                }
+                else
+                {
+                    _selectedSlotIndex = TeamSlots.IndexOf(slot);
+                    SelectedPokemon = slot;
+                }
+            });
 
             AllPokemon = new ObservableCollection<PokemonDisplayEntry>(
                 _service.GetAllPokemon());
@@ -270,6 +366,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                     IsEvIvPanelOpen = false;
                     IsMovePickerOpen = false;
                     IsItemPickerOpen = false;
+                    PokemonSearchText = string.Empty;
+                    OnPropertyChanged(nameof(FilteredPokemons));  // ← add this
+
                 }
             });
 
@@ -278,43 +377,155 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             {
                 if (PickerPokemon == null) return;
 
-                _selectedPokemon = new TeamSlotEntry(PickerPokemon);
+                var newSlot = new TeamSlotEntry(PickerPokemon);
+                _selectedPokemon = newSlot;
                 OnPropertyChanged(nameof(SelectedPokemon));
-                OnPropertyChanged(nameof(FilteredMoves));  // ← add this
-                OnPropertyChanged(nameof(FilteredItems));  // ← add this
+
+                // Fill the slot that was clicked
+                if (_selectedSlotIndex >= 0 && _selectedSlotIndex < 6 && TeamSlots[_selectedSlotIndex] == null)
+                    TeamSlots[_selectedSlotIndex] = newSlot;
+
+                OnPropertyChanged(nameof(FilteredMoves));
+                OnPropertyChanged(nameof(FilteredItems));
+                OnPropertyChanged(nameof(FilteredPokemons));
 
                 _pickerPokemon = null;
                 OnPropertyChanged(nameof(PickerPokemon));
 
                 IsPokemonPickerOpen = false;
                 AddToTeamCommand.NotifyCanExecuteChanged();
+            }); 
+
+
+
+           
+
+            // RemoveFromTeamCommand — set to null instead of removing
+            RemoveFromTeamCommand = new RelayCommand(() =>
+            {
+                if (SelectedPokemon == null) return;
+                int idx = TeamSlots.IndexOf(SelectedPokemon);
+                if (idx >= 0) TeamSlots[idx] = null;
+                SelectedPokemon = null;
             });
 
-            // New command — commits the current edited slot to the team
+            // AddToTeamCommand — fill first null slot
             AddToTeamCommand = new RelayCommand(() =>
             {
                 if (SelectedPokemon == null) return;
-                if (TeamSlots.Contains(SelectedPokemon)) return; // already in team (editing existing)
-                if (TeamSlots.Count >= 6) return;
-                TeamSlots.Add(SelectedPokemon);
+                int idx = TeamSlots.IndexOf(null);
+                if (idx >= 0) TeamSlots[idx] = SelectedPokemon;
             },
-            () => SelectedPokemon != null && !TeamSlots.Contains(SelectedPokemon) && TeamSlots.Count < 6);
+            () => SelectedPokemon != null && !TeamSlots.Contains(SelectedPokemon) && TeamSlots.Contains(null));
 
-            AddTeamSlotCommand = new RelayCommand(() =>
+            SaveTeamCommand = new RelayCommand(() =>
             {
-                if (TeamSlots.Count >= 6) return;
-                IsPokemonPickerOpen = true;
+                var battlerPokemons = new List<BattlerPokemon>();
+                foreach (var slot in TeamSlots)
+                {
+                    if (slot == null) continue;
+
+                    var move1 = slot.Move1 ?? slot.AvailableMoves.FirstOrDefault();
+                    if (move1 == null) continue;
+
+                    battlerPokemons.Add(new BattlerPokemon
+                    {
+                        PokedexID = slot.PokedexId,
+                        AbilityID = _service.GetAbilityId(slot.SelectedAbility),
+                        ItemID = _service.GetItemId(slot.HeldItemName),
+                        Shiny = slot.IsShiny ? 1 : 0,
+                        Gender = slot.Gender switch
+                        {
+                            "♂" => "Male",
+                            "♀" => "Female",
+                            "—" => new Random().Next(2) == 0 ? "Male" : "Female",
+                            _ => "Genderless"
+                        },
+                        Level = slot.Level,
+                        Move1ID = _service.GetMoveId(move1.Name) ?? 0,
+                        Move2ID = _service.GetMoveId(slot.Move2?.Name),
+                        Move3ID = _service.GetMoveId(slot.Move3?.Name),
+                        Move4ID = _service.GetMoveId(slot.Move4?.Name),
+                        Iv_hp = slot.IvHP,
+                        Iv_atk = slot.IvAtk,
+                        Iv_def = slot.IvDef,
+                        Iv_spAtk = slot.IvSpA,
+                        Iv_spDef = slot.IvSpD,
+                        Iv_speed = slot.IvSpe,
+                        Ev_hp = slot.EvHP,
+                        Ev_atk = slot.EvAtk,
+                        Ev_def = slot.EvDef,
+                        Ev_spAtk = slot.EvSpA,
+                        Ev_spDef = slot.EvSpD,
+                        Ev_speed = slot.EvSpe,
+                        Nature = slot.Nature ?? "Hardy",
+                    });
+                }
+
+                if (battlerPokemons.Count == 0) return;
+
+                var team = _service.SaveTeam(TeamName, _userStore.BattlePlayerID, battlerPokemons);
+                if (team != null)
+                    _service.AssignTeamToBattlePlayer(team.Id, _userStore.BattlePlayerID);
+
+                RefreshSavedTeams();
             });
 
-            RemoveFromTeamCommand = new RelayCommand(() =>
+            LoadTeamCommand = new RelayCommand(() =>
             {
-                if (SelectedPokemon == null || !TeamSlots.Contains(SelectedPokemon)) return;
-                TeamSlots.Remove(SelectedPokemon);
-                SelectedPokemon = TeamSlots.Count > 0 ? TeamSlots[0] : null;
+                if (SelectedTeam == null) return;
+                TeamName = SelectedTeam.TeamName ?? "My Team";
+                // Clear slots
+                for (int i = 0; i < 6; i++) TeamSlots[i] = null;
+                // Load members
+                var members = _service.GetTeamMembers(SelectedTeam.Id);
+                for (int i = 0; i < members.Count && i < 6; i++)
+                {
+                    var bp = members[i];
+                    var pokemon = AllPokemon.FirstOrDefault(p => p.PokedexId == bp.PokedexID);
+                    if (pokemon == null) continue;
+                    var slot = new TeamSlotEntry(pokemon)
+                    {
+                        Level = bp.Level,
+                        Gender = bp.Gender ?? "—",
+                        IsShiny = bp.Shiny == 1,
+                        Nature = bp.Nature ?? "Serious",
+                        HeldItemName = AllItems.FirstOrDefault(it => it.Id == bp.ItemID)?.Name,
+                        IvHP = bp.Iv_hp,
+                        IvAtk = bp.Iv_atk,
+                        IvDef = bp.Iv_def,
+                        IvSpA = bp.Iv_spAtk,
+                        IvSpD = bp.Iv_spDef,
+                        IvSpe = bp.Iv_speed,
+                        EvHP = bp.Ev_hp,
+                        EvAtk = bp.Ev_atk,
+                        EvDef = bp.Ev_def,
+                        EvSpA = bp.Ev_spAtk,
+                        EvSpD = bp.Ev_spDef,
+                        EvSpe = bp.Ev_speed,
+                    };
+                    TeamSlots[i] = slot;
+                }
+                OnPropertyChanged(nameof(TeamSlots));
             });
-            IsPokemonPickerOpen = true;
+
+            DeleteTeamCommand = new RelayCommand<TeamData>(team =>
+            {
+                if (team == null) return;
+                // You'll need to add DeleteTeam to your service
+                RefreshSavedTeams();
+            });
+
+            RefreshSavedTeams();
+        }
+        private void RefreshSavedTeams()
+        {
+            var team = _service.GetTeamByBattlePlayer(_userStore.BattlePlayerID);
+            SavedTeams = team != null ? new List<TeamData> { team } : new List<TeamData>();
+            OnPropertyChanged(nameof(SavedTeams));
         }
 
+        public bool CanSaveNewTeam => _service.GetUserTeams(_userStore.BattlePlayerID).Count < 3 || SelectedTeam != null;
         // ── Helpers ───────────────────────────────────────────────────────────
 
         private void OpenMoveSlot(int slot)
@@ -701,5 +912,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public int FinalSpA => CalcStat(SpA, EvSpA, IvSpA, GetNatureMult("SpA"));
         public int FinalSpD => CalcStat(SpD, EvSpD, IvSpD, GetNatureMult("SpD"));
         public int FinalSpe => CalcStat(Spe, EvSpe, IvSpe, GetNatureMult("Spe"));
+
     }
+
 }

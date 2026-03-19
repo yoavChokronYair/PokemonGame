@@ -74,5 +74,16 @@ namespace PokemonGame.Services.Data.ConnectionsService
             foreach (var prop in parameters.GetType().GetProperties())
                 cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
         }
+        public override int ExecuteAndGetLastId(string sql, object parameters = null)
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
+            AddParameters(cmd, parameters);
+            cmd.ExecuteNonQuery();
+
+            using var idCmd = new SqliteCommand("SELECT last_insert_rowid();", conn);
+            return (int)(long)idCmd.ExecuteScalar();
+        }
     }
 }

@@ -255,7 +255,7 @@
                                 Foreground="#555"
                                 Text="{Binding Description}"
                                 TextTrimming="CharacterEllipsis"
-                                TextWrapping="NoWrap" />
+                                TextWrapping="Wrap" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

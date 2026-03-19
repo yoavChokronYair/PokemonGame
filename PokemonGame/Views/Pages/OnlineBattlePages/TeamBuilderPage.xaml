@@ -15,6 +15,8 @@
         <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
         <conv:NullToVisibilityConverter x:Key="NullToVis" />
         <conv:InverseNullToVisibilityConverter x:Key="InvNullToVis" />
+        <conv:PokemonIdToImageConverter x:Key="PokemonToImage" />
+        <conv:PokemonIdToShinyImageConverter x:Key="PokemonToShinyImage" />
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -24,6 +26,7 @@
             HorizontalAlignment="Left">
 
             <!--  ══ Team slot bar ══  -->
+
             <Border
                 Margin="0,0,0,8"
                 Padding="10,8"
@@ -31,153 +34,128 @@
                 BorderBrush="#CCCCCC"
                 BorderThickness="1"
                 CornerRadius="6">
-                <StackPanel Orientation="Horizontal">
-
-                    <!--
-                        Team slots — clicking sets SelectedPokemon directly via ListBox binding.
-                        No CommandParameter needed.
-                    -->
-                    <ListBox
-                        Background="Transparent"
-                        BorderThickness="0"
-                        ItemsSource="{Binding TeamSlots}"
-                        SelectedItem="{Binding SelectedPokemon, Mode=OneWay}">
-                        <ListBox.ItemsPanel>
+                <StackPanel>
+                    <!--  Row 1: Team slots  -->
+                    <ItemsControl ItemsSource="{Binding TeamSlots}">
+                        <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" />
                             </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Padding" Value="0" />
-                                <Setter Property="Margin" Value="3,0" />
-                                <Setter Property="BorderThickness" Value="2" />
-                                <Setter Property="BorderBrush" Value="#CCCCCC" />
-                                <Setter Property="Background" Value="White" />
-                                <Setter Property="Cursor" Value="Hand" />
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Width="80"
+                                    Height="80"
+                                    Margin="3,0"
+                                    Padding="4"
+                                    Background="White"
+                                    BorderBrush="#CCCCCC"
+                                    BorderThickness="2"
+                                    Command="{Binding DataContext.SelectSlotCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                    CommandParameter="{Binding}"
+                                    Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
                                             <Border
-                                                Padding="4"
+                                                Padding="{TemplateBinding Padding}"
                                                 Background="{TemplateBinding Background}"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 BorderThickness="{TemplateBinding BorderThickness}"
                                                 CornerRadius="6">
-                                                <ContentPresenter />
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
                                             <ControlTemplate.Triggers>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter Property="BorderBrush" Value="#4A90D9" />
-                                                </Trigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter Property="BorderBrush" Value="#7AB8E8" />
+                                                    <Setter Property="Background" Value="#EEF4FF" />
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Width="72" HorizontalAlignment="Center">
-                                    <Image
-                                        Width="48"
-                                        Height="48"
-                                        HorizontalAlignment="Center"
-                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                        Source="{Binding SpriteImage}" />
-                                    <TextBlock
-                                        HorizontalAlignment="Center"
-                                        FontSize="9"
-                                        Foreground="#333"
-                                        Text="{Binding Nickname}"
-                                        TextAlignment="Center"
-                                        TextTrimming="CharacterEllipsis" />
-                                </StackPanel>
+                                    </Button.Template>
+                                    <Grid Width="72" Height="72">
+                                        <StackPanel Visibility="{Binding Converter={StaticResource NullToVis}}">
+                                            <Grid Width="48" Height="48">
+                                                <Image
+                                                    Width="48"
+                                                    Height="48"
+                                                    HorizontalAlignment="Center"
+                                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                    Source="{Binding PokedexId, Converter={StaticResource PokemonToImage}}" />
+                                                <Image
+                                                    Width="48"
+                                                    Height="48"
+                                                    HorizontalAlignment="Center"
+                                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                    Source="{Binding PokedexId, Converter={StaticResource PokemonToShinyImage}}"
+                                                    Visibility="{Binding IsShiny, Converter={StaticResource BoolToVis}}" />
+                                            </Grid>
+                                            <TextBlock
+                                                HorizontalAlignment="Center"
+                                                FontSize="9"
+                                                Foreground="#333"
+                                                Text="{Binding Nickname}"
+                                                TextAlignment="Center"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="26"
+                                            Foreground="#CCCCCC"
+                                            Text="+"
+                                            Visibility="{Binding Converter={StaticResource InvNullToVis}}" />
+                                    </Grid>
+                                </Button>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                    <!--  Add slot (opens pokemon picker)  -->
-                    <Button
-                        Width="80"
-                        Height="80"
-                        Margin="3,0"
-                        Background="#F5F5F5"
-                        BorderBrush="#DDDDDD"
-                        BorderThickness="2"
-                        Command="{Binding AddTeamSlotCommand}"
-                        Cursor="Hand"
-                        Visibility="{Binding CanAddTeamSlot, Converter={StaticResource BoolToVis}}">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="6">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="BorderBrush" Value="#4A90D9" />
-                                        <Setter Property="Background" Value="#EEF4FF" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
+                    <!--  Row 2: Actions  -->
+                    <StackPanel
+                        Margin="0,8,0,0"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
+                            VerticalAlignment="Center"
+                            Background="#FFF0F0"
+                            BorderBrush="#FFAAAA"
+                            BorderThickness="1"
+                            Command="{Binding RemoveFromTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
+                            <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
+                        </Button>
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
+                            VerticalAlignment="Center"
+                            Background="#F0FFF0"
+                            BorderBrush="#88CC88"
+                            BorderThickness="1"
+                            Command="{Binding SaveTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11">
+                            <TextBlock Foreground="#336633" Text="💾 Save Team" />
+                        </Button>
                         <TextBlock
-                            HorizontalAlignment="Center"
-                            FontSize="26"
-                            Foreground="#AAAAAA"
-                            Text="+" />
-                    </Button>
-
-                    <!--  Remove selected  -->
-                    <Button
-                        Margin="12,0,0,0"
-                        Padding="8,4"
-                        VerticalAlignment="Center"
-                        Background="#FFF0F0"
-                        BorderBrush="#FFAAAA"
-                        BorderThickness="1"
-                        Command="{Binding RemoveFromTeamCommand}"
-                        Cursor="Hand"
-                        FontSize="11"
-                        Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
-                        <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
-                    </Button>
-                    <Button
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        VerticalAlignment="Center"
-                        Background="#F0FFF0"
-                        BorderBrush="#88CC88"
-                        BorderThickness="1"
-                        Command="{Binding AddToTeamCommand}"
-                        Cursor="Hand"
-                        FontSize="11"
-                        Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
-                        <TextBlock Foreground="#336633" Text="✚ Add to Team" />
-                    </Button>
-                    <!--  Always-visible picker toggle  -->
-                    <Button
-                        Margin="6,0,0,0"
-                        Padding="8,4"
-                        VerticalAlignment="Center"
-                        Background="#F0F4FF"
-                        BorderBrush="#4A90D9"
-                        BorderThickness="1"
-                        Command="{Binding OpenPokemonPickerCommand}"
-                        Cursor="Hand"
-                        FontSize="11">
-                        <TextBlock Foreground="#4A90D9" Text="🔍 Browse Pokémon" />
-                    </Button>
+                            Margin="0,0,4,0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="#555"
+                            Text="Name:" />
+                        <TextBox
+                            Width="120"
+                            Padding="4,2"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Text="{Binding TeamName, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
                 </StackPanel>
             </Border>
-
             <!--  ══ Editor card ══  -->
             <controls:PokemonEditorUserControl Margin="0,0,0,6" DataContext="{Binding}" />
 

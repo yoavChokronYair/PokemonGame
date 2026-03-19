@@ -129,7 +129,7 @@ namespace PokemonGame
 
         private TeamBuilderViewModel CreateTeamSelectPageViewModel()
         {
-            return new TeamBuilderViewModel();
+            return new TeamBuilderViewModel(_userStore);
         }
 
         private ProfileViewModel CreateProfileViewModel()

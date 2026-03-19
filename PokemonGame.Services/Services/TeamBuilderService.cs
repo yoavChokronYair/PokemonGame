@@ -36,7 +36,11 @@ namespace PokemonGame.Services.Handler
             _teamMembers = f.TeamMemberRepository;
             _battlerPokemon = f.BattlerPokemonRepository;
         }
+        public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
+    _teams.GetTeamByBattlePlayer(battlePlayerId);
 
+        public void AssignTeamToBattlePlayer(int teamId, int battlePlayerId) =>
+            _teams.AssignTeamToBattlePlayer(teamId, battlePlayerId);
         // ── Pokémon list for the picker ───────────────────────────────────────
 
         /// <summary>
@@ -46,9 +50,11 @@ namespace PokemonGame.Services.Handler
         public List<PokemonDisplayEntry> GetAllPokemon()
         {
             var moveEntries = GetMoveDisplayCache();
+            var allPokemonData = _pokemon.GetAllPokemon(); // ← cache here
+
             var result = new List<PokemonDisplayEntry>();
 
-            foreach (var p in _pokemon.GetAllPokemon())
+            foreach (var p in allPokemonData)
             {
                 var baseStats = _stats.GetBaseStats(p.PokedexID);
 
@@ -64,6 +70,23 @@ namespace PokemonGame.Services.Handler
                 foreach (var m in _learnsets.GetMachineMoves(p.PokedexID)) moveIds.Add(m.MoveID);
                 foreach (var m in _learnsets.GetTutorMoves(p.PokedexID)) moveIds.Add(m.MoveID);
                 foreach (var m in _learnsets.GetEggMoves(p.PokedexID)) moveIds.Add(m.MoveID);
+
+                // Previous evolutions
+                var visited = new HashSet<int> { p.PokedexID };
+                var current = p;
+                while (true)
+                {
+                    var preEvo = allPokemonData.FirstOrDefault(x => x.PokemonEvoID == current.PokedexID);
+                    if (preEvo == null || visited.Contains(preEvo.PokedexID)) break;
+                    visited.Add(preEvo.PokedexID);
+
+                    foreach (var m in _learnsets.GetLevelUpMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
+                    foreach (var m in _learnsets.GetMachineMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
+                    foreach (var m in _learnsets.GetTutorMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
+                    foreach (var m in _learnsets.GetEggMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
+
+                    current = preEvo;
+                }
 
                 var availableMoves = moveIds
                     .Where(id => moveEntries.ContainsKey(id))
@@ -128,8 +151,16 @@ namespace PokemonGame.Services.Handler
             var team = _teams.CreateTeam(teamName, userId);
             for (int i = 0; i < slots.Count && i < 6; i++)
             {
-                var pokemonId = _battlerPokemon.CreatePokemonInstance(slots[i]);
-                _teamMembers.SetPokemonInSlot(team.Id, pokemonId, i + 1);
+                
+                    var pokemonId = _battlerPokemon.CreatePokemonInstance(slots[i]);
+                    if (pokemonId <= 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Slot {i + 1} failed — pokemonId={pokemonId}");
+                        continue;
+                    }
+                    _teamMembers.SetPokemonInSlot(team.Id, pokemonId, i + 1);
+                
+                
             }
             return team;
         }

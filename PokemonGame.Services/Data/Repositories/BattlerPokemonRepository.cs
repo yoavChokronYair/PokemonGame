@@ -16,23 +16,25 @@ namespace PokemonGame.Services.Data.Repositories
                 new { pid = pokemonID });
 
         // Add a new captured/bred Pokemon instance
-        public int CreatePokemonInstance(BattlerPokemon p)
+        public int CreatePokemonInstance(BattlerPokemon pokemon)
         {
-            _db.Execute(@"
-                INSERT INTO battler_pokemon (
-                    pokedexID, abilityID, itemID, shiny, gender, level, 
-                    move1ID, move2ID, move3ID, move4ID, 
-                    iv_hp, iv_atk, iv_def, iv_spAtk, iv_spDef, iv_speed,
-                    ev_hp, ev_atk, ev_def, ev_spAtk, ev_spDef, ev_speed, nature
-                ) VALUES (
-                    @PokedexID, @AbilityID, @ItemID, @Shiny, @Gender, @Level,
-                    @Move1ID, @Move2ID, @Move3ID, @Move4ID,
-                    @Iv_hp, @Iv_atk, @Iv_def, @Iv_spAtk, @Iv_spDef, @Iv_speed,
-                    @Ev_hp, @Ev_atk, @Ev_def, @Ev_spAtk, @Ev_spDef, @Ev_speed, @Nature
-                );", p);
+            
+            var result = _db.ExecuteAndGetLastId(@"
+        INSERT INTO battler_pokemon (
+            pokedexID, abilityID, itemID, shiny, gender, level, 
+            move1ID, move2ID, move3ID, move4ID, 
+            iv_hp, iv_atk, iv_def, iv_spAtk, iv_spDef, iv_speed,
+            ev_hp, ev_atk, ev_def, ev_spAtk, ev_spDef, ev_speed, nature
+        ) VALUES (
+            @PokedexID, @AbilityID, @ItemID, @Shiny, @Gender, @Level,
+            @Move1ID, @Move2ID, @Move3ID, @Move4ID,
+            @Iv_hp, @Iv_atk, @Iv_def, @Iv_spAtk, @Iv_spDef, @Iv_speed,
+            @Ev_hp, @Ev_atk, @Ev_def, @Ev_spAtk, @Ev_spDef, @Ev_speed, @Nature
+        );", pokemon);
 
-            // Get the ID of the new instance
-            return _db.QuerySingle<int>("SELECT last_insert_rowid()");
+            System.Diagnostics.Debug.WriteLine($"Created pokemon instance ID: {result}");
+            return result;
+            
         }
 
         // Update stats (EVs or Level) after training or leveling

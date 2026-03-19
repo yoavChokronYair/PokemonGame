@@ -21,6 +21,8 @@
         List<T> Query<T>(string sql, object parameters) where T : new();
 
         int Execute(string sql, object parameters = null);
+        int ExecuteAndGetLastId(string sql, object parameters = null);
+
 
     }
 }

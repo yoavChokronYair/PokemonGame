@@ -12,7 +12,10 @@
     <UserControl.Resources>
         <conv:NullToVisibilityConverter x:Key="NullToVis" />
         <conv:InverseNullToVisibilityConverter x:Key="InvNullToVis" />
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
         <conv:TypeToImageConverter x:Key="TypeToImage" />
+        <conv:PokemonIdToImageConverter x:Key="PokemonToImage" />
+        <conv:PokemonIdToShinyImageConverter x:Key="PokemonToShinyImage" />
 
 
         <Style x:Key="Lbl" TargetType="TextBlock">
@@ -114,8 +117,8 @@
             <!--  Editor  -->
             <Grid Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="86" />
-                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="116" />
+                    <ColumnDefinition Width="100" />
                     <ColumnDefinition Width="125" />
                     <ColumnDefinition Width="125" />
                     <ColumnDefinition Width="*" />
@@ -126,23 +129,38 @@
                     Grid.Column="0"
                     Margin="0,0,6,0"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Top">
+                    VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource Lbl}" Text="Nickname" />
+                    <TextBox
+                        Margin="0,0,0,6"
+                        Style="{StaticResource Box}"
+                        Text="{Binding SelectedPokemon.Nickname, UpdateSourceTrigger=PropertyChanged}" />
                     <Button
                         Padding="0"
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding OpenPokemonPickerCommand}"
                         Cursor="Hand">
-                        <Image
-                            Width="64"
-                            Height="64"
-                            HorizontalAlignment="Center"
-                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                            Source="{Binding SelectedPokemon.SpriteImage}" />
+                        <Grid Width="64" Height="64">
+                            <Image
+                                Width="64"
+                                Height="64"
+                                HorizontalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                Source="{Binding SelectedPokemon.PokedexId, Converter={StaticResource PokemonToImage}}" />
+                            <Image
+                                Width="64"
+                                Height="64"
+                                HorizontalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                Source="{Binding SelectedPokemon.PokedexId, Converter={StaticResource PokemonToShinyImage}}"
+                                Visibility="{Binding SelectedPokemon.IsShiny, Converter={StaticResource BoolToVis}}" />
+                        </Grid>
                     </Button>
                     <Button
                         Padding="2,1"
                         HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding OpenPokemonPickerCommand}"
@@ -154,6 +172,57 @@
                             Text="{Binding SelectedPokemon.Name, Mode=OneWay}"
                             TextAlignment="Center"
                             TextDecorations="Underline"
+                            TextWrapping="NoWrap" />
+                    </Button>
+
+                </StackPanel>
+
+                <!--  ── Col 1: Nickname / Details ──  -->
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Top"
+                    Orientation="Vertical">
+
+
+                    <TextBlock Style="{StaticResource Hdr}" Text="Details" />
+                    <StackPanel Margin="0,0,0,4">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Level" />
+                        <TextBox
+                            Margin="0,0,0,4"
+                            Style="{StaticResource Box}"
+                            Text="{Binding SelectedPokemon.Level, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Style="{StaticResource Lbl}" Text="Gender" />
+                        <ComboBox
+                            Margin="0,0,0,4"
+                            ItemsSource="{Binding GenderOptions}"
+                            SelectedItem="{Binding SelectedPokemon.Gender}"
+                            Style="{StaticResource Combo}" />
+
+                        <TextBlock Style="{StaticResource Lbl}" Text="Shiny" />
+                        <CheckBox
+                            VerticalAlignment="Center"
+                            Content="Yes"
+                            FontSize="11"
+                            IsChecked="{Binding SelectedPokemon.IsShiny}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!--  ── Col 2: Item / Ability / Nature ──  -->
+                <StackPanel
+                    Grid.Column="2"
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Top"
+                    Orientation="Vertical">
+                    <TextBlock Style="{StaticResource Lbl}" Text="Held Item" />
+                    <Button
+                        Margin="0,0,0,6"
+                        Command="{Binding OpenItemPickerCommand}"
+                        Style="{StaticResource MoveBtn}">
+                        <TextBlock
+                            FontSize="11"
+                            Text="{Binding SelectedPokemon.HeldItemName, FallbackValue='(click to choose)'}"
                             TextWrapping="Wrap" />
                     </Button>
                     <StackPanel Orientation="Horizontal">
@@ -170,81 +239,6 @@
                             Source="{Binding SelectedPokemon.Type2, Converter={StaticResource TypeToImage}}"
                             Visibility="{Binding SelectedPokemon.Type2, Converter={StaticResource NullToVis}}" />
                     </StackPanel>
-                </StackPanel>
-
-                <!--  ── Col 1: Nickname / Details ──  -->
-                <StackPanel
-                    Grid.Column="1"
-                    Margin="0,0,8,0"
-                    VerticalAlignment="Top">
-                    <TextBlock Style="{StaticResource Lbl}" Text="Nickname" />
-                    <TextBox
-                        Margin="0,0,0,6"
-                        Style="{StaticResource Box}"
-                        Text="{Binding SelectedPokemon.Nickname, UpdateSourceTrigger=PropertyChanged}" />
-
-                    <TextBlock Style="{StaticResource Hdr}" Text="Details" />
-                    <Grid Margin="0,0,0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="42" />
-                            <ColumnDefinition Width="55" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock
-                            Grid.Column="0"
-                            Style="{StaticResource Lbl}"
-                            Text="Level" />
-                        <TextBlock
-                            Grid.Column="1"
-                            Style="{StaticResource Lbl}"
-                            Text="Gender" />
-                        <TextBlock
-                            Grid.Column="2"
-                            Style="{StaticResource Lbl}"
-                            Text="Shiny" />
-                        <TextBox
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="0,0,3,0"
-                            Style="{StaticResource Box}"
-                            Text="{Binding SelectedPokemon.Level, UpdateSourceTrigger=PropertyChanged}" />
-                        <ComboBox
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="0,0,3,0"
-                            ItemsSource="{Binding GenderOptions}"
-                            SelectedItem="{Binding SelectedPokemon.Gender}"
-                            Style="{StaticResource Combo}" />
-                        <CheckBox
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            VerticalAlignment="Center"
-                            Content="Yes"
-                            FontSize="11"
-                            IsChecked="{Binding SelectedPokemon.IsShiny}" />
-                    </Grid>
-                </StackPanel>
-
-                <!--  ── Col 2: Item / Ability / Nature ──  -->
-                <StackPanel
-                    Grid.Column="2"
-                    Margin="0,0,8,0"
-                    VerticalAlignment="Top">
-                    <TextBlock Style="{StaticResource Lbl}" Text="Held Item" />
-                    <Button
-                        Margin="0,0,0,6"
-                        Command="{Binding OpenItemPickerCommand}"
-                        Style="{StaticResource MoveBtn}">
-                        <TextBlock
-                            FontSize="11"
-                            Text="{Binding SelectedPokemon.HeldItemName, FallbackValue='(click to choose)'}"
-                            TextWrapping="Wrap" />
-                    </Button>
-
                     <TextBlock Style="{StaticResource Lbl}" Text="Ability" />
                     <ComboBox
                         Margin="0,0,0,6"

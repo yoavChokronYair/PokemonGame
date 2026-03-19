@@ -26,7 +26,12 @@ namespace PokemonGame.Services.Data.Repositories
                 "INSERT INTO teams (team_name, user_id) VALUES (@name, @uid)",
                 new { name = teamName, uid = userID });
 
-            return _db.QuerySingle<TeamData>("SELECT * FROM teams WHERE id = last_insert_rowid()");
+            var team = _db.QuerySingle<TeamData>(
+                "SELECT * FROM teams WHERE team_name = @name AND user_id = @uid ORDER BY id DESC LIMIT 1",
+                new { name = teamName, uid = userID });
+
+            System.Diagnostics.Debug.WriteLine($"Created team: {team?.Id} - {team?.TeamName}");
+            return team;
         }
 
         // Link an existing team to a BattlePlayer session

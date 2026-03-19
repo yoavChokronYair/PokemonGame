@@ -26,6 +26,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -42,10 +43,49 @@
                     Foreground="#333"
                     Text="Choose Pokémon" />
             </Border>
-
-            <!--  Column headers  -->
             <Border
                 Grid.Row="1"
+                Padding="8,5"
+                Background="White"
+                BorderBrush="#EEEEEE"
+                BorderThickness="0,0,0,1">
+                <TextBox
+                    Height="24"
+                    Padding="6,3"
+                    BorderBrush="#CCCCCC"
+                    BorderThickness="1"
+                    FontSize="11"
+                    Text="{Binding PokemonSearchText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Resources>
+                                <VisualBrush
+                                    x:Key="HintBrush"
+                                    AlignmentX="Left"
+                                    AlignmentY="Center"
+                                    Stretch="None">
+                                    <VisualBrush.Visual>
+                                        <TextBlock
+                                            Margin="6,0,0,0"
+                                            FontSize="11"
+                                            Foreground="#AAAAAA"
+                                            Text="🔍 Search items..." />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Style.Resources>
+                            <Setter Property="Background" Value="White" />
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background" Value="{StaticResource HintBrush}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Border>
+            <!--  Column headers  -->
+            <Border
+                Grid.Row="2"
                 Padding="10,4"
                 Background="#F9F9F9"
                 BorderBrush="#EEEEEE"
@@ -99,10 +139,10 @@
                 The setter auto-calls ConfirmPokemonCommand → clones + adds to team + closes.
             -->
             <ListBox
-                Grid.Row="2"
+                Grid.Row="3"
                 Background="Transparent"
                 BorderThickness="0"
-                ItemsSource="{Binding AllPokemon}"
+                ItemsSource="{Binding FilteredPokemons}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectedItem="{Binding PickerPokemon, Mode=TwoWay}">
                 <ListBox.ItemContainerStyle>
