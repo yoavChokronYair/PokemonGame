@@ -352,7 +352,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public int Spe { get; }
         public int BST => HP + Atk + Def + SpA + SpD + Spe;
         public BitmapImage SpriteImage { get; }
-        public List<TypeEntry> Types { get; }
+        public List<string> Types { get; }
 
         public TeamSlotEntry(PokemonDisplayEntry src)
         {
@@ -523,7 +523,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         }
         
         private int _evAtk;
-        public int EvAtk
+        public int EvAtk    
         {
             get => _evAtk;
             set

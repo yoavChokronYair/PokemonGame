@@ -85,11 +85,11 @@ namespace PokemonGame.Services.Handler
                     SpA = baseStats?.SpAtk ?? 0,
                     SpD = baseStats?.SpDef ?? 0,
                     Spe = baseStats?.Speed ?? 0,
-                    Types = new List<TypeEntry>
-                    {
-                        new TypeEntry { Name = p.Type1 ?? string.Empty },
-                        p.Type2 != null ? new TypeEntry { Name = p.Type2 } : null
-                    }.Where(t => t != null).ToList(),
+                    Types = new List<string>
+                {
+                    p.Type1,
+                    p.Type2
+                }.Where(t => !string.IsNullOrEmpty(t)).ToList(),
                 });
             }
 
@@ -309,7 +309,6 @@ namespace PokemonGame.Services.Handler
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string TypeName { get; set; } = string.Empty;
-        public string TypeColor => TypeColors.TryGetValue(TypeName, out var c) ? c : "#999999";
         public string Category { get; set; } = string.Empty;
         public int? Power { get; set; }
         public int? Accuracy { get; set; }
@@ -318,16 +317,6 @@ namespace PokemonGame.Services.Handler
 
         public string PowerDisplay => Power.HasValue ? Power.Value.ToString() : "—";
         public string AccuracyDisplay => Accuracy.HasValue ? $"{Accuracy.Value}%" : "—";
-
-        private static readonly Dictionary<string, string> TypeColors = new Dictionary<string, string>
-        {
-            { "Normal",   "#A8A878" }, { "Fire",     "#F08030" }, { "Water",    "#6890F0" },
-            { "Electric", "#F8D030" }, { "Grass",    "#78C850" }, { "Ice",      "#98D8D8" },
-            { "Fighting", "#C03028" }, { "Poison",   "#A040A0" }, { "Ground",   "#E0C068" },
-            { "Flying",   "#A890F0" }, { "Psychic",  "#F85888" }, { "Bug",      "#A8B820" },
-            { "Rock",     "#B8A038" }, { "Ghost",    "#705898" }, { "Dragon",   "#7038F8" },
-            { "Dark",     "#705848" }, { "Steel",    "#B8B8D0" }, { "Fairy",    "#EE99AC" },
-        };
     }
 
     // ── PokemonDisplayEntry ───────────────────────────────────────────────────
@@ -342,7 +331,7 @@ namespace PokemonGame.Services.Handler
         public List<string> Abilities { get; set; } = new List<string>();
         public List<MoveDisplayEntry> AvailableMoves { get; set; } = new List<MoveDisplayEntry>();
         public BitmapImage SpriteImage { get; set; }
-        public List<TypeEntry> Types { get; set; } = new List<TypeEntry>();
+        public List<string> Types { get; set; } = new List<string>();
         public string AbilityPrimary => Abilities.Count > 0 ? Abilities[0] : string.Empty;
         public string AbilityHidden => Abilities.Count > 2 ? Abilities[2] : string.Empty;
         // Base stats
@@ -369,20 +358,5 @@ namespace PokemonGame.Services.Handler
         public int IvHP { get; set; } = 31; public int IvAtk { get; set; } = 31;
         public int IvDef { get; set; } = 31; public int IvSpA { get; set; } = 31;
         public int IvSpD { get; set; } = 31; public int IvSpe { get; set; } = 31;
-    }
-    public class TypeEntry
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Color => TypeColors.TryGetValue(Name, out var c) ? c : "#999999";
-
-        private static readonly Dictionary<string, string> TypeColors = new Dictionary<string, string>
-    {
-        { "Normal",   "#A8A878" }, { "Fire",     "#F08030" }, { "Water",    "#6890F0" },
-        { "Electric", "#F8D030" }, { "Grass",    "#78C850" }, { "Ice",      "#98D8D8" },
-        { "Fighting", "#C03028" }, { "Poison",   "#A040A0" }, { "Ground",   "#E0C068" },
-        { "Flying",   "#A890F0" }, { "Psychic",  "#F85888" }, { "Bug",      "#A8B820" },
-        { "Rock",     "#B8A038" }, { "Ghost",    "#705898" }, { "Dragon",   "#7038F8" },
-        { "Dark",     "#705848" }, { "Steel",    "#B8B8D0" }, { "Fairy",    "#EE99AC" },
-    };
     }
 }
