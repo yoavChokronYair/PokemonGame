@@ -12,7 +12,6 @@
     <UserControl.Resources>
         <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <conv:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter" />
-
         <Style x:Key="SectionTitle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -85,8 +84,6 @@
         BorderThickness="1"
         CornerRadius="4">
         <Grid>
-
-            <!--  Empty state  -->
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -95,10 +92,8 @@
                 Text="Select a Pokémon to edit EVs and IVs"
                 Visibility="{Binding SelectedPokemon, Converter={StaticResource InverseNullToVisibilityConverter}}" />
 
-            <!--  Editor  -->
             <StackPanel Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVisibilityConverter}}">
 
-                <!--  Title bar  -->
                 <Border
                     Margin="0,0,0,6"
                     Padding="0,0,0,4"
@@ -132,9 +127,13 @@
                         Grid.Column="5"
                         Style="{StaticResource ColHeader}"
                         Text="IVs" />
+                    <TextBlock
+                        Grid.Column="6"
+                        Style="{StaticResource ColHeader}"
+                        Text="Final" />
                 </Grid>
 
-                <!--  ── HP ──  -->
+                <!--  HP  -->
                 <Grid Margin="0,0,0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65" />
@@ -160,9 +159,9 @@
                         Background="#DDDDDD"
                         BorderThickness="0"
                         Foreground="#78C840"
-                        Maximum="255"
+                        Maximum="700"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.HP, Mode=OneWay}" />
+                        Value="{Binding SelectedPokemon.FinalHP, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -183,7 +182,7 @@
                         Text="{Binding SelectedPokemon.FinalHP, Mode=OneWay}" />
                 </Grid>
 
-                <!--  ── Attack ──  -->
+                <!--  Attack  -->
                 <Grid Margin="0,0,0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65" />
@@ -209,9 +208,9 @@
                         Background="#DDDDDD"
                         BorderThickness="0"
                         Foreground="#C8C840"
-                        Maximum="255"
+                        Maximum="700"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.Atk, Mode=OneWay}" />
+                        Value="{Binding SelectedPokemon.FinalAtk, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -232,7 +231,7 @@
                         Text="{Binding SelectedPokemon.FinalAtk, Mode=OneWay}" />
                 </Grid>
 
-                <!--  ── Defense ──  -->
+                <!--  Defense  -->
                 <Grid Margin="0,0,0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65" />
@@ -258,9 +257,9 @@
                         Background="#DDDDDD"
                         BorderThickness="0"
                         Foreground="#C8C840"
-                        Maximum="255"
+                        Maximum="700"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.Def, Mode=OneWay}" />
+                        Value="{Binding SelectedPokemon.FinalDef, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -281,7 +280,7 @@
                         Text="{Binding SelectedPokemon.FinalDef, Mode=OneWay}" />
                 </Grid>
 
-                <!--  ── Sp. Atk ──  -->
+                <!--  Sp. Atk  -->
                 <Grid Margin="0,0,0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65" />
@@ -307,9 +306,9 @@
                         Background="#DDDDDD"
                         BorderThickness="0"
                         Foreground="#E08030"
-                        Maximum="255"
+                        Maximum="700"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.SpA, Mode=OneWay}" />
+                        Value="{Binding SelectedPokemon.FinalSpA, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -330,7 +329,7 @@
                         Text="{Binding SelectedPokemon.FinalSpA, Mode=OneWay}" />
                 </Grid>
 
-                <!--  ── Sp. Def ──  -->
+                <!--  Sp. Def  -->
                 <Grid Margin="0,0,0,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65" />
@@ -356,9 +355,9 @@
                         Background="#DDDDDD"
                         BorderThickness="0"
                         Foreground="#E08030"
-                        Maximum="255"
+                        Maximum="700"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.SpD, Mode=OneWay}" />
+                        Value="{Binding SelectedPokemon.FinalSpD, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -379,7 +378,7 @@
                         Text="{Binding SelectedPokemon.FinalSpD, Mode=OneWay}" />
                 </Grid>
 
-                <!--  ── Speed ──  -->
+                <!--  Speed  -->
                 <Grid Margin="0,0,0,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="65" />
@@ -405,9 +404,9 @@
                         Background="#DDDDDD"
                         BorderThickness="0"
                         Foreground="#E83030"
-                        Maximum="255"
+                        Maximum="700"
                         Minimum="0"
-                        Value="{Binding SelectedPokemon.Spe, Mode=OneWay}" />
+                        Value="{Binding SelectedPokemon.FinalSpe, Mode=OneWay}" />
                     <TextBox
                         Grid.Column="3"
                         Margin="4,0"
@@ -428,27 +427,57 @@
                         Text="{Binding SelectedPokemon.FinalSpe, Mode=OneWay}" />
                 </Grid>
 
-                <!--  ── Remaining EVs ──  -->
-                <StackPanel
-                    Margin="0,0,80,8"
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal">
-                    <TextBlock
+                <!--  Bottom bar  -->
+                <Grid Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel
+                        Grid.Column="0"
                         VerticalAlignment="Center"
-                        FontSize="11"
-                        FontStyle="Italic"
-                        Foreground="#555555"
-                        Text="Remaining: " />
-                    <TextBlock
+                        Orientation="Horizontal">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            FontStyle="Italic"
+                            Foreground="#555555"
+                            Text="Remaining EVs: " />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            FontWeight="Bold"
+                            Foreground="#333333"
+                            Text="{Binding SelectedPokemon.RemainingEvs, Mode=OneWay}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="#888888"
+                            Text=" / 510" />
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Column="1"
                         VerticalAlignment="Center"
-                        FontSize="11"
-                        FontWeight="Bold"
-                        Foreground="#333333"
-                        Text="{Binding SelectedPokemon.RemainingEvs, Mode=OneWay}" />
-                </StackPanel>
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,6,0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="#444444"
+                            Text="IV spread:" />
+                        <ComboBox
+                            Width="150"
+                            Height="24"
+                            Background="White"
+                            BorderBrush="#BBBBBB"
+                            BorderThickness="1"
+                            FontSize="11"
+                            ItemsSource="{Binding IvSpreadOptions}"
+                            SelectedItem="{Binding SelectedIvSpread}" />
+                    </StackPanel>
+                </Grid>
 
-                <!--  ── Nature ──  -->
-                <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+                <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
                     <TextBlock
                         Margin="0,0,8,0"
                         VerticalAlignment="Center"
@@ -464,6 +493,13 @@
                         FontSize="11"
                         ItemsSource="{Binding NatureOptions}"
                         SelectedItem="{Binding SelectedPokemon.Nature}" />
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="10"
+                        FontStyle="Italic"
+                        Foreground="#4A90D9"
+                        Text="{Binding SelectedPokemon.SuggestedNature, Mode=OneWay, StringFormat='Suggested: {0}'}" />
                 </StackPanel>
 
             </StackPanel>

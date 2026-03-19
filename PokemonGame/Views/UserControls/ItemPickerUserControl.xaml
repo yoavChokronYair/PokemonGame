@@ -19,9 +19,11 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+            <!--  Header  -->
             <Border
                 Grid.Row="0"
                 Padding="10,6"
@@ -35,15 +37,54 @@
                     Text="Choose Held Item" />
             </Border>
 
-            <!--
-                SelectedItem binds to SelectedItem on the VM.
-                The setter auto-calls ConfirmItemCommand → sets HeldItem + closes panel.
-            -->
-            <ListBox
+            <!--  Search box  -->
+            <Border
                 Grid.Row="1"
+                Padding="8,5"
+                Background="White"
+                BorderBrush="#EEEEEE"
+                BorderThickness="0,0,0,1">
+                <TextBox
+                    Height="24"
+                    Padding="6,3"
+                    BorderBrush="#CCCCCC"
+                    BorderThickness="1"
+                    FontSize="11"
+                    Text="{Binding ItemSearchText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Resources>
+                                <VisualBrush
+                                    x:Key="HintBrush"
+                                    AlignmentX="Left"
+                                    AlignmentY="Center"
+                                    Stretch="None">
+                                    <VisualBrush.Visual>
+                                        <TextBlock
+                                            Margin="6,0,0,0"
+                                            FontSize="11"
+                                            Foreground="#AAAAAA"
+                                            Text="🔍 Search items..." />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Style.Resources>
+                            <Setter Property="Background" Value="White" />
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background" Value="{StaticResource HintBrush}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Border>
+
+            <!--  List  -->
+            <ListBox
+                Grid.Row="2"
                 Background="Transparent"
                 BorderThickness="0"
-                ItemsSource="{Binding AllItems}"
+                ItemsSource="{Binding FilteredItems}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                 <ListBox.ItemContainerStyle>

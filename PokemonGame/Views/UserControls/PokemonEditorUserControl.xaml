@@ -248,7 +248,10 @@
                         Margin="0,0,0,6"
                         Command="{Binding OpenItemPickerCommand}"
                         Style="{StaticResource MoveBtn}">
-                        <TextBlock FontSize="11" Text="{Binding SelectedPokemon.HeldItemName, FallbackValue='(click to choose)'}" />
+                        <TextBlock
+                            FontSize="11"
+                            Text="{Binding SelectedPokemon.HeldItemName, FallbackValue='(click to choose)'}"
+                            TextWrapping="Wrap" />
                     </Button>
 
                     <TextBlock Style="{StaticResource Lbl}" Text="Ability" />
@@ -256,12 +259,6 @@
                         Margin="0,0,0,6"
                         ItemsSource="{Binding SelectedPokemon.Abilities}"
                         SelectedItem="{Binding SelectedPokemon.SelectedAbility}"
-                        Style="{StaticResource Combo}" />
-
-                    <TextBlock Style="{StaticResource Lbl}" Text="Nature" />
-                    <ComboBox
-                        ItemsSource="{Binding NatureOptions}"
-                        SelectedItem="{Binding SelectedPokemon.Nature}"
                         Style="{StaticResource Combo}" />
                 </StackPanel>
 
@@ -295,6 +292,7 @@
                 </StackPanel>
 
                 <!--  ── Col 4: Stats — click to toggle EV/IV panel ──  -->
+                <!--  ── Col 4: Stats — click to toggle EV/IV panel ──  -->
                 <StackPanel Grid.Column="4" VerticalAlignment="Top">
                     <Button
                         Padding="0"
@@ -304,6 +302,8 @@
                         Cursor="Hand">
                         <StackPanel Width="200">
                             <TextBlock Style="{StaticResource Hdr}" Text="Stats  ▾" />
+
+                            <!--  HP  -->
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="20" />
@@ -319,15 +319,18 @@
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#6DBE6D"
+                                    Maximum="700"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.HP, Mode=OneWay}" />
+                                    Value="{Binding SelectedPokemon.FinalHP, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.HP, Mode=OneWay}"
+                                    Text="{Binding SelectedPokemon.EvHP, Mode=OneWay}"
                                     TextAlignment="Left" />
                             </Grid>
+
+                            <!--  Atk  -->
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="20" />
@@ -343,15 +346,18 @@
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#E8855A"
+                                    Maximum="700"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.Atk, Mode=OneWay}" />
+                                    Value="{Binding SelectedPokemon.FinalAtk, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.Atk, Mode=OneWay}"
+                                    Text="{Binding SelectedPokemon.EvAtk, Mode=OneWay}"
                                     TextAlignment="Left" />
                             </Grid>
+
+                            <!--  Def  -->
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="20" />
@@ -367,15 +373,18 @@
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#D4C85A"
+                                    Maximum="700"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.Def, Mode=OneWay}" />
+                                    Value="{Binding SelectedPokemon.FinalDef, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.Def, Mode=OneWay}"
+                                    Text="{Binding SelectedPokemon.EvDef, Mode=OneWay}"
                                     TextAlignment="Left" />
                             </Grid>
+
+                            <!--  SpA  -->
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="20" />
@@ -391,15 +400,18 @@
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#7BA7E0"
+                                    Maximum="700"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.SpA, Mode=OneWay}" />
+                                    Value="{Binding SelectedPokemon.FinalSpA, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.SpA, Mode=OneWay}"
+                                    Text="{Binding SelectedPokemon.EvSpA, Mode=OneWay}"
                                     TextAlignment="Left" />
                             </Grid>
+
+                            <!--  SpD  -->
                             <Grid Margin="0,0,0,3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="20" />
@@ -415,15 +427,18 @@
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#78C8A8"
+                                    Maximum="700"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.SpD, Mode=OneWay}" />
+                                    Value="{Binding SelectedPokemon.FinalSpD, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.SpD, Mode=OneWay}"
+                                    Text="{Binding SelectedPokemon.EvSpD, Mode=OneWay}"
                                     TextAlignment="Left" />
                             </Grid>
+
+                            <!--  Spe  -->
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="20" />
@@ -439,15 +454,17 @@
                                 <ProgressBar
                                     Grid.Column="1"
                                     Foreground="#C87DDB"
+                                    Maximum="700"
                                     Style="{StaticResource Bar}"
-                                    Value="{Binding SelectedPokemon.Spe, Mode=OneWay}" />
+                                    Value="{Binding SelectedPokemon.FinalSpe, Mode=OneWay}" />
                                 <TextBlock
                                     Grid.Column="2"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource StatVal}"
-                                    Text="{Binding SelectedPokemon.Spe, Mode=OneWay}"
+                                    Text="{Binding SelectedPokemon.EvSpe, Mode=OneWay}"
                                     TextAlignment="Left" />
                             </Grid>
+
                         </StackPanel>
                     </Button>
                 </StackPanel>

@@ -217,20 +217,78 @@ namespace PokemonGame.Services.Handler
             if (_moveDisplayCache != null) return _moveDisplayCache;
 
             _moveDisplayCache = new Dictionary<int, MoveDisplayEntry>();
+
             foreach (var m in _moves.GetAllMoves())
             {
+                // ── Accuracy: from the first attempt's AccuracyValue ──────────────
+                double? accuracy = null;
+                var attempts = _moves.LoadAttemptsForMove(m.Id);
+                var firstAttempt = attempts.FirstOrDefault();
+                if (firstAttempt?.AccuracyValue.HasValue == true)
+                    accuracy = firstAttempt.AccuracyValue.Value;
+                
+                // ── Power: from the OnHitEffect's NumberId → MoveNumberData.ExactValue ──
+                // ── Power ────────────────────────────────────────────────────────────
+                int? power = null;
+                if (firstAttempt?.OnHitEffectId.HasValue == true)
+                {
+                    var onHitEffect = _moves.LoadEffect(firstAttempt.OnHitEffectId.Value);
+
+                    if (onHitEffect != null)
+                    {
+                        // Direct damage
+                        if (onHitEffect.Type == "FormulaDamage" && onHitEffect.NumberId.HasValue)
+                        {
+                            var number = _moves.LoadNumber(onHitEffect.NumberId.Value);
+                            if (number?.ExactValue.HasValue == true)
+                                power = (int)number.ExactValue.Value;
+                        }
+                        // Sequence — damage is in one of the steps
+                        else if (onHitEffect.Type == "Sequence")
+                        {
+                            var steps = _moves.LoadSequenceSteps(onHitEffect.Id);
+                            foreach (var step in steps)
+                            {
+                                var stepEffect = _moves.LoadEffect(step.ChildEffectId);
+                                if (stepEffect?.Type == "FormulaDamage" && stepEffect.NumberId.HasValue)
+                                {
+                                    var number = _moves.LoadNumber(stepEffect.NumberId.Value);
+                                    if (number?.ExactValue.HasValue == true)
+                                    {
+                                        power = (int)number.ExactValue.Value;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        // Chance wrapping damage (e.g. secondary effect moves)
+                        else if (onHitEffect.Type == "Chance" && onHitEffect.ChildEffectId.HasValue)
+                        {
+                            var child = _moves.LoadEffect(onHitEffect.ChildEffectId.Value);
+                            if (child?.Type == "FormulaDamage" && child.NumberId.HasValue)
+                            {
+                                var number = _moves.LoadNumber(child.NumberId.Value);
+                                if (number?.ExactValue.HasValue == true)
+                                    power = (int)number.ExactValue.Value;
+                            }
+                        }
+                    }
+                }
+
+
                 _moveDisplayCache[m.Id] = new MoveDisplayEntry
                 {
                     Id = m.Id,
                     Name = m.Name ?? string.Empty,
-                    TypeName = m.Element ?? string.Empty,  // Element, not Type
+                    TypeName = m.Element ?? string.Empty,
                     Category = m.Category ?? string.Empty,
-                    Power = null,   // not on MoveData — no Power field
-                    Accuracy = null,   // not on MoveData — no Accuracy field
+                    Power = power,
+                    Accuracy = accuracy.HasValue ? (int)(accuracy.Value * 100) : (int?)null,
                     PP = m.PP,
                     Description = m.Description ?? string.Empty,
                 };
             }
+
             return _moveDisplayCache;
         }
 

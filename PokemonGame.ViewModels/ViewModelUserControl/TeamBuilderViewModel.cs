@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData;
-using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -37,6 +34,39 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         // ── Team slots ────────────────────────────────────────────────────────
         public ObservableCollection<TeamSlotEntry> TeamSlots { get; }
+        // ── Move search ───────────────────────────────────────────────────────────
+        private string _moveSearchText = string.Empty;
+        public string MoveSearchText
+        {
+            get => _moveSearchText;
+            set
+            {
+                if (SetProperty(ref _moveSearchText, value))
+                    OnPropertyChanged(nameof(FilteredMoves));
+            }
+        }
+
+        public IEnumerable<MoveDisplayEntry> FilteredMoves =>
+            string.IsNullOrWhiteSpace(MoveSearchText)
+            ? SelectedPokemon?.AvailableMoves ?? Enumerable.Empty<MoveDisplayEntry>()
+            : SelectedPokemon?.AvailableMoves
+                .Where(m => m.Name.IndexOf(MoveSearchText, StringComparison.OrdinalIgnoreCase) >= 0)
+              ?? Enumerable.Empty<MoveDisplayEntry>();
+        private string _itemSearchText = string.Empty;
+        public string ItemSearchText
+        {
+            get => _itemSearchText;
+            set
+            {
+                if (SetProperty(ref _itemSearchText, value))
+                    OnPropertyChanged(nameof(FilteredItems));
+            }
+        }
+
+        public IEnumerable<ItemData> FilteredItems =>
+            string.IsNullOrWhiteSpace(ItemSearchText)
+                ? AllItems
+                : AllItems.Where(i => i.Name.IndexOf(ItemSearchText, StringComparison.OrdinalIgnoreCase) >= 0);
 
         // ── Selected slot in team ─────────────────────────────────────────────
         private TeamSlotEntry _selectedPokemon;
@@ -52,6 +82,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                     IsItemPickerOpen = false;
                     IsPokemonPickerOpen = false;
                     ActiveMoveSlot = 0;
+                    OnPropertyChanged(nameof(FilteredMoves));
+
                 }
             }
         }
@@ -127,6 +159,22 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             get => _activeMoveSlot;
             set => SetProperty(ref _activeMoveSlot, value);
         }
+        public List<string> IvSpreadOptions { get; } = new List<string>
+        {
+            "max all", "min Atk", "min Atk, min Spe", "min Spe", "min all"
+        };
+
+        private string _selectedIvSpread;
+        public string SelectedIvSpread
+        {
+            get => _selectedIvSpread;
+            set
+            {
+                if (SetProperty(ref _selectedIvSpread, value) && value != null)
+                    SelectedPokemon?.ApplyIvSpread(value);
+            }
+        }
+
 
         // ── Commands ──────────────────────────────────────────────────────────
         public RelayCommand ToggleEvIvCommand { get; }
@@ -142,6 +190,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public RelayCommand AddTeamSlotCommand { get; }
         public RelayCommand RemoveFromTeamCommand { get; }
         public RelayCommand AddToTeamCommand { get; }
+        public RelayCommand<string> ApplyIvSpreadCommand { get; }
+
 
 
         // ── Constructor ───────────────────────────────────────────────────────
@@ -194,6 +244,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                     IsEvIvPanelOpen = false;
                     IsMovePickerOpen = false;
                     IsPokemonPickerOpen = false;
+                    ItemSearchText = string.Empty; // ← reset on open
+                    OnPropertyChanged(nameof(FilteredItems));  // ← add this
+
                 }
             });
 
@@ -204,7 +257,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 SelectedItem = null;
                 IsItemPickerOpen = false;
             });
-
+            ApplyIvSpreadCommand = new RelayCommand<string>(spread =>
+            {
+                if (spread == null) return;
+                SelectedPokemon?.ApplyIvSpread(spread);
+            });
             OpenPokemonPickerCommand = new RelayCommand(() =>
             {
                 IsPokemonPickerOpen = !IsPokemonPickerOpen;
@@ -221,23 +278,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             {
                 if (PickerPokemon == null) return;
 
-                var slot = new TeamSlotEntry(PickerPokemon);
-
-                // Debug: verify slot is created
-                System.Diagnostics.Debug.WriteLine($"Created slot for: {slot.Name}");
-
-                _selectedPokemon = slot;
+                _selectedPokemon = new TeamSlotEntry(PickerPokemon);
                 OnPropertyChanged(nameof(SelectedPokemon));
-
-                System.Diagnostics.Debug.WriteLine($"SelectedPokemon is now: {_selectedPokemon?.Name ?? "NULL"}");
+                OnPropertyChanged(nameof(FilteredMoves));  // ← add this
+                OnPropertyChanged(nameof(FilteredItems));  // ← add this
 
                 _pickerPokemon = null;
                 OnPropertyChanged(nameof(PickerPokemon));
 
                 IsPokemonPickerOpen = false;
-
-                System.Diagnostics.Debug.WriteLine($"IsPokemonPickerOpen: {IsPokemonPickerOpen}");
-
                 AddToTeamCommand.NotifyCanExecuteChanged();
             });
 
@@ -276,6 +325,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             IsItemPickerOpen = false;
             IsPokemonPickerOpen = false;
             SelectedMove = null;
+            MoveSearchText = string.Empty; // ← reset search on open
+            OnPropertyChanged(nameof(FilteredMoves));  // ← add this
+
         }
     }
 
@@ -395,6 +447,27 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             get => _selectedAbility;
             set => SetProperty(ref _selectedAbility, value);
         }
+        public string SuggestedNature
+        {
+            get
+            {
+                // Determine which offensive stat is being invested in
+                bool physicalAttacker = EvAtk >= 252;
+                bool specialAttacker = EvSpA >= 252;
+                bool speedInvested = EvSpe >= 252;
+                bool slowRole = IvSpe == 0; // trick room
+
+                if (physicalAttacker && speedInvested) return "Adamant or Jolly";
+                if (physicalAttacker && slowRole) return "Brave (Trick Room)";
+                if (physicalAttacker) return "Adamant";
+                if (specialAttacker && speedInvested) return "Modest or Timid";
+                if (specialAttacker && slowRole) return "Quiet (Trick Room)";
+                if (specialAttacker) return "Modest";
+                if (speedInvested) return "Jolly or Timid";
+                if (EvHP >= 252) return "Bold or Calm (Defensive)";
+                return "—";
+            }
+        }
 
         // ── Moves ─────────────────────────────────────────────────────────────
         private MoveDisplayEntry _move1;
@@ -431,29 +504,164 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public string Move3Display => Move3?.Name ?? "— Move 3 —";
         public string Move4Display => Move4?.Name ?? "— Move 4 —";
 
-        // ── EVs ───────────────────────────────────────────────────────────────
+        // Replace all 6 EV properties with capped versions:
+        // ── EVs ───────────────────────────────────────────────────────────────────
         private int _evHP;
-        public int EvHP { get => _evHP; set { if (SetProperty(ref _evHP, value)) { OnPropertyChanged(nameof(FinalHP)); OnPropertyChanged(nameof(RemainingEvs)); } } }
+        public int EvHP
+        {
+            get => _evHP;
+            set
+            {
+                int clamped = Math.Min(252, Math.Max(0, Math.Min(value, 510 - (EvAtk + EvDef + EvSpA + EvSpD + EvSpe))));
+                if (SetProperty(ref _evHP, clamped))
+                {
+                    OnPropertyChanged(nameof(FinalHP));
+                    OnPropertyChanged(nameof(RemainingEvs));
+                    OnPropertyChanged(nameof(SuggestedNature));
+                }
+            }
+        }
+        
         private int _evAtk;
-        public int EvAtk { get => _evAtk; set { if (SetProperty(ref _evAtk, value)) { OnPropertyChanged(nameof(FinalAtk)); OnPropertyChanged(nameof(RemainingEvs)); } } }
+        public int EvAtk
+        {
+            get => _evAtk;
+            set
+            {
+                int clamped = Math.Min(252, Math.Max(0, Math.Min(value, 510 - (EvHP + EvDef + EvSpA + EvSpD + EvSpe))));
+                if (SetProperty(ref _evAtk, clamped))
+                {
+                    OnPropertyChanged(nameof(FinalAtk));
+                    OnPropertyChanged(nameof(RemainingEvs));
+                    OnPropertyChanged(nameof(SuggestedNature));
+                }
+            }
+        }
+
         private int _evDef;
-        public int EvDef { get => _evDef; set { if (SetProperty(ref _evDef, value)) { OnPropertyChanged(nameof(FinalDef)); OnPropertyChanged(nameof(RemainingEvs)); } } }
+        public int EvDef
+        {
+            get => _evDef;
+            set
+            {
+                int clamped = Math.Min(252, Math.Max(0, Math.Min(value, 510 - (EvHP + EvAtk + EvSpA + EvSpD + EvSpe))));
+                if (SetProperty(ref _evDef, clamped))
+                {
+                    OnPropertyChanged(nameof(FinalDef));
+                    OnPropertyChanged(nameof(RemainingEvs));
+                    OnPropertyChanged(nameof(SuggestedNature));
+                }
+            }
+        }
+
         private int _evSpA;
-        public int EvSpA { get => _evSpA; set { if (SetProperty(ref _evSpA, value)) { OnPropertyChanged(nameof(FinalSpA)); OnPropertyChanged(nameof(RemainingEvs)); } } }
+        public int EvSpA
+        {
+            get => _evSpA;
+            set
+            {
+                int clamped = Math.Min(252, Math.Max(0, Math.Min(value, 510 - (EvHP + EvAtk + EvDef + EvSpD + EvSpe))));
+                if (SetProperty(ref _evSpA, clamped))
+                {
+                    OnPropertyChanged(nameof(FinalSpA));
+                    OnPropertyChanged(nameof(RemainingEvs));
+                    OnPropertyChanged(nameof(SuggestedNature));
+                }
+            }
+        }
+
         private int _evSpD;
-        public int EvSpD { get => _evSpD; set { if (SetProperty(ref _evSpD, value)) { OnPropertyChanged(nameof(FinalSpD)); OnPropertyChanged(nameof(RemainingEvs)); } } }
+        public int EvSpD
+        {
+            get => _evSpD;
+            set
+            {
+                int clamped = Math.Min(252, Math.Max(0, Math.Min(value, 510 - (EvHP + EvAtk + EvDef + EvSpA + EvSpe))));
+                if (SetProperty(ref _evSpD, clamped))
+                {
+                    OnPropertyChanged(nameof(FinalSpD));
+                    OnPropertyChanged(nameof(RemainingEvs));
+                    OnPropertyChanged(nameof(SuggestedNature));
+                }
+            }
+        }
+
         private int _evSpe;
-        public int EvSpe { get => _evSpe; set { if (SetProperty(ref _evSpe, value)) { OnPropertyChanged(nameof(FinalSpe)); OnPropertyChanged(nameof(RemainingEvs)); } } }
+        public int EvSpe
+        {
+            get => _evSpe;
+            set
+            {
+                int clamped = Math.Min(252, Math.Max(0, Math.Min(value, 510 - (EvHP + EvAtk + EvDef + EvSpA + EvSpD))));
+                if (SetProperty(ref _evSpe, clamped))
+                {
+                    OnPropertyChanged(nameof(FinalSpe));
+                    OnPropertyChanged(nameof(RemainingEvs));
+                    OnPropertyChanged(nameof(SuggestedNature));
+                }
+            }
+        }
+
+        // ── IVs ───────────────────────────────────────────────────────────────────
+        private int _ivHP = 31;
+        public int IvHP
+        {
+            get => _ivHP;
+            set { if (SetProperty(ref _ivHP, value)) { OnPropertyChanged(nameof(FinalHP)); OnPropertyChanged(nameof(SuggestedNature)); } }
+        }
+
+        private int _ivAtk = 31;
+        public int IvAtk
+        {
+            get => _ivAtk;
+            set { if (SetProperty(ref _ivAtk, value)) { OnPropertyChanged(nameof(FinalAtk)); OnPropertyChanged(nameof(SuggestedNature)); } }
+        }
+
+        private int _ivDef = 31;
+        public int IvDef
+        {
+            get => _ivDef;
+            set { if (SetProperty(ref _ivDef, value)) { OnPropertyChanged(nameof(FinalDef)); OnPropertyChanged(nameof(SuggestedNature)); } }
+        }
+
+        private int _ivSpA = 31;
+        public int IvSpA
+        {
+            get => _ivSpA;
+            set { if (SetProperty(ref _ivSpA, value)) { OnPropertyChanged(nameof(FinalSpA)); OnPropertyChanged(nameof(SuggestedNature)); } }
+        }
+
+        private int _ivSpD = 31;
+        public int IvSpD
+        {
+            get => _ivSpD;
+            set { if (SetProperty(ref _ivSpD, value)) { OnPropertyChanged(nameof(FinalSpD)); OnPropertyChanged(nameof(SuggestedNature)); } }
+        }
+
+        private int _ivSpe = 31;
+        public int IvSpe
+        {
+            get => _ivSpe;
+            set { if (SetProperty(ref _ivSpe, value)) { OnPropertyChanged(nameof(FinalSpe)); OnPropertyChanged(nameof(SuggestedNature)); } }
+        }
+
+        // ── IV Spread presets ─────────────────────────────────────────────────────
+        public void ApplyIvSpread(string spread)
+        {
+            switch (spread)
+            {
+                case "max all": IvHP = 31; IvAtk = 31; IvDef = 31; IvSpA = 31; IvSpD = 31; IvSpe = 31; break;
+                case "min Atk": IvHP = 31; IvAtk = 0; IvDef = 31; IvSpA = 31; IvSpD = 31; IvSpe = 31; break;
+                case "min Atk, min Spe": IvHP = 31; IvAtk = 0; IvDef = 31; IvSpA = 31; IvSpD = 31; IvSpe = 0; break;
+                case "min Spe": IvHP = 31; IvAtk = 31; IvDef = 31; IvSpA = 31; IvSpD = 31; IvSpe = 0; break;
+                case "min all": IvHP = 0; IvAtk = 0; IvDef = 0; IvSpA = 0; IvSpD = 0; IvSpe = 0; break;
+            }
+            OnPropertyChanged(nameof(SuggestedNature));
+        }
 
         public int RemainingEvs => 510 - EvHP - EvAtk - EvDef - EvSpA - EvSpD - EvSpe;
 
-        // ── IVs ───────────────────────────────────────────────────────────────
-        private int _ivHP = 31; public int IvHP { get => _ivHP; set { if (SetProperty(ref _ivHP, value)) OnPropertyChanged(nameof(FinalHP)); } }
-        private int _ivAtk = 31; public int IvAtk { get => _ivAtk; set { if (SetProperty(ref _ivAtk, value)) OnPropertyChanged(nameof(FinalAtk)); } }
-        private int _ivDef = 31; public int IvDef { get => _ivDef; set { if (SetProperty(ref _ivDef, value)) OnPropertyChanged(nameof(FinalDef)); } }
-        private int _ivSpA = 31; public int IvSpA { get => _ivSpA; set { if (SetProperty(ref _ivSpA, value)) OnPropertyChanged(nameof(FinalSpA)); } }
-        private int _ivSpD = 31; public int IvSpD { get => _ivSpD; set { if (SetProperty(ref _ivSpD, value)) OnPropertyChanged(nameof(FinalSpD)); } }
-        private int _ivSpe = 31; public int IvSpe { get => _ivSpe; set { if (SetProperty(ref _ivSpe, value)) OnPropertyChanged(nameof(FinalSpe)); } }
+       
 
         // ── Stat formula (Gen 3+) ─────────────────────────────────────────────
         private static readonly Dictionary<string, (string Boost, string Reduce)> NatureMap =
