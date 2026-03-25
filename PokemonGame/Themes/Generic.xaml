@@ -14,12 +14,12 @@
                         UseLayoutRounding="True">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="28" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
                             <RowDefinition Height="28" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="28" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="28" />
                         </Grid.ColumnDefinitions>
 

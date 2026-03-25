@@ -29,7 +29,7 @@
             <local:HistoryBattlePage />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type onlinevm:OnlineBattleShellViewModel}">
+        <DataTemplate DataType="{x:Type onlinevm:BattleMenuViewModel}">
             <local:BattleMenuPage />
         </DataTemplate>
 
@@ -37,7 +37,8 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="Auto" />
+            <!--  shrinks/grows with MenuWidth  -->
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 

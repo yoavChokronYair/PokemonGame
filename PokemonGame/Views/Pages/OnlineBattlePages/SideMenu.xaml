@@ -7,69 +7,121 @@
     Title="SideMenu"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Background="White"
+    Background="Transparent"
     mc:Ignorable="d">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100*" />
-            <RowDefinition Height="350*" />
-        </Grid.RowDefinitions>
+    <Border
+        Width="{Binding MenuWidth}"
+        Padding="5"
+        HorizontalAlignment="Left"
+        Background="#1E1E1E">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <StackPanel>
 
-        <Border
-            Grid.RowSpan="2"
-            Grid.Column="0"
-            Padding="5"
-            Background="#1E1E1E">
+            <!--  Hamburger  -->
+            <Button
+                Width="40"
+                Height="40"
+                Margin="5,10,5,10"
+                HorizontalAlignment="Left"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding ToggleMenuCommand}"
+                Content="☰"
+                Cursor="Hand"
+                FontSize="22"
+                Foreground="White" />
 
-            <StackPanel>
+            <!--  Home  -->
+            <Button Command="{Binding HomeCommand}" Style="{StaticResource MenuButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="🏠" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="Home"
+                        Visibility="{Binding TextVisibility}" />
+                </StackPanel>
+            </Button>
 
-                <!--  Hamburger  -->
-                <Button
-                    Width="40"
-                    Height="40"
-                    Margin="10"
-                    HorizontalAlignment="Left"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Command="{Binding ToggleMenuCommand}"
-                    Content="☰"
-                    Cursor="Hand"
-                    FontSize="22"
-                    Foreground="White" />
+            <!--  History  -->
+            <Button Command="{Binding HistoryCommand}" Style="{StaticResource MenuButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="📋" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="History"
+                        Visibility="{Binding TextVisibility}" />
+                </StackPanel>
+            </Button>
 
-                <!--  Menu buttons  -->
-                <Button
-                    Command="{Binding HistoryCommand}"
-                    Content="History"
-                    Style="{StaticResource MenuButtonStyle}" />
+            <!--  Friends  -->
+            <Button Command="{Binding FriendsCommand}" Style="{StaticResource MenuButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="👥" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="Friends"
+                        Visibility="{Binding TextVisibility}" />
+                </StackPanel>
+            </Button>
 
-                <Button
-                    Command="{Binding FriendsCommand}"
-                    Content="Friends"
-                    Style="{StaticResource MenuButtonStyle}" />
+            <!--  Team  -->
+            <Button Command="{Binding TeamCommand}" Style="{StaticResource MenuButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="⚔️" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="Team"
+                        Visibility="{Binding TextVisibility}" />
+                </StackPanel>
+            </Button>
 
-                <Button
-                    Command="{Binding TeamCommand}"
-                    Content="Team"
-                    Style="{StaticResource MenuButtonStyle}" />
+            <!--  Profile  -->
+            <Button Command="{Binding ProfileCommand}" Style="{StaticResource MenuButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="👤" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="Profile"
+                        Visibility="{Binding TextVisibility}" />
+                </StackPanel>
+            </Button>
 
-                <Button
-                    Command="{Binding ProfileCommand}"
-                    Content="Profile"
-                    Style="{StaticResource MenuButtonStyle}" />
+            <!--  Exit  -->
+            <Button Command="{Binding ExitCommand}" Style="{StaticResource MenuButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="🚪" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="Main Menu"
+                        Visibility="{Binding TextVisibility}" />
+                </StackPanel>
+            </Button>
 
-                <Button
-                    Command="{Binding ExitCommand}"
-                    Content="to main window"
-                    Style="{StaticResource MenuButtonStyle}" />
-
-            </StackPanel>
-        </Border>
-    </Grid>
+        </StackPanel>
+    </Border>
 </Page>

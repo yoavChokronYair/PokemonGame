@@ -6,7 +6,30 @@
     xmlns:local2="clr-namespace:PokemonGame.Views.Pages.SignIn">
     <Application.Resources>
 
-
+        <Style x:Key="ToggleRadioStyle" TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border
+                            x:Name="OptionBorder"
+                            Padding="8,6"
+                            Background="#F5F5F5"
+                            BorderBrush="#DDDDDD"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="OptionBorder" Property="Background" Value="#E8F0FE" />
+                                <Setter TargetName="OptionBorder" Property="BorderBrush" Value="#4A90D9" />
+                                <Setter TargetName="OptionBorder" Property="BorderThickness" Value="2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!--  Default font style for all text  -->
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="FontFamily" Value="pack://application:,,,/Assets/Fonts/#Pokemon Classic" />

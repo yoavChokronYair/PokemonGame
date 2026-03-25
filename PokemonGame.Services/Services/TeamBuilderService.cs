@@ -257,7 +257,15 @@ namespace PokemonGame.Services.Handler
             var pair = cache.FirstOrDefault(kv => kv.Value.Name == moveName);
             return pair.Value == null ? null : (int?)pair.Key;
         }
-
+        public MoveDisplayEntry GetMoveById(int? moveId, List<MoveDisplayEntry> availableMoves)
+        {
+            if (moveId == null || moveId <= 0) return null;
+            return availableMoves.FirstOrDefault(m => m.Id == moveId);
+        }
+        public string GetAbilityNameById(int abilityId)
+        {
+            return _abilities.GetAbility(abilityId)?.Name ?? string.Empty;
+        }
         /// <summary>Looks up an ability ID by name. Returns 0 if not found.</summary>
         public int GetAbilityId(string? abilityName)
         {

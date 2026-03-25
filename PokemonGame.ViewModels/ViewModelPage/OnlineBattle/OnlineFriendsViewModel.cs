@@ -26,7 +26,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             AddFriendCommand = new AsyncRelayCommand(OnAddFriendAsync);
             LoadDummyFriends();
         }
-        // In OnlineFriendsViewModel
         public void Cleanup()
         {
             foreach (var friend in Friends)
@@ -85,7 +84,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private void OnFriendRemoved(FriendItemViewModel friendVm)
         {
+
             Friends.Remove(friendVm);
+            Cleanup();
         }
     }
 

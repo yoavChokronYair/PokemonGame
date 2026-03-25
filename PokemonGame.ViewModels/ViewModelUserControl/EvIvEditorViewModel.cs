@@ -14,7 +14,14 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
         {
             "max all", "min Atk", "min Atk, min Spe", "min Spe", "min all"
         };
-
+        public List<string> NatureOptions { get; } = new List<string>
+        {
+            "Hardy",  "Lonely", "Brave",   "Adamant", "Naughty",
+            "Bold",   "Docile", "Relaxed", "Impish",  "Lax",
+            "Timid",  "Hasty",  "Serious", "Jolly",   "Naive",
+            "Modest", "Mild",   "Quiet",   "Bashful", "Rash",
+            "Calm",   "Gentle", "Sassy",   "Careful", "Quirky"
+        };
         private string _selectedIvSpread;
         public string SelectedIvSpread
         {

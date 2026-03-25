@@ -20,7 +20,7 @@
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <!--  2 columns, 3 rows — scales with the control's size  -->
-                <UniformGrid Columns="3" Rows="2" />
+                <UniformGrid Columns="2" Rows="3" />
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
 
@@ -63,35 +63,14 @@
                             <!--  Sprite — sizes to whatever the control is  -->
                             <Image
                                 Height="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=ActualHeight, Converter={StaticResource ThirdOfHeightConverter}}"
+                                Margin="10"
                                 HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 Source="{Binding PokedexId, Converter={StaticResource PokemonToImage}, Mode=OneWay}"
                                 Stretch="Uniform" />
 
-                            <!--  Name  -->
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                FontSize="11"
-                                FontWeight="SemiBold"
-                                Text="{Binding Name}"
-                                TextTrimming="CharacterEllipsis" />
 
-                            <!--  Types  -->
-                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <Image
-                                    Width="36"
-                                    Height="12"
-                                    Margin="0,2,2,0"
-                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                    Source="{Binding Type1, Converter={StaticResource TypeToImage}}" />
-                                <Image
-                                    Width="36"
-                                    Height="12"
-                                    Margin="0,2,0,0"
-                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                    Source="{Binding Type2, Converter={StaticResource TypeToImage}}"
-                                    Visibility="{Binding Type2, Converter={StaticResource NullToVis}}" />
-                            </StackPanel>
                         </StackPanel>
                     </Grid>
                 </Border>

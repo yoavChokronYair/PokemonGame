@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -6,6 +7,7 @@ using PokemonGame.ViewModels.ViewModelHelper.Service;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
 using PokemonGame.ViewModels.ViewModelPage.Summery;
+using PokemonGame.Views.Pages.OnlineBattlePages;
 
 namespace PokemonGame
 {
@@ -92,49 +94,83 @@ namespace PokemonGame
             );
         }
 
-        // ---------------- ONLINE BATTLE SHELL ----------------
+      // ---------------- ONLINE BATTLE SHELL ----------------
+
+        private OnlineBattleShellViewModel _onlineBattleShellViewModel;
+        private NavigationStore _contentNavigationStore;
+
+        // cached content VMs
+        private BattleMenuViewModel _battleMenuViewModel;
+        private HistoryBattleViewModel _historyBattleViewModel;
+        private OnlineFriendsViewModel _onlineFriendsViewModel;
+        private TeamBuilderViewModel _teamBuilderViewModel;
+        private ProfileViewModel _profileViewModel;
 
         private OnlineBattleShellViewModel CreateOnlineBattleShellViewModel()
         {
-            var contentNavigationStore = new NavigationStore();
-            return new OnlineBattleShellViewModel(
-                contentNavigationStore,
-                CreateSideMenuViewModel(contentNavigationStore)
+            if (_onlineBattleShellViewModel != null)
+                return _onlineBattleShellViewModel;
+
+            _contentNavigationStore = new NavigationStore();
+            _contentNavigationStore.CurrentViewModel = GetBattleMenuViewModel();
+
+            _onlineBattleShellViewModel = new OnlineBattleShellViewModel(
+                _contentNavigationStore,
+                CreateSideMenuViewModel(_contentNavigationStore)
             );
+
+            return _onlineBattleShellViewModel;
         }
 
         private SideMenuViewModel CreateSideMenuViewModel(NavigationStore contentNavigationStore)
         {
             return new SideMenuViewModel(
                 contentNavigationStore,
-                CreateHistoryViewModel,
-                CreateFriendsViewModel,
-                CreateTeamSelectPageViewModel,
-                CreateProfileViewModel,
+                _navigationStore,
+                GetBattleMenuViewModel,
+                GetHistoryViewModel,
+                GetFriendsViewModel,
+                GetTeamSelectPageViewModel,
+                GetProfileViewModel,
                 CreateGameModeChooserViewModel
             );
         }
 
-        // ---------------- CONTENT VIEWMODELS ----------------
+        // ---------------- CACHED CONTENT VIEWMODELS ----------------
 
-        private HistoryBattleViewModel CreateHistoryViewModel()
+        private BattleMenuViewModel GetBattleMenuViewModel()
         {
-            return new HistoryBattleViewModel(_userStore);
+            if (_battleMenuViewModel == null)
+                _battleMenuViewModel = new BattleMenuViewModel();
+            return _battleMenuViewModel;
         }
 
-        private OnlineFriendsViewModel CreateFriendsViewModel()
+        private HistoryBattleViewModel GetHistoryViewModel()
         {
-            return new OnlineFriendsViewModel(_userStore,new DialogService());
+            if (_historyBattleViewModel == null)
+                _historyBattleViewModel = new HistoryBattleViewModel(_userStore);
+            return _historyBattleViewModel;
         }
 
-        private TeamBuilderViewModel CreateTeamSelectPageViewModel()
+        private OnlineFriendsViewModel GetFriendsViewModel()
         {
-            return new TeamBuilderViewModel(_userStore);
+            if (_onlineFriendsViewModel == null)
+                _onlineFriendsViewModel = new OnlineFriendsViewModel(_userStore, new DialogService());
+            return _onlineFriendsViewModel;
         }
 
-        private ProfileViewModel CreateProfileViewModel()
+        private TeamBuilderViewModel GetTeamSelectPageViewModel()
         {
-            return new ProfileViewModel(_userStore);
+            if (_teamBuilderViewModel == null)
+                _teamBuilderViewModel = new TeamBuilderViewModel(_userStore);
+            return _teamBuilderViewModel;
+        }
+
+        private ProfileViewModel GetProfileViewModel()
+        {
+            if (_profileViewModel == null)
+                _profileViewModel = new ProfileViewModel(_userStore);
+            return _profileViewModel;
         }
         private MoveSummaryViewModel CreateMoveSummaryViewModel()
         {

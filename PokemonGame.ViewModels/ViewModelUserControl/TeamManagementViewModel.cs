@@ -114,6 +114,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                         IsShiny = bp.Shiny == 1,
                         Nature = bp.Nature ?? "Serious",
                         HeldItemName = _allItems.FirstOrDefault(it => it.Id == bp.ItemID)?.Name,
+                        SelectedAbility = _service.GetAbilityNameById(bp.AbilityID),
                         IvHP = bp.Iv_hp,
                         IvAtk = bp.Iv_atk,
                         IvDef = bp.Iv_def,
@@ -127,6 +128,11 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                         EvSpD = bp.Ev_spDef,
                         EvSpe = bp.Ev_speed,
                     };
+                    slot.Move1 = _service.GetMoveById(bp.Move1ID, pokemon.AvailableMoves);
+                    slot.Move2 = _service.GetMoveById(bp.Move2ID, pokemon.AvailableMoves);
+                    slot.Move3 = _service.GetMoveById(bp.Move3ID, pokemon.AvailableMoves);
+                    slot.Move4 = _service.GetMoveById(bp.Move4ID, pokemon.AvailableMoves);
+
                     _state.TeamSlots[i] = slot;
                 }
                 _state.CloseAllPanels();
