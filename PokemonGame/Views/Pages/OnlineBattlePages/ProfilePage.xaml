@@ -5,6 +5,7 @@
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uc="clr-namespace:PokemonGame.Views.UserControls"
     Background="White"
     mc:Ignorable="d">
 
@@ -246,33 +247,11 @@
                         Margin="0,0,0,12"
                         FontWeight="Bold"
                         Text="FAVOURITE TEAM" />
-                    <ItemsControl ItemsSource="{Binding FavouriteTeamSlots}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Columns="6" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border
-                                    Width="44"
-                                    Height="44"
-                                    Margin="2"
-                                    Background="#F5F5F5"
-                                    CornerRadius="4">
-                                    <Image
-                                        Width="40"
-                                        Height="40"
-                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                        Source="{Binding SpriteImage}" />
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+
+                    <uc:PokemonTeamUserControl Height="180" DataContext="{Binding FavouriteTeam}" />
                 </StackPanel>
             </controls:BoardBackground>
 
-            <!--  ── SETTINGS CARD ──  -->
             <!--  ── SETTINGS CARD ──  -->
             <controls:BoardBackground
                 Margin="0,0,0,16"

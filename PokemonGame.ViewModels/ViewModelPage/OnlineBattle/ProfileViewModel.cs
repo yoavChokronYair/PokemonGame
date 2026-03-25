@@ -2,12 +2,14 @@
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.ViewModels.ViewModelUserControl;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class ProfileViewModel : ViewModelBase
     {
         private readonly ProfileService _handler;
+
         private string _userName;
         public string UserName { get => _userName; set => SetProperty(ref _userName, value); }
 
@@ -17,33 +19,32 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private string _playerId;
         public string PlayerId { get => _playerId; set => SetProperty(ref _playerId, value); }
 
+        // ── Stats ─────────────────────────────────────────────────
+        private int _wins, _losses, _draws, _currentWinStreak, _bestWinStreak;
+        private int _pokemonKnockedOut, _pokemonFainted, _criticalHits;
 
-
-
-        // ── Stats (extended) ──────────────────────────────────────
-        private int _draws;
-        private int _currentWinStreak;
-        private int _bestWinStreak;
-        private int _pokemonKnockedOut;
-        private int _pokemonFainted;
-        private int _criticalHits;
-
+        public int Wins { get => _wins; set { SetProperty(ref _wins, value); OnPropertyChanged(nameof(WinRate)); OnPropertyChanged(nameof(TotalBattles)); } }
+        public int Losses { get => _losses; set { SetProperty(ref _losses, value); OnPropertyChanged(nameof(WinRate)); OnPropertyChanged(nameof(TotalBattles)); } }
         public int Draws { get => _draws; set => SetProperty(ref _draws, value); }
         public int CurrentWinStreak { get => _currentWinStreak; set => SetProperty(ref _currentWinStreak, value); }
         public int BestWinStreak { get => _bestWinStreak; set => SetProperty(ref _bestWinStreak, value); }
         public int PokemonKnockedOut { get => _pokemonKnockedOut; set => SetProperty(ref _pokemonKnockedOut, value); }
         public int PokemonFainted { get => _pokemonFainted; set => SetProperty(ref _pokemonFainted, value); }
         public int CriticalHits { get => _criticalHits; set => SetProperty(ref _criticalHits, value); }
+        public int TotalBattles => Wins + Losses;
+        public string WinRate => TotalBattles == 0 ? "—" : $"{(Wins * 100.0 / TotalBattles):0.#}%";
 
         // ── Favourite Team ────────────────────────────────────────
-        public ObservableCollection<TeamSlotEntry> FavouriteTeamSlots { get; } = new();
+        public PokemonTeamViewModel FavouriteTeam { get; } = new();
 
-        // ── Settings (extended) ───────────────────────────────────
-        private bool _animationsEnabled = true;
+        // ── Settings ──────────────────────────────────────────────
+        private bool _isDarkMode, _showOnlineStatus, _allowBattleRequests;
+        private bool _animationsEnabled = true, _showDamageNumbers = true, _showTypeEffectiveness = true;
         private bool _autoConfirmMoves;
-        private bool _showDamageNumbers = true;
-        private bool _showTypeEffectiveness = true;
 
+        public bool IsDarkMode { get => _isDarkMode; set => SetProperty(ref _isDarkMode, value); }
+        public bool ShowOnlineStatus { get => _showOnlineStatus; set => SetProperty(ref _showOnlineStatus, value); }
+        public bool AllowBattleRequests { get => _allowBattleRequests; set => SetProperty(ref _allowBattleRequests, value); }
         public bool AnimationsEnabled { get => _animationsEnabled; set => SetProperty(ref _animationsEnabled, value); }
         public bool AutoConfirmMoves { get => _autoConfirmMoves; set => SetProperty(ref _autoConfirmMoves, value); }
         public bool ShowDamageNumbers { get => _showDamageNumbers; set => SetProperty(ref _showDamageNumbers, value); }
@@ -57,19 +58,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private void LoadProfile(string username)
         {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(username)) return;
 
             var user = _handler.GetUser(username);
-            if (user == null)
-            {
-                return;
-            }
+            if (user == null) return;
 
             UserName = user.UserName;
-            DisplayName = user.UserName; // defaults to username; extend later with a DisplayName column
+            DisplayName = user.UserName;
         }
     }
 }
