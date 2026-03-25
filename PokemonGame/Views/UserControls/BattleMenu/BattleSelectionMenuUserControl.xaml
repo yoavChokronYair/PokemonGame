@@ -10,6 +10,7 @@
     d:DesignWidth="800"
     Background="White"
     mc:Ignorable="d">
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
@@ -20,6 +21,7 @@
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
 
+        <!--  Battle text — always visible  -->
         <controls:BoardBackground Grid.ColumnSpan="2">
             <TextBlock
                 Margin="10,0"
@@ -27,6 +29,7 @@
                 Text="What will Pokemon do?" />
         </controls:BoardBackground>
 
+        <!--  Main menu: FIGHT / BAG / POKEMON / RUN  -->
         <controls:BoardBackground Grid.Column="1" Visibility="{Binding IsMainMenuVisible, Converter={StaticResource BoolToVis}}">
             <UniformGrid Columns="2" Rows="2">
                 <Button Command="{Binding OpenMovesetCommand}" Content="FIGHT" />
@@ -36,13 +39,14 @@
             </UniformGrid>
         </controls:BoardBackground>
 
+        <!--  Move info panel (PP / TYPE + BACK button)  -->
         <controls:BoardBackground Grid.Column="1" Visibility="{Binding IsMovesetVisible, Converter={StaticResource BoolToVis}}">
             <StackPanel Margin="10" VerticalAlignment="Center">
-                <TextBlock FontSize="14" Text="PP 35/35" />
+                <TextBlock FontSize="14" Text="{Binding SelectedMovePP}" />
                 <TextBlock
                     Margin="0,5,0,0"
                     FontSize="14"
-                    Text="TYPE/ NORMAL" />
+                    Text="{Binding SelectedMoveType}" />
                 <Button
                     Margin="0,10,0,0"
                     Command="{Binding CloseMovesetCommand}"
@@ -50,6 +54,10 @@
             </StackPanel>
         </controls:BoardBackground>
 
-        <local:BattlePokemonMovesetChooserUserControl Grid.Column="0" Visibility="{Binding IsMovesetVisible, Converter={StaticResource BoolToVis}}" />
+        <!--  Moveset chooser — DataContext passed down to MovesetChooser child VM  -->
+        <local:BattlePokemonMovesetChooserUserControl
+            Grid.Column="0"
+            DataContext="{Binding MovesetChooser}"
+            Visibility="{Binding IsMovesetVisible, Converter={StaticResource BoolToVis}}" />
     </Grid>
 </UserControl>

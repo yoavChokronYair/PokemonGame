@@ -13,7 +13,6 @@
 
     <Grid>
         <Grid.RowDefinitions>
-
             <RowDefinition Height="50" />
             <RowDefinition Height="199" />
             <RowDefinition />
@@ -24,20 +23,32 @@
             <ColumnDefinition Width="744*" />
             <ColumnDefinition Width="13*" />
         </Grid.ColumnDefinitions>
+
+        <!--  Background  -->
         <Image
             Grid.RowSpan="3"
             Grid.ColumnSpan="3"
             RenderOptions.BitmapScalingMode="NearestNeighbor"
             Source="/Assets/Images/BattleBackground.png"
             Stretch="Fill" />
-        <uc:BattleSelectionMenuUserControl Grid.Row="3" Grid.ColumnSpan="3" />
+
+        <!--  Bottom battle menu — DataContext = BattleMenuViewModel  -->
+        <uc:BattleSelectionMenuUserControl
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            DataContext="{Binding BattleMenu}" />
+
+        <!--  Enemy status bar — DataContext = EnemyBattleStatusViewModel  -->
         <uc:EnemyBattleStatusControl
             Grid.Row="1"
             Grid.Column="1"
             Width="280"
             Height="80"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top" />
+            VerticalAlignment="Top"
+            DataContext="{Binding EnemyStatus}" />
+
+        <!--  Enemy sprite  -->
         <Grid
             Grid.Row="1"
             Grid.Column="1"
@@ -57,7 +68,6 @@
                     <BlurEffect Radius="10" />
                 </Ellipse.Effect>
             </Ellipse>
-
             <Image
                 x:Name="PokemonSprite"
                 HorizontalAlignment="Center"
@@ -74,6 +84,8 @@
                 </Image.RenderTransform>
             </Image>
         </Grid>
+
+        <!--  Player status bar — DataContext = PokemonBattleStatusViewModel  -->
         <uc:PokemonBattleStatusControl
             Grid.Row="2"
             Grid.Column="1"
@@ -81,7 +93,10 @@
             Height="100"
             Margin="10"
             HorizontalAlignment="Right"
-            VerticalAlignment="Bottom" />
+            VerticalAlignment="Bottom"
+            DataContext="{Binding PlayerStatus}" />
+
+        <!--  Player sprite  -->
         <Image
             Grid.Row="2"
             Grid.Column="1"

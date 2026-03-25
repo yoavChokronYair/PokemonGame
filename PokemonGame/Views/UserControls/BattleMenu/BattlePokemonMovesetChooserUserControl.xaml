@@ -4,33 +4,82 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="150"
     d:DesignWidth="455"
     mc:Ignorable="d">
+
     <Grid>
         <controls:BoardBackground HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
             <UniformGrid Columns="2" Rows="2">
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="first Move" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="second Move" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="third Move" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Text="fourth Move" />
-            </UniformGrid>
 
+                <!--  Move 0  -->
+                <Button
+                    Command="{Binding ClickCommand}"
+                    Content="{Binding MoveName}"
+                    DataContext="{Binding Move0}"
+                    IsEnabled="{Binding IsEnabled}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseEnter">
+                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseLeave">
+                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+
+                <!--  Move 1  -->
+                <Button
+                    Command="{Binding ClickCommand}"
+                    Content="{Binding MoveName}"
+                    DataContext="{Binding Move1}"
+                    IsEnabled="{Binding IsEnabled}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseEnter">
+                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseLeave">
+                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+
+                <!--  Move 2  -->
+                <Button
+                    Command="{Binding ClickCommand}"
+                    Content="{Binding MoveName}"
+                    DataContext="{Binding Move2}"
+                    IsEnabled="{Binding IsEnabled}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseEnter">
+                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseLeave">
+                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+
+                <!--  Move 3  -->
+                <Button
+                    Command="{Binding ClickCommand}"
+                    Content="{Binding MoveName}"
+                    DataContext="{Binding Move3}"
+                    IsEnabled="{Binding IsEnabled}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseEnter">
+                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseLeave">
+                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+
+            </UniformGrid>
         </controls:BoardBackground>
     </Grid>
 </UserControl>
