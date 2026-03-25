@@ -1,0 +1,36 @@
+﻿<UserControl
+    x:Class="PokemonGame.Views.UserControls.BattleMenu.BattlePokemonMovesetChooserUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="150"
+    d:DesignWidth="455"
+    mc:Ignorable="d">
+    <Grid>
+        <controls:BoardBackground HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <UniformGrid Columns="2" Rows="2">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Text="first Move" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Text="second Move" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Text="third Move" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Text="fourth Move" />
+            </UniformGrid>
+
+        </controls:BoardBackground>
+    </Grid>
+</UserControl>

@@ -108,6 +108,7 @@
                     <RadioButton
                         Margin="0"
                         Content="🚫  No Legends"
+                        Cursor="Hand"
                         FontSize="12"
                         GroupName="GameMode"
                         IsChecked="{Binding IsNoLegendaries}"
@@ -138,6 +139,12 @@
 
         <!--  PLAY BUTTON  -->
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+            <controls:BoardBackground
+                Margin="0,0,16,0"
+                HorizontalAlignment="Left"
+                BorderThickness="0">
+                <TextBlock Height="40" Text="team choosen:" />
+            </controls:BoardBackground>
             <controls:BoardBackground BackgroundType="{x:Static controls:BackgroundType.White}" BorderThickness="0">
                 <Button
                     Width="200"

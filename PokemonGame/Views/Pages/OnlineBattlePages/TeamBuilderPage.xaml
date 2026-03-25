@@ -195,7 +195,10 @@
                             <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
                         </Button>
 
-                        <!--  Team name  -->
+
+
+                    </StackPanel>
+                    <StackPanel Margin="10" Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,4,0"
                             VerticalAlignment="Center"
@@ -203,7 +206,6 @@
                             Foreground="#555"
                             Text="Name:" />
                         <TextBox
-                            Width="120"
                             Padding="4,2"
                             VerticalAlignment="Center"
                             FontSize="11"

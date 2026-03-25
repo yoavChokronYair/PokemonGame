@@ -1,0 +1,86 @@
+﻿<UserControl
+    x:Class="PokemonGame.Views.UserControls.BattleMenu.PokemonBattleStatusControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="100"
+    d:DesignWidth="300"
+    RenderOptions.BitmapScalingMode="NearestNeighbor"
+    SnapsToDevicePixels="True"
+    mc:Ignorable="d">
+    <Grid>
+        <Image
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            Source="pack://application:,,,/PokemonGame;component/Assets/Images/TeamPokemon.png"
+            Stretch="Fill" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="47.3" />
+                <ColumnDefinition Width="91.162" />
+                <ColumnDefinition Width="138.462" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="13.55" />
+                <RowDefinition Height="32.396" />
+                <RowDefinition Height="35.3" />
+                <RowDefinition Height="auto" MinHeight="0" />
+
+            </Grid.RowDefinitions>
+
+            <Rectangle
+                x:Name="HPBarFiller"
+                Grid.Row="2"
+                Grid.Column="2"
+                Width="139"
+                Height="8"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Fill="{Binding HPColor}">
+                <Rectangle.RenderTransform>
+                    <ScaleTransform x:Name="HPScale" ScaleX="{Binding HpPercentage}" />
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Grid
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                VerticalAlignment="Top">
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold" Text="{Binding PokemonName}" />
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        Foreground="{Binding GenderColor}"
+                        Text="{Binding GenderSymbol}" />
+                </StackPanel>
+
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBlock
+                        Margin="0,0,2,0"
+                        VerticalAlignment="Bottom"
+                        FontSize="12"
+                        Text="Lv" />
+                    <TextBlock
+                        Width="40"
+                        Text="{Binding Level}"
+                        TextAlignment="Left" />
+                </StackPanel>
+            </Grid>
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="2"
+                Width="70"
+                Height="20"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}/{1}">
+                        <Binding Path="CurrentHP" />
+                        <Binding Path="MaxHP" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </Grid>
+    </Grid>
+</UserControl>
