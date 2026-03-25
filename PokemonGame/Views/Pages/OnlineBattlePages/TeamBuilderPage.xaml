@@ -26,7 +26,6 @@
             HorizontalAlignment="Left">
 
             <!--  ══ Team slot bar ══  -->
-
             <Border
                 Margin="0,0,0,8"
                 Padding="10,8"
@@ -36,7 +35,7 @@
                 CornerRadius="6">
                 <StackPanel>
                     <!--  Row 1: Team slots  -->
-                    <ItemsControl ItemsSource="{Binding TeamSlots}">
+                    <ItemsControl ItemsSource="{Binding SlotBar.TeamSlots}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal" />
@@ -52,7 +51,7 @@
                                     Background="White"
                                     BorderBrush="#CCCCCC"
                                     BorderThickness="2"
-                                    Command="{Binding DataContext.SelectSlotCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                    Command="{Binding DataContext.SlotBar.SelectSlotCommand, RelativeSource={RelativeSource AncestorType=Page}}"
                                     CommandParameter="{Binding}"
                                     Cursor="Hand">
                                     <Button.Template>
@@ -116,31 +115,87 @@
                         Margin="0,8,0,0"
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
+
+                        <!--  Team selector  -->
+                        <ComboBox
+                            Width="130"
+                            Margin="0,0,6,0"
+                            DisplayMemberPath="TeamName"
+                            FontSize="11"
+                            ItemsSource="{Binding TeamManagement.SavedTeams}"
+                            SelectedItem="{Binding TeamManagement.SelectedTeam}" />
+
+                        <!--  Load selected team  -->
+                        <Button
+                            Margin="0,0,4,0"
+                            Padding="8,4"
+                            Background="#F0F4FF"
+                            BorderBrush="#4A90D9"
+                            BorderThickness="1"
+                            Command="{Binding TeamManagement.LoadTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding TeamManagement.SelectedTeam, Converter={StaticResource NullToVis}}">
+                            <TextBlock Foreground="#4A90D9" Text="📂 Load" />
+                        </Button>
+
+                        <!--  Delete selected team  -->
                         <Button
                             Margin="0,0,6,0"
                             Padding="8,4"
-                            VerticalAlignment="Center"
                             Background="#FFF0F0"
                             BorderBrush="#FFAAAA"
                             BorderThickness="1"
-                            Command="{Binding RemoveFromTeamCommand}"
+                            Command="{Binding TeamManagement.DeleteTeamCommand}"
+                            CommandParameter="{Binding TeamManagement.SelectedTeam}"
                             Cursor="Hand"
                             FontSize="11"
-                            Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
-                            <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
+                            Visibility="{Binding TeamManagement.SelectedTeam, Converter={StaticResource NullToVis}}">
+                            <TextBlock Foreground="#CC4444" Text="🗑 Delete" />
                         </Button>
+
+                        <!--  New team  -->
                         <Button
                             Margin="0,0,6,0"
                             Padding="8,4"
-                            VerticalAlignment="Center"
+                            Background="#F0F4FF"
+                            BorderBrush="#4A90D9"
+                            BorderThickness="1"
+                            Command="{Binding TeamManagement.NewTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding TeamManagement.CanCreateNewTeam, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Foreground="#4A90D9" Text="✚ New Team" />
+                        </Button>
+
+                        <!--  Save  -->
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
                             Background="#F0FFF0"
                             BorderBrush="#88CC88"
                             BorderThickness="1"
-                            Command="{Binding SaveTeamCommand}"
+                            Command="{Binding TeamManagement.SaveTeamCommand}"
                             Cursor="Hand"
                             FontSize="11">
-                            <TextBlock Foreground="#336633" Text="💾 Save Team" />
+                            <TextBlock Foreground="#336633" Text="💾 Save" />
                         </Button>
+
+                        <!--  Remove selected  -->
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
+                            Background="#FFF0F0"
+                            BorderBrush="#FFAAAA"
+                            BorderThickness="1"
+                            Command="{Binding SlotBar.RemoveFromTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding State.SelectedPokemon, Converter={StaticResource NullToVis}}">
+                            <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
+                        </Button>
+
+                        <!--  Team name  -->
                         <TextBlock
                             Margin="0,0,4,0"
                             VerticalAlignment="Center"
@@ -152,37 +207,37 @@
                             Padding="4,2"
                             VerticalAlignment="Center"
                             FontSize="11"
-                            Text="{Binding TeamName, UpdateSourceTrigger=PropertyChanged}" />
+                            Text="{Binding TeamManagement.TeamName, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
-            <!--  ══ Editor card ══  -->
-            <controls:PokemonEditorUserControl Margin="0,0,0,6" DataContext="{Binding}" />
 
-            <!--  ══ EV/IV panel (toggle by clicking Stats) ══  -->
+            <!--  ══ Editor card ══  -->
+            <controls:PokemonEditorUserControl Margin="0,0,0,6" DataContext="{Binding Editor}" />
+
+            <!--  ══ EV/IV panel ══  -->
             <controls:EvIvEditorUserControl
                 Margin="0,0,0,6"
-                DataContext="{Binding}"
-                Visibility="{Binding IsEvIvPanelOpen, Converter={StaticResource BoolToVis}}" />
+                DataContext="{Binding EvIvEditor}"
+                Visibility="{Binding DataContext.State.IsEvIvPanelOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
 
             <!--  ══ Move picker ══  -->
             <controls:MovePickerUserControl
                 Margin="0,0,0,6"
-                DataContext="{Binding}"
-                Visibility="{Binding IsMovePickerOpen, Converter={StaticResource BoolToVis}}" />
+                DataContext="{Binding MovePicker}"
+                Visibility="{Binding DataContext.State.IsMovePickerOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
 
             <!--  ══ Item picker ══  -->
             <controls:ItemPickerUserControl
                 Margin="0,0,0,6"
-                DataContext="{Binding}"
-                Visibility="{Binding IsItemPickerOpen, Converter={StaticResource BoolToVis}}" />
+                DataContext="{Binding ItemPicker}"
+                Visibility="{Binding DataContext.State.IsItemPickerOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
 
             <!--  ══ Pokemon picker ══  -->
             <controls:PokemonPickerUserControl
                 Margin="0,0,0,6"
-                DataContext="{Binding}"
-                Visibility="{Binding IsPokemonPickerOpen, Converter={StaticResource BoolToVis}}" />
-
+                DataContext="{Binding PokemonPicker}"
+                Visibility="{Binding DataContext.State.IsPokemonPickerOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
 
         </StackPanel>
     </ScrollViewer>

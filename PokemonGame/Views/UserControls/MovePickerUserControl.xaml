@@ -42,7 +42,7 @@
                     FontWeight="SemiBold"
                     Foreground="#333">
                     <Run Text="Pick Move " />
-                    <Run Foreground="#4A90D9" Text="{Binding ActiveMoveSlot}" />
+                    <Run Foreground="#4A90D9" Text="{Binding ActiveMoveSlot, Mode=OneWay}" />
                     <Run Text=" — " />
                     <Run Foreground="#4A90D9" Text="{Binding SelectedPokemon.Name, Mode=OneWay}" />
                 </TextBlock>

@@ -143,8 +143,7 @@
                 Background="Transparent"
                 BorderThickness="0"
                 ItemsSource="{Binding FilteredPokemons}"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                SelectedItem="{Binding PickerPokemon, Mode=TwoWay}">
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Padding" Value="10,5" />
@@ -153,6 +152,7 @@
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Cursor" Value="Hand" />
                         <Setter Property="Background" Value="White" />
+
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#E8F0FE" />
@@ -165,112 +165,120 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="38" />
-                                <ColumnDefinition Width="32" />
-                                <ColumnDefinition Width="130" />
-                                <ColumnDefinition Width="110" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="200" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock
-                                Grid.Column="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontSize="10"
-                                Foreground="#AAA"
-                                Text="{Binding PokedexId}" />
-                            <Image
-                                Grid.Column="1"
-                                Width="28"
-                                Height="28"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding SpriteImage}" />
-                            <TextBlock
-                                Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontSize="12"
-                                FontWeight="SemiBold"
-                                Foreground="#222"
-                                Text="{Binding Name}"
-                                TextTrimming="CharacterEllipsis" />
-                            <StackPanel Grid.Column="3" Orientation="Horizontal">
+                        <Button
+                            Padding="0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding DataContext.ConfirmPokemonCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                            CommandParameter="{Binding}"
+                            Cursor="Hand">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="38" />
+                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="110" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="10"
+                                    Foreground="#AAA"
+                                    Text="{Binding PokedexId}" />
                                 <Image
-                                    Width="40"
-                                    Height="14"
-                                    Margin="0,0,2,0"
-                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                    Source="{Binding Type1, Converter={StaticResource TypeToImage}}" />
-                                <Image
-                                    Width="40"
-                                    Height="14"
-                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                    Source="{Binding Type2, Converter={StaticResource TypeToImage}}"
-                                    Visibility="{Binding Type2, Converter={StaticResource NullToVis}}" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                    Grid.Column="1"
+                                    Width="28"
+                                    Height="28"
+                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                    Source="{Binding SpriteImage}" />
                                 <TextBlock
-                                    FontSize="11"
-                                    Foreground="#444"
-                                    Text="{Binding AbilityPrimary}"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    Foreground="#222"
+                                    Text="{Binding Name}"
                                     TextTrimming="CharacterEllipsis" />
-                                <TextBlock
-                                    FontSize="10"
-                                    FontStyle="Italic"
-                                    Foreground="#888"
-                                    Text="{Binding AbilityHidden}"
-                                    TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                            <UniformGrid
-                                Grid.Column="5"
-                                VerticalAlignment="Center"
-                                Columns="7">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Consolas"
-                                    FontSize="10"
-                                    Foreground="#555"
-                                    Text="{Binding HP}" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Consolas"
-                                    FontSize="10"
-                                    Foreground="#555"
-                                    Text="{Binding Atk}" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Consolas"
-                                    FontSize="10"
-                                    Foreground="#555"
-                                    Text="{Binding Def}" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Consolas"
-                                    FontSize="10"
-                                    Foreground="#555"
-                                    Text="{Binding SpA}" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Consolas"
-                                    FontSize="10"
-                                    Foreground="#555"
-                                    Text="{Binding SpD}" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Consolas"
-                                    FontSize="10"
-                                    Foreground="#555"
-                                    Text="{Binding Spe}" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontFamily="Consolas"
-                                    FontSize="10"
-                                    FontWeight="Bold"
-                                    Foreground="#333"
-                                    Text="{Binding BST}" />
-                            </UniformGrid>
-                        </Grid>
+                                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                    <Image
+                                        Width="40"
+                                        Height="14"
+                                        Margin="0,0,2,0"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        Source="{Binding Type1, Converter={StaticResource TypeToImage}}" />
+                                    <Image
+                                        Width="40"
+                                        Height="14"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        Source="{Binding Type2, Converter={StaticResource TypeToImage}}"
+                                        Visibility="{Binding Type2, Converter={StaticResource NullToVis}}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#444"
+                                        Text="{Binding AbilityPrimary}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        FontSize="10"
+                                        FontStyle="Italic"
+                                        Foreground="#888"
+                                        Text="{Binding AbilityHidden}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <UniformGrid
+                                    Grid.Column="5"
+                                    VerticalAlignment="Center"
+                                    Columns="7">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontFamily="Consolas"
+                                        FontSize="10"
+                                        Foreground="#555"
+                                        Text="{Binding HP}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontFamily="Consolas"
+                                        FontSize="10"
+                                        Foreground="#555"
+                                        Text="{Binding Atk}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontFamily="Consolas"
+                                        FontSize="10"
+                                        Foreground="#555"
+                                        Text="{Binding Def}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontFamily="Consolas"
+                                        FontSize="10"
+                                        Foreground="#555"
+                                        Text="{Binding SpA}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontFamily="Consolas"
+                                        FontSize="10"
+                                        Foreground="#555"
+                                        Text="{Binding SpD}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontFamily="Consolas"
+                                        FontSize="10"
+                                        Foreground="#555"
+                                        Text="{Binding Spe}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontFamily="Consolas"
+                                        FontSize="10"
+                                        FontWeight="Bold"
+                                        Foreground="#333"
+                                        Text="{Binding BST}" />
+                                </UniformGrid>
+                            </Grid>
+                        </Button>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

@@ -5,49 +5,50 @@ namespace PokemonGame.Services.Data.Repositories
 {
     internal class TeamRepository : DbRepository<int, TeamData>
     {
+        public bool CanCreateTeam(int battlePlayerId) =>
+            GetTeamsByBattlePlayer(battlePlayerId).Count < 3;
         internal TeamRepository(IDbConnectionService db) : base(db) { }
 
-        // Fetch all teams belonging to a specific User
-        public List<TeamData> GetUserTeams(int userID) =>
-            _db.Query<TeamData>("SELECT * FROM teams WHERE user_id = @uid", new { uid = userID }).ToList();
+        private const string TeamSelect =
+    @"SELECT id AS Id, 
+             team_name AS TeamName, 
+             user_id AS User_id, 
+             battle_player_id AS Battle_player_id 
+      FROM teams";
 
-        // Get a specific team by its unique ID
+        public List<TeamData> GetUserTeams(int userID) =>
+            _db.Query<TeamData>($"{TeamSelect} WHERE user_id = @uid", new { uid = userID }).ToList();
+
+        public List<TeamData> GetTeamsByBattlePlayer(int battlePlayerId) =>
+            _db.Query<TeamData>($"{TeamSelect} WHERE battle_player_id = @bpid", new { bpid = battlePlayerId }).ToList();
+
         public TeamData? GetTeamById(int teamID) =>
-            _db.QuerySingle<TeamData>("SELECT * FROM teams WHERE id = @tid", new { tid = teamID });
-        // Fetch the team associated with a specific battle session
-        public TeamData? GetTeamByBattlePlayer(int battlePlayerID) =>
-            _db.QuerySingle<TeamData>(
-                "SELECT * FROM teams WHERE battle_player_id = @bpid",
-                new { bpid = battlePlayerID });
-        // Create a new empty team
-        public TeamData CreateTeam(string teamName, int userID)
+            _db.QuerySingle<TeamData>($"{TeamSelect} WHERE id = @tid", new { tid = teamID });
+
+        public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
+            _db.QuerySingle<TeamData>($"{TeamSelect} WHERE battle_player_id = @bpid ORDER BY id DESC LIMIT 1", new { bpid = battlePlayerId });
+
+        public TeamData CreateTeam(string teamName, int userID, int battlePlayerId)
         {
-            _db.Execute(
-                "INSERT INTO teams (team_name, user_id) VALUES (@name, @uid)",
-                new { name = teamName, uid = userID });
+            if (!CanCreateTeam(battlePlayerId))
+                throw new InvalidOperationException("Max 3 teams per battle player.");
+
+            _db.ExecuteAndGetLastId(
+                "INSERT INTO teams (team_name, user_id, battle_player_id) VALUES (@name, @uid, @bpid)",
+                new { name = teamName, uid = userID, bpid = battlePlayerId });
 
             var team = _db.QuerySingle<TeamData>(
-                "SELECT * FROM teams WHERE team_name = @name AND user_id = @uid ORDER BY id DESC LIMIT 1",
-                new { name = teamName, uid = userID });
+                $"{TeamSelect} WHERE team_name = @name AND battle_player_id = @bpid ORDER BY id DESC LIMIT 1",
+                new { name = teamName, bpid = battlePlayerId });
 
             System.Diagnostics.Debug.WriteLine($"Created team: {team?.Id} - {team?.TeamName}");
             return team;
         }
+        public void UpdateTeamName(int teamId, string newName) =>
+    _db.Execute("UPDATE teams SET team_name = @name WHERE id = @tid",
+        new { name = newName, tid = teamId });
 
-        // Link an existing team to a BattlePlayer session
-        public void AssignTeamToBattlePlayer(int teamID, int battlePlayerID)
-        {
-            _db.Execute(
-                "UPDATE teams SET battle_player_id = @bpid WHERE id = @tid",
-                new { bpid = battlePlayerID, tid = teamID });
-        }
-
-        // Remove the link when a battle session ends
-        public void UnassignTeamFromBattlePlayer(int teamID)
-        {
-            _db.Execute(
-                "UPDATE teams SET battle_player_id = NULL WHERE id = @tid",
-                new { tid = teamID });
-        }
+        public void DeleteTeam(int teamId) =>
+            _db.Execute("DELETE FROM teams WHERE id = @tid", new { tid = teamId });
     }
 }

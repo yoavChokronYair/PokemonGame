@@ -39,8 +39,7 @@ namespace PokemonGame.Services.Handler
         public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
     _teams.GetTeamByBattlePlayer(battlePlayerId);
 
-        public void AssignTeamToBattlePlayer(int teamId, int battlePlayerId) =>
-            _teams.AssignTeamToBattlePlayer(teamId, battlePlayerId);
+      
         // ── Pokémon list for the picker ───────────────────────────────────────
 
         /// <summary>
@@ -146,9 +145,9 @@ namespace PokemonGame.Services.Handler
             return result;
         }
 
-        public TeamData SaveTeam(string teamName, int userId, List<BattlerPokemon> slots)
+        public TeamData SaveTeam(string teamName, int userId, int battlePlayerId, List<BattlerPokemon> slots)
         {
-            var team = _teams.CreateTeam(teamName, userId);
+            var team = _teams.CreateTeam(teamName, userId, battlePlayerId);
             for (int i = 0; i < slots.Count && i < 6; i++)
             {
                 
@@ -175,7 +174,41 @@ namespace PokemonGame.Services.Handler
             var newId = _battlerPokemon.CreatePokemonInstance(pokemon);
             _teamMembers.SetPokemonInSlot(teamId, newId, slotNumber);
         }
+        public List<TeamData> GetTeamsByBattlePlayer(int battlePlayerId) =>
+    _teams.GetTeamsByBattlePlayer(battlePlayerId);
 
+        public bool CanCreateTeam(int battlePlayerId) =>
+            _teams.CanCreateTeam(battlePlayerId);
+
+        
+
+        public void UpdateTeam(int teamId, string teamName, List<BattlerPokemon> slots)
+        {
+            _teams.UpdateTeamName(teamId, teamName);
+            // Delete old members
+            var oldMembers = _teamMembers.GetTeamMembers(teamId);
+            foreach (var m in oldMembers)
+            {
+                _battlerPokemon.DeletePokemonInstance(m.PokemonID);
+                _teamMembers.RemovePokemonFromTeam(teamId, m.PokemonID);
+            }
+            // Insert new members
+            for (int i = 0; i < slots.Count && i < 6; i++)
+            {
+                try
+                {
+                    var pokemonId = _battlerPokemon.CreatePokemonInstance(slots[i]);
+                    if (pokemonId <= 0) continue;
+                    _teamMembers.SetPokemonInSlot(teamId, pokemonId, i + 1);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Slot {i + 1} failed: {ex.Message}");
+                }
+            }
+        }
+
+        public void DeleteTeam(int teamId) => _teams.DeleteTeam(teamId);
         public void RemoveTeamSlot(int teamId, int pokemonId)
         {
             _teamMembers.RemovePokemonFromTeam(teamId, pokemonId);
