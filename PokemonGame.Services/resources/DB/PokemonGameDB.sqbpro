@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="PokemonGameDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="7057"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="abilities" custom_title="0" dock_id="4" table="4,9:mainabilities"/><table title="BattlePlayer" custom_title="0" dock_id="4" table="4,12:mainBattlePlayer"/><table title="egg_moves" custom_title="0" dock_id="5" table="4,9:mainegg_moves"/><dock_state state="000000ff00000000fd000000010000000200000480000002b6fc0100000002fc000000000000046c0000000000fffffffa000000000100000006fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fc00000000000004800000012400fffffffa000000020100000004fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000012400fffffffb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000011800fffffffb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000011e00ffffff000004800000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="BattlePlayer" show_row_id="0" encoding="" plot_x_axis="UserID" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="90"/><column index="2" value="55"/><column index="3" value="50"/><column index="4" value="41"/><column index="5" value="38"/><column index="6" value="36"/><column index="7" value="45"/><column index="8" value="156"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes><y_axis name="BattleID" line_style="1" point_shape="5" colour="#ff420e" active="1"/><y_axis name="BattlePlayerID" line_style="1" point_shape="5" colour="#004586" active="1"/><y2_axis name="Row #" line_style="1" point_shape="5" colour="#ffd320" active="1"/></plot_y_axes><global_filter/></table><table schema="main" name="BattleTeamPokemon" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="88"/><column index="2" value="76"/><column index="3" value="30"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="EggMove" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="52"/><column index="2" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="LevelUpMove" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="52"/><column index="2" value="38"/><column index="3" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="66"/><column index="3" value="62"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="abilities" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="3" mode="0"/></sort><column_widths><column index="1" value="29"/><column index="2" value="39"/><column index="3" value="70"/><column index="4" value="60"/><column index="5" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="conditions" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="124"/><column index="3" value="68"/><column index="4" value="54"/><column index="5" value="54"/><column index="6" value="90"/><column index="7" value="72"/><column index="8" value="91"/><column index="9" value="105"/><column index="10" value="113"/><column index="11" value="115"/></column_widths><filter_values><column index="0" value="2"/></filter_values><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="egg_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="55"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="items" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="140"/><column index="3" value="117"/><column index="4" value="39"/><column index="5" value="300"/><column index="6" value="91"/><column index="7" value="60"/><column index="8" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="levelup_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="55"/><column index="3" value="35"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="machine_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="69"/><column index="2" value="55"/><column index="3" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="117"/><column index="3" value="70"/><column index="4" value="70"/><column index="5" value="70"/><column index="6" value="29"/><column index="7" value="49"/><column index="8" value="64"/><column index="9" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pokemon_general" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="69"/><column index="2" value="39"/><column index="3" value="82"/><column index="4" value="98"/><column index="5" value="98"/><column index="6" value="40"/><column index="7" value="40"/><column index="8" value="61"/><column index="9" value="76"/><column index="10" value="97"/><column index="11" value="58"/><column index="12" value="74"/><column index="13" value="93"/><column index="14" value="54"/><column index="15" value="77"/><column index="16" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pokemon_stats" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="59"/><column index="3" value="29"/><column index="4" value="43"/><column index="5" value="52"/><column index="6" value="40"/><column index="7" value="40"/><column index="8" value="41"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="148"/><column index="2" value="31"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="create database">-- ============================================================
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="PokemonGameDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="7057"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="BattlePlayer" custom_title="0" dock_id="4" table="4,12:mainBattlePlayer"/><table title="BattlePlayerStats" custom_title="0" dock_id="4" table="4,17:mainBattlePlayerStats"/><table title="BattlePlayerSettings" custom_title="0" dock_id="5" table="4,20:mainBattlePlayerSettings"/><dock_state state="000000ff00000000fd000000010000000200000480000002b6fc0100000002fc000000000000046c0000000000fffffffa000000000100000006fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fc00000000000004800000011800fffffffa000000030100000004fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000011800fffffffb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000011800fffffffb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000011800ffffff000004800000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Battle" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="55"/><column index="2" value="132"/><column index="3" value="68"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayer" show_row_id="0" encoding="" plot_x_axis="UserID" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="90"/><column index="2" value="55"/><column index="3" value="50"/><column index="4" value="41"/><column index="5" value="38"/><column index="6" value="36"/><column index="7" value="45"/><column index="8" value="156"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes><y_axis name="" line_style="0" point_shape="0" colour="#000000" active="0"/><y_axis name="BattleID" line_style="1" point_shape="5" colour="#ff420e" active="1"/><y_axis name="BattlePlayerID" line_style="1" point_shape="5" colour="#004586" active="1"/><y2_axis name="" line_style="0" point_shape="0" colour="#000000" active="0"/><y2_axis name="Row #" line_style="1" point_shape="5" colour="#ffd320" active="1"/></plot_y_axes><global_filter/></table><table schema="main" name="BattlePlayerFriends" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="59"/><column index="2" value="94"/><column index="3" value="44"/><column index="4" value="36"/><column index="5" value="45"/><column index="6" value="68"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayerSettings" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="92"/><column index="2" value="76"/><column index="3" value="110"/><column index="4" value="123"/><column index="5" value="115"/><column index="6" value="113"/><column index="7" value="134"/><column index="8" value="139"/><column index="9" value="156"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayerStats" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="92"/><column index="2" value="36"/><column index="3" value="45"/><column index="4" value="44"/><column index="5" value="108"/><column index="6" value="91"/><column index="7" value="111"/><column index="8" value="115"/><column index="9" value="101"/><column index="10" value="127"/><column index="11" value="71"/><column index="12" value="69"/><column index="13" value="91"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleTeam" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="86"/><column index="2" value="58"/><column index="3" value="92"/><column index="4" value="60"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleTeamPokemon" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="88"/><column index="2" value="76"/><column index="3" value="30"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="EggMove" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="52"/><column index="2" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="LevelUpMove" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="52"/><column index="2" value="38"/><column index="3" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="66"/><column index="3" value="62"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="abilities" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="3" mode="0"/></sort><column_widths><column index="1" value="31"/><column index="2" value="109"/><column index="3" value="300"/><column index="4" value="60"/><column index="5" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="battler_pokemon" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="73"/><column index="2" value="71"/><column index="3" value="59"/><column index="4" value="49"/><column index="5" value="38"/><column index="6" value="54"/><column index="7" value="35"/><column index="8" value="62"/><column index="9" value="62"/><column index="10" value="62"/><column index="11" value="62"/><column index="12" value="39"/><column index="13" value="43"/><column index="14" value="43"/><column index="15" value="57"/><column index="16" value="57"/><column index="17" value="58"/><column index="18" value="42"/><column index="19" value="46"/><column index="20" value="46"/><column index="21" value="60"/><column index="22" value="60"/><column index="23" value="61"/><column index="24" value="62"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="conditions" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="124"/><column index="3" value="68"/><column index="4" value="54"/><column index="5" value="54"/><column index="6" value="90"/><column index="7" value="72"/><column index="8" value="91"/><column index="9" value="105"/><column index="10" value="113"/><column index="11" value="115"/></column_widths><filter_values><column index="0" value="2"/></filter_values><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="egg_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="55"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="items" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="140"/><column index="3" value="117"/><column index="4" value="39"/><column index="5" value="300"/><column index="6" value="91"/><column index="7" value="60"/><column index="8" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="levelup_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="55"/><column index="3" value="35"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="machine_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="69"/><column index="2" value="55"/><column index="3" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="117"/><column index="3" value="70"/><column index="4" value="70"/><column index="5" value="70"/><column index="6" value="29"/><column index="7" value="49"/><column index="8" value="64"/><column index="9" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pokedex_data" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="54"/><column index="3" value="57"/><column index="4" value="101"/><column index="5" value="85"/><column index="6" value="108"/><column index="7" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pokemon_general" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="69"/><column index="2" value="39"/><column index="3" value="82"/><column index="4" value="98"/><column index="5" value="98"/><column index="6" value="40"/><column index="7" value="40"/><column index="8" value="61"/><column index="9" value="76"/><column index="10" value="97"/><column index="11" value="58"/><column index="12" value="74"/><column index="13" value="93"/><column index="14" value="54"/><column index="15" value="77"/><column index="16" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pokemon_stats" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="59"/><column index="3" value="29"/><column index="4" value="43"/><column index="5" value="52"/><column index="6" value="40"/><column index="7" value="40"/><column index="8" value="41"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="148"/><column index="2" value="31"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="team_members" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="0" mode="0"/></sort><column_widths><column index="1" value="56"/><column index="2" value="76"/><column index="3" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="teams" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="2" mode="0"/></sort><column_widths><column index="1" value="29"/><column index="2" value="101"/><column index="3" value="52"/><column index="4" value="102"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="create database">-- ============================================================
 -- PokemonGameDB - Full Schema
 -- ============================================================
 -- Re-runnable: drops everything then recreates clean.
@@ -29,7 +29,8 @@ DROP TABLE IF EXISTS breeding;
 DROP TABLE IF EXISTS pokedex_data;
 DROP TABLE IF EXISTS battler_pokemon;
 DROP TABLE IF EXISTS team_members;
-DROP TABLE IF EXISTS BattleParticipants;
+DROP TABLE IF EXISTS BattleParticipants;
+DROP TABLE IF EXISTS BattlePlayerStats;
 -- 2. DROP Master Tables
 DROP TABLE IF EXISTS pokemon_general;
 DROP TABLE IF EXISTS abilities;
@@ -48,7 +49,9 @@ CREATE TABLE Users (
     UserName TEXT,
     Password INT
 );
-CREATE TABLE BattlePlayerFriends (
+CREATE TABLE 
+
+Friends (
     PlayerID         INTEGER,
     FriendPlayerID   INTEGER,
     Status           TEXT DEFAULT 'Pending', -- 'Pending', 'Accepted', 'Blocked'
@@ -79,6 +82,31 @@ CREATE TABLE BattlePlayer (
     Wins           INTEGER DEFAULT 0,  -- Track session wins
     Losses         INTEGER DEFAULT 0,  -- Track session losses
     CreatedAt      TEXT DEFAULT (datetime('now')) -- Useful for sorting new players
+);
+CREATE TABLE BattlePlayerStats (
+    BattlePlayerID   INTEGER PRIMARY KEY,
+    
+    -- Battle Record
+    Wins             INTEGER DEFAULT 0,
+    Losses           INTEGER DEFAULT 0,
+    Draws            INTEGER DEFAULT 0,
+    
+    -- Streak
+    CurrentWinStreak INTEGER DEFAULT 0,
+    BestWinStreak    INTEGER DEFAULT 0,
+    
+    -- Detail Stats
+    TotalDamageDealt    INTEGER DEFAULT 0,
+    TotalDamageTaken    INTEGER DEFAULT 0,
+    PokemonFainted      INTEGER DEFAULT 0,  -- how many of yours fainted
+    PokemonKnockedOut   INTEGER DEFAULT 0,  -- how many enemies you KO'd
+    MovesUsed           INTEGER DEFAULT 0,
+    CriticalHits        INTEGER DEFAULT 0,
+    
+    -- Meta
+    LastBattleDate   TEXT,
+    
+    FOREIGN KEY (BattlePlayerID) REFERENCES BattlePlayer(BattlePlayerID) ON DELETE CASCADE
 );
 
 CREATE TABLE Battle (
@@ -248,113 +276,113 @@ CREATE TABLE BattleParticipants (
     Score             INTEGER DEFAULT 0, -- e.g., how many pokemon they had left
     PRIMARY KEY (BattleID, BattlePlayerID)
 );
-CREATE TABLE moves (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    name        TEXT    NOT NULL UNIQUE,
-    element     TEXT    NOT NULL,                    -- PokemonType enum
-    category    TEXT    NOT NULL,                    -- Physical / Special / Status
-    target      TEXT    NOT NULL DEFAULT 'Opponent', -- MoveTarget enum
-    pp          INTEGER NOT NULL,
-    priority    INTEGER NOT NULL DEFAULT 0,
-    crit_stage  INTEGER NOT NULL DEFAULT 0,
-    description TEXT
-);
-
-CREATE TABLE numbers (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    type            TEXT    NOT NULL,
-    exact_value     REAL,
-    range_min       REAL,
-    range_max       REAL,
-    left_number_id  INTEGER REFERENCES numbers(id),
-    right_number_id INTEGER REFERENCES numbers(id),
-    target          TEXT
-);
-
-CREATE TABLE weighted_entries (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    number_id INTEGER NOT NULL REFERENCES numbers(id) ON DELETE CASCADE,
-    value     REAL    NOT NULL,
-    weight    REAL    NOT NULL
-);
-
-CREATE TABLE conditions (
-    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-    type               TEXT    NOT NULL,
-    probability        REAL,
-    weather            TEXT,
-    status             TEXT,
-    volatile_status    TEXT,
-    hp_fraction        REAL,
-    pokemon_type       TEXT,
-    left_condition_id  INTEGER REFERENCES conditions(id),
-    right_condition_id INTEGER REFERENCES conditions(id),
-    inner_condition_id INTEGER REFERENCES conditions(id)
-);
-
-CREATE TABLE effects (
-    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-    type               TEXT    NOT NULL,
-    target             TEXT,
-    number_id          INTEGER REFERENCES numbers(id),
-    heal_target        TEXT,
-    chance_probability REAL,
-    child_effect_id    INTEGER REFERENCES effects(id),
-    condition_id       INTEGER REFERENCES conditions(id),
-    on_pass_effect_id  INTEGER REFERENCES effects(id),
-    on_fail_effect_id  INTEGER REFERENCES effects(id),
-    stat               TEXT,
-    stat_stages        INTEGER,
-    sleep_min_turns    INTEGER,
-    sleep_max_turns    INTEGER,
-    confuse_min_turns  INTEGER,
-    confuse_max_turns  INTEGER,
-    is_toxic           INTEGER DEFAULT 0,
-    weather            TEXT,
-    weather_turns      INTEGER,
-    screen             TEXT,
-    screen_turns       INTEGER,
-    battle_side        TEXT,
-    hazard             TEXT,
-    charge_turns       INTEGER
-);
-
-CREATE TABLE sequence_steps (
-    sequence_effect_id INTEGER NOT NULL REFERENCES effects(id) ON DELETE CASCADE,
-    step_order         INTEGER NOT NULL,
-    child_effect_id    INTEGER NOT NULL REFERENCES effects(id),
-    PRIMARY KEY (sequence_effect_id, step_order)
-);
-
-CREATE TABLE multi_stat_changes (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    effect_id INTEGER NOT NULL REFERENCES effects(id) ON DELETE CASCADE,
-    stat      TEXT    NOT NULL,
-    stages    INTEGER NOT NULL
-);
-
-CREATE TABLE attempts (
-    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
-    move_id                 INTEGER NOT NULL REFERENCES moves(id) ON DELETE CASCADE,
-    type                    TEXT    NOT NULL,
-    accuracy_value          REAL,
-    on_hit_effect_id        INTEGER REFERENCES effects(id),
-    on_miss_effect_id       INTEGER REFERENCES effects(id),
-    after_effect_id         INTEGER REFERENCES effects(id),
-    stop_on_miss            INTEGER DEFAULT 1,
-    hits_number_id          INTEGER REFERENCES numbers(id),
-    charge_effect_id        INTEGER REFERENCES effects(id),
-    release_attempt_id      INTEGER REFERENCES attempts(id),
-    rampage_min_turns       INTEGER,
-    rampage_max_turns       INTEGER,
-    after_rampage_effect_id INTEGER REFERENCES effects(id)
-);
-
-CREATE TABLE cascade_steps (
-    cascade_attempt_id INTEGER NOT NULL REFERENCES attempts(id) ON DELETE CASCADE,
-    step_order         INTEGER NOT NULL,
-    child_attempt_id   INTEGER NOT NULL REFERENCES attempts(id),
-    PRIMARY KEY (cascade_attempt_id, step_order)
+CREATE TABLE moves (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    name        TEXT    NOT NULL UNIQUE,
+    element     TEXT    NOT NULL,                    -- PokemonType enum
+    category    TEXT    NOT NULL,                    -- Physical / Special / Status
+    target      TEXT    NOT NULL DEFAULT 'Opponent', -- MoveTarget enum
+    pp          INTEGER NOT NULL,
+    priority    INTEGER NOT NULL DEFAULT 0,
+    crit_stage  INTEGER NOT NULL DEFAULT 0,
+    description TEXT
+);
+
+CREATE TABLE numbers (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    type            TEXT    NOT NULL,
+    exact_value     REAL,
+    range_min       REAL,
+    range_max       REAL,
+    left_number_id  INTEGER REFERENCES numbers(id),
+    right_number_id INTEGER REFERENCES numbers(id),
+    target          TEXT
+);
+
+CREATE TABLE weighted_entries (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    number_id INTEGER NOT NULL REFERENCES numbers(id) ON DELETE CASCADE,
+    value     REAL    NOT NULL,
+    weight    REAL    NOT NULL
+);
+
+CREATE TABLE conditions (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    type               TEXT    NOT NULL,
+    probability        REAL,
+    weather            TEXT,
+    status             TEXT,
+    volatile_status    TEXT,
+    hp_fraction        REAL,
+    pokemon_type       TEXT,
+    left_condition_id  INTEGER REFERENCES conditions(id),
+    right_condition_id INTEGER REFERENCES conditions(id),
+    inner_condition_id INTEGER REFERENCES conditions(id)
+);
+
+CREATE TABLE effects (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    type               TEXT    NOT NULL,
+    target             TEXT,
+    number_id          INTEGER REFERENCES numbers(id),
+    heal_target        TEXT,
+    chance_probability REAL,
+    child_effect_id    INTEGER REFERENCES effects(id),
+    condition_id       INTEGER REFERENCES conditions(id),
+    on_pass_effect_id  INTEGER REFERENCES effects(id),
+    on_fail_effect_id  INTEGER REFERENCES effects(id),
+    stat               TEXT,
+    stat_stages        INTEGER,
+    sleep_min_turns    INTEGER,
+    sleep_max_turns    INTEGER,
+    confuse_min_turns  INTEGER,
+    confuse_max_turns  INTEGER,
+    is_toxic           INTEGER DEFAULT 0,
+    weather            TEXT,
+    weather_turns      INTEGER,
+    screen             TEXT,
+    screen_turns       INTEGER,
+    battle_side        TEXT,
+    hazard             TEXT,
+    charge_turns       INTEGER
+);
+
+CREATE TABLE sequence_steps (
+    sequence_effect_id INTEGER NOT NULL REFERENCES effects(id) ON DELETE CASCADE,
+    step_order         INTEGER NOT NULL,
+    child_effect_id    INTEGER NOT NULL REFERENCES effects(id),
+    PRIMARY KEY (sequence_effect_id, step_order)
+);
+
+CREATE TABLE multi_stat_changes (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    effect_id INTEGER NOT NULL REFERENCES effects(id) ON DELETE CASCADE,
+    stat      TEXT    NOT NULL,
+    stages    INTEGER NOT NULL
+);
+
+CREATE TABLE attempts (
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    move_id                 INTEGER NOT NULL REFERENCES moves(id) ON DELETE CASCADE,
+    type                    TEXT    NOT NULL,
+    accuracy_value          REAL,
+    on_hit_effect_id        INTEGER REFERENCES effects(id),
+    on_miss_effect_id       INTEGER REFERENCES effects(id),
+    after_effect_id         INTEGER REFERENCES effects(id),
+    stop_on_miss            INTEGER DEFAULT 1,
+    hits_number_id          INTEGER REFERENCES numbers(id),
+    charge_effect_id        INTEGER REFERENCES effects(id),
+    release_attempt_id      INTEGER REFERENCES attempts(id),
+    rampage_min_turns       INTEGER,
+    rampage_max_turns       INTEGER,
+    after_rampage_effect_id INTEGER REFERENCES effects(id)
+);
+
+CREATE TABLE cascade_steps (
+    cascade_attempt_id INTEGER NOT NULL REFERENCES attempts(id) ON DELETE CASCADE,
+    step_order         INTEGER NOT NULL,
+    child_attempt_id   INTEGER NOT NULL REFERENCES attempts(id),
+    PRIMARY KEY (cascade_attempt_id, step_order)
 );</sql><sql name="Add one value to table">PRAGMA foreign_keys = ON;
 
 -- =========================
@@ -823,106 +851,34 @@ JOIN effects        child   ON child.id                = step.child_effect_id
 LEFT JOIN numbers   n       ON n.id                    = child.number_id
 LEFT JOIN effects   wrapped ON wrapped.id              = child.child_effect_id
 WHERE m.name = 'Flamethrower'
-ORDER BY step.step_order;</sql><sql name="SQL 7">CREATE TABLE Map (
-    MapID INTEGER PRIMARY KEY,
-    Name  TEXT
-);
-
-CREATE TABLE Details (
-    DetailsID INTEGER PRIMARY KEY,
-    Section   TEXT,
-    Weather   TEXT,
-    Music     TEXT,
-    MapID     INTEGER,
-    FOREIGN KEY (MapID) REFERENCES Map(MapID)
-);
-
-CREATE TABLE FlagsDetailsMap (
-    FlagID          INTEGER PRIMARY KEY,
-    Bike            BOOLEAN,
-    DayTint         BOOLEAN,
-    Dig_EscapeRope  BOOLEAN,
-    Fly             BOOLEAN,
-    ShowMapName     BOOLEAN,
-    Teleport        BOOLEAN,
-    DetailsID       INTEGER,
-    FOREIGN KEY (DetailsID) REFERENCES Details(DetailsID)
-);
-
-CREATE TABLE Connection (
-    ConnectionID INTEGER PRIMARY KEY,
-    Direction    TEXT,
-    Map          TEXT,
-    Offset       INTEGER,
-    MapID        INTEGER,
-    FOREIGN KEY (MapID) REFERENCES Map(MapID)
-);
-
-CREATE TABLE Encounter (
-    EncounterID INTEGER PRIMARY KEY,
-    minLevel    INTEGER,
-    MaxLevel    INTEGER,
-    SpeciesName TEXT,
-    Chance      REAL,
-    MapID       INTEGER,
-    FOREIGN KEY (MapID) REFERENCES Map(MapID)
-);
-
-CREATE TABLE Warps (
-    WarpsID       INTEGER PRIMARY KEY,
-    MapID         INTEGER,
-    X             INTEGER,
-    Y             INTEGER,
-    Elevation     INTEGER,
-    DestMap       TEXT,
-    DestX         INTEGER,
-    DestY         INTEGER,
-    DestElevation INTEGER,
-    FOREIGN KEY (MapID) REFERENCES Map(MapID)
-);
-
-CREATE TABLE Events (
-    EventID INTEGER PRIMARY KEY
-);
-
-CREATE TABLE ObjSprites (
-    ObjSpriteID INTEGER PRIMARY KEY,
-    Name        TEXT,
-    Sprite      BLOB,
-    Width       INTEGER,
-    Height      INTEGER,
-    ShadowX     INTEGER,
-    ShadowY     INTEGER,
-    ShadowW     INTEGER,
-    ShadowH     INTEGER
-);
-
-CREATE TABLE Objs (
-    ObjID        INTEGER PRIMARY KEY,
-    EventID      INTEGER,
-    X            INTEGER,
-    Y            INTEGER,
-    Elevation    INTEGER,
-    Sprite       INTEGER,
-    MovementType TEXT,
-    MovementX    INTEGER,
-    MovementY    INTEGER,
-    TrainerType  TEXT,
-    TrainerSight INTEGER,
-    ScriptID     INTEGER,
-    Flag         INTEGER,
-    FOREIGN KEY (EventID) REFERENCES Events(EventID),
-    FOREIGN KEY (Flag)    REFERENCES FlagsDetailsMap(FlagID)
-);
-
-CREATE TABLE ScriptTiles (
-    ScruptTileID     INTEGER PRIMARY KEY,
-    X                INTEGER,
-    Y                INTEGER,
-    Var              TEXT,
-    VarValue         TEXT,
-    VarConditional   TEXT,
-    ScriptID         INTEGER,
-    EventID          INTEGER,
-    FOREIGN KEY (EventID) REFERENCES Events(EventID)
-);</sql><current_tab id="0"/></tab_sql></sqlb_project>
+ORDER BY step.step_order;</sql><sql name="SQL 7">CREATE TABLE BattlePlayerSettings (
+    BattlePlayerID        INTEGER PRIMARY KEY,
+    
+    -- Display
+    IsDarkMode            INTEGER DEFAULT 0,  -- 0 = false, 1 = true
+    ShowOnlineStatus      INTEGER DEFAULT 1,
+    AllowBattleRequests   INTEGER DEFAULT 1,
+    
+    -- Battle Preferences
+    AnimationsEnabled     INTEGER DEFAULT 1,
+    AutoConfirmMoves      INTEGER DEFAULT 0,
+    ShowDamageNumbers     INTEGER DEFAULT 1,
+    ShowTypeEffectiveness INTEGER DEFAULT 1,
+    
+    -- Meta
+    UpdatedAt             TEXT DEFAULT (datetime('now')),
+    
+    FOREIGN KEY (BattlePlayerID) REFERENCES BattlePlayer(BattlePlayerID) ON DELETE CASCADE
+);
+
+-- Auto-create settings row when a player is created
+CREATE TRIGGER trg_CreatePlayerSettings
+AFTER INSERT ON BattlePlayer
+BEGIN
+    INSERT INTO BattlePlayerSettings (BattlePlayerID)
+    VALUES (NEW.BattlePlayerID);
+END;
+
+-- Insert for existing player (BattlePlayerID = 1)
+INSERT INTO BattlePlayerSettings (BattlePlayerID)
+VALUES (1);</sql><current_tab id="6"/></tab_sql></sqlb_project>
