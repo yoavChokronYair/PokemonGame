@@ -13,8 +13,22 @@
     </Page.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  TITLE  -->
+        <TextBlock
+            Grid.Row="0"
+            Margin="0,20,0,10"
+            HorizontalAlignment="Center"
+            FontSize="26"
+            FontWeight="Bold"
+            Text="Battle History" />
         <!--  Empty state  -->
         <TextBlock
+            Grid.Row="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             FontSize="16"
@@ -23,6 +37,7 @@
             Visibility="{Binding HasNoBattles, Converter={StaticResource BoolToVis}}" />
 
         <ScrollViewer
+            Grid.Row="1"
             Width="650"
             Height="500"
             HorizontalAlignment="Center"
