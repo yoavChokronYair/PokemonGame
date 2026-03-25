@@ -18,6 +18,7 @@
         public string? Status { get; set; } 
         public int Wins { get; set; } 
         public int Losses { get; set; } 
+        public int Level { get; set; }
         public string? LastPlayed { get; set; } 
     }
 }
