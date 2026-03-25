@@ -31,11 +31,19 @@ namespace PokemonGame.ViewModels.Translators
             var tree = _moveService.GetMove(moveName)
                 ?? throw new InvalidOperationException($"Move '{moveName}' not found.");
 
-            if (tree.Attempts.Count != 1)
+            // CHANGE: Instead of demanding exactly 1, we find the "Root" attempt.
+            // In most DB schemas, the root attempt is the one that is NOT 
+            // referenced by a 'release_attempt_id' or 'child_attempt_id'.
+            // If your service already orders them, usually index 0 is the root.
+
+            if (tree.Attempts.Count == 0)
             {
-                throw new InvalidOperationException(
-                    $"Move '{moveName}' has {tree.Attempts.Count} root attempts — expected exactly 1.");
+                throw new InvalidOperationException($"Move '{moveName}' has no attempts.");
             }
+
+            // Pick the first attempt as the entry point. 
+            // Complex moves (Charge/Cascade) will recursively translate their children.
+            var rootAttempt = tree.Attempts[0];
 
             var move = tree.Move;
 
@@ -49,11 +57,6 @@ namespace PokemonGame.ViewModels.Translators
                 critStage: move.CritStage,
                 description: move.Description
             );
-
-            // NOTE: MoveDomain currently stores metadata only (name, type, pp).
-            // The attempt tree is wired separately via TranslateAttempt — attach
-            // it to MoveDomain once the constructor accepts an IAttempt parameter.
-            // TranslateAttempt(tree.Attempts[0]);
         }
 
         // ── Attempt ──────────────────────────────────────────────────────────

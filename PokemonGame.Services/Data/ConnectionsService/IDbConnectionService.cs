@@ -10,6 +10,8 @@
         /// <param name="parameters">Optional parameters for the query.</param>
         /// <returns>An instance of T with the row data, or default if no row is found.</returns>
         T QuerySingle<T>(string sql, object parameters = null) where T : new();
+        T QueryScalar<T>(string sql, object parameters = null);
+        List<T> QueryScalarList<T>(string sql, object parameters = null);
 
         /// <summary>
         /// Executes a SQL query that returns multiple rows and maps them to a list of type T.

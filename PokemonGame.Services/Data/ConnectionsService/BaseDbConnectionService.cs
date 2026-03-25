@@ -20,6 +20,8 @@ namespace PokemonGame.Services.Data.ConnectionsService
 
         /// <inheritdoc/>
         public abstract T QuerySingle<T>(string sql, object parameters = null) where T : new();
+        public abstract T QueryScalar<T>(string sql, object parameters = null);
+        public abstract List<T> QueryScalarList<T>(string sql, object parameters = null);
 
         /// <inheritdoc/>
         public abstract List<T> Query<T>(string sql) where T : new();

@@ -4,6 +4,7 @@ using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
+using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
 using PokemonGame.ViewModels.ViewModelPage.Summery;
@@ -100,7 +101,7 @@ namespace PokemonGame
         private NavigationStore _contentNavigationStore;
 
         // cached content VMs
-        private BattleMenuViewModel _battleMenuViewModel;
+        private ViewModels.ViewModelPage.OnlineBattle.OnlineBattleMenuViewModel _battleMenuViewModel;
         private HistoryBattleViewModel _historyBattleViewModel;
         private OnlineFriendsViewModel _onlineFriendsViewModel;
         private TeamBuilderViewModel _teamBuilderViewModel;
@@ -112,7 +113,7 @@ namespace PokemonGame
                 return _onlineBattleShellViewModel;
 
             _contentNavigationStore = new NavigationStore();
-            _contentNavigationStore.CurrentViewModel = GetBattleMenuViewModel();
+            _contentNavigationStore.CurrentViewModel = GetOnlineBattleMenuViewModel();
 
             _onlineBattleShellViewModel = new OnlineBattleShellViewModel(
                 _contentNavigationStore,
@@ -127,7 +128,7 @@ namespace PokemonGame
             return new SideMenuViewModel(
                 contentNavigationStore,
                 _navigationStore,
-                GetBattleMenuViewModel,
+                GetOnlineBattleMenuViewModel,
                 GetHistoryViewModel,
                 GetFriendsViewModel,
                 GetTeamSelectPageViewModel,
@@ -138,10 +139,10 @@ namespace PokemonGame
 
         // ---------------- CACHED CONTENT VIEWMODELS ----------------
 
-        private BattleMenuViewModel GetBattleMenuViewModel()
+        private OnlineBattleMenuViewModel GetOnlineBattleMenuViewModel()
         {
             if (_battleMenuViewModel == null)
-                _battleMenuViewModel = new BattleMenuViewModel();
+                _battleMenuViewModel = new OnlineBattleMenuViewModel(_userStore,_navigationStore,CreateBattleViewModel);
             return _battleMenuViewModel;
         }
 
@@ -176,6 +177,11 @@ namespace PokemonGame
         {
             return new MoveSummaryViewModel();
         }
+        private BattleViewModel CreateBattleViewModel() 
+        {
+            return new BattleViewModel(_userStore); 
+        }
+        
 
     }
 }

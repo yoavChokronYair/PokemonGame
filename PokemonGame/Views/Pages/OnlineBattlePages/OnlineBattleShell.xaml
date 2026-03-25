@@ -29,7 +29,7 @@
             <local:HistoryBattlePage />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type onlinevm:BattleMenuViewModel}">
+        <DataTemplate DataType="{x:Type onlinevm:OnlineBattleMenuViewModel}">
             <local:BattleMenuPage />
         </DataTemplate>
 

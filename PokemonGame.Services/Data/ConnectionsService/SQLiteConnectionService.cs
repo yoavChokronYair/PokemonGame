@@ -31,7 +31,36 @@ namespace PokemonGame.Services.Data.ConnectionsService
             using var reader = cmd.ExecuteReader();
             return reader.Read() ? MapReaderToObject<T>(reader) : default!;
         }
+        public override T QueryScalar<T>(string sql, object parameters = null)
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
+            AddParameters(cmd, parameters);
 
+            object result = cmd.ExecuteScalar();
+
+            if (result == null || result == DBNull.Value)
+                return default!;
+
+            // This handles converting SQLite's types (like long) to C# types (like int)
+            return (T)Convert.ChangeType(result, typeof(T));
+        }
+        public override List<T> QueryScalarList<T>(string sql, object parameters = null)
+        {
+            var list = new List<T>();
+            using var conn = new SqliteConnection(_connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
+            AddParameters(cmd, parameters);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var val = reader.GetValue(0);
+                list.Add((T)Convert.ChangeType(val, typeof(T)));
+            }
+            return list;
+        }
         /// <inheritdoc/>
         public override List<T> Query<T>(string sql) => Query<T>(sql, null);
 

@@ -39,7 +39,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public SideMenuViewModel(
             NavigationStore contentNavigationStore,
             NavigationStore rootNavigationStore,   
-            Func<BattleMenuViewModel> createHome,
+            Func<OnlineBattleMenuViewModel> createHome,
             Func<HistoryBattleViewModel> createHistory,
             Func<OnlineFriendsViewModel> createFriends,
             Func<TeamBuilderViewModel> createTeam,

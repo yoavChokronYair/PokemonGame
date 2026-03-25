@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Battle;
 using PokemonGame.Model.Model.Helper.MoveHelper;
+using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
+using PokemonGame.ViewModels.Translators;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
@@ -29,10 +31,43 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public string? WinnerName => _manager.Winner?.Active.Name;
 
         // ── Constructor ──────────────────────────────────────────────────────
-        public BattleViewModel(PokemonTeam playerTeam, PokemonTeam botTeam)
+        public BattleViewModel(UserStore playerUserStore, UserStore botUserStore)
         {
+            var translator = new TeamTranslator();
+
+            var playerTeam = translator.LoadTeam(playerUserStore.BattlePlayerID);
+            var botTeam = translator.LoadTeam(botUserStore.BattlePlayerID);
+
             _manager = new BattleManager(playerTeam, botTeam);
 
+            PlayerStatus = new PokemonBattleStatusViewModel();
+            EnemyStatus = new EnemyBattleStatusViewModel();
+            BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager);
+
+            SyncAll();
+        }
+        public BattleViewModel(UserStore playerBattlePlayerId)
+        {
+            var translator = new TeamTranslator();
+            var service = new PokemonService();
+
+            // 1. Load the Player's set team
+            var playerTeam = translator.LoadTeam(playerBattlePlayerId.BattlePlayerID);
+
+            PokemonTeam botTeam;
+            
+            // 2. Generate a random team and translate each result to a Domain object
+            var randomResults = service.GenerateRandomTeam(count: 6, level: 50);
+            var roster = randomResults
+                .Select(r => translator.TranslateToDomain(r))
+                .ToList();
+
+            botTeam = PokemonTeam.Create(roster);
+            
+
+            _manager = new BattleManager(playerTeam, botTeam);
+
+            // Standard UI Initialization
             PlayerStatus = new PokemonBattleStatusViewModel();
             EnemyStatus = new EnemyBattleStatusViewModel();
             BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager);

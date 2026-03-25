@@ -1,11 +1,17 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
-    public class BattleMenuViewModel : ViewModelBase
+    public class OnlineBattleMenuViewModel : ViewModelBase
     {
+        private readonly UserStore _userStore;
+        private readonly NavigationStore _rootNavigationStore;
+        private readonly Func<BattleViewModel> _createBattleViewModel;
+
         private bool _isOnline = true;
         public bool IsOnline
         {
@@ -55,11 +61,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         public ICommand PlayCommand { get; }
 
-        public BattleMenuViewModel()
+        public OnlineBattleMenuViewModel(
+        UserStore userStore,
+        NavigationStore rootNavigationStore,
+        Func<BattleViewModel> createBattleViewModel)
         {
+            _userStore = userStore;
+            _rootNavigationStore = rootNavigationStore;
+            _createBattleViewModel = createBattleViewModel;
+
             PlayCommand = new RelayCommand(() =>
             {
-                // hook up matchmaking / navigation here
+                // This triggers the factory in App.xaml.cs 
+                // which will check the current "IsRandom" state
+                _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
             });
         }
     }
