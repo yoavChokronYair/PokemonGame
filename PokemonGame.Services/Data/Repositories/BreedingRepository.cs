@@ -34,7 +34,9 @@ namespace PokemonGame.Services.Data.Repositories
             var b2 = GetBreedingStats(p2PokedexID);
 
             if (b1 == null || b2 == null || b1.EggGroup == null || b2.EggGroup == null)
+            {
                 return false;
+            }
 
             return b1.EggGroup == b2.EggGroup;
         }

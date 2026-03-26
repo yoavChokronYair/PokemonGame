@@ -66,7 +66,7 @@ namespace PokemonGame
             );
         }
 
-      // ---------------- ONLINE BATTLE SHELL ----------------
+        // ---------------- ONLINE BATTLE SHELL ----------------
 
         private OnlineBattleShellViewModel _onlineBattleShellViewModel;
         private NavigationStore _contentNavigationStore;
@@ -113,7 +113,7 @@ namespace PokemonGame
         private OnlineBattleMenuViewModel GetOnlineBattleMenuViewModel()
         {
             if (_battleMenuViewModel == null)
-                _battleMenuViewModel = new OnlineBattleMenuViewModel(_userStore,_navigationStore,CreateBattleViewModel);
+                _battleMenuViewModel = new OnlineBattleMenuViewModel(_userStore, _navigationStore, CreateBattleViewModel);
             return _battleMenuViewModel;
         }
 
@@ -148,11 +148,11 @@ namespace PokemonGame
         {
             return new MoveSummaryViewModel();
         }
-        private BattleViewModel CreateBattleViewModel() 
+        private BattleViewModel CreateBattleViewModel()
         {
-            return new BattleViewModel(_userStore); 
+            return new BattleViewModel(_userStore);
         }
-        
+
 
     }
 }

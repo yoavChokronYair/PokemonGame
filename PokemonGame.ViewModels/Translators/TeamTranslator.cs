@@ -27,7 +27,9 @@ namespace PokemonGame.ViewModels.Translators
 
             // Check team size constraint
             if (results.Count != 6) // Replacing with hardcoded 6 if PokemonTeam.TeamSize isn't accessible
+            {
                 throw new InvalidOperationException($"Expected 6 members, found {results.Count}.");
+            }
 
             // Transform data results into Domain objects
             var roster = results

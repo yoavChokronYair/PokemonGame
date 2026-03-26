@@ -89,7 +89,10 @@ namespace PokemonGame.Services.Handler
         public PokemonLoadResult? GetPokemon(int pokemonId)
         {
             var battler = _battlerRepo.GetPokemonInstance(pokemonId);
-            if (battler == null) return null;
+            if (battler == null)
+            {
+                return null;
+            }
 
             // Use the new helper!
             return GetPokemonFromInstance(battler);
@@ -121,9 +124,20 @@ namespace PokemonGame.Services.Handler
         private static IEnumerable<int> GetMoveIds(BattlerPokemon b)
         {
             yield return b.Move1ID;
-            if (b.Move2ID.HasValue) yield return b.Move2ID.Value;
-            if (b.Move3ID.HasValue) yield return b.Move3ID.Value;
-            if (b.Move4ID.HasValue) yield return b.Move4ID.Value;
+            if (b.Move2ID.HasValue)
+            {
+                yield return b.Move2ID.Value;
+            }
+
+            if (b.Move3ID.HasValue)
+            {
+                yield return b.Move3ID.Value;
+            }
+
+            if (b.Move4ID.HasValue)
+            {
+                yield return b.Move4ID.Value;
+            }
         }
     }
 }

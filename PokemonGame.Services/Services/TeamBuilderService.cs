@@ -1,5 +1,4 @@
-﻿using System.Windows.Media.Imaging;
-using PokemonGame.Services.Data.GameData;
+﻿using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Data.Repositories;
@@ -39,7 +38,7 @@ namespace PokemonGame.Services.Handler
         public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
     _teams.GetTeamByBattlePlayer(battlePlayerId);
 
-      
+
         // ── Pokémon list for the picker ───────────────────────────────────────
 
         /// <summary>
@@ -58,17 +57,44 @@ namespace PokemonGame.Services.Handler
                 var baseStats = _stats.GetBaseStats(p.PokedexID);
 
                 var abilities = new List<string>();
-                if (p.FirstAbilityID != null) abilities.Add(_abilities.GetAbility(p.FirstAbilityID.Value)?.Name ?? "");
-                if (p.SecondAbilityID != null) abilities.Add(_abilities.GetAbility(p.SecondAbilityID.Value)?.Name ?? "");
-                if (p.HiddenAbilityID != null) abilities.Add(_abilities.GetAbility(p.HiddenAbilityID.Value)?.Name ?? "");
+                if (p.FirstAbilityID != null)
+                {
+                    abilities.Add(_abilities.GetAbility(p.FirstAbilityID.Value)?.Name ?? "");
+                }
+
+                if (p.SecondAbilityID != null)
+                {
+                    abilities.Add(_abilities.GetAbility(p.SecondAbilityID.Value)?.Name ?? "");
+                }
+
+                if (p.HiddenAbilityID != null)
+                {
+                    abilities.Add(_abilities.GetAbility(p.HiddenAbilityID.Value)?.Name ?? "");
+                }
+
                 abilities.RemoveAll(string.IsNullOrWhiteSpace);
 
                 // Union all learnset sources, resolve IDs to MoveDisplayEntry, sort alphabetically
                 var moveIds = new HashSet<int>();
-                foreach (var m in _learnsets.GetLevelUpMoves(p.PokedexID)) moveIds.Add(m.MoveID);
-                foreach (var m in _learnsets.GetMachineMoves(p.PokedexID)) moveIds.Add(m.MoveID);
-                foreach (var m in _learnsets.GetTutorMoves(p.PokedexID)) moveIds.Add(m.MoveID);
-                foreach (var m in _learnsets.GetEggMoves(p.PokedexID)) moveIds.Add(m.MoveID);
+                foreach (var m in _learnsets.GetLevelUpMoves(p.PokedexID))
+                {
+                    moveIds.Add(m.MoveID);
+                }
+
+                foreach (var m in _learnsets.GetMachineMoves(p.PokedexID))
+                {
+                    moveIds.Add(m.MoveID);
+                }
+
+                foreach (var m in _learnsets.GetTutorMoves(p.PokedexID))
+                {
+                    moveIds.Add(m.MoveID);
+                }
+
+                foreach (var m in _learnsets.GetEggMoves(p.PokedexID))
+                {
+                    moveIds.Add(m.MoveID);
+                }
 
                 // Previous evolutions
                 var visited = new HashSet<int> { p.PokedexID };
@@ -76,13 +102,32 @@ namespace PokemonGame.Services.Handler
                 while (true)
                 {
                     var preEvo = allPokemonData.FirstOrDefault(x => x.PokemonEvoID == current.PokedexID);
-                    if (preEvo == null || visited.Contains(preEvo.PokedexID)) break;
+                    if (preEvo == null || visited.Contains(preEvo.PokedexID))
+                    {
+                        break;
+                    }
+
                     visited.Add(preEvo.PokedexID);
 
-                    foreach (var m in _learnsets.GetLevelUpMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
-                    foreach (var m in _learnsets.GetMachineMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
-                    foreach (var m in _learnsets.GetTutorMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
-                    foreach (var m in _learnsets.GetEggMoves(preEvo.PokedexID)) moveIds.Add(m.MoveID);
+                    foreach (var m in _learnsets.GetLevelUpMoves(preEvo.PokedexID))
+                    {
+                        moveIds.Add(m.MoveID);
+                    }
+
+                    foreach (var m in _learnsets.GetMachineMoves(preEvo.PokedexID))
+                    {
+                        moveIds.Add(m.MoveID);
+                    }
+
+                    foreach (var m in _learnsets.GetTutorMoves(preEvo.PokedexID))
+                    {
+                        moveIds.Add(m.MoveID);
+                    }
+
+                    foreach (var m in _learnsets.GetEggMoves(preEvo.PokedexID))
+                    {
+                        moveIds.Add(m.MoveID);
+                    }
 
                     current = preEvo;
                 }
@@ -140,7 +185,10 @@ namespace PokemonGame.Services.Handler
             foreach (var slot in slots)
             {
                 var bp = _battlerPokemon.GetPokemonInstance(slot.PokemonID);
-                if (bp != null) result.Add(bp);
+                if (bp != null)
+                {
+                    result.Add(bp);
+                }
             }
             return result;
         }
@@ -150,16 +198,16 @@ namespace PokemonGame.Services.Handler
             var team = _teams.CreateTeam(teamName, userId, battlePlayerId);
             for (int i = 0; i < slots.Count && i < 6; i++)
             {
-                
-                    var pokemonId = _battlerPokemon.CreatePokemonInstance(slots[i]);
-                    if (pokemonId <= 0)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Slot {i + 1} failed — pokemonId={pokemonId}");
-                        continue;
-                    }
-                    _teamMembers.SetPokemonInSlot(team.Id, pokemonId, i + 1);
-                
-                
+
+                var pokemonId = _battlerPokemon.CreatePokemonInstance(slots[i]);
+                if (pokemonId <= 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Slot {i + 1} failed — pokemonId={pokemonId}");
+                    continue;
+                }
+                _teamMembers.SetPokemonInSlot(team.Id, pokemonId, i + 1);
+
+
             }
             return team;
         }
@@ -169,7 +217,9 @@ namespace PokemonGame.Services.Handler
             var existing = _teamMembers.GetTeamMembers(teamId)
                                        .FirstOrDefault(m => m.Slot_number == slotNumber);
             if (existing != null)
+            {
                 _battlerPokemon.DeletePokemonInstance(existing.PokemonID);
+            }
 
             var newId = _battlerPokemon.CreatePokemonInstance(pokemon);
             _teamMembers.SetPokemonInSlot(teamId, newId, slotNumber);
@@ -180,7 +230,7 @@ namespace PokemonGame.Services.Handler
         public bool CanCreateTeam(int battlePlayerId) =>
             _teams.CanCreateTeam(battlePlayerId);
 
-        
+
 
         public void UpdateTeam(int teamId, string teamName, List<BattlerPokemon> slots)
         {
@@ -198,7 +248,11 @@ namespace PokemonGame.Services.Handler
                 try
                 {
                     var pokemonId = _battlerPokemon.CreatePokemonInstance(slots[i]);
-                    if (pokemonId <= 0) continue;
+                    if (pokemonId <= 0)
+                    {
+                        continue;
+                    }
+
                     _teamMembers.SetPokemonInSlot(teamId, pokemonId, i + 1);
                 }
                 catch (Exception ex)
@@ -252,14 +306,22 @@ namespace PokemonGame.Services.Handler
         /// <summary>Looks up a move ID by name. Returns null if not found.</summary>
         public int? GetMoveId(string? moveName)
         {
-            if (string.IsNullOrWhiteSpace(moveName)) return null;
+            if (string.IsNullOrWhiteSpace(moveName))
+            {
+                return null;
+            }
+
             var cache = GetMoveDisplayCache();
             var pair = cache.FirstOrDefault(kv => kv.Value.Name == moveName);
             return pair.Value == null ? null : (int?)pair.Key;
         }
         public MoveDisplayEntry GetMoveById(int? moveId, List<MoveDisplayEntry> availableMoves)
         {
-            if (moveId == null || moveId <= 0) return null;
+            if (moveId == null || moveId <= 0)
+            {
+                return null;
+            }
+
             return availableMoves.FirstOrDefault(m => m.Id == moveId);
         }
         public string GetAbilityNameById(int abilityId)
@@ -269,7 +331,11 @@ namespace PokemonGame.Services.Handler
         /// <summary>Looks up an ability ID by name. Returns 0 if not found.</summary>
         public int GetAbilityId(string? abilityName)
         {
-            if (string.IsNullOrWhiteSpace(abilityName)) return 0;
+            if (string.IsNullOrWhiteSpace(abilityName))
+            {
+                return 0;
+            }
+
             return _abilities.GetAllAbilities()
                              .FirstOrDefault(a => a.Name == abilityName)?.Id ?? 0;
         }
@@ -277,7 +343,11 @@ namespace PokemonGame.Services.Handler
         /// <summary>Looks up an item ID by name. Returns null if not found.</summary>
         public int? GetItemId(string? itemName)
         {
-            if (string.IsNullOrWhiteSpace(itemName)) return null;
+            if (string.IsNullOrWhiteSpace(itemName))
+            {
+                return null;
+            }
+
             return _items.GetAllItems()
                          .FirstOrDefault(i => i.Name == itemName)?.Id;
         }
@@ -286,7 +356,10 @@ namespace PokemonGame.Services.Handler
 
         private Dictionary<int, MoveDisplayEntry> GetMoveDisplayCache()
         {
-            if (_moveDisplayCache != null) return _moveDisplayCache;
+            if (_moveDisplayCache != null)
+            {
+                return _moveDisplayCache;
+            }
 
             _moveDisplayCache = new Dictionary<int, MoveDisplayEntry>();
 
@@ -297,8 +370,10 @@ namespace PokemonGame.Services.Handler
                 var attempts = _moves.LoadAttemptsForMove(m.Id);
                 var firstAttempt = attempts.FirstOrDefault();
                 if (firstAttempt?.AccuracyValue.HasValue == true)
+                {
                     accuracy = firstAttempt.AccuracyValue.Value;
-                
+                }
+
                 // ── Power: from the OnHitEffect's NumberId → MoveNumberData.ExactValue ──
                 // ── Power ────────────────────────────────────────────────────────────
                 int? power = null;
@@ -313,7 +388,9 @@ namespace PokemonGame.Services.Handler
                         {
                             var number = _moves.LoadNumber(onHitEffect.NumberId.Value);
                             if (number?.ExactValue.HasValue == true)
+                            {
                                 power = (int)number.ExactValue.Value;
+                            }
                         }
                         // Sequence — damage is in one of the steps
                         else if (onHitEffect.Type == "Sequence")
@@ -341,7 +418,9 @@ namespace PokemonGame.Services.Handler
                             {
                                 var number = _moves.LoadNumber(child.NumberId.Value);
                                 if (number?.ExactValue.HasValue == true)
+                                {
                                     power = (int)number.ExactValue.Value;
+                                }
                             }
                         }
                     }
@@ -368,7 +447,10 @@ namespace PokemonGame.Services.Handler
         private Dictionary<int, string> GetMoveNameCache()
         {
             if (_moveNameCache == null)
+            {
                 _moveNameCache = _moves.GetAllMoves().ToDictionary(m => m.Id, m => m.Name);
+            }
+
             return _moveNameCache;
         }
     }

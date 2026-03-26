@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Handler;
@@ -29,7 +28,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public void Cleanup()
         {
             foreach (var friend in Friends)
+            {
                 friend.Cleanup();
+            }
         }
         private void LoadDummyFriends()
         {
@@ -70,14 +71,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             string? friendIdentifier = await _dialogService.ShowInputAsync("Add Friend", "Enter Friend's Player ID:");
 
             if (string.IsNullOrWhiteSpace(friendIdentifier) || !int.TryParse(friendIdentifier, out int friendID))
+            {
                 return;
+            }
 
             bool success = _friendService.SendRequest(_user.BattlePlayerID, friendID);
 
             if (success)
+            {
                 await _dialogService.ShowSuccessAsync("Success", "Friend request sent!");
+            }
             else
+            {
                 await _dialogService.ShowErrorAsync("Error", "Could not send request. Check the ID or friendship status.");
+            }
 
             LoadFriends();
         }
@@ -147,7 +154,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private void OnWindowMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (IsPopupOpen)
+            {
                 IsPopupOpen = false;
+            }
         }
         public void Cleanup()
         {
@@ -156,7 +165,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private void OnRemove()
         {
             if (_data != null)
+            {
                 _friendService.RemoveFriendship(_data.PlayerID, _data.FriendPlayerID);
+            }
 
             // ✅ Unsubscribe to avoid memory leak when friend is removed
             Application.Current.MainWindow.PreviewMouseDown -= OnWindowMouseDown;
@@ -165,6 +176,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         }
         private void OnInvite() { /* TODO */ }
 
-        
+
     }
 }

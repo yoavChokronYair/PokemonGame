@@ -41,7 +41,9 @@ namespace PokemonGame.Services.Data.ConnectionsService
             object result = cmd.ExecuteScalar();
 
             if (result == null || result == DBNull.Value)
+            {
                 return default!;
+            }
 
             // This handles converting SQLite's types (like long) to C# types (like int)
             return (T)Convert.ChangeType(result, typeof(T));
@@ -73,7 +75,11 @@ namespace PokemonGame.Services.Data.ConnectionsService
             using var cmd = new SqliteCommand(sql, conn);
             AddParameters(cmd, parameters);
             using var reader = cmd.ExecuteReader();
-            while (reader.Read()) list.Add(MapReaderToObject<T>(reader));
+            while (reader.Read())
+            {
+                list.Add(MapReaderToObject<T>(reader));
+            }
+
             return list;
         }
 
@@ -99,9 +105,15 @@ namespace PokemonGame.Services.Data.ConnectionsService
         /// <param name="parameters">An anonymous object whose properties map to SQL parameters. Pass <see langword="null"/> for parameter-free queries.</param>
         private static void AddParameters(SqliteCommand cmd, object parameters)
         {
-            if (parameters == null) return;
+            if (parameters == null)
+            {
+                return;
+            }
+
             foreach (var prop in parameters.GetType().GetProperties())
+            {
                 cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
+            }
         }
         public override int ExecuteAndGetLastId(string sql, object parameters = null)
         {

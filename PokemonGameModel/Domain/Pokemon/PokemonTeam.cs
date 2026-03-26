@@ -39,7 +39,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public bool IsDefeated => _slots.All(s => s.IsFainted);
         public int GetAlivePokemonCount() => Alive.Count();
         public int getAllPokemonCount() => All.Count();
-        
+
 
         // ── Switching ─────────────────────────────────────────────────────────
 
@@ -49,9 +49,20 @@ namespace PokemonGame.Model.Domain.Pokemon
         /// </summary>
         public bool SwitchTo(int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex >= PokemonConstants.PartyCapacity) return false;
-            if (slotIndex == _activeIndex) return false;
-            if (_slots[slotIndex].IsFainted) return false;
+            if (slotIndex < 0 || slotIndex >= PokemonConstants.PartyCapacity)
+            {
+                return false;
+            }
+
+            if (slotIndex == _activeIndex)
+            {
+                return false;
+            }
+
+            if (_slots[slotIndex].IsFainted)
+            {
+                return false;
+            }
 
             _activeIndex = slotIndex;
             return true;
@@ -85,7 +96,9 @@ namespace PokemonGame.Model.Domain.Pokemon
             for (int i = 0; i < PokemonConstants.PartyCapacity; i++)
             {
                 if (i != _activeIndex && !_slots[i].IsFainted)
+                {
                     result.Add(i);
+                }
             }
             return result;
         }

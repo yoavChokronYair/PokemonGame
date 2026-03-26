@@ -1,5 +1,5 @@
-﻿using PokemonGame.Services.Factory;
-using PokemonGame.Services.Data.GameData.OnlineBattleData;
+﻿using PokemonGame.Services.Data.GameData.OnlineBattleData;
+using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
@@ -36,11 +36,17 @@ namespace PokemonGame.Services.Handler
 
         private List<string> GetPokemonNames(int? battlePlayerID)
         {
-            if (battlePlayerID == null) return new List<string>();
+            if (battlePlayerID == null)
+            {
+                return new List<string>();
+            }
 
             // Logic: Find the Team linked to this BattlePlayerID, then get members
             var team = ServiceFactory.Instance.TeamRepository.GetTeamByBattlePlayer(battlePlayerID.Value);
-            if (team == null) return new List<string>();
+            if (team == null)
+            {
+                return new List<string>();
+            }
 
             var members = ServiceFactory.Instance.TeamMemberRepository.GetTeamMembers(team.Id);
 

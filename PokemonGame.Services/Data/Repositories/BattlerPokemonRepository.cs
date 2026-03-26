@@ -18,7 +18,7 @@ namespace PokemonGame.Services.Data.Repositories
         // Add a new captured/bred Pokemon instance
         public int CreatePokemonInstance(BattlerPokemon pokemon)
         {
-            
+
             var result = _db.ExecuteAndGetLastId(@"
         INSERT INTO battler_pokemon (
             pokedexID, abilityID, itemID, shiny, gender, level, 
@@ -34,7 +34,7 @@ namespace PokemonGame.Services.Data.Repositories
 
             System.Diagnostics.Debug.WriteLine($"Created pokemon instance ID: {result}");
             return result;
-            
+
         }
 
         // Update stats (EVs or Level) after training or leveling

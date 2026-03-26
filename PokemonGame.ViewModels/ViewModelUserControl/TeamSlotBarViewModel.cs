@@ -42,9 +42,17 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
             RemoveFromTeamCommand = new RelayCommand(() =>
             {
-                if (_state.SelectedPokemon == null) return;
+                if (_state.SelectedPokemon == null)
+                {
+                    return;
+                }
+
                 int idx = _state.TeamSlots.IndexOf(_state.SelectedPokemon);
-                if (idx >= 0) _state.TeamSlots[idx] = null;
+                if (idx >= 0)
+                {
+                    _state.TeamSlots[idx] = null;
+                }
+
                 _state.SelectedPokemon = null;
             });
         }

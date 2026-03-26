@@ -82,7 +82,9 @@ namespace PokemonGame.Model.Model.Battle
         public bool RunTurn(int playerMoveIndex, bool botDecides = true)
         {
             if (Phase != BattlePhase.AwaitingPlayerAction)
+            {
                 return false;
+            }
 
             // 1. Gather moves
             _pendingPlayerMove = GetMoveOrFallback(PlayerActive, playerMoveIndex);
@@ -111,10 +113,15 @@ namespace PokemonGame.Model.Model.Battle
         public bool PlayerSwitch(int slotIndex)
         {
             if (Phase != BattlePhase.AwaitingPlayerSwitch)
+            {
                 return false;
+            }
 
             bool ok = _playerTeam.SwitchTo(slotIndex);
-            if (!ok) return false;
+            if (!ok)
+            {
+                return false;
+            }
 
             SyncActivePokemon();
             _state.Logger.Log($"Player sends out {PlayerActive.Name}!");
@@ -143,21 +150,28 @@ namespace PokemonGame.Model.Model.Battle
             {
                 ExecuteMove(_pendingPlayerMove!, PlayerActive, BotActive);
                 if (!BotActive.IsFainted)
+                {
                     ExecuteMove(_pendingBotMove!, BotActive, PlayerActive);
+                }
             }
             else
             {
                 ExecuteMove(_pendingBotMove!, BotActive, PlayerActive);
                 if (!PlayerActive.IsFainted)
+                {
                     ExecuteMove(_pendingPlayerMove!, PlayerActive, BotActive);
+                }
             }
 
-            _state.EndTurn(PlayerActive,BotActive);
+            _state.EndTurn(PlayerActive, BotActive);
         }
 
         private void ExecuteMove(IMove move, PokemonState user, PokemonState target)
         {
-            if (user.IsFainted) return;
+            if (user.IsFainted)
+            {
+                return;
+            }
 
             _state.RegisterMove(move);
 
@@ -170,13 +184,17 @@ namespace PokemonGame.Model.Model.Battle
             // If the bot is acting, flip the state's perspective so move
             // logic that reads _state.Attacker/Defender sees the right sides
             if (!userIsPlayer)
+            {
                 _state.SwitchAttackerDefender();
+            }
 
             move.Execute(_state);
 
             // Restore to player-perspective after bot's move
             if (!userIsPlayer)
+            {
                 _state.SwitchAttackerDefender();
+            }
         }
 
         // ── Post-turn faint handling ───────────────────────────────────────────
@@ -252,7 +270,9 @@ namespace PokemonGame.Model.Model.Battle
         private static IMove GetMoveOrFallback(PokemonState pokemon, int index)
         {
             if (pokemon.Moves.Count == 0)
+            {
                 throw new InvalidOperationException($"{pokemon.Name} has no moves.");
+            }
 
             int clamped = MathHelper.Clamp(index, 0, pokemon.Moves.Count - 1);
             return pokemon.Moves[clamped];

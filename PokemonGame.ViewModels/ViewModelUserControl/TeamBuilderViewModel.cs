@@ -1,9 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Media.Imaging;
-using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData;
-using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -32,8 +28,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             SlotBar = new TeamSlotBarViewModel(State, service);
             Editor = new PokemonEditorViewModel(State, service);
             MovePicker = new MovePickerViewModel(State, service);
-            ItemPicker = new ItemPickerViewModel(State, service,allItems);
-            PokemonPicker = new PokemonPickerViewModel(State, service,allPokemon);
+            ItemPicker = new ItemPickerViewModel(State, service, allItems);
+            PokemonPicker = new PokemonPickerViewModel(State, service, allPokemon);
             EvIvEditor = new EvIvEditorViewModel(State);
             TeamManagement = new TeamManagementViewModel(State, service, userStore, allPokemon, allItems);
         }
@@ -164,14 +160,46 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 bool speedInvested = EvSpe >= 252;
                 bool slowRole = IvSpe == 0; // trick room
 
-                if (physicalAttacker && speedInvested) return "Adamant or Jolly";
-                if (physicalAttacker && slowRole) return "Brave (Trick Room)";
-                if (physicalAttacker) return "Adamant";
-                if (specialAttacker && speedInvested) return "Modest or Timid";
-                if (specialAttacker && slowRole) return "Quiet (Trick Room)";
-                if (specialAttacker) return "Modest";
-                if (speedInvested) return "Jolly or Timid";
-                if (EvHP >= 252) return "Bold or Calm (Defensive)";
+                if (physicalAttacker && speedInvested)
+                {
+                    return "Adamant or Jolly";
+                }
+
+                if (physicalAttacker && slowRole)
+                {
+                    return "Brave (Trick Room)";
+                }
+
+                if (physicalAttacker)
+                {
+                    return "Adamant";
+                }
+
+                if (specialAttacker && speedInvested)
+                {
+                    return "Modest or Timid";
+                }
+
+                if (specialAttacker && slowRole)
+                {
+                    return "Quiet (Trick Room)";
+                }
+
+                if (specialAttacker)
+                {
+                    return "Modest";
+                }
+
+                if (speedInvested)
+                {
+                    return "Jolly or Timid";
+                }
+
+                if (EvHP >= 252)
+                {
+                    return "Bold or Calm (Defensive)";
+                }
+
                 return "—";
             }
         }
@@ -181,28 +209,44 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public MoveDisplayEntry Move1
         {
             get => _move1;
-            set { if (SetProperty(ref _move1, value)) OnPropertyChanged(nameof(Move1Display)); }
+            set { if (SetProperty(ref _move1, value))
+                {
+                    OnPropertyChanged(nameof(Move1Display));
+                }
+            }
         }
 
         private MoveDisplayEntry _move2;
         public MoveDisplayEntry Move2
         {
             get => _move2;
-            set { if (SetProperty(ref _move2, value)) OnPropertyChanged(nameof(Move2Display)); }
+            set { if (SetProperty(ref _move2, value))
+                {
+                    OnPropertyChanged(nameof(Move2Display));
+                }
+            }
         }
 
         private MoveDisplayEntry _move3;
         public MoveDisplayEntry Move3
         {
             get => _move3;
-            set { if (SetProperty(ref _move3, value)) OnPropertyChanged(nameof(Move3Display)); }
+            set { if (SetProperty(ref _move3, value))
+                {
+                    OnPropertyChanged(nameof(Move3Display));
+                }
+            }
         }
 
         private MoveDisplayEntry _move4;
         public MoveDisplayEntry Move4
         {
             get => _move4;
-            set { if (SetProperty(ref _move4, value)) OnPropertyChanged(nameof(Move4Display)); }
+            set { if (SetProperty(ref _move4, value))
+                {
+                    OnPropertyChanged(nameof(Move4Display));
+                }
+            }
         }
 
         // Display-only name strings for the editor card buttons
@@ -228,9 +272,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 }
             }
         }
-        
+
         private int _evAtk;
-        public int EvAtk    
+        public int EvAtk
         {
             get => _evAtk;
             set
@@ -270,7 +314,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 int clamped = Math.Min(252, Math.Max(0, Math.Min(value, 510 - (EvHP + EvAtk + EvDef + EvSpD + EvSpe))));
                 if (SetProperty(ref _evSpA, clamped))
                 {
-                   
+
                     OnPropertyChanged(nameof(FinalSpA));
                     OnPropertyChanged(nameof(RemainingEvs));
                     OnPropertyChanged(nameof(SuggestedNature));
@@ -369,7 +413,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         public int RemainingEvs => 510 - EvHP - EvAtk - EvDef - EvSpA - EvSpD - EvSpe;
 
-       
+
 
         // ── Stat formula (Gen 3+) ─────────────────────────────────────────────
         private static readonly Dictionary<string, (string Boost, string Reduce)> NatureMap =
@@ -392,9 +436,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private double GetNatureMult(string stat)
         {
-            if (Nature == null || !NatureMap.TryGetValue(Nature, out var pair)) return 1.0;
-            if (pair.Boost == stat && pair.Boost != pair.Reduce) return 1.1;
-            if (pair.Reduce == stat && pair.Boost != pair.Reduce) return 0.9;
+            if (Nature == null || !NatureMap.TryGetValue(Nature, out var pair))
+            {
+                return 1.0;
+            }
+
+            if (pair.Boost == stat && pair.Boost != pair.Reduce)
+            {
+                return 1.1;
+            }
+
+            if (pair.Reduce == stat && pair.Boost != pair.Reduce)
+            {
+                return 0.9;
+            }
+
             return 1.0;
         }
 

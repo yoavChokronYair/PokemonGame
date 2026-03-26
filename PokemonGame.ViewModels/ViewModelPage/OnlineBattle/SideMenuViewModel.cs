@@ -38,7 +38,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         public SideMenuViewModel(
             NavigationStore contentNavigationStore,
-            NavigationStore rootNavigationStore,   
+            NavigationStore rootNavigationStore,
             Func<OnlineBattleMenuViewModel> createHome,
             Func<HistoryBattleViewModel> createHistory,
             Func<OnlineFriendsViewModel> createFriends,
@@ -61,7 +61,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             ProfileCommand = new NavigateCommand(_contentNavigationStore, createProfile);
 
             if (exit != null)
+            {
                 ExitCommand = new NavigateCommand(_rootNavigationStore, exit);
+            }
         }
     }
 }

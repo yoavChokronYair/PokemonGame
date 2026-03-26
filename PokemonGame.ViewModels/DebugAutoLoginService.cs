@@ -1,6 +1,6 @@
 ﻿#if DEBUG
-using PokemonGame.Services.Handler;
 using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Handler;
 
 namespace PokemonGame.ViewModels
 {
@@ -35,18 +35,24 @@ namespace PokemonGame.ViewModels
         {
             // Step 1 — Log in the user
             if (!_loginService.Login(_debugUsername, _debugPassword))
+            {
                 return false;
+            }
 
             CurrentUser = _loginService.GetUser(_debugUsername);
             if (CurrentUser == null)
+            {
                 return false;
+            }
 
             // Step 2 — Log in or create the online player
             if (!_gameModeService.OnlinePlayerLogIn(_debugPlayerUsername, CurrentUser))
             {
                 // Player doesn't exist yet — create them
                 if (!_gameModeService.AddOnlineModePlayer(_debugPlayerUsername, CurrentUser))
+                {
                     return false;
+                }
             }
 
             CurrentPlayer = _gameModeService.GetOnlinePlayer(_debugPlayerUsername, CurrentUser);

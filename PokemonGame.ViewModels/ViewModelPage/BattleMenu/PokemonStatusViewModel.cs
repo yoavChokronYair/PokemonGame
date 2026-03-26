@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using PokemonGame.ViewModels.ViewModelHelper;
+﻿using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
@@ -47,8 +46,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             get
             {
                 double r = HpPercentage;
-                if (r > 0.5) return new SolidColorBrush(Color.FromRgb(80, 240, 144));
-                if (r > 0.2) return new SolidColorBrush(Color.FromRgb(248, 224, 56));
+                if (r > 0.5)
+                {
+                    return new SolidColorBrush(Color.FromRgb(80, 240, 144));
+                }
+
+                if (r > 0.2)
+                {
+                    return new SolidColorBrush(Color.FromRgb(248, 224, 56));
+                }
+
                 return new SolidColorBrush(Color.FromRgb(248, 88, 56));
             }
         }

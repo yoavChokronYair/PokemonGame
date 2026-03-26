@@ -23,7 +23,7 @@ namespace PokemonGame.Views.Pages.OnlineBattlePages
         public TeamBuilderPage()
         {
             InitializeComponent();
-            
+
         }
     }
 }

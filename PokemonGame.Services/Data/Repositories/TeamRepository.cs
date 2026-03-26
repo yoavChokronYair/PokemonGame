@@ -31,7 +31,9 @@ namespace PokemonGame.Services.Data.Repositories
         public TeamData CreateTeam(string teamName, int userID, int battlePlayerId)
         {
             if (!CanCreateTeam(battlePlayerId))
+            {
                 throw new InvalidOperationException("Max 3 teams per battle player.");
+            }
 
             _db.ExecuteAndGetLastId(
                 "INSERT INTO teams (team_name, user_id, battle_player_id) VALUES (@name, @uid, @bpid)",

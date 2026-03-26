@@ -2,8 +2,8 @@
 {
     public class TeamMemberData
     {
-        public int Team_id { get; set; } 
+        public int Team_id { get; set; }
         public int PokemonID { get; set; }
-        public int Slot_number { get; set; } 
+        public int Slot_number { get; set; }
     }
 }
