@@ -209,7 +209,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public MoveDisplayEntry Move1
         {
             get => _move1;
-            set { if (SetProperty(ref _move1, value))
+            set
+            {
+                if (SetProperty(ref _move1, value))
                 {
                     OnPropertyChanged(nameof(Move1Display));
                 }
@@ -220,7 +222,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public MoveDisplayEntry Move2
         {
             get => _move2;
-            set { if (SetProperty(ref _move2, value))
+            set
+            {
+                if (SetProperty(ref _move2, value))
                 {
                     OnPropertyChanged(nameof(Move2Display));
                 }
@@ -231,7 +235,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public MoveDisplayEntry Move3
         {
             get => _move3;
-            set { if (SetProperty(ref _move3, value))
+            set
+            {
+                if (SetProperty(ref _move3, value))
                 {
                     OnPropertyChanged(nameof(Move3Display));
                 }
@@ -242,7 +248,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public MoveDisplayEntry Move4
         {
             get => _move4;
-            set { if (SetProperty(ref _move4, value))
+            set
+            {
+                if (SetProperty(ref _move4, value))
                 {
                     OnPropertyChanged(nameof(Move4Display));
                 }
