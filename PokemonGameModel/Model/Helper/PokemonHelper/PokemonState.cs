@@ -16,6 +16,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         }
 
         // --- Identity / stats ---
+        public int PokedexId => _state.PokedexNumber;
         public string Name => _state.Name;
         public int Level => _state.Level;
         public int MaxHP => _state.MaxHP;

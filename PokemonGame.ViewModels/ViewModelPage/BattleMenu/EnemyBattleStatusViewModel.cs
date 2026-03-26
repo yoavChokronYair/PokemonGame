@@ -10,7 +10,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private int _currentHp;
         private int _maxHp;
         private string _gender = "None";
-
+        private int _pokedexId;
+        public int PokedexId
+        {
+            get => _pokedexId;
+            set => SetProperty(ref _pokedexId, value);
+        }
         public string PokemonName { get => _pokemonName; set => SetProperty(ref _pokemonName, value); }
         public int Level { get => _level; set => SetProperty(ref _level, value); }
 

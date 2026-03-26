@@ -123,7 +123,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     {
         private readonly ICondition<PokemonState> _inner;
         public OpponentCondition(ICondition<PokemonState> inner) { _inner = inner; }
-        public bool Check(BattleState battle) => _inner.Check(battle.Attacker);
+        public bool Check(BattleState battle) => _inner.Check(battle.Defender); // ← fix
     }
 
     // ── Target Implementations ────────────────────────────────────────────────
@@ -136,7 +136,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     public class DefenderTarget : ITarget
     {
-        public PokemonState Resolve(BattleState battle) => battle.Attacker;
+        public PokemonState Resolve(BattleState battle) => battle.Defender;
     }
 
     // Always resolves to a specific pokemon regardless of attacker/defender roles.

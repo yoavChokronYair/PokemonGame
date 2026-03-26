@@ -1,19 +1,21 @@
-﻿using PokemonGame.Model.Model.Helper.PokemonHelper;
+﻿using PokemonGame.Core.Config;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
     public sealed class PokemonTeam
     {
-        public const int TeamSize = 6;
 
         private readonly PokemonState[] _slots;
         private int _activeIndex;
 
         private PokemonTeam(IReadOnlyList<PokemonDomain> roster)
         {
-            if (roster.Count != TeamSize)
+            if (roster.Count != PokemonConstants.PartyCapacity)
+            {
                 throw new ArgumentException(
-                    $"A team must have exactly {TeamSize} Pokémon, got {roster.Count}.");
+                    $"A team must have exactly {PokemonConstants.PartyCapacity} Pokémon, got {roster.Count}.");
+            }
 
             _slots = roster.Select(d => new PokemonState(d)).ToArray();
             _activeIndex = 0;
@@ -32,9 +34,12 @@ namespace PokemonGame.Model.Domain.Pokemon
 
         // ── Team view ─────────────────────────────────────────────────────────
 
-        public IReadOnlyList<PokemonState> All => _slots;
-        public IEnumerable<PokemonState> Alive => _slots.Where(s => !s.IsFainted);
+        private IReadOnlyList<PokemonState> All => _slots;
+        private IEnumerable<PokemonState> Alive => _slots.Where(s => !s.IsFainted);
         public bool IsDefeated => _slots.All(s => s.IsFainted);
+        public int GetAlivePokemonCount() => Alive.Count();
+        public int getAllPokemonCount() => All.Count();
+        
 
         // ── Switching ─────────────────────────────────────────────────────────
 
@@ -44,7 +49,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         /// </summary>
         public bool SwitchTo(int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex >= TeamSize) return false;
+            if (slotIndex < 0 || slotIndex >= PokemonConstants.PartyCapacity) return false;
             if (slotIndex == _activeIndex) return false;
             if (_slots[slotIndex].IsFainted) return false;
 
@@ -59,7 +64,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         /// </summary>
         public bool SwitchToNextAvailable()
         {
-            for (int i = 0; i < TeamSize; i++)
+            for (int i = 0; i < PokemonConstants.PartyCapacity; i++)
             {
                 if (i != _activeIndex && !_slots[i].IsFainted)
                 {
@@ -77,7 +82,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public IReadOnlyList<int> GetSwitchableIndices()
         {
             var result = new List<int>();
-            for (int i = 0; i < TeamSize; i++)
+            for (int i = 0; i < PokemonConstants.PartyCapacity; i++)
             {
                 if (i != _activeIndex && !_slots[i].IsFainted)
                     result.Add(i);

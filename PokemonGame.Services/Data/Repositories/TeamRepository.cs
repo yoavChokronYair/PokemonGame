@@ -10,11 +10,11 @@ namespace PokemonGame.Services.Data.Repositories
         internal TeamRepository(IDbConnectionService db) : base(db) { }
 
         private const string TeamSelect =
-    @"SELECT id AS Id, 
-             team_name AS TeamName, 
-             user_id AS User_id, 
-             battle_player_id AS Battle_player_id 
-      FROM teams";
+            @"SELECT id AS Id, 
+                     team_name AS TeamName, 
+                     user_id AS User_id, 
+                     battle_player_id AS Battle_player_id 
+              FROM teams";
 
         public List<TeamData> GetUserTeams(int userID) =>
             _db.Query<TeamData>($"{TeamSelect} WHERE user_id = @uid", new { uid = userID }).ToList();

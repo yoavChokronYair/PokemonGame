@@ -139,8 +139,8 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             var victim = _damageTarget.Resolve(battle);
             var user = _healTarget.Resolve(battle);
             int amount = (int)_drainAmount.Evaluate(battle);
-            victim.TakeDamage(amount);
-            user.RestoreHP(amount);
+            user.TakeDamage(amount);
+            victim.RestoreHP(amount);
         }
     }
 

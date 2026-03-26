@@ -63,7 +63,7 @@ namespace PokemonGame.Model.Model.Battle
             _domain = new BattleDomain
             {
                 Attacker = playerTeam.Active,
-                Defender = botTeam.Active,
+                Defender = botTeam.Active
             };
 
             _state = new BattleState(_domain);
@@ -152,7 +152,7 @@ namespace PokemonGame.Model.Model.Battle
                     ExecuteMove(_pendingPlayerMove!, PlayerActive, BotActive);
             }
 
-            _state.EndTurn();
+            _state.EndTurn(PlayerActive,BotActive);
         }
 
         private void ExecuteMove(IMove move, PokemonState user, PokemonState target)
@@ -161,23 +161,20 @@ namespace PokemonGame.Model.Model.Battle
 
             _state.RegisterMove(move);
 
-            // Set attacker/defender for the move's perspective
             bool userIsPlayer = ReferenceEquals(user, PlayerActive);
-            if (userIsPlayer)
-            {
-                _domain.Attacker = user;
-                _domain.Defender = target;
-            }
-            else
-            {
-                _domain.Attacker = target; // keep symmetry from bot's view
-                _domain.Defender = user;
+
+            // Always set Attacker = actual user, Defender = actual target
+            _domain.Attacker = user;
+            _domain.Defender = target;
+
+            // If the bot is acting, flip the state's perspective so move
+            // logic that reads _state.Attacker/Defender sees the right sides
+            if (!userIsPlayer)
                 _state.SwitchAttackerDefender();
-            }
 
             move.Execute(_state);
 
-            // Restore attacker = player perspective
+            // Restore to player-perspective after bot's move
             if (!userIsPlayer)
                 _state.SwitchAttackerDefender();
         }

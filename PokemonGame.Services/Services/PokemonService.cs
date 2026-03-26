@@ -25,13 +25,18 @@ namespace PokemonGame.Services.Handler
         private readonly PokemonRepository _pokemonRepo;
         private readonly TeamRepository _teamRepo;
         private readonly TeamMemberRepository _memberRepo;
-
+        private readonly MoveLearnsetRepository _moveLearnsetRepository;
+        private readonly PokemonStatsRepository _pokemonStatsRepository;
+        private readonly MoveRepository _moveRepository;
         public PokemonService()
         {
             _battlerRepo = ServiceFactory.Instance.BattlerPokemonRepository;
             _pokemonRepo = ServiceFactory.Instance.PokemonRepository;
             _teamRepo = ServiceFactory.Instance.TeamRepository;
             _memberRepo = ServiceFactory.Instance.TeamMemberRepository;
+            _moveLearnsetRepository = ServiceFactory.Instance.MoveLearnsetRepository;
+            _pokemonStatsRepository = ServiceFactory.Instance.pokemonStatsRepository;
+            _moveRepository = ServiceFactory.Instance.MoveRepository;
         }
 
         public List<PokemonLoadResult> LoadTeamResults(int battlePlayerId)
@@ -71,7 +76,7 @@ namespace PokemonGame.Services.Handler
                     Iv_spDef = 31,
                     Iv_speed = 31,
                     Nature = "Hardy", // Or randomize this too
-                    Move1ID = _pokemonRepo.GetRandomMoveIdForPokemon(randomPokedexId) // Helper to get a legal move
+                    Move1ID = _moveLearnsetRepository.GetRandomMoveIdForPokemon(randomPokedexId) // Helper to get a legal move
                 };
 
                 // 3. Use your existing GetPokemon logic to fill the rest
@@ -97,11 +102,11 @@ namespace PokemonGame.Services.Handler
             var general = _pokemonRepo.GetPokemonById(battler.PokedexID)
                 ?? throw new InvalidOperationException($"No general data for PokedexID {battler.PokedexID}.");
 
-            var stats = _pokemonRepo.GetStatsById(battler.PokedexID)
+            var stats = _pokemonStatsRepository.GetBaseStats(battler.PokedexID)
                 ?? throw new InvalidOperationException($"No base stats for PokedexID {battler.PokedexID}.");
 
             var moveNames = GetMoveIds(battler)
-                .Select(id => _pokemonRepo.GetMoveName(id)
+                .Select(id => _moveRepository.GetMoveName(id)
                     ?? throw new InvalidOperationException($"Move ID {id} not found."))
                 .ToList();
 

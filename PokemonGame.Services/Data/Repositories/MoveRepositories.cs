@@ -74,7 +74,10 @@ namespace PokemonGame.Services.Data.Repositories
 
             return row;
         }
-
+        public string? GetMoveName(int moveId) =>
+           _db.QueryScalar<string>(
+               "SELECT name FROM moves WHERE id = @mid",
+               new { mid = moveId });
         public ConditionRow? LoadCondition(int id)
         {
             if (_conditionCache.TryGetValue(id, out var cached))
@@ -124,6 +127,7 @@ namespace PokemonGame.Services.Data.Repositories
             GetAllCached(
                 () => _db.Query<MoveData>("SELECT * FROM moves").ToList(),
                 m => m.Name);
+
 
         // ── Numbers ───────────────────────────────────────────────────────────────
 

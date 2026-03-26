@@ -1,5 +1,7 @@
 ﻿
+using System.Windows;
 using System.Windows.Controls;
+using PokemonGame.ViewModels.ViewModelPage.SignUp;
 
 
 namespace PokemonGame.Views.Pages.SignIn
@@ -12,6 +14,11 @@ namespace PokemonGame.Views.Pages.SignIn
         public LogIn()
         {
             InitializeComponent();            
+        }
+        private void PasswordInput_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is LogInViewModel vm)
+                vm.Password = PasswordInput.Password;
         }
     }
 }

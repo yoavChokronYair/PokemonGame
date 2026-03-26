@@ -27,25 +27,8 @@ namespace PokemonGame.Services.Data.Repositories
                 new { evoID }).ToList();
 
         // ── Battle loading ────────────────────────────────────────────────────
-
-        public PokemonStatsData? GetStatsById(int pokedexID) =>
-            _db.QuerySingle<PokemonStatsData>(
-                // Table name changed from base_stats to pokemon_stats
-                // added WHERE clause for isEVYield = 0 to get base values
-                "SELECT * FROM pokemon_stats WHERE pokedexID = @pid AND isEVYield = 0",
-                new { pid = pokedexID });
-
-        public string? GetMoveName(int moveId) =>
-            _db.QueryScalar<string>(
-                "SELECT name FROM moves WHERE id = @mid",
-                new { mid = moveId });
         public List<int> GetAllPokedexIds() =>
             _db.QueryScalarList<int>("SELECT pokedexID FROM pokemon_general");
-
-          // 2. Get a random legal move for a specific Pokemon
-        public int GetRandomMoveIdForPokemon(int pokedexId) =>
-            _db.QueryScalar<int>(
-                "SELECT moveID FROM levelup_moves WHERE pokedexID = @pid ORDER BY RANDOM() LIMIT 1",
-                new { pid = pokedexId });
+       
     }
 }

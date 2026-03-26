@@ -22,6 +22,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public EnemyBattleStatusViewModel EnemyStatus { get; }
         public BattleMenuViewModel BattleMenu { get; }
 
+
         // ── Battle log ───────────────────────────────────────────────────────
         public ObservableCollection<string> Log { get; } = new();
 
@@ -97,21 +98,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private void SyncAll()
         {
             var p = _manager.PlayerActive;
+            PlayerStatus.PokedexId = p.PokedexId;   // ← add this
             PlayerStatus.PokemonName = p.Name;
             PlayerStatus.Level = p.Level;
             PlayerStatus.CurrentHP = p.CurrentHP;
             PlayerStatus.MaxHP = p.MaxHP;
 
             var e = _manager.BotActive;
+            EnemyStatus.PokedexId = e.PokedexId;    // ← add this
             EnemyStatus.PokemonName = e.Name;
             EnemyStatus.Level = e.Level;
             EnemyStatus.CurrentHP = e.CurrentHP;
             EnemyStatus.MaxHP = e.MaxHP;
 
-            // Feed current moves into the menu
             BattleMenu.RefreshMoves(_manager.PlayerActive.Moves);
 
-            // Append new log lines
             foreach (var line in _manager.BattleLog.Skip(Log.Count))
                 Log.Add(line);
 
@@ -122,7 +123,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     }
 
     // ── BattleMenuViewModel — owns fight/bag/pokemon/run + moveset panel ─────
-   
+
 
     // ── BattlePokemonMovesetChooserViewModel — the 4 move buttons ────────────
     public class BattlePokemonMovesetChooserViewModel : ViewModelBase
@@ -158,7 +159,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
         }
     }
-
     // ── One move button slot ─────────────────────────────────────────────────
     public class MoveSlotViewModel : ViewModelBase
     {

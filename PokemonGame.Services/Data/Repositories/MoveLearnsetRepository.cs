@@ -37,7 +37,10 @@ namespace PokemonGame.Services.Data.Repositories
             EnsureLoaded();
             return _levelUpCache!.TryGetValue(pokedexID, out var moves) ? moves : new List<LevelUpMoveData>();
         }
-
+        public int GetRandomMoveIdForPokemon(int pokedexId) =>
+           _db.QueryScalar<int>(
+               "SELECT moveID FROM levelup_moves WHERE pokedexID = @pid ORDER BY RANDOM() LIMIT 1",
+               new { pid = pokedexId });
         public List<MachineMoveData> GetMachineMoves(int pokedexID)
         {
             EnsureLoaded();

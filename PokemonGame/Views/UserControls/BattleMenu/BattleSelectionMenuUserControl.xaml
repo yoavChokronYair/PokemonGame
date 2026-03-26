@@ -58,6 +58,6 @@
         <local:BattlePokemonMovesetChooserUserControl
             Grid.Column="0"
             DataContext="{Binding MovesetChooser}"
-            Visibility="{Binding IsMovesetVisible, Converter={StaticResource BoolToVis}}" />
+            Visibility="{Binding DataContext.IsMovesetVisible, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}" />
     </Grid>
 </UserControl>
