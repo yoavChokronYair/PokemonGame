@@ -777,7 +777,7 @@ CREATE TABLE cascade_steps (
     step_order         INTEGER NOT NULL,
     child_attempt_id   INTEGER NOT NULL REFERENCES attempts(id),
     PRIMARY KEY (cascade_attempt_id, step_order)
-);</sql><sql name="SQL 6*">SELECT 
+);</sql><sql name="SQL 6">SELECT 
     t.team_name,
     tm.slot_number,
     pg.name AS PokemonName,
