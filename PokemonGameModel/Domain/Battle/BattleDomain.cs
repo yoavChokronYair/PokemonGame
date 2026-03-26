@@ -14,7 +14,7 @@ namespace PokemonGame.Model.Domain.Battle
 
 
     // ── Battle Domain ─────────────────────────────────────────────────────────
-    internal class BattleDomain
+    public class BattleDomain
     {
         public PokemonState Attacker { get; set; }
         public PokemonState Defender { get; set; }

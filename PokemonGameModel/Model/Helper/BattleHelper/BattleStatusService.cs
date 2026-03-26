@@ -9,7 +9,7 @@ using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
-    internal class BattleStatusService
+    public class BattleStatusService
     {
         private readonly BattleLogger _logger;
 

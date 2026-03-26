@@ -1,16 +1,16 @@
-﻿using PokemonGame.Services.Data.DataCache;
-using PokemonGame.Services.Data.GameData.User;
+﻿using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Handler
 {
     public class ProfileService
     {
-        private readonly UserCacheService _userCache;
+        private readonly UserRepository _userCache;
 
         public ProfileService()
         {
-            _userCache = ServiceFactory.Instance.UserCache;
+            _userCache = ServiceFactory.Instance.UserRepository;
         }
 
         public UserData? GetUser(string username)
@@ -20,7 +20,7 @@ namespace PokemonGame.Services.Handler
                 return null;
             }
 
-            return _userCache.GetUserByName(username);
+            return _userCache.LoadUserByName(username);
         }
 
         public bool UserExists(string username)

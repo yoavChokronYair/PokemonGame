@@ -5,7 +5,7 @@ using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Interface
 {
-    internal interface INumber
+    public interface INumber
     {
         double Evaluate(BattleState battle);
     }

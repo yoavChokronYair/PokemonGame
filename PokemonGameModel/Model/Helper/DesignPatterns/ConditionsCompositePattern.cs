@@ -15,7 +15,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     // ── Condition Combinators ─────────────────────────────────────────────────
 
-    internal class And<T> : ICondition<T>
+    public class And<T> : ICondition<T>
     {
         private readonly ICondition<T> _left;
         private readonly ICondition<T> _right;
@@ -23,7 +23,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public bool Check(T entity) => _left.Check(entity) && _right.Check(entity);
     }
 
-    internal class Or<T> : ICondition<T>
+    public class Or<T> : ICondition<T>
     {
         private readonly ICondition<T> _left;
         private readonly ICondition<T> _right;
@@ -31,7 +31,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public bool Check(T entity) => _left.Check(entity) || _right.Check(entity);
     }
 
-    internal class Not<T> : ICondition<T>
+    public class Not<T> : ICondition<T>
     {
         private readonly ICondition<T> _inner;
         public Not(ICondition<T> inner) { _inner = inner; }
@@ -41,7 +41,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     // ── Probability ───────────────────────────────────────────────────────────
 
     // Uses RandomHelper.NextBool — do not use new Random() here.
-    internal class Probability<T> : ICondition<T>
+    public class Probability<T> : ICondition<T>
     {
         private readonly double _probability;
         public Probability(double probability)
@@ -52,59 +52,59 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     }
 
     // Convenience alias — most common usage is against BattleDomain.
-    internal class Probability : Probability<BattleState>
+    public class Probability : Probability<BattleState>
     {
         public Probability(double probability) : base(probability) { }
     }
 
     // ── Battle Conditions ─────────────────────────────────────────────────────
 
-    internal class IsWeatherActive : ICondition<BattleState>
+    public class IsWeatherActive : ICondition<BattleState>
     {
         private readonly Weather _weather;
         public IsWeatherActive(Weather weather) { _weather = weather; }
         public bool Check(BattleState battle) => battle.WeatherService.IsWeatherActive(_weather);
     }
 
-    internal class IsBattleOver : ICondition<BattleState>
+    public class IsBattleOver : ICondition<BattleState>
     {
         public bool Check(BattleState battle) => battle.IsBattleOver;
     }
 
     // ── Pokemon Conditions ────────────────────────────────────────────────────
 
-    internal class HasStatus : ICondition<PokemonState>
+    public class HasStatus : ICondition<PokemonState>
     {
         private readonly StatusCondition _status;
         public HasStatus(StatusCondition status) { _status = status; }
         public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() == _status;
     }
 
-    internal class HasVolatile : ICondition<PokemonState>
+    public class HasVolatile : ICondition<PokemonState>
     {
         private readonly VolatileStatus _status;
         public HasVolatile(VolatileStatus status) { _status = status; }
         public bool Check(PokemonState pokemon) => pokemon.HasVolatileStatus(_status);
     }
 
-    internal class IsFainted : ICondition<PokemonState>
+    public class IsFainted : ICondition<PokemonState>
     {
         public bool Check(PokemonState pokemon) => pokemon.IsFainted;
     }
 
-    internal class IsFullHP : ICondition<PokemonState>
+    public class IsFullHP : ICondition<PokemonState>
     {
         public bool Check(PokemonState pokemon) => pokemon.CurrentHP == pokemon.MaxHP;
     }
 
-    internal class HPBelow : ICondition<PokemonState>
+    public class HPBelow : ICondition<PokemonState>
     {
         private readonly double _fraction;
         public HPBelow(double fraction) { _fraction = fraction; }
         public bool Check(PokemonState pokemon) => pokemon.GetHPFraction() < _fraction;
     }
 
-    internal class HasType : ICondition<PokemonState>
+    public class HasType : ICondition<PokemonState>
     {
         private readonly PokemonType _type;
         public HasType(PokemonType type) { _type = type; }
@@ -112,36 +112,36 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     }
 
     // Adapter: wraps a PokemonDomain condition so it can be used as ICondition<BattleDomain>.
-    internal class UserCondition : ICondition<BattleState>
+    public class UserCondition : ICondition<BattleState>
     {
         private readonly ICondition<PokemonState> _inner;
         public UserCondition(ICondition<PokemonState> inner) { _inner = inner; }
         public bool Check(BattleState battle) => _inner.Check(battle.Attacker);
     }
 
-    internal class OpponentCondition : ICondition<BattleState>
+    public class OpponentCondition : ICondition<BattleState>
     {
         private readonly ICondition<PokemonState> _inner;
         public OpponentCondition(ICondition<PokemonState> inner) { _inner = inner; }
-        public bool Check(BattleState battle) => _inner.Check(battle.Attacker);
+        public bool Check(BattleState battle) => _inner.Check(battle.Defender); // ← fix
     }
 
     // ── Target Implementations ────────────────────────────────────────────────
     // ITarget interface lives in Interface/Move/IConditionAndTarget.cs.
 
-    internal class AttackerTarget : ITarget
+    public class AttackerTarget : ITarget
     {
         public PokemonState Resolve(BattleState battle) => battle.Attacker;
     }
 
-    internal class DefenderTarget : ITarget
+    public class DefenderTarget : ITarget
     {
-        public PokemonState Resolve(BattleState battle) => battle.Attacker;
+        public PokemonState Resolve(BattleState battle) => battle.Defender;
     }
 
     // Always resolves to a specific pokemon regardless of attacker/defender roles.
     // Useful for field effects, weather damage, end-of-turn effects.
-    internal class SpecificTarget : ITarget
+    public class SpecificTarget : ITarget
     {
         private readonly PokemonState _pokemon;
         public SpecificTarget(PokemonState pokemon) { _pokemon = pokemon; }

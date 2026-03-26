@@ -3,7 +3,7 @@ using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Interface
 {
-    internal interface IMove
+    public interface IMove
     {
         void Execute(BattleState battle);
     }

@@ -1,0 +1,235 @@
+﻿<UserControl
+    x:Class="PokemonGame.Views.UserControls.PokemonTableUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:PokemonGame.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PokemonGame.Views.UserControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <conv:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter" />
+
+        <Style x:Key="TypeBadgeStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Padding" Value="4,1" />
+            <Setter Property="Margin" Value="1,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="PokemonDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#DDDDDD" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="RowBackground" Value="White" />
+            <Setter Property="AlternatingRowBackground" Value="#F9F9F9" />
+            <Setter Property="HorizontalGridLinesBrush" Value="#EEEEEE" />
+            <Setter Property="VerticalGridLinesBrush" Value="#EEEEEE" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="SelectionMode" Value="Single" />
+            <Setter Property="SelectionUnit" Value="FullRow" />
+            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="CanUserResizeRows" Value="False" />
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="HeadersVisibility" Value="Column" />
+            <Setter Property="GridLinesVisibility" Value="Horizontal" />
+            <Setter Property="ColumnHeaderHeight" Value="28" />
+            <Setter Property="RowHeight" Value="42" />
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#EFEFEF" />
+            <Setter Property="Foreground" Value="#444444" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="6,0" />
+            <Setter Property="BorderBrush" Value="#DDDDDD" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E8F0FE" />
+                    <Setter Property="BorderBrush" Value="#4A90D9" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F4FF" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="4,0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="#222222" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="StatTextStyle" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="Foreground" Value="#333333" />
+        </Style>
+
+        <Style x:Key="BstTextStyle" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#333333" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <DataGrid
+            x:Name="PokemonDataGrid"
+            ItemsSource="{Binding PokemonList}"
+            Style="{StaticResource PokemonDataGridStyle}">
+
+            <DataGrid.Columns>
+
+                <DataGridTemplateColumn
+                    Width="38"
+                    CanUserSort="True"
+                    Header="id"
+                    SortMemberPath="PokedexId">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="11"
+                                Foreground="#888888"
+                                Text="{Binding PokedexId}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  Name  -->
+                <DataGridTemplateColumn
+                    Width="120"
+                    CanUserSort="True"
+                    Header="Name"
+                    SortMemberPath="Name">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                Padding="2,0"
+                                VerticalAlignment="Center"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="#222222"
+                                Text="{Binding Name}"
+                                TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  Type  -->
+                <DataGridTemplateColumn
+                    Width="105"
+                    CanUserSort="False"
+                    Header="Type">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl VerticalAlignment="Center" ItemsSource="{Binding Types}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{Binding Color}" Style="{StaticResource TypeBadgeStyle}">
+                                            <TextBlock
+                                                FontSize="9"
+                                                FontWeight="Bold"
+                                                Foreground="White"
+                                                Text="{Binding Name}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  Abilities  -->
+                <DataGridTemplateColumn
+                    Width="135"
+                    CanUserSort="False"
+                    Header="Abilities">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="2,0" VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333333"
+                                    Text="{Binding AbilityPrimary}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#555555"
+                                    Text="{Binding AbilitySecondary}"
+                                    TextTrimming="CharacterEllipsis"
+                                    Visibility="{Binding AbilitySecondary, Converter={StaticResource NullToVisibilityConverter}}" />
+                                <TextBlock
+                                    FontSize="10"
+                                    FontStyle="Italic"
+                                    Foreground="#888888"
+                                    Text="{Binding AbilityHidden}"
+                                    TextTrimming="CharacterEllipsis"
+                                    Visibility="{Binding AbilityHidden, Converter={StaticResource NullToVisibilityConverter}}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--
+                    All 7 stats in one stretching column — Width="*" takes all remaining space
+                    so BST is never squeezed off screen. MinWidth keeps it readable.
+                -->
+                <DataGridTemplateColumn
+                    Width="*"
+                    MinWidth="230"
+                    CanUserSort="False"
+                    Header="HP    Atk    Def    SpA    SpD    Spe    BST">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <UniformGrid VerticalAlignment="Center" Columns="7">
+                                <TextBlock Style="{StaticResource StatTextStyle}" Text="{Binding HP}" />
+                                <TextBlock Style="{StaticResource StatTextStyle}" Text="{Binding Atk}" />
+                                <TextBlock Style="{StaticResource StatTextStyle}" Text="{Binding Def}" />
+                                <TextBlock Style="{StaticResource StatTextStyle}" Text="{Binding SpA}" />
+                                <TextBlock Style="{StaticResource StatTextStyle}" Text="{Binding SpD}" />
+                                <TextBlock Style="{StaticResource StatTextStyle}" Text="{Binding Spe}" />
+                                <TextBlock Style="{StaticResource BstTextStyle}" Text="{Binding BST}" />
+                            </UniformGrid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

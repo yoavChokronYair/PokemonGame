@@ -1,6 +1,5 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -12,6 +11,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
     public class GameModeChooserViewModel : ViewModelBase
     {
         private readonly GameModeChooserService _handler;
+        private readonly LogInService _loginService;
+        private readonly UserStore? _userStore;
         private readonly IDialogService _dialogService;
         private readonly NavigationStore _navigationStore;
 
@@ -33,7 +34,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand OnlineModeCommand { get; }
         public ICommand QuickLoginCommand { get; }
         public ICommand CreateAccountCommand { get; }
-        public ICommand NavigateToSideMenuCommand { get; }  // ✅ Command for navigation
+        public ICommand NavigateToSideMenuCommand { get; }
 
         public GameModeChooserViewModel(UserStore? user, NavigationStore navigationStore, IDialogService dialogService,
             Func<OnlineBattleShellViewModel> createSideMenuViewModel)
@@ -41,15 +42,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             _dialogService = dialogService;
             _navigationStore = navigationStore;
             _handler = new GameModeChooserService();
-
+            _loginService = new LogInService();
+            _userStore = user;
             Username = user?.Username ?? string.Empty;
 
             StoryModeCommand = new RelayCommand(OnStoryMode);
             OnlineModeCommand = new AsyncRelayCommand(OnOnlineModeAsync);
             QuickLoginCommand = new AsyncRelayCommand(OnQuickLoginAsync);
             CreateAccountCommand = new AsyncRelayCommand(OnCreateAccountAsync);
-
-            // ✅ Inject navigation command
             NavigateToSideMenuCommand = new NavigateCommand(_navigationStore, createSideMenuViewModel);
         }
 
@@ -60,9 +60,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         private async Task OnOnlineModeAsync()
         {
-            var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
-                                .FirstOrDefault(u => u.UserName == Username);
-
+            var currentUser = _loginService.GetUser(Username);
             if (currentUser == null)
             {
                 await _dialogService.ShowErrorAsync("Error", "User not found. Please create an account first.");
@@ -74,22 +72,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                                 .ToList();
 
             string? selectedUser = null;
-
             if (users.Count > 0)
             {
                 selectedUser = await _dialogService.ShowSelectionAsync(
                     "Quick Login",
                     "Select your username: \n*cancel to create a new account",
-                    users
-                );
+                    users);
             }
 
             if (string.IsNullOrWhiteSpace(selectedUser))
             {
                 bool createNew = await _dialogService.ShowConfirmAsync(
                     "Create Account",
-                    "No account selected. Do you want to create a new account?"
-                );
+                    "No account selected. Do you want to create a new account?");
 
                 if (!createNew)
                 {
@@ -112,24 +107,27 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 await _dialogService.ShowSuccessAsync("Success", $"Account '{selectedUser}' created successfully!");
             }
 
-            if (_handler.OnlinePlayerLogIn(Username, currentUser))
+            if (_handler.OnlinePlayerLogIn(selectedUser, currentUser))
             {
-                await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{Username}'!");
+                var onlinePlayer = _handler.GetOnlinePlayer(selectedUser, _loginService.GetUser(this.Username));
 
-                // ✅ Use NavigateCommand instead of setting CurrentViewModel manually
-                NavigateToSideMenuCommand.Execute(null);
-            }
-            else
-            {
-                await _dialogService.ShowErrorAsync("Error", $"Failed to log in as '{Username}'.");
+                if (onlinePlayer != null)
+                {
+                    _userStore.BattlePlayerID = onlinePlayer.BattlePlayerID;
+                    await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{selectedUser}'!");
+                    NavigateToSideMenuCommand.Execute(null);
+                }
+                else
+                {
+                    // Handle the edge case where login was valid but the record failed to fetch
+                    await _dialogService.ShowErrorAsync("Error", "Account verified, but profile data could not be retrieved.");
+                }
             }
         }
 
         private async Task OnQuickLoginAsync()
         {
-            var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
-                                .FirstOrDefault(u => u.UserName == Username);
-
+            var currentUser = _loginService.GetUser(Username);
             if (currentUser == null)
             {
                 return;
@@ -142,8 +140,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             string? selectedUser = await _dialogService.ShowSelectionAsync(
                 "Select Account",
                 "Choose your username:",
-                users
-            );
+                users);
 
             if (string.IsNullOrWhiteSpace(selectedUser))
             {
@@ -161,9 +158,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 return;
             }
 
-            var currentUser = ServiceFactory.Instance.UserCache.GetAllUsers()
-                                .FirstOrDefault(u => u.UserName == Username);
-
+            var currentUser = _loginService.GetUser(Username);
             if (currentUser == null)
             {
                 return;
@@ -173,8 +168,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             {
                 Username = newUser;
                 await _dialogService.ShowSuccessAsync("Success", $"Account '{newUser}' created! You can now log in.");
-
-                // ✅ Navigate using NavigateCommand
                 NavigateToSideMenuCommand.Execute(null);
             }
             else
