@@ -5,7 +5,7 @@ using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Interface
 {
-    internal interface IAttempt
+    public interface IAttempt
     {
         void Execute(BattleState battle);
     }

@@ -5,7 +5,7 @@ using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Model.Helper.MoveHelper
 {
-    internal class MoveState : IMove
+    public class MoveState : IMove
     {
         private readonly MoveDomain _state;
         private readonly IAttempt _attempt;
@@ -22,6 +22,7 @@ namespace PokemonGame.Model.Model.Helper.MoveHelper
         public MoveTarget Target => _state.Target;
         public int PP => _state.PP;
         public int MaxPP => _state.MaxPP;
+        public int Priority => _state.Priority;
 
         public void Execute(BattleState battle)
         {

@@ -8,13 +8,13 @@ using PokemonGame.Model.Model.Helper.PokemonHelper;
 namespace PokemonGame.Model.Interface
 {
     // Generic condition — can check against BattleDomain or PokemonDomain
-    internal interface ICondition<T>
+    public interface ICondition<T>
     {
         bool Check(T entity);
     }
 
     // Resolves which Pokemon is the target for an effect or condition
-    internal interface ITarget
+    public interface ITarget
     {
         PokemonState Resolve(BattleState battle);
     }

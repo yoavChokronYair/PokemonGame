@@ -1,10 +1,11 @@
 ﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
-    internal class BattleState
+    public class BattleState
     {
         private readonly BattleDomain _state;
         public BattleWeatherService WeatherService { get; }
@@ -40,13 +41,13 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             Logger.Log($"--- Turn {_state.TurnNumber} ---");
         }
 
-        public void EndTurn()
+        public void EndTurn(PokemonState player, PokemonState bot)
         {
             WeatherService.TickWeather();
             AttackerSide.Tick();
             DefenderSide.Tick();
-            StatusService.ApplyEndOfTurnStatus(Attacker);
-            StatusService.ApplyEndOfTurnStatus(Defender);
+            StatusService.ApplyEndOfTurnStatus(player);
+            StatusService.ApplyEndOfTurnStatus(bot);
         }
 
         public void SwitchAttackerDefender() => (_state.Attacker, _state.Defender) = (_state.Defender, _state.Attacker);

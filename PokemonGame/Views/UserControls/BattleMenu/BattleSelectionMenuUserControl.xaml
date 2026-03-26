@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="PokemonGame.Views.UserControls.BattleMenu.BattleSelectionMenuUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="150"
+    d:DesignWidth="800"
+    Background="White"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="500" />
+            <ColumnDefinition Width="300" />
+        </Grid.ColumnDefinitions>
+
+        <!--  Battle text — always visible  -->
+        <controls:BoardBackground Grid.ColumnSpan="2">
+            <TextBlock
+                Margin="10,0"
+                VerticalAlignment="Center"
+                Text="What will Pokemon do?" />
+        </controls:BoardBackground>
+
+        <!--  Main menu: FIGHT / BAG / POKEMON / RUN  -->
+        <controls:BoardBackground Grid.Column="1" Visibility="{Binding IsMainMenuVisible, Converter={StaticResource BoolToVis}}">
+            <UniformGrid Columns="2" Rows="2">
+                <Button Command="{Binding OpenMovesetCommand}" Content="FIGHT" />
+                <Button Content="BAG" />
+                <Button Content="POKEMON" />
+                <Button Content="RUN" />
+            </UniformGrid>
+        </controls:BoardBackground>
+
+        <!--  Move info panel (PP / TYPE + BACK button)  -->
+        <controls:BoardBackground Grid.Column="1" Visibility="{Binding IsMovesetVisible, Converter={StaticResource BoolToVis}}">
+            <StackPanel Margin="10" VerticalAlignment="Center">
+                <TextBlock FontSize="14" Text="{Binding SelectedMovePP}" />
+                <TextBlock
+                    Margin="0,5,0,0"
+                    FontSize="14"
+                    Text="{Binding SelectedMoveType}" />
+                <Button
+                    Margin="0,10,0,0"
+                    Command="{Binding CloseMovesetCommand}"
+                    Content="BACK" />
+            </StackPanel>
+        </controls:BoardBackground>
+
+        <!--  Moveset chooser — DataContext passed down to MovesetChooser child VM  -->
+        <local:BattlePokemonMovesetChooserUserControl
+            Grid.Column="0"
+            DataContext="{Binding MovesetChooser}"
+            Visibility="{Binding DataContext.IsMovesetVisible, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}" />
+    </Grid>
+</UserControl>

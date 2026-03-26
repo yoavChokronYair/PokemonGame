@@ -13,8 +13,8 @@
         </DataTemplate>
 
         <!--  Pages  -->
-        <DataTemplate DataType="{x:Type onlinevm:TeamViewModel}">
-            <local:TeamSelectPage />
+        <DataTemplate DataType="{x:Type onlinevm:TeamBuilderViewModel}">
+            <local:TeamBuilderPage />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type onlinevm:OnlineFriendsViewModel}">
@@ -29,7 +29,7 @@
             <local:HistoryBattlePage />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type onlinevm:OnlineBattleShellViewModel}">
+        <DataTemplate DataType="{x:Type onlinevm:OnlineBattleMenuViewModel}">
             <local:BattleMenuPage />
         </DataTemplate>
 
@@ -37,7 +37,8 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="Auto" />
+            <!--  shrinks/grows with MenuWidth  -->
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
