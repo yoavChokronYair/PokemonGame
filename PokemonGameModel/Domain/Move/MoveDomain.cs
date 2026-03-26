@@ -9,7 +9,7 @@ using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Move
 {
-    internal class MoveDomain
+    public class MoveDomain
     {
         public string Name { get; set; } = string.Empty;
         public PokemonType Element { get; set; }
@@ -17,9 +17,19 @@ namespace PokemonGame.Model.Domain.Move
         public MoveTarget Target { get; set; }
         public int PP { get; set; }
         public int MaxPP { get; set; }
+        public int Priority { get; set; }
+        public int CritStage { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        public MoveDomain(string name, PokemonType element, MoveCategory category,
-                         int pp = 10, MoveTarget target = MoveTarget.Opponent)
+        public MoveDomain(
+            string name,
+            PokemonType element,
+            MoveCategory category,
+            int pp = 10,
+            MoveTarget target = MoveTarget.Opponent,
+            int priority = 0,
+            int critStage = 0,
+            string description = "")
         {
             Name = name;
             Element = element;
@@ -27,6 +37,9 @@ namespace PokemonGame.Model.Domain.Move
             PP = pp;
             MaxPP = pp;
             Target = target;
+            Priority = priority;
+            CritStage = critStage;
+            Description = description;
         }
     }
 }

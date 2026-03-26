@@ -7,7 +7,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 {
     #region Combinators
 
-    internal class Sequence : IEffect
+    public class Sequence : IEffect
     {
         private readonly List<IEffect> _effects;
         public Sequence(List<IEffect> effects) { _effects = effects; }
@@ -21,7 +21,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class Conditional : IEffect
+    public class Conditional : IEffect
     {
         private readonly ICondition<BattleState> _condition;
         private readonly IEffect _onPass;
@@ -47,7 +47,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class Chance : IEffect
+    public class Chance : IEffect
     {
         private readonly double _probability;
         private readonly IEffect _effect;
@@ -69,14 +69,14 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     #endregion
 
-    internal class NoEffect : IEffect
+    public class NoEffect : IEffect
     {
         public void Apply(BattleState battle) { }
     }
 
     // ── Damage ────────────────────────────────────────────────────────────────
 
-    internal class FormulaDamage : IEffect
+    public class FormulaDamage : IEffect
     {
         private readonly ITarget _target;
         private readonly INumber _power;
@@ -93,7 +93,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class DirectDamage : IEffect
+    public class DirectDamage : IEffect
     {
         private readonly ITarget _target;
         private readonly INumber _amount;
@@ -110,7 +110,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class OHKO : IEffect
+    public class OHKO : IEffect
     {
         private readonly ITarget _target;
         public OHKO(ITarget target) { _target = target; }
@@ -121,7 +121,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class Drain : IEffect
+    public class Drain : IEffect
     {
         private readonly ITarget _damageTarget;
         private readonly ITarget _healTarget;
@@ -139,12 +139,12 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             var victim = _damageTarget.Resolve(battle);
             var user = _healTarget.Resolve(battle);
             int amount = (int)_drainAmount.Evaluate(battle);
-            victim.TakeDamage(amount);
-            user.RestoreHP(amount);
+            user.TakeDamage(amount);
+            victim.RestoreHP(amount);
         }
     }
 
-    internal class CrashDamage : IEffect
+    public class CrashDamage : IEffect
     {
         private readonly ITarget _target;
         private readonly INumber _amount;
@@ -152,7 +152,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle) => _target.Resolve(battle).TakeDamage((int)_amount.Evaluate(battle));
     }
 
-    internal class Recoil : IEffect
+    public class Recoil : IEffect
     {
         private readonly ITarget _target;
         private readonly INumber _amount;
@@ -162,7 +162,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // ── HP ────────────────────────────────────────────────────────────────────
 
-    internal class RestoreHP : IEffect
+    public class RestoreHP : IEffect
     {
         private readonly ITarget _target;
         private readonly INumber _amount;
@@ -170,7 +170,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle) => _target.Resolve(battle).RestoreHP((int)_amount.Evaluate(battle));
     }
 
-    internal class Faint : IEffect
+    public class Faint : IEffect
     {
         private readonly ITarget _target;
         public Faint(ITarget target) { _target = target; }
@@ -183,21 +183,21 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // ── Status Conditions ─────────────────────────────────────────────────────
 
-    internal class Paralyze : IEffect
+    public class Paralyze : IEffect
     {
         private readonly ITarget _target;
         public Paralyze(ITarget target) { _target = target; }
         public void Apply(BattleState battle) => _target.Resolve(battle).ApplyStatus(StatusCondition.Paralysis);
     }
 
-    internal class Burn : IEffect
+    public class Burn : IEffect
     {
         private readonly ITarget _target;
         public Burn(ITarget target) { _target = target; }
         public void Apply(BattleState battle) => _target.Resolve(battle).ApplyStatus(StatusCondition.Burn);
     }
 
-    internal class Poison : IEffect
+    public class Poison : IEffect
     {
         private readonly ITarget _target;
         private readonly bool _toxic;
@@ -206,7 +206,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             => _target.Resolve(battle).ApplyStatus(_toxic ? StatusCondition.Toxic : StatusCondition.Poison);
     }
 
-    internal class Sleep : IEffect
+    public class Sleep : IEffect
     {
         private readonly ITarget _target;
         private readonly Between _turns;
@@ -225,14 +225,14 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class Freeze : IEffect
+    public class Freeze : IEffect
     {
         private readonly ITarget _target;
         public Freeze(ITarget target) { _target = target; }
         public void Apply(BattleState battle) => _target.Resolve(battle).ApplyStatus(StatusCondition.Freeze);
     }
 
-    internal class Confuse : IEffect
+    public class Confuse : IEffect
     {
         private readonly ITarget _target;
         private readonly Between _turns;
@@ -250,7 +250,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class Flinch : IEffect
+    public class Flinch : IEffect
     {
         private readonly ITarget _target;
         public Flinch(ITarget target) { _target = target; }
@@ -259,7 +259,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // ── Stat Changes ──────────────────────────────────────────────────────────
 
-    internal class StatChange : IEffect
+    public class StatChange : IEffect
     {
         private readonly ITarget _target;
         private readonly Stat _stat;
@@ -268,7 +268,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle) => _target.Resolve(battle).ChangeStatStage(_stat, _stages);
     }
 
-    internal class MultiStatChange : IEffect
+    public class MultiStatChange : IEffect
     {
         private readonly ITarget _target;
         private readonly List<(Stat stat, int stages)> _changes;
@@ -283,7 +283,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class ResetStats : IEffect
+    public class ResetStats : IEffect
     {
         private readonly ITarget _target;
         public ResetStats(ITarget target) { _target = target; }
@@ -292,7 +292,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // ── Field / Battle-wide ───────────────────────────────────────────────────
 
-    internal class SetHazard : IEffect
+    public class SetHazard : IEffect
     {
         private readonly BattleSide _side;
         private readonly Hazard _hazard;
@@ -300,7 +300,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle) => battle.GetSide(_side).AddHazard(_hazard);
     }
 
-    internal class SetScreen : IEffect
+    public class SetScreen : IEffect
     {
         private readonly BattleSide _side;
         private readonly Screen _screen;
@@ -309,7 +309,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle) => battle.GetSide(_side).ActivateScreen(_screen, _turns);
     }
 
-    internal class SetWeather : IEffect
+    public class SetWeather : IEffect
     {
         private readonly Weather _weather;
         private readonly int _turns;
@@ -319,21 +319,21 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
 
     // ── Utility ───────────────────────────────────────────────────────────────
 
-    internal class ForceSwitch : IEffect
+    public class ForceSwitch : IEffect
     {
         private readonly ITarget _target;
         public ForceSwitch(ITarget target) { _target = target; }
         public void Apply(BattleState battle) => _target.Resolve(battle).ForceSwitch(battle);
     }
 
-    internal class CureStatus : IEffect
+    public class CureStatus : IEffect
     {
         private readonly ITarget _target;
         public CureStatus(ITarget target) { _target = target; }
         public void Apply(BattleState battle) => _target.Resolve(battle).ClearStatus();
     }
 
-    internal class CopyLastMove : IEffect
+    public class CopyLastMove : IEffect
     {
         private readonly ITarget _copyFrom;
         public CopyLastMove(ITarget copyFrom) { _copyFrom = copyFrom; }
@@ -344,7 +344,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         }
     }
 
-    internal class StoreAndRelease : IEffect
+    public class StoreAndRelease : IEffect
     {
         private readonly ITarget _target;
         private readonly int _chargeTurns;

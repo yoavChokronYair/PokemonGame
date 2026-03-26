@@ -4,8 +4,11 @@ using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
+using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
+using PokemonGame.ViewModels.ViewModelPage.Summery;
+using PokemonGame.Views.Pages.OnlineBattlePages;
 
 namespace PokemonGame
 {
@@ -22,13 +25,13 @@ namespace PokemonGame
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
             _navigationStore.CurrentViewModel = CreateLogInViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
             };
             MainWindow.Show();
-            base.OnStartup(e);
         }
 
         // ---------------- ROOT NAVIGATION ----------------
@@ -63,48 +66,93 @@ namespace PokemonGame
             );
         }
 
-        // ---------------- ONLINE BATTLE SHELL ----------------
+      // ---------------- ONLINE BATTLE SHELL ----------------
+
+        private OnlineBattleShellViewModel _onlineBattleShellViewModel;
+        private NavigationStore _contentNavigationStore;
+
+        // cached content VMs
+        private ViewModels.ViewModelPage.OnlineBattle.OnlineBattleMenuViewModel _battleMenuViewModel;
+        private HistoryBattleViewModel _historyBattleViewModel;
+        private OnlineFriendsViewModel _onlineFriendsViewModel;
+        private TeamBuilderViewModel _teamBuilderViewModel;
+        private ProfileViewModel _profileViewModel;
 
         private OnlineBattleShellViewModel CreateOnlineBattleShellViewModel()
         {
-            var contentNavigationStore = new NavigationStore();
-            return new OnlineBattleShellViewModel(
-                contentNavigationStore,
-                CreateSideMenuViewModel(contentNavigationStore)
+            if (_onlineBattleShellViewModel != null)
+                return _onlineBattleShellViewModel;
+
+            _contentNavigationStore = new NavigationStore();
+            _contentNavigationStore.CurrentViewModel = GetOnlineBattleMenuViewModel();
+
+            _onlineBattleShellViewModel = new OnlineBattleShellViewModel(
+                _contentNavigationStore,
+                CreateSideMenuViewModel(_contentNavigationStore)
             );
+
+            return _onlineBattleShellViewModel;
         }
 
         private SideMenuViewModel CreateSideMenuViewModel(NavigationStore contentNavigationStore)
         {
             return new SideMenuViewModel(
                 contentNavigationStore,
-                CreateHistoryViewModel,
-                CreateFriendsViewModel,
-                CreateTeamSelectPageViewModel,
-                CreateProfileViewModel
+                _navigationStore,
+                GetOnlineBattleMenuViewModel,
+                GetHistoryViewModel,
+                GetFriendsViewModel,
+                GetTeamSelectPageViewModel,
+                GetProfileViewModel,
+                CreateGameModeChooserViewModel
             );
         }
 
-        // ---------------- CONTENT VIEWMODELS ----------------
+        // ---------------- CACHED CONTENT VIEWMODELS ----------------
 
-        private HistoryBattleViewModel CreateHistoryViewModel()
+        private OnlineBattleMenuViewModel GetOnlineBattleMenuViewModel()
         {
-            return new HistoryBattleViewModel();
+            if (_battleMenuViewModel == null)
+                _battleMenuViewModel = new OnlineBattleMenuViewModel(_userStore,_navigationStore,CreateBattleViewModel);
+            return _battleMenuViewModel;
         }
 
-        private OnlineFriendsViewModel CreateFriendsViewModel()
+        private HistoryBattleViewModel GetHistoryViewModel()
         {
-            return new OnlineFriendsViewModel();
+            if (_historyBattleViewModel == null)
+                _historyBattleViewModel = new HistoryBattleViewModel(_userStore);
+            return _historyBattleViewModel;
         }
 
-        private TeamSelectPageViewModel CreateTeamSelectPageViewModel()
+        private OnlineFriendsViewModel GetFriendsViewModel()
         {
-            return new TeamSelectPageViewModel(_userStore);
+            if (_onlineFriendsViewModel == null)
+                _onlineFriendsViewModel = new OnlineFriendsViewModel(_userStore, new DialogService());
+            return _onlineFriendsViewModel;
         }
 
-        private ProfileViewModel CreateProfileViewModel()
+        private TeamBuilderViewModel GetTeamSelectPageViewModel()
         {
-            return new ProfileViewModel(_userStore);
+            if (_teamBuilderViewModel == null)
+                _teamBuilderViewModel = new TeamBuilderViewModel(_userStore);
+            return _teamBuilderViewModel;
         }
+
+        private ProfileViewModel GetProfileViewModel()
+        {
+            if (_profileViewModel == null)
+                _profileViewModel = new ProfileViewModel(_userStore);
+            return _profileViewModel;
+        }
+        private MoveSummaryViewModel CreateMoveSummaryViewModel()
+        {
+            return new MoveSummaryViewModel();
+        }
+        private BattleViewModel CreateBattleViewModel() 
+        {
+            return new BattleViewModel(_userStore); 
+        }
+        
+
     }
 }

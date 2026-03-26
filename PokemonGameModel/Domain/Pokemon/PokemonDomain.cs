@@ -7,6 +7,7 @@
 // Note: ApplyStatus uses RandomHelper for sleep duration — no inline new Random().
 // Note: All battle enums (Stat, StatusCondition, VolatileStatus) live in Enums/Battle/BattleEnums.cs.
 
+using PokemonGame.Core.Config;
 using PokemonGame.Enums;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
@@ -15,7 +16,7 @@ namespace PokemonGame.Model.Domain.Pokemon
 {
     // ── Pokemon Domain ────────────────────────────────────────────────────────
 
-    internal class PokemonDomain
+    public class PokemonDomain
     {
         public string Name { get; set; } = string.Empty;
         public int PokedexNumber { get; set; }
@@ -34,16 +35,16 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int BaseSpeed { get; set; }
 
         // IVs / EVs
-        public int[] IVs { get; set; } = new int[6];
-        public int[] EVs { get; set; } = new int[6];
+        public int[] IVs { get; set; } = new int[PokemonConstants.IvsAndEvsNum];
+        public int[] EVs { get; set; } = new int[PokemonConstants.IvsAndEvsNum];
 
         // Stat stages
         public Dictionary<Stat, int> StatStages { get; set; } = new()
-    {
-        { Stat.Attack, 0 }, { Stat.Defense, 0 },
-        { Stat.SpecialAttack, 0 }, { Stat.SpecialDefense, 0 },
-        { Stat.Speed, 0 }, { Stat.Accuracy, 0 }, { Stat.Evasion, 0 }
-    };
+        {
+            { Stat.Attack, 0 }, { Stat.Defense, 0 },
+            { Stat.SpecialAttack, 0 }, { Stat.SpecialDefense, 0 },
+            { Stat.Speed, 0 }, { Stat.Accuracy, 0 }, { Stat.Evasion, 0 }
+        };
 
         // HP
         public int CurrentHP { get; set; }

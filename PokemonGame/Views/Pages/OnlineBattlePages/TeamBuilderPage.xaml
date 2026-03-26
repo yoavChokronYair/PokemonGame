@@ -1,0 +1,246 @@
+﻿<Page
+    x:Class="PokemonGame.Views.Pages.OnlineBattlePages.TeamBuilderPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:PokemonGame.Views.UserControls"
+    xmlns:conv="clr-namespace:PokemonGame.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="900"
+    d:DesignWidth="740"
+    Background="#F0F4F8"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <conv:NullToVisibilityConverter x:Key="NullToVis" />
+        <conv:InverseNullToVisibilityConverter x:Key="InvNullToVis" />
+        <conv:PokemonIdToImageConverter x:Key="PokemonToImage" />
+        <conv:PokemonIdToShinyImageConverter x:Key="PokemonToShinyImage" />
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel
+            Width="716"
+            Margin="12"
+            HorizontalAlignment="Left">
+
+            <!--  ══ Team slot bar ══  -->
+            <Border
+                Margin="0,0,0,8"
+                Padding="10,8"
+                Background="White"
+                BorderBrush="#CCCCCC"
+                BorderThickness="1"
+                CornerRadius="6">
+                <StackPanel>
+                    <!--  Row 1: Team slots  -->
+                    <ItemsControl ItemsSource="{Binding SlotBar.TeamSlots}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Width="80"
+                                    Height="80"
+                                    Margin="3,0"
+                                    Padding="4"
+                                    Background="White"
+                                    BorderBrush="#CCCCCC"
+                                    BorderThickness="2"
+                                    Command="{Binding DataContext.SlotBar.SelectSlotCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                    CommandParameter="{Binding}"
+                                    Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border
+                                                Padding="{TemplateBinding Padding}"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="6">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#7AB8E8" />
+                                                    <Setter Property="Background" Value="#EEF4FF" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Grid Width="72" Height="72">
+                                        <StackPanel Visibility="{Binding Converter={StaticResource NullToVis}}">
+                                            <Grid Width="48" Height="48">
+                                                <Image
+                                                    Width="48"
+                                                    Height="48"
+                                                    HorizontalAlignment="Center"
+                                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                    Source="{Binding PokedexId, Converter={StaticResource PokemonToImage}}" />
+                                                <Image
+                                                    Width="48"
+                                                    Height="48"
+                                                    HorizontalAlignment="Center"
+                                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                    Source="{Binding PokedexId, Converter={StaticResource PokemonToShinyImage}}"
+                                                    Visibility="{Binding IsShiny, Converter={StaticResource BoolToVis}}" />
+                                            </Grid>
+                                            <TextBlock
+                                                HorizontalAlignment="Center"
+                                                FontSize="9"
+                                                Foreground="#333"
+                                                Text="{Binding Nickname}"
+                                                TextAlignment="Center"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="26"
+                                            Foreground="#CCCCCC"
+                                            Text="+"
+                                            Visibility="{Binding Converter={StaticResource InvNullToVis}}" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!--  Row 2: Actions  -->
+                    <StackPanel
+                        Margin="0,8,0,0"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+
+                        <!--  Team selector  -->
+                        <ComboBox
+                            Width="130"
+                            Margin="0,0,6,0"
+                            DisplayMemberPath="TeamName"
+                            FontSize="11"
+                            ItemsSource="{Binding TeamManagement.SavedTeams}"
+                            SelectedItem="{Binding TeamManagement.SelectedTeam}" />
+
+                        <!--  Load selected team  -->
+                        <Button
+                            Margin="0,0,4,0"
+                            Padding="8,4"
+                            Background="#F0F4FF"
+                            BorderBrush="#4A90D9"
+                            BorderThickness="1"
+                            Command="{Binding TeamManagement.LoadTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding TeamManagement.SelectedTeam, Converter={StaticResource NullToVis}}">
+                            <TextBlock Foreground="#4A90D9" Text="📂 Load" />
+                        </Button>
+
+                        <!--  Delete selected team  -->
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
+                            Background="#FFF0F0"
+                            BorderBrush="#FFAAAA"
+                            BorderThickness="1"
+                            Command="{Binding TeamManagement.DeleteTeamCommand}"
+                            CommandParameter="{Binding TeamManagement.SelectedTeam}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding TeamManagement.SelectedTeam, Converter={StaticResource NullToVis}}">
+                            <TextBlock Foreground="#CC4444" Text="🗑 Delete" />
+                        </Button>
+
+                        <!--  New team  -->
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
+                            Background="#F0F4FF"
+                            BorderBrush="#4A90D9"
+                            BorderThickness="1"
+                            Command="{Binding TeamManagement.NewTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding TeamManagement.CanCreateNewTeam, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Foreground="#4A90D9" Text="✚ New Team" />
+                        </Button>
+
+                        <!--  Save  -->
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
+                            Background="#F0FFF0"
+                            BorderBrush="#88CC88"
+                            BorderThickness="1"
+                            Command="{Binding TeamManagement.SaveTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11">
+                            <TextBlock Foreground="#336633" Text="💾 Save" />
+                        </Button>
+
+                        <!--  Remove selected  -->
+                        <Button
+                            Margin="0,0,6,0"
+                            Padding="8,4"
+                            Background="#FFF0F0"
+                            BorderBrush="#FFAAAA"
+                            BorderThickness="1"
+                            Command="{Binding SlotBar.RemoveFromTeamCommand}"
+                            Cursor="Hand"
+                            FontSize="11"
+                            Visibility="{Binding State.SelectedPokemon, Converter={StaticResource NullToVis}}">
+                            <TextBlock Foreground="#CC4444" Text="🗑 Remove" />
+                        </Button>
+
+
+
+                    </StackPanel>
+                    <StackPanel Margin="10" Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,4,0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="#555"
+                            Text="Name:" />
+                        <TextBox
+                            Padding="4,2"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Text="{Binding TeamManagement.TeamName, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!--  ══ Editor card ══  -->
+            <controls:PokemonEditorUserControl Margin="0,0,0,6" DataContext="{Binding Editor}" />
+
+            <!--  ══ EV/IV panel ══  -->
+            <controls:EvIvEditorUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding EvIvEditor}"
+                Visibility="{Binding DataContext.State.IsEvIvPanelOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
+
+            <!--  ══ Move picker ══  -->
+            <controls:MovePickerUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding MovePicker}"
+                Visibility="{Binding DataContext.State.IsMovePickerOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
+
+            <!--  ══ Item picker ══  -->
+            <controls:ItemPickerUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding ItemPicker}"
+                Visibility="{Binding DataContext.State.IsItemPickerOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
+
+            <!--  ══ Pokemon picker ══  -->
+            <controls:PokemonPickerUserControl
+                Margin="0,0,0,6"
+                DataContext="{Binding PokemonPicker}"
+                Visibility="{Binding DataContext.State.IsPokemonPickerOpen, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVis}}" />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

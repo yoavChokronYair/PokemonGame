@@ -10,6 +10,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
     {
         private readonly NavigationStore _navigationStore;
         private readonly UserStore _userStore;
+        
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
 
         private readonly LogInService _handler;
@@ -41,7 +42,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 }
             }
         }
-
+        private string _statusMessage = string.Empty;
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set
+            {
+                _statusMessage = value;
+                OnPropertyChanged(nameof(StatusMessage));
+            }
+        }
         public ICommand LoginCommand { get; }
         public ICommand SwitchToSignUpCommand { get; }
         public ICommand NavigateToGameModeChooserCommand { get; }
@@ -59,6 +69,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         private void Login()
         {
+            StatusMessage = "";
+            if (string.IsNullOrWhiteSpace(Username) ||
+                string.IsNullOrWhiteSpace(Password))
+            {
+                StatusMessage = "All fields are required";
+                return;
+            }
             if (_handler.Login(Username, Password))
             {
                 // Login successful, you can navigate to a different ViewModel here
@@ -70,7 +87,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             }
             else
             {
-                Console.WriteLine("Login failed");
+                StatusMessage = "password or username invalid";
             }
         }
 

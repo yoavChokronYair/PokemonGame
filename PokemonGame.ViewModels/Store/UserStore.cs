@@ -3,5 +3,6 @@
     public class UserStore
     {
         public string Username { get; set; }
+        public int BattlePlayerID { get; set; }
     }
 }

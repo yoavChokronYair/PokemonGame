@@ -1,0 +1,459 @@
+<UserControl
+    x:Class="PokemonGame.Views.UserControls.PokemonEditorUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:PokemonGame.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="220"
+    d:DesignWidth="700"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <conv:NullToVisibilityConverter x:Key="NullToVis" />
+        <conv:InverseNullToVisibilityConverter x:Key="InvNullToVis" />
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <conv:TypeToImageConverter x:Key="TypeToImage" />
+        <conv:PokemonIdToImageConverter x:Key="PokemonToImage" />
+        <conv:PokemonIdToShinyImageConverter x:Key="PokemonToShinyImage" />
+
+
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Foreground" Value="#666" />
+            <Setter Property="Margin" Value="0,0,0,1" />
+        </Style>
+        <Style x:Key="Box" TargetType="TextBox">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="3,2" />
+            <Setter Property="BorderBrush" Value="#CCC" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="White" />
+        </Style>
+        <Style x:Key="Combo" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="BorderBrush" Value="#CCC" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="White" />
+        </Style>
+        <Style x:Key="Hdr" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#444" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+        <Style x:Key="StatLbl" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Foreground" Value="#555" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Width" Value="24" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,3,0" />
+        </Style>
+        <Style x:Key="StatVal" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Foreground" Value="#333" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Width" Value="26" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="Bar" TargetType="ProgressBar">
+            <Setter Property="Height" Value="6" />
+            <Setter Property="Minimum" Value="0" />
+            <Setter Property="Maximum" Value="255" />
+            <Setter Property="Background" Value="#E0E0E0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="MoveBtn" TargetType="Button">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="4,3" />
+            <Setter Property="BorderBrush" Value="#CCC" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E8F0FE" />
+                                <Setter Property="BorderBrush" Value="#4A90D9" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Border
+        Width="700"
+        Padding="10"
+        HorizontalAlignment="Left"
+        Background="#EEF2F7"
+        BorderBrush="#CCD0D8"
+        BorderThickness="1"
+        CornerRadius="4">
+        <Grid>
+            <!--  Empty state  -->
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="13"
+                Foreground="#AAAAAA"
+                Text="Select a Pokémon from the list below to edit it"
+                Visibility="{Binding SelectedPokemon, Converter={StaticResource InvNullToVis}}" />
+
+            <!--  Editor  -->
+            <Grid Visibility="{Binding SelectedPokemon, Converter={StaticResource NullToVis}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="116" />
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="125" />
+                    <ColumnDefinition Width="125" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--  ── Col 0: Sprite + Name ──  -->
+                <StackPanel
+                    Grid.Column="0"
+                    Margin="0,0,6,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource Lbl}" Text="Nickname" />
+                    <TextBox
+                        Margin="0,0,0,6"
+                        Style="{StaticResource Box}"
+                        Text="{Binding SelectedPokemon.Nickname, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Padding="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding OpenPokemonPickerCommand}"
+                        Cursor="Hand">
+                        <Grid Width="64" Height="64">
+                            <Image
+                                Width="64"
+                                Height="64"
+                                HorizontalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                Source="{Binding SelectedPokemon.PokedexId, Converter={StaticResource PokemonToImage}}" />
+                            <Image
+                                Width="64"
+                                Height="64"
+                                HorizontalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                Source="{Binding SelectedPokemon.PokedexId, Converter={StaticResource PokemonToShinyImage}}"
+                                Visibility="{Binding SelectedPokemon.IsShiny, Converter={StaticResource BoolToVis}}" />
+                        </Grid>
+                    </Button>
+                    <Button
+                        Padding="2,1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding OpenPokemonPickerCommand}"
+                        Cursor="Hand">
+                        <TextBlock
+                            FontSize="10"
+                            FontWeight="SemiBold"
+                            Foreground="#1A6FCC"
+                            Text="{Binding SelectedPokemon.Name, Mode=OneWay}"
+                            TextAlignment="Center"
+                            TextDecorations="Underline"
+                            TextWrapping="NoWrap" />
+                    </Button>
+
+                </StackPanel>
+
+                <!--  ── Col 1: Nickname / Details ──  -->
+                <StackPanel
+                    Grid.Column="1"
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Top"
+                    Orientation="Vertical">
+
+
+                    <TextBlock Style="{StaticResource Hdr}" Text="Details" />
+                    <StackPanel Margin="0,0,0,4">
+                        <TextBlock Style="{StaticResource Lbl}" Text="Level" />
+                        <TextBox
+                            Margin="0,0,0,4"
+                            Style="{StaticResource Box}"
+                            Text="{Binding SelectedPokemon.Level, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Style="{StaticResource Lbl}" Text="Gender" />
+                        <ComboBox
+                            Margin="0,0,0,4"
+                            ItemsSource="{Binding GenderOptions}"
+                            SelectedItem="{Binding SelectedPokemon.Gender}"
+                            Style="{StaticResource Combo}" />
+
+                        <TextBlock Style="{StaticResource Lbl}" Text="Shiny" />
+                        <CheckBox
+                            VerticalAlignment="Center"
+                            Content="Yes"
+                            FontSize="11"
+                            IsChecked="{Binding SelectedPokemon.IsShiny}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!--  ── Col 2: Item / Ability / Nature ──  -->
+                <StackPanel
+                    Grid.Column="2"
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Top"
+                    Orientation="Vertical">
+                    <TextBlock Style="{StaticResource Lbl}" Text="Held Item" />
+                    <Button
+                        Margin="0,0,0,6"
+                        Command="{Binding OpenItemPickerCommand}"
+                        Style="{StaticResource MoveBtn}">
+                        <TextBlock
+                            FontSize="11"
+                            Text="{Binding SelectedPokemon.HeldItemName, FallbackValue='(click to choose)'}"
+                            TextWrapping="Wrap" />
+                    </Button>
+                    <StackPanel Orientation="Horizontal">
+                        <Image
+                            Width="40"
+                            Height="14"
+                            Margin="0,0,2,0"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            Source="{Binding SelectedPokemon.Type1, Converter={StaticResource TypeToImage}}" />
+                        <Image
+                            Width="40"
+                            Height="14"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            Source="{Binding SelectedPokemon.Type2, Converter={StaticResource TypeToImage}}"
+                            Visibility="{Binding SelectedPokemon.Type2, Converter={StaticResource NullToVis}}" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Lbl}" Text="Ability" />
+                    <ComboBox
+                        Margin="0,0,0,6"
+                        ItemsSource="{Binding SelectedPokemon.Abilities}"
+                        SelectedItem="{Binding SelectedPokemon.SelectedAbility}"
+                        Style="{StaticResource Combo}" />
+                </StackPanel>
+
+                <!--  ── Col 3: Moves — each button uses its own command ──  -->
+                <StackPanel
+                    Grid.Column="3"
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Top">
+                    <TextBlock Style="{StaticResource Hdr}" Text="Moves" />
+                    <Button
+                        Margin="0,0,0,4"
+                        Command="{Binding OpenMoveSlot1Command}"
+                        Style="{StaticResource MoveBtn}">
+                        <TextBlock Text="{Binding SelectedPokemon.Move1Display}" />
+                    </Button>
+                    <Button
+                        Margin="0,0,0,4"
+                        Command="{Binding OpenMoveSlot2Command}"
+                        Style="{StaticResource MoveBtn}">
+                        <TextBlock Text="{Binding SelectedPokemon.Move2Display}" />
+                    </Button>
+                    <Button
+                        Margin="0,0,0,4"
+                        Command="{Binding OpenMoveSlot3Command}"
+                        Style="{StaticResource MoveBtn}">
+                        <TextBlock Text="{Binding SelectedPokemon.Move3Display}" />
+                    </Button>
+                    <Button Command="{Binding OpenMoveSlot4Command}" Style="{StaticResource MoveBtn}">
+                        <TextBlock Text="{Binding SelectedPokemon.Move4Display}" />
+                    </Button>
+                </StackPanel>
+
+                <!--  ── Col 4: Stats — click to toggle EV/IV panel ──  -->
+                <!--  ── Col 4: Stats — click to toggle EV/IV panel ──  -->
+                <StackPanel Grid.Column="4" VerticalAlignment="Top">
+                    <Button
+                        Padding="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding ToggleEvIvCommand}"
+                        Cursor="Hand">
+                        <StackPanel Width="200">
+                            <TextBlock Style="{StaticResource Hdr}" Text="Stats  ▾" />
+
+                            <!--  HP  -->
+                            <Grid Margin="0,0,0,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatLbl}"
+                                    Text="HP"
+                                    TextAlignment="Left" />
+                                <ProgressBar
+                                    Grid.Column="1"
+                                    Foreground="#6DBE6D"
+                                    Maximum="700"
+                                    Style="{StaticResource Bar}"
+                                    Value="{Binding SelectedPokemon.FinalHP, Mode=OneWay}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatVal}"
+                                    Text="{Binding SelectedPokemon.EvHP, Mode=OneWay}"
+                                    TextAlignment="Left" />
+                            </Grid>
+
+                            <!--  Atk  -->
+                            <Grid Margin="0,0,0,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatLbl}"
+                                    Text="Atk"
+                                    TextAlignment="Left" />
+                                <ProgressBar
+                                    Grid.Column="1"
+                                    Foreground="#E8855A"
+                                    Maximum="700"
+                                    Style="{StaticResource Bar}"
+                                    Value="{Binding SelectedPokemon.FinalAtk, Mode=OneWay}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatVal}"
+                                    Text="{Binding SelectedPokemon.EvAtk, Mode=OneWay}"
+                                    TextAlignment="Left" />
+                            </Grid>
+
+                            <!--  Def  -->
+                            <Grid Margin="0,0,0,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatLbl}"
+                                    Text="Def"
+                                    TextAlignment="Left" />
+                                <ProgressBar
+                                    Grid.Column="1"
+                                    Foreground="#D4C85A"
+                                    Maximum="700"
+                                    Style="{StaticResource Bar}"
+                                    Value="{Binding SelectedPokemon.FinalDef, Mode=OneWay}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatVal}"
+                                    Text="{Binding SelectedPokemon.EvDef, Mode=OneWay}"
+                                    TextAlignment="Left" />
+                            </Grid>
+
+                            <!--  SpA  -->
+                            <Grid Margin="0,0,0,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatLbl}"
+                                    Text="SpA"
+                                    TextAlignment="Left" />
+                                <ProgressBar
+                                    Grid.Column="1"
+                                    Foreground="#7BA7E0"
+                                    Maximum="700"
+                                    Style="{StaticResource Bar}"
+                                    Value="{Binding SelectedPokemon.FinalSpA, Mode=OneWay}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatVal}"
+                                    Text="{Binding SelectedPokemon.EvSpA, Mode=OneWay}"
+                                    TextAlignment="Left" />
+                            </Grid>
+
+                            <!--  SpD  -->
+                            <Grid Margin="0,0,0,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatLbl}"
+                                    Text="SpD"
+                                    TextAlignment="Left" />
+                                <ProgressBar
+                                    Grid.Column="1"
+                                    Foreground="#78C8A8"
+                                    Maximum="700"
+                                    Style="{StaticResource Bar}"
+                                    Value="{Binding SelectedPokemon.FinalSpD, Mode=OneWay}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatVal}"
+                                    Text="{Binding SelectedPokemon.EvSpD, Mode=OneWay}"
+                                    TextAlignment="Left" />
+                            </Grid>
+
+                            <!--  Spe  -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="40" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatLbl}"
+                                    Text="Spe"
+                                    TextAlignment="Left" />
+                                <ProgressBar
+                                    Grid.Column="1"
+                                    Foreground="#C87DDB"
+                                    Maximum="700"
+                                    Style="{StaticResource Bar}"
+                                    Value="{Binding SelectedPokemon.FinalSpe, Mode=OneWay}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource StatVal}"
+                                    Text="{Binding SelectedPokemon.EvSpe, Mode=OneWay}"
+                                    TextAlignment="Left" />
+                            </Grid>
+
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

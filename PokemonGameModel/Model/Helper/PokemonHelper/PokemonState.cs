@@ -6,7 +6,7 @@ using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Model.Helper.PokemonHelper
 {
-    internal class PokemonState
+    public class PokemonState
     {
         private readonly PokemonDomain _state;
 
@@ -16,6 +16,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         }
 
         // --- Identity / stats ---
+        public int PokedexId => _state.PokedexNumber;
         public string Name => _state.Name;
         public int Level => _state.Level;
         public int MaxHP => _state.MaxHP;
