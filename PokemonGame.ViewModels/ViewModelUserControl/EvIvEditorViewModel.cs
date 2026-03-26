@@ -29,7 +29,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             set
             {
                 if (SetProperty(ref _selectedIvSpread, value) && value != null)
+                {
                     _state.SelectedPokemon?.ApplyIvSpread(value);
+                }
             }
         }
 
@@ -41,12 +43,18 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             _state.PropertyChanged += (_, e) =>
             {
                 if (e.PropertyName == nameof(TeamBuilderState.SelectedPokemon))
+                {
                     OnPropertyChanged(nameof(SelectedPokemon));
+                }
             };
 
             ApplyIvSpreadCommand = new RelayCommand<string>(spread =>
             {
-                if (spread == null) return;
+                if (spread == null)
+                {
+                    return;
+                }
+
                 _state.SelectedPokemon?.ApplyIvSpread(spread);
             });
         }

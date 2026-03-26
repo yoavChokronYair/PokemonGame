@@ -19,7 +19,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             set
             {
                 if (SetProperty(ref _moveSearchText, value))
+                {
                     OnPropertyChanged(nameof(FilteredMoves));
+                }
             }
         }
 
@@ -37,7 +39,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             set
             {
                 if (SetProperty(ref _selectedMove, value) && value != null)
+                {
                     ConfirmMoveCommand.Execute(null);
+                }
             }
         }
 
@@ -49,7 +53,10 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             _state.PropertyChanged += (_, e) =>
             {
                 if (e.PropertyName == nameof(TeamBuilderState.ActiveMoveSlot))
+                {
                     OnPropertyChanged(nameof(ActiveMoveSlot));
+                }
+
                 if (e.PropertyName == nameof(TeamBuilderState.SelectedPokemon))
                 {
                     OnPropertyChanged(nameof(SelectedPokemon));
@@ -66,7 +73,11 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
             ConfirmMoveCommand = new RelayCommand(() =>
             {
-                if (_state.SelectedPokemon == null || SelectedMove == null) return;
+                if (_state.SelectedPokemon == null || SelectedMove == null)
+                {
+                    return;
+                }
+
                 switch (_state.ActiveMoveSlot)
                 {
                     case 1: _state.SelectedPokemon.Move1 = SelectedMove; break;

@@ -1,6 +1,5 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.Pokemon;
-using PokemonGame.Services.Data.GameData.PokemonData;
 
 namespace PokemonGame.Services.Data.Repositories
 {
@@ -29,6 +28,6 @@ namespace PokemonGame.Services.Data.Repositories
         // ── Battle loading ────────────────────────────────────────────────────
         public List<int> GetAllPokedexIds() =>
             _db.QueryScalarList<int>("SELECT pokedexID FROM pokemon_general");
-       
+
     }
 }

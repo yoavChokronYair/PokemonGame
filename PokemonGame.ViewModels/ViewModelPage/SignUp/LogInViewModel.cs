@@ -10,7 +10,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
     {
         private readonly NavigationStore _navigationStore;
         private readonly UserStore _userStore;
-        
+
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
 
         private readonly LogInService _handler;

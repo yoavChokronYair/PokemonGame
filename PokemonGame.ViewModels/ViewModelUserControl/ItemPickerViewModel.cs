@@ -18,7 +18,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             set
             {
                 if (SetProperty(ref _itemSearchText, value))
+                {
                     OnPropertyChanged(nameof(FilteredItems));
+                }
             }
         }
 
@@ -34,7 +36,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             set
             {
                 if (SetProperty(ref _selectedItem, value) && value != null)
+                {
                     ConfirmItemCommand.Execute(null);
+                }
             }
         }
 
@@ -57,7 +61,11 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
             ConfirmItemCommand = new RelayCommand(() =>
             {
-                if (_state.SelectedPokemon == null || SelectedItem == null) return;
+                if (_state.SelectedPokemon == null || SelectedItem == null)
+                {
+                    return;
+                }
+
                 _state.SelectedPokemon.HeldItemName = SelectedItem.Name;
                 _selectedItem = null;
                 OnPropertyChanged(nameof(SelectedItem));

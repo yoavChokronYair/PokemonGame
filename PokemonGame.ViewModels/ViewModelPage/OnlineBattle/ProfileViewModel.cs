@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using PokemonGame.Services.Handler;
+﻿using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelUserControl;
@@ -72,10 +71,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private void LoadProfile(string username)
         {
-            if (string.IsNullOrWhiteSpace(username)) return;
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return;
+            }
 
             var user = _handler.GetUser(username);
-            if (user == null) return;
+            if (user == null)
+            {
+                return;
+            }
 
             UserName = user.UserName;
             DisplayName = user.UserName;

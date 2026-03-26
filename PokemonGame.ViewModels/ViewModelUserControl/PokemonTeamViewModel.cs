@@ -12,7 +12,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
         {
             // Fill all 6 with empty placeholders by default
             for (int i = 0; i < 6; i++)
+            {
                 Slots.Add(TeamSlotDisplayEntry.Empty());
+            }
         }
 
         /// <summary>
@@ -22,11 +24,15 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
         {
             Slots.Clear();
             foreach (var e in entries.Take(6))
+            {
                 Slots.Add(e);
+            }
 
             // Pad remaining with empty
             while (Slots.Count < 6)
+            {
                 Slots.Add(TeamSlotDisplayEntry.Empty());
+            }
         }
     }
     public class TeamSlotDisplayEntry : ViewModelBase

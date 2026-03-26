@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
@@ -38,7 +35,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             _state.PropertyChanged += (_, e) =>
             {
                 if (e.PropertyName == nameof(TeamBuilderState.SelectedPokemon))
+                {
                     OnPropertyChanged(nameof(SelectedPokemon));
+                }
             };
 
             ToggleEvIvCommand = new RelayCommand(() =>

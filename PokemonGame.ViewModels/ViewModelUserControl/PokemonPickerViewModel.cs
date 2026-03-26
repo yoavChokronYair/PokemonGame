@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -23,7 +18,9 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             set
             {
                 if (SetProperty(ref _pokemonSearchText, value))
+                {
                     OnPropertyChanged(nameof(FilteredPokemons));
+                }
             }
         }
 
@@ -38,7 +35,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             get => _pickerPokemon;
             set => SetProperty(ref _pickerPokemon, value);
         }
-      
+
         public RelayCommand<PokemonDisplayEntry> ConfirmPokemonCommand { get; }
 
         public PokemonPickerViewModel(TeamBuilderState state, TeamBuilderService service,
@@ -57,13 +54,18 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
             ConfirmPokemonCommand = new RelayCommand<PokemonDisplayEntry>(pokemon =>
             {
-                if (pokemon == null) return;
+                if (pokemon == null)
+                {
+                    return;
+                }
 
                 var newSlot = new TeamSlotEntry(pokemon);
 
                 if (_state.SelectedSlotIndex >= 0 && _state.SelectedSlotIndex < 6
                     && _state.TeamSlots[_state.SelectedSlotIndex] == null)
+                {
                     _state.TeamSlots[_state.SelectedSlotIndex] = newSlot;
+                }
 
                 _state.SelectedPokemon = newSlot;
                 _state.CloseAllPanels();

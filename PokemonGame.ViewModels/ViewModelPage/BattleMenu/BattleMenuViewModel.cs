@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Battle;
@@ -27,7 +21,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             set
             {
                 if (SetProperty(ref _isMovesetVisible, value))
+                {
                     OnPropertyChanged(nameof(IsMainMenuVisible));
+                }
             }
         }
 

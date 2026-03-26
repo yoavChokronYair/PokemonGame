@@ -56,7 +56,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             var playerTeam = translator.LoadTeam(playerBattlePlayerId.BattlePlayerID);
 
             PokemonTeam botTeam;
-            
+
             // 2. Generate a random team and translate each result to a Domain object
             var randomResults = service.GenerateRandomTeam(count: 6, level: 50);
             var roster = randomResults
@@ -64,7 +64,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 .ToList();
 
             botTeam = PokemonTeam.Create(roster);
-            
+
 
             _manager = new BattleManager(playerTeam, botTeam);
 
@@ -79,7 +79,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         // ── Called by BattleMenuViewModel when player picks a move ───────────
         private void OnMoveChosen(int moveIndex)
         {
-            if (_manager.Phase != BattlePhase.AwaitingPlayerAction) return;
+            if (_manager.Phase != BattlePhase.AwaitingPlayerAction)
+            {
+                return;
+            }
 
             _manager.RunTurn(moveIndex, botDecides: true);
             SyncAll();
@@ -88,7 +91,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         // ── Called by BattleMenuViewModel when player picks a switch slot ────
         private void OnSwitchChosen(int slotIndex)
         {
-            if (_manager.Phase != BattlePhase.AwaitingPlayerSwitch) return;
+            if (_manager.Phase != BattlePhase.AwaitingPlayerSwitch)
+            {
+                return;
+            }
 
             _manager.PlayerSwitch(slotIndex);
             SyncAll();
@@ -114,7 +120,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             BattleMenu.RefreshMoves(_manager.PlayerActive.Moves);
 
             foreach (var line in _manager.BattleLog.Skip(Log.Count))
+            {
                 Log.Add(line);
+            }
 
             OnPropertyChanged(nameof(IsBattleOver));
             OnPropertyChanged(nameof(IsAwaitingSwitch));
@@ -153,9 +161,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             for (int i = 0; i < 4; i++)
             {
                 if (i < moves.Count)
+                {
                     slots[i].SetMove(moves[i]);
+                }
                 else
+                {
                     slots[i].Clear();
+                }
             }
         }
     }
@@ -213,8 +225,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     }
 
     // ── PokemonBattleStatusViewModel (player) — unchanged shape, live data ───
-   
+
 
     // ── EnemyBattleStatusViewModel — unchanged shape, live data ─────────────
-   
+
 }

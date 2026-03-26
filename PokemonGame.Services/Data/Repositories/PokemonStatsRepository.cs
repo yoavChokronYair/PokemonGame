@@ -24,7 +24,7 @@ namespace PokemonGame.Services.Data.Repositories
             _db.QuerySingle<PokemonStatsData>(
                 "SELECT * FROM pokemon_stats WHERE pokedexID = @pid AND isEVYield = 1",
                 new { pid = pokedexID });
-        
+
         // Update stats for a specific type (0 for base, 1 for EV)
         public void UpdateStats(PokemonStatsData stats)
         {

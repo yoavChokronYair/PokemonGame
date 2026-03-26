@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
@@ -45,7 +42,11 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             {
                 if (SetProperty(ref _selectedTeam, value))
                 {
-                    if (value != null) TeamName = value.TeamName ?? "My Team";
+                    if (value != null)
+                    {
+                        TeamName = value.TeamName ?? "My Team";
+                    }
+
                     OnPropertyChanged(nameof(CanCreateNewTeam));
                 }
             }
@@ -71,27 +72,47 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             SaveTeamCommand = new RelayCommand(() =>
             {
                 var battlerPokemons = BuildBattlerPokemons();
-                if (battlerPokemons.Count == 0) return;
+                if (battlerPokemons.Count == 0)
+                {
+                    return;
+                }
 
                 if (SelectedTeam != null)
+                {
                     _service.UpdateTeam(SelectedTeam.Id, TeamName, battlerPokemons);
+                }
                 else
                 {
-                    if (!_service.CanCreateTeam(_userStore.BattlePlayerID)) return;
+                    if (!_service.CanCreateTeam(_userStore.BattlePlayerID))
+                    {
+                        return;
+                    }
+
                     var team = _service.SaveTeam(TeamName, _userStore.BattlePlayerID,
                                                  _userStore.BattlePlayerID, battlerPokemons);
-                    if (team != null) SelectedTeam = team;
+                    if (team != null)
+                    {
+                        SelectedTeam = team;
+                    }
                 }
                 RefreshSavedTeams();
             });
 
             LoadTeamCommand = new RelayCommand(() =>
             {
-                if (SelectedTeam == null) return;
+                if (SelectedTeam == null)
+                {
+                    return;
+                }
+
                 TeamName = SelectedTeam.TeamName ?? "My Team";
 
                 // Clear all slots
-                for (int i = 0; i < 6; i++) _state.TeamSlots[i] = null;
+                for (int i = 0; i < 6; i++)
+                {
+                    _state.TeamSlots[i] = null;
+                }
+
                 _state.SelectedPokemon = null;
 
                 // Load members from DB
@@ -100,7 +121,10 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                 {
                     var bp = members[i];
                     var pokemon = _allPokemon.FirstOrDefault(p => p.PokedexId == bp.PokedexID);
-                    if (pokemon == null) continue;
+                    if (pokemon == null)
+                    {
+                        continue;
+                    }
 
                     var slot = new TeamSlotEntry(pokemon)
                     {
@@ -142,19 +166,30 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             {
                 SelectedTeam = null;
                 TeamName = "My Team";
-                for (int i = 0; i < 6; i++) _state.TeamSlots[i] = null;
+                for (int i = 0; i < 6; i++)
+                {
+                    _state.TeamSlots[i] = null;
+                }
+
                 _state.SelectedPokemon = null;
             }, () => CanCreateNewTeam);
 
             DeleteTeamCommand = new RelayCommand<TeamData>(team =>
             {
-                if (team == null) return;
+                if (team == null)
+                {
+                    return;
+                }
+
                 _service.DeleteTeam(team.Id);
                 if (SelectedTeam?.Id == team.Id)
                 {
                     SelectedTeam = null;
                     TeamName = "My Team";
-                    for (int i = 0; i < 6; i++) _state.TeamSlots[i] = null;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        _state.TeamSlots[i] = null;
+                    }
                 }
                 RefreshSavedTeams();
             });
@@ -174,9 +209,17 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             var list = new List<BattlerPokemon>();
             foreach (var slot in _state.TeamSlots)
             {
-                if (slot == null) continue;
+                if (slot == null)
+                {
+                    continue;
+                }
+
                 var move1 = slot.Move1 ?? slot.AvailableMoves.FirstOrDefault();
-                if (move1 == null) continue;
+                if (move1 == null)
+                {
+                    continue;
+                }
+
                 list.Add(new BattlerPokemon
                 {
                     PokedexID = slot.PokedexId,
