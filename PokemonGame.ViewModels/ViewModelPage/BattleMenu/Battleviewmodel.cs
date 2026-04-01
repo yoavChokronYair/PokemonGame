@@ -17,111 +17,114 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     {
         private readonly BattleManager _manager;
 
-        // ── Child ViewModels (bound by the UserControls) ─────────────────────
+        // ── Child ViewModels ──────────────────────────────────────────────────
         public PokemonBattleStatusViewModel PlayerStatus { get; }
         public EnemyBattleStatusViewModel EnemyStatus { get; }
         public BattleMenuViewModel BattleMenu { get; }
+        public BattleLoggerViewModel Logger { get; }
 
+        // ── Tracks how many log entries have already been queued ──────────────
+        private int _logCursor = 0;
 
-        // ── Battle log ───────────────────────────────────────────────────────
-        public ObservableCollection<string> Log { get; } = new();
-
-        // ── Phase helpers ────────────────────────────────────────────────────
+        // ── Phase helpers ─────────────────────────────────────────────────────
         public bool IsBattleOver => _manager.IsBattleOver;
         public bool IsAwaitingSwitch => _manager.Phase == BattlePhase.AwaitingPlayerSwitch;
         public string? WinnerName => _manager.Winner?.Active.Name;
 
-        // ── Constructor ──────────────────────────────────────────────────────
+        // ── Constructor (vs real player team) ─────────────────────────────────
         public BattleViewModel(UserStore playerUserStore, UserStore botUserStore)
         {
             var translator = new TeamTranslator();
-
             var playerTeam = translator.LoadTeam(playerUserStore.BattlePlayerID);
             var botTeam = translator.LoadTeam(botUserStore.BattlePlayerID);
 
             _manager = new BattleManager(playerTeam, botTeam);
 
+            Logger = new BattleLoggerViewModel();
             PlayerStatus = new PokemonBattleStatusViewModel();
             EnemyStatus = new EnemyBattleStatusViewModel();
-            BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager);
+            BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager, Logger);
 
-            SyncAll();
+            SyncAll(flushSetup: true);
         }
+
+        // ── Constructor (vs random bot team) ──────────────────────────────────
         public BattleViewModel(UserStore playerBattlePlayerId)
         {
             var translator = new TeamTranslator();
             var service = new PokemonService();
 
-            // 1. Load the Player's set team
             var playerTeam = translator.LoadTeam(playerBattlePlayerId.BattlePlayerID);
 
-            PokemonTeam botTeam;
-
-            // 2. Generate a random team and translate each result to a Domain object
             var randomResults = service.GenerateRandomTeam(count: 6, level: 50);
             var roster = randomResults
                 .Select(r => translator.TranslateToDomain(r))
                 .ToList();
-
-            botTeam = PokemonTeam.Create(roster);
-
+            var botTeam = PokemonTeam.Create(roster);
 
             _manager = new BattleManager(playerTeam, botTeam);
 
-            // Standard UI Initialization
+            Logger = new BattleLoggerViewModel();
             PlayerStatus = new PokemonBattleStatusViewModel();
             EnemyStatus = new EnemyBattleStatusViewModel();
-            BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager);
+            BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager, Logger);
 
-            SyncAll();
+            SyncAll(flushSetup: true);
         }
 
-        // ── Called by BattleMenuViewModel when player picks a move ───────────
+        // ── Called by BattleMenuViewModel when player picks a move ────────────
         private void OnMoveChosen(int moveIndex)
         {
             if (_manager.Phase != BattlePhase.AwaitingPlayerAction)
-            {
                 return;
-            }
 
             _manager.RunTurn(moveIndex, botDecides: true);
             SyncAll();
         }
 
-        // ── Called by BattleMenuViewModel when player picks a switch slot ────
+        // ── Called by BattleMenuViewModel when player picks a switch slot ─────
         private void OnSwitchChosen(int slotIndex)
         {
             if (_manager.Phase != BattlePhase.AwaitingPlayerSwitch)
-            {
                 return;
-            }
 
             _manager.PlayerSwitch(slotIndex);
             SyncAll();
         }
 
-        // ── Push all state down to child VMs ─────────────────────────────────
-        private void SyncAll()
+        // ── Push all state down to child VMs ──────────────────────────────────
+        private void SyncAll(bool flushSetup = false)
         {
+            // 1. Sync HP / status bars
             var p = _manager.PlayerActive;
-            PlayerStatus.PokedexId = p.PokedexId;   // ← add this
+            PlayerStatus.PokedexId = p.PokedexId;
             PlayerStatus.PokemonName = p.Name;
             PlayerStatus.Level = p.Level;
             PlayerStatus.CurrentHP = p.CurrentHP;
             PlayerStatus.MaxHP = p.MaxHP;
 
             var e = _manager.BotActive;
-            EnemyStatus.PokedexId = e.PokedexId;    // ← add this
+            EnemyStatus.PokedexId = e.PokedexId;
             EnemyStatus.PokemonName = e.Name;
             EnemyStatus.Level = e.Level;
             EnemyStatus.CurrentHP = e.CurrentHP;
             EnemyStatus.MaxHP = e.MaxHP;
 
+            // 2. Refresh move buttons
             BattleMenu.RefreshMoves(_manager.PlayerActive.Moves);
 
-            foreach (var line in _manager.BattleLog.Skip(Log.Count))
+            // 3. Enqueue only NEW log entries since last sync
+            var allEntries = _manager.BattleLogEntries;
+            if (allEntries.Count > _logCursor)
             {
-                Log.Add(line);
+                var newEntries = allEntries.Skip(_logCursor).ToList();
+                _logCursor = allEntries.Count;
+                Logger.EnqueueEntries(newEntries);
+
+                // On first call, setup messages ("Go! Charizard!") are shown
+                // immediately without requiring a button press
+                if (flushSetup)
+                    Logger.FlushSetupMessages();
             }
 
             OnPropertyChanged(nameof(IsBattleOver));
@@ -130,10 +133,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
     }
 
-    // ── BattleMenuViewModel — owns fight/bag/pokemon/run + moveset panel ─────
 
-
-    // ── BattlePokemonMovesetChooserViewModel — the 4 move buttons ────────────
+    // ── BattlePokemonMovesetChooserViewModel ──────────────────────────────────
     public class BattlePokemonMovesetChooserViewModel : ViewModelBase
     {
         private readonly Action<int> _onMoveClicked;
@@ -144,15 +145,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public MoveSlotViewModel Move2 { get; }
         public MoveSlotViewModel Move3 { get; }
 
-        public BattlePokemonMovesetChooserViewModel(Action<int> onMoveClicked, Action<IMove?> onMoveHovered)
+        public BattlePokemonMovesetChooserViewModel(
+            Action<int> onMoveClicked,
+            Action<IMove?> onMoveHovered,
+            BattleLoggerViewModel logger)
         {
             _onMoveClicked = onMoveClicked;
             _onMoveHovered = onMoveHovered;
 
-            Move0 = new MoveSlotViewModel(0, onMoveClicked, onMoveHovered);
-            Move1 = new MoveSlotViewModel(1, onMoveClicked, onMoveHovered);
-            Move2 = new MoveSlotViewModel(2, onMoveClicked, onMoveHovered);
-            Move3 = new MoveSlotViewModel(3, onMoveClicked, onMoveHovered);
+            Move0 = new MoveSlotViewModel(0, onMoveClicked, onMoveHovered, logger);
+            Move1 = new MoveSlotViewModel(1, onMoveClicked, onMoveHovered, logger);
+            Move2 = new MoveSlotViewModel(2, onMoveClicked, onMoveHovered, logger);
+            Move3 = new MoveSlotViewModel(3, onMoveClicked, onMoveHovered, logger);
         }
 
         public void LoadMoves(IReadOnlyList<IMove> moves)
@@ -160,26 +164,22 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             var slots = new[] { Move0, Move1, Move2, Move3 };
             for (int i = 0; i < 4; i++)
             {
-                if (i < moves.Count)
-                {
-                    slots[i].SetMove(moves[i]);
-                }
-                else
-                {
-                    slots[i].Clear();
-                }
+                if (i < moves.Count) slots[i].SetMove(moves[i]);
+                else slots[i].Clear();
             }
         }
     }
-    // ── One move button slot ─────────────────────────────────────────────────
+
+    // ── MoveSlotViewModel ─────────────────────────────────────────────────────
     public class MoveSlotViewModel : ViewModelBase
     {
         private readonly int _index;
         private readonly Action<int> _onClick;
         private readonly Action<IMove?> _onHover;
+        private readonly BattleLoggerViewModel _logger;
 
         private string _moveName = "-";
-        private bool _isEnabled = false;
+        private bool _hasMove = false;   // true when a real move is loaded
         private IMove? _move;
 
         public string MoveName
@@ -188,45 +188,62 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             private set => SetProperty(ref _moveName, value);
         }
 
-        public bool IsEnabled
-        {
-            get => _isEnabled;
-            private set => SetProperty(ref _isEnabled, value);
-        }
+        /// <summary>
+        /// IsEnabled = move slot has a move AND the log queue is empty.
+        /// Bound to IsEnabled on the button in XAML.
+        /// </summary>
+        public bool IsEnabled => _hasMove && _logger.AreActionsUnlocked;
 
         public ICommand ClickCommand { get; }
         public ICommand HoverCommand { get; }
         public ICommand LeaveCommand { get; }
 
-        public MoveSlotViewModel(int index, Action<int> onClick, Action<IMove?> onHover)
+        public MoveSlotViewModel(
+            int index,
+            Action<int> onClick,
+            Action<IMove?> onHover,
+            BattleLoggerViewModel logger)
         {
             _index = index;
             _onClick = onClick;
             _onHover = onHover;
+            _logger = logger;
 
-            ClickCommand = new RelayCommand(() => _onClick(_index), () => IsEnabled);
+            ClickCommand = new RelayCommand(
+                () => _onClick(_index),
+                () => IsEnabled);
+
             HoverCommand = new RelayCommand(() => _onHover(_move));
             LeaveCommand = new RelayCommand(() => _onHover(null));
+
+            // Re-evaluate CanExecute whenever the queue drains or refills
+            _logger.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(BattleLoggerViewModel.AreActionsUnlocked))
+                {
+                    OnPropertyChanged(nameof(IsEnabled));
+                    ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
+                }
+            };
         }
 
         public void SetMove(IMove move)
         {
             _move = move;
-            MoveName = (move as MoveState)?.Name ?? "-";
-            IsEnabled = true;
+            MoveName = (_move as Model.Model.Helper.MoveHelper.MoveState)?.Name ?? "-";
+            _hasMove = true;
+            OnPropertyChanged(nameof(IsEnabled));
+            ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
         }
 
         public void Clear()
         {
             _move = null;
             MoveName = "-";
-            IsEnabled = false;
+            _hasMove = false;
+            OnPropertyChanged(nameof(IsEnabled));
+            ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
         }
     }
-
-    // ── PokemonBattleStatusViewModel (player) — unchanged shape, live data ───
-
-
-    // ── EnemyBattleStatusViewModel — unchanged shape, live data ─────────────
 
 }

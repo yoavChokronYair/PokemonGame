@@ -48,6 +48,8 @@ namespace PokemonGame.Model.Model.Battle
         public PokemonState PlayerActive => _playerTeam.Active;
         public PokemonState BotActive => _botTeam.Active;
         public IReadOnlyList<string> BattleLog => _state.Logger.BattleLog;
+        public IReadOnlyList<BattleLogEntry> BattleLogEntries => _state.Logger.Entries;
+
         public bool IsBattleOver => Phase == BattlePhase.BattleOver;
 
         /// <summary>Null until the battle ends.</summary>
