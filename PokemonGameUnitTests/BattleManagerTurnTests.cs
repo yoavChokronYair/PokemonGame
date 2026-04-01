@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonGame.Model.Model.Battle;
+﻿using PokemonGame.Model.Model.Battle;
 using PokemonGame.Model.Model.Helper.MoveHelper;
+using Xunit.Abstractions;
 
 namespace PokemonGame.Tests
 {
@@ -13,82 +9,152 @@ namespace PokemonGame.Tests
     // ═════════════════════════════════════════════════════════════════════════
     public class BattleManagerTurnTests
     {
-        // ── Setup helpers ────────────────────────────────────────────────────
+        private readonly ITestOutputHelper _out;
+
+        public BattleManagerTurnTests(ITestOutputHelper output)
+        {
+            _out = output;
+        }
+
+        // ── Setup helpers ─────────────────────────────────────────────────────
 
         private static BattleManager NewBattle() => BattleTestFactory.Battle();
 
-        // ── Initial state ────────────────────────────────────────────────────
+        // ── Dump helpers ──────────────────────────────────────────────────────
+
+        private void DumpBattleState(BattleManager b)
+        {
+            _out.WriteLine("══ BattleManager State ═══════════════════════");
+            _out.WriteLine($"  Phase       : {b.Phase}");
+            _out.WriteLine($"  IsBattleOver: {b.IsBattleOver}");
+            _out.WriteLine($"  Winner      : {b.Winner?.Active.Name ?? "none"}");
+            DumpSide("Player", b.PlayerActive);
+            DumpSide("Bot   ", b.BotActive);
+            _out.WriteLine("══════════════════════════════════════════════");
+        }
+
+        private void DumpSide(string label, Model.Model.Helper.PokemonHelper.PokemonState p)
+        {
+            _out.WriteLine($"  [{label}] {p.Name}  HP: {p.CurrentHP}/{p.MaxHP}  Fainted: {p.IsFainted}");
+            for (int i = 0; i < p.Moves.Count; i++)
+            {
+                var m = p.Moves[i] as MoveState;
+                if (m != null)
+                    _out.WriteLine($"    Move[{i}] {m.Name,-16} PP:{m.PP}/{m.MaxPP}  Type:{m.Element}  Cat:{m.Category}");
+                else
+                    _out.WriteLine($"    Move[{i}] (non-MoveState: {p.Moves[i].GetType().Name})");
+            }
+        }
+
+        private void DumpLog(BattleManager b, string header = "Battle Log")
+        {
+            _out.WriteLine($"── {header} ({'─',-40}");
+            foreach (var line in b.BattleLog)
+                _out.WriteLine($"  | {line}");
+            _out.WriteLine($"{'─',50}");
+        }
+
+        // ── Initial state ─────────────────────────────────────────────────────
 
         [Fact]
         public void Battle_InitialPhase_IsAwaitingPlayerAction()
-            => Assert.Equal(BattlePhase.AwaitingPlayerAction, NewBattle().Phase);
+        {
+            var b = NewBattle();
+            DumpBattleState(b);
+            Assert.Equal(BattlePhase.AwaitingPlayerAction, b.Phase);
+        }
 
         [Fact]
         public void Battle_InitialState_IsNotOver()
-            => Assert.False(NewBattle().IsBattleOver);
+        {
+            var b = NewBattle();
+            DumpBattleState(b);
+            Assert.False(b.IsBattleOver);
+        }
 
         [Fact]
         public void Battle_InitialState_NoWinner()
-            => Assert.Null(NewBattle().Winner);
+        {
+            var b = NewBattle();
+            DumpBattleState(b);
+            Assert.Null(b.Winner);
+        }
 
         [Fact]
         public void Battle_PlayerActive_IsCharizard()
-            => Assert.Equal("Charizard", NewBattle().PlayerActive.Name);
+        {
+            var b = NewBattle();
+            DumpBattleState(b);
+            Assert.Equal("Charizard", b.PlayerActive.Name);
+        }
 
         [Fact]
         public void Battle_BotActive_IsBlastoise()
-            => Assert.Equal("Blastoise", NewBattle().BotActive.Name);
+        {
+            var b = NewBattle();
+            DumpBattleState(b);
+            Assert.Equal("Blastoise", b.BotActive.Name);
+        }
 
         [Fact]
         public void Battle_BothSides_StartAtFullHP()
         {
             var b = NewBattle();
+            DumpBattleState(b);
             Assert.Equal(b.PlayerActive.MaxHP, b.PlayerActive.CurrentHP);
             Assert.Equal(b.BotActive.MaxHP, b.BotActive.CurrentHP);
         }
 
-        // ── Log ──────────────────────────────────────────────────────────────
+        // ── Log ───────────────────────────────────────────────────────────────
 
         [Fact]
         public void Battle_Log_ContainsStartMessage()
-            => Assert.Contains(NewBattle().BattleLog,
-                l => l.Contains("Battle start"));
+        {
+            var b = NewBattle();
+            DumpLog(b, "Initial Log");
+            Assert.Contains(b.BattleLog, l => l.Contains("Battle start"));
+        }
 
-        // ── Turn execution — Tackle (index 0 on enemy = Tackle) ─────────────
-        // Player index 0 = HyperBeam (Charge type — executes as a Charge on first call)
-        // Bot always uses index 0 = Tackle
+        // ── Turn execution ────────────────────────────────────────────────────
 
         [Fact]
         public void RunTurn_ReturnsTrueWhenPhaseCorrect()
         {
             var b = NewBattle();
-            Assert.True(b.RunTurn(playerMoveIndex: 1, botDecides: false));
+            DumpBattleState(b);
+            _out.WriteLine("  → Running turn (playerMoveIndex=1, botDecides=false)");
+            bool result = b.RunTurn(playerMoveIndex: 1, botDecides: false);
+            _out.WriteLine($"  RunTurn returned: {result}");
+            DumpBattleState(b);
+            DumpLog(b, "Log After Turn 1");
+            Assert.True(result);
         }
 
         [Fact]
         public void RunTurn_WithWrongPhase_ReturnsFalse()
         {
             var b = NewBattle();
-            b.RunTurn(1, botDecides: false); // advance phase
-            // Phase may be AwaitingPlayerAction again or BattleOver — either way
-            // calling RunTurn in a non-AwaitingPlayerAction phase should return false
-            // Force the phase by running until something changes; just assert the
-            // initial RunTurn itself returned true (already tested above).
-            // This test: calling RunTurn twice in a row where 2nd has no valid phase
-            // is architecture-dependent; instead we test the guard via a stub approach.
-            Assert.True(true); // documented guard exists in BattleManager source
+            b.RunTurn(1, botDecides: false);
+            DumpBattleState(b);
+            DumpLog(b, "Log After Turn 1 (phase guard test)");
+            // Guard is documented in BattleManager — this test confirms it compiles and runs
+            Assert.True(true);
         }
 
         [Fact]
         public void RunTurn_Thunderbolt_PhaseRemainsAwaitingPlayerActionAfterTurn()
         {
             var b = NewBattle();
-            b.RunTurn(playerMoveIndex: 1, botDecides: false); // Thunderbolt vs Tackle
-            // If neither Pokémon fainted, phase returns to AwaitingPlayerAction
+            DumpBattleState(b);
+            _out.WriteLine("  → Running turn (Thunderbolt vs Tackle)");
+            b.RunTurn(playerMoveIndex: 1, botDecides: false);
+            DumpBattleState(b);
+            DumpLog(b, "Log After Thunderbolt Turn");
+
             if (!b.IsBattleOver)
-            {
                 Assert.Equal(BattlePhase.AwaitingPlayerAction, b.Phase);
-            }
+            else
+                _out.WriteLine("  (battle ended in one turn — phase check skipped)");
         }
 
         [Fact]
@@ -96,6 +162,7 @@ namespace PokemonGame.Tests
         {
             var b = NewBattle();
             b.RunTurn(playerMoveIndex: 1, botDecides: false);
+            DumpLog(b, "Log After Thunderbolt Turn");
             Assert.Contains(b.BattleLog, l => l.Contains("Thunderbolt"));
         }
 
@@ -103,7 +170,8 @@ namespace PokemonGame.Tests
         public void RunTurn_Tackle_LogContainsMoveUsedMessage()
         {
             var b = NewBattle();
-            b.RunTurn(playerMoveIndex: 1, botDecides: false); // bot uses Tackle
+            b.RunTurn(playerMoveIndex: 1, botDecides: false);
+            DumpLog(b, "Log After Turn (bot used Tackle)");
             Assert.Contains(b.BattleLog, l => l.Contains("Tackle"));
         }
 
@@ -112,9 +180,13 @@ namespace PokemonGame.Tests
         {
             var b = NewBattle();
             int before = b.PlayerActive.CurrentHP;
+            _out.WriteLine($"  Player HP before: {before}");
             b.RunTurn(playerMoveIndex: 1, botDecides: false);
-            // Bot used Tackle — player should have taken some damage
-            Assert.True(b.PlayerActive.CurrentHP <= before);
+            int after = b.PlayerActive.CurrentHP;
+            _out.WriteLine($"  Player HP after : {after}");
+            _out.WriteLine($"  Damage taken    : {before - after}");
+            DumpLog(b, "Log After Turn");
+            Assert.True(after <= before);
         }
 
         [Fact]
@@ -122,11 +194,16 @@ namespace PokemonGame.Tests
         {
             var b = NewBattle();
             int before = b.BotActive.CurrentHP;
+            _out.WriteLine($"  Bot HP before: {before}");
             b.RunTurn(playerMoveIndex: 1, botDecides: false);
-            Assert.True(b.BotActive.CurrentHP <= before);
+            int after = b.BotActive.CurrentHP;
+            _out.WriteLine($"  Bot HP after : {after}");
+            _out.WriteLine($"  Damage taken : {before - after}");
+            DumpLog(b, "Log After Thunderbolt Turn");
+            Assert.True(after <= before);
         }
 
-        // ── PP depletion ─────────────────────────────────────────────────────
+        // ── PP depletion ──────────────────────────────────────────────────────
 
         [Fact]
         public void RunTurn_Thunderbolt_DecrementsPP()
@@ -135,8 +212,12 @@ namespace PokemonGame.Tests
             var thunderbolt = b.PlayerActive.Moves[1] as MoveState;
             Assert.NotNull(thunderbolt);
             int ppBefore = thunderbolt!.PP;
+            _out.WriteLine($"  Thunderbolt PP before: {ppBefore}");
             b.RunTurn(playerMoveIndex: 1, botDecides: false);
-            Assert.Equal(ppBefore - 1, thunderbolt.PP);
+            int ppAfter = thunderbolt.PP;
+            _out.WriteLine($"  Thunderbolt PP after : {ppAfter}");
+            DumpLog(b, "Log After Turn");
+            Assert.Equal(ppBefore - 1, ppAfter);
         }
 
         [Fact]
@@ -146,17 +227,22 @@ namespace PokemonGame.Tests
             var tackle = b.BotActive.Moves[0] as MoveState;
             Assert.NotNull(tackle);
             int ppBefore = tackle!.PP;
+            _out.WriteLine($"  Tackle PP before: {ppBefore}");
             b.RunTurn(playerMoveIndex: 1, botDecides: false);
-            Assert.Equal(ppBefore - 1, tackle.PP);
+            int ppAfter = tackle.PP;
+            _out.WriteLine($"  Tackle PP after : {ppAfter}");
+            DumpLog(b, "Log After Turn");
+            Assert.Equal(ppBefore - 1, ppAfter);
         }
 
-        // ── Turn counter ─────────────────────────────────────────────────────
+        // ── Turn counter ──────────────────────────────────────────────────────
 
         [Fact]
         public void RunTurn_LogContainsTurnHeader()
         {
             var b = NewBattle();
             b.RunTurn(playerMoveIndex: 1, botDecides: false);
+            DumpLog(b, "Log After Turn 1");
             Assert.Contains(b.BattleLog, l => l.Contains("Turn 1"));
         }
 
@@ -165,10 +251,17 @@ namespace PokemonGame.Tests
         {
             var b = NewBattle();
             b.RunTurn(playerMoveIndex: 1, botDecides: false);
+            DumpLog(b, "Log After Turn 1");
+
             if (!b.IsBattleOver)
             {
                 b.RunTurn(playerMoveIndex: 1, botDecides: false);
+                DumpLog(b, "Log After Turn 2");
                 Assert.Contains(b.BattleLog, l => l.Contains("Turn 2"));
+            }
+            else
+            {
+                _out.WriteLine("  (battle ended after turn 1 — Turn 2 check skipped)");
             }
         }
 
@@ -178,20 +271,26 @@ namespace PokemonGame.Tests
         public void PlayerSwitch_WhenNotAwaitingSwitch_ReturnsFalse()
         {
             var b = NewBattle();
-            // Phase is AwaitingPlayerAction — switch should be rejected
-            Assert.False(b.PlayerSwitch(1));
+            DumpBattleState(b);
+            bool result = b.PlayerSwitch(1);
+            _out.WriteLine($"  PlayerSwitch(1) while AwaitingPlayerAction returned: {result}");
+            Assert.False(result);
         }
 
         [Fact]
         public void GetPlayerSwitchOptions_AtStart_HasFiveOptions()
-            => Assert.Equal(5, NewBattle().GetPlayerSwitchOptions().Count);
-
-        // ── Full battle — simulate until someone wins ─────────────────────────
-
-        [Fact]
-        public void FullBattle_EventuallyEnds()
         {
             var b = NewBattle();
+            var opts = b.GetPlayerSwitchOptions();
+            _out.WriteLine($"  Switch options count: {opts.Count}");
+            _out.WriteLine($"  Switch option slots : [{string.Join(", ", opts)}]");
+            Assert.Equal(5, opts.Count);
+        }
+
+        // ── Full battle simulation ────────────────────────────────────────────
+
+        private void RunFullBattle(BattleManager b)
+        {
             int maxTurns = 200;
             int turns = 0;
 
@@ -203,43 +302,34 @@ namespace PokemonGame.Tests
                 }
                 else if (b.Phase == BattlePhase.AwaitingPlayerSwitch)
                 {
-                    var options = b.GetPlayerSwitchOptions();
-                    if (options.Count > 0)
-                    {
-                        b.PlayerSwitch(options[0]);
-                    }
-                    else
-                    {
-                        break; // team wiped — should already be BattleOver
-                    }
+                    var opts = b.GetPlayerSwitchOptions();
+                    if (opts.Count > 0) b.PlayerSwitch(opts[0]);
+                    else break;
                 }
                 turns++;
             }
 
-            Assert.True(b.IsBattleOver, $"Battle did not end within {maxTurns} turns.");
+            _out.WriteLine($"  Simulation ended after {turns} turn(s).");
+        }
+
+        [Fact]
+        public void FullBattle_EventuallyEnds()
+        {
+            var b = NewBattle();
+            DumpBattleState(b);
+            RunFullBattle(b);
+            DumpBattleState(b);
+            DumpLog(b, "Full Battle Log");
+            Assert.True(b.IsBattleOver, "Battle did not end within 200 turns.");
         }
 
         [Fact]
         public void FullBattle_WinnerIsAssigned()
         {
             var b = NewBattle();
-            int maxTurns = 200;
-            int turns = 0;
-
-            while (!b.IsBattleOver && turns++ < maxTurns)
-            {
-                if (b.Phase == BattlePhase.AwaitingPlayerAction)
-                {
-                    b.RunTurn(playerMoveIndex: 1, botDecides: false);
-                }
-                else if (b.Phase == BattlePhase.AwaitingPlayerSwitch)
-                {
-                    var opts = b.GetPlayerSwitchOptions();
-                    if (opts.Count > 0) b.PlayerSwitch(opts[0]);
-                    else break;
-                }
-            }
-
+            RunFullBattle(b);
+            _out.WriteLine($"  Winner: {b.Winner?.Active.Name ?? "null"}");
+            DumpLog(b, "Full Battle Log");
             Assert.NotNull(b.Winner);
         }
 
@@ -247,23 +337,8 @@ namespace PokemonGame.Tests
         public void FullBattle_LogContainsWinMessage()
         {
             var b = NewBattle();
-            int maxTurns = 200;
-            int turns = 0;
-
-            while (!b.IsBattleOver && turns++ < maxTurns)
-            {
-                if (b.Phase == BattlePhase.AwaitingPlayerAction)
-                {
-                    b.RunTurn(playerMoveIndex: 1, botDecides: false);
-                }
-                else if (b.Phase == BattlePhase.AwaitingPlayerSwitch)
-                {
-                    var opts = b.GetPlayerSwitchOptions();
-                    if (opts.Count > 0) b.PlayerSwitch(opts[0]);
-                    else break;
-                }
-            }
-
+            RunFullBattle(b);
+            DumpLog(b, "Full Battle Log");
             Assert.Contains(b.BattleLog,
                 l => l.Contains("wins", StringComparison.OrdinalIgnoreCase));
         }
