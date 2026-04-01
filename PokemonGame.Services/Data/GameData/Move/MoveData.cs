@@ -105,8 +105,6 @@
         public string? Hazard { get; set; }
         public int? ChargeTurns { get; set; }
         public double? Multiplier { get; set; }
-        public double? Fraction { get; set; }
-        public string? VolatileStatus { get; set; }
         public string? Status { get; set; }
     }
 
