@@ -99,7 +99,8 @@ namespace PokemonGame.Services.Data.Repositories
                      confuse_max_turns AS ConfuseMaxTurns, is_toxic AS IsToxic, 
                      weather AS Weather, weather_turns AS WeatherTurns, screen AS Screen, 
                      screen_turns AS ScreenTurns, battle_side AS BattleSide, 
-                     hazard AS Hazard, charge_turns AS ChargeTurns 
+                     hazard AS Hazard, charge_turns AS ChargeTurns,
+                     multiplier AS Multiplier, status AS Status
               FROM effects WHERE id = @id", new { id }));
     }
     internal class NumberRepository : DbRepository<int, NumberData>

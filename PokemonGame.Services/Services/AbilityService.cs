@@ -14,14 +14,17 @@ namespace PokemonGame.Services.Handler
     public class AbilityService : IAbilityService
     {
         private readonly AbilityRepository _repo;
+        private readonly ConditionRepository _conditionRepository;
+        private readonly EffectRepository _effectRepository;
+        private readonly NumberRepository _numberRepository;
 
-        private readonly HashSet<int> _visitedEffects = new();
-        private readonly HashSet<int> _visitedConditions = new();
-        private readonly HashSet<int> _visitedNumbers = new();
 
         public AbilityService()
         {
             _repo = ServiceFactory.Instance.AbilityRepository;
+            _conditionRepository = ServiceFactory.Instance.ConditionRepository;
+            _effectRepository = ServiceFactory.Instance.EffectRepository;
+            _numberRepository = ServiceFactory.Instance.NumberRepository;
         }
 
         // ── Public entry points ──────────────────────────────────────────────────
@@ -42,9 +45,7 @@ namespace PokemonGame.Services.Handler
 
         private AbilityTree BuildTree(AbilityData ability)
         {
-            _visitedEffects.Clear();
-            _visitedConditions.Clear();
-            _visitedNumbers.Clear();
+            
 
             var tree = new AbilityTree
             {
@@ -67,12 +68,7 @@ namespace PokemonGame.Services.Handler
 
         private MoveEffect? BuildEffect(int id)
         {
-            if (_visitedEffects.Contains(id))
-                return null;
-
-            _visitedEffects.Add(id);
-
-            var row = _repo.GetEffectById(id);
+            var row = _effectRepository.Load(id);
             if (row == null)
                 return null;
 
@@ -114,7 +110,6 @@ namespace PokemonGame.Services.Handler
             if (row.OnFailEffectId.HasValue)
                 effect.OnFail = BuildEffect(row.OnFailEffectId.Value);
 
-            _visitedEffects.Remove(id);
             return effect;
         }
 
@@ -122,12 +117,7 @@ namespace PokemonGame.Services.Handler
 
         private MoveNumber? BuildNumber(int id)
         {
-            if (_visitedNumbers.Contains(id))
-                return null;
-
-            _visitedNumbers.Add(id);
-
-            var row = _repo.LoadNumber(id);
+            var row = _numberRepository.Load(id);
             if (row == null)
                 return null;
 
@@ -146,7 +136,6 @@ namespace PokemonGame.Services.Handler
             if (row.RightNumberId.HasValue)
                 number.Right = BuildNumber(row.RightNumberId.Value);
 
-            _visitedNumbers.Remove(id);
             return number;
         }
 
@@ -154,12 +143,9 @@ namespace PokemonGame.Services.Handler
 
         private MoveCondition? BuildCondition(int id)
         {
-            if (_visitedConditions.Contains(id))
-                return null;
+            
 
-            _visitedConditions.Add(id);
-
-            var row = _repo.GetConditionById(id);
+            var row = _conditionRepository.Load(id);
             if (row == null)
                 return null;
 
@@ -184,7 +170,6 @@ namespace PokemonGame.Services.Handler
             if (row.InnerConditionId.HasValue)
                 condition.Inner = BuildCondition(row.InnerConditionId.Value);
 
-            _visitedConditions.Remove(id);
             return condition;
         }
     }

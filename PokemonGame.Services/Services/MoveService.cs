@@ -142,8 +142,8 @@ namespace PokemonGame.Services.Handler
                 Hazard = row.Hazard,
                 ChargeTurns = row.ChargeTurns,
                 Multiplier = row.Multiplier,
-                Fraction = row.Fraction,
-                VolatileStatus = row.VolatileStatus,
+                Status = row.Status,
+                
             };
 
             if (row.NumberId.HasValue) effect.Number = BuildNumber(row.NumberId.Value);
@@ -211,6 +211,7 @@ namespace PokemonGame.Services.Handler
                 VolatileStatus = row.VolatileStatus,
                 HpFraction = row.HpFraction,
                 PokemonType = row.PokemonType,
+                Fraction = row.HpFraction
             };
 
             if (row.LeftConditionId.HasValue) condition.Left = BuildCondition(row.LeftConditionId.Value);

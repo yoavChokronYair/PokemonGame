@@ -117,7 +117,7 @@ namespace PokemonGame.ViewModels.Translators
         {
             // ── Ability-exclusive ────────────────────────────────────────────
             "ModifyDamageDealt" => new ModifyDamageDealt(ResolveTarget(e.Target), e.Multiplier ?? 1.0),
-            "DamageOnAttack" => new DamageOnAttack(ResolveTarget(e.Target), e.Fraction ?? 0.0),
+            "DamageOnAttack" => new DamageOnAttack(ResolveTarget(e.Target), e.Multiplier ?? 0.0),
             "ModifySpeedMultiplier" => new ModifySpeedMultiplier(ResolveTarget(e.Target), e.Multiplier ?? 1.0),
             "ModifyAccuracy" => new ModifyAccuracy(ResolveTarget(e.Target), e.Multiplier ?? 1.0),
             "ModifyEvasion" => new ModifyEvasion(ResolveTarget(e.Target), e.Multiplier ?? 1.0),
@@ -126,7 +126,7 @@ namespace PokemonGame.ViewModels.Translators
             "ChanceFlinch" => new ChanceFlinch(e.ChanceProbability ?? 0),
             "ResetNegativeStatStages" => new ResetNegativeStatStages(ResolveTarget(e.Target)),
             "LockMove" => new LockMove(ResolveTarget(e.Target)),
-            "CureVolatile" => new CureVolatile(ResolveTarget(e.Target), ParseEnum<VolatileStatus>(e.VolatileStatus!)),
+            "CureVolatile" => new CureVolatile(ResolveTarget(e.Target), ParseEnum<VolatileStatus>(e.Status!)),
             "CureSpecificStatus" => new CureSpecificStatus(ResolveTarget(e.Target), ParseEnum<StatusCondition>(e.Stat!)),
             "SkipChargeTurn" => new SkipChargeTurn(ResolveTarget(e.Target)),
 
