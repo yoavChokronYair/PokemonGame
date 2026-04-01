@@ -36,7 +36,7 @@ namespace PokemonGame.Services.Handler
             _teamRepo = ServiceFactory.Instance.TeamRepository;
             _memberRepo = ServiceFactory.Instance.TeamMemberRepository;
             _moveLearnsetRepository = ServiceFactory.Instance.MoveLearnsetRepository;
-            _pokemonStatsRepository = ServiceFactory.Instance.pokemonStatsRepository;
+            _pokemonStatsRepository = ServiceFactory.Instance.PokemonStatsRepository;
             _moveRepository = ServiceFactory.Instance.MoveRepository;
         }
 
@@ -110,7 +110,7 @@ namespace PokemonGame.Services.Handler
                 ?? throw new InvalidOperationException($"No base stats for PokedexID {battler.PokedexID}.");
 
             var moveNames = GetMoveIds(battler)
-                .Select(id => _moveRepository.GetMoveName(id)
+                .Select(id => _moveRepository.GetName(id)
                     ?? throw new InvalidOperationException($"Move ID {id} not found."))
                 .ToList();
 
