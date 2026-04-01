@@ -123,7 +123,7 @@ namespace PokemonGame.Tests
             var b = NewBattle();
             DumpBattleState(b);
             _out.WriteLine("  → Running turn (playerMoveIndex=1, botDecides=false)");
-            bool result = b.RunTurn(playerMoveIndex: 1, botDecides: false);
+            bool result = b.RunTurn(playerMoveIndex: 0, botDecides: false);
             _out.WriteLine($"  RunTurn returned: {result}");
             DumpBattleState(b);
             DumpLog(b, "Log After Turn 1");
@@ -156,7 +156,38 @@ namespace PokemonGame.Tests
             else
                 _out.WriteLine("  (battle ended in one turn — phase check skipped)");
         }
+        [Fact]
+        public void RunTurn_HyperBeam_ReducesBotHP()
+        {
+            var b = NewBattle();
+            int before = b.BotActive.CurrentHP; // Usually 186 based on your logs
 
+            // Turn 1: User starts charging/recharging
+            b.RunTurn(playerMoveIndex: 0, botDecides: false);
+            _out.WriteLine($"HP after Turn 1: {b.BotActive.CurrentHP}");
+
+            // Turn 2: User releases the beam (Damage happens here)
+            b.RunTurn(playerMoveIndex: 0, botDecides: false);
+
+            int after = b.BotActive.CurrentHP;
+            _out.WriteLine($"HP after Turn 2: {after}");
+
+            Assert.True(after < before, $"Expected HP to be less than {before}, but was {after}");
+            Assert.Contains(b.BattleLog, l => l.Contains("HyperBeam"));
+        }
+        [Fact]
+        public void RunTurn_HyperBeam_DecrementsPP()
+        {
+            var b = NewBattle();
+            // Index 0 is HyperBeam
+            var hyperBeam = b.PlayerActive.Moves[0] as MoveState;
+            Assert.NotNull(hyperBeam);
+
+            int ppBefore = hyperBeam!.PP;
+            b.RunTurn(playerMoveIndex: 0, botDecides: false);
+
+            Assert.Equal(ppBefore - 1, hyperBeam.PP);
+        }
         [Fact]
         public void RunTurn_Thunderbolt_LogContainsMoveUsedMessage()
         {
@@ -298,7 +329,7 @@ namespace PokemonGame.Tests
             {
                 if (b.Phase == BattlePhase.AwaitingPlayerAction)
                 {
-                    b.RunTurn(playerMoveIndex: 1, botDecides: false);
+                    b.RunTurn(playerMoveIndex: 0, botDecides: false);
                     turns++;
                 }
                 else if (b.Phase == BattlePhase.AwaitingPlayerSwitch)
