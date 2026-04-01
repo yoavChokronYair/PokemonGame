@@ -2,9 +2,9 @@
 {
     public class AbillityDomain
     {
-        public string name { get; set; } = string.Empty;
-        public string description { get; set; } = string.Empty;
-        public bool used { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool Used { get; set; }
 
     }
 }

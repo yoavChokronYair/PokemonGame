@@ -9,6 +9,7 @@ namespace PokemonGame.Model.Model
         private readonly AbillityDomain _abillityDomain;
         private readonly ICondition<BattleState> _condition;
         private readonly IEffect _effect;
+        public string Name => _abillityDomain.Name;
 
         public AbilityState(AbillityDomain abillityDomain, ICondition<BattleState> condition, IEffect effect)
         {
@@ -19,13 +20,13 @@ namespace PokemonGame.Model.Model
 
         public void Apply(BattleState battle)
         {
-            if (!_abillityDomain.used)
+            if (!_abillityDomain.Used)
             {
                 if (_condition.Check(battle))
                 {
                     _effect.Apply(battle);
                 }
-                _abillityDomain.used = true;
+                _abillityDomain.Used = true;
             }
         }
     }

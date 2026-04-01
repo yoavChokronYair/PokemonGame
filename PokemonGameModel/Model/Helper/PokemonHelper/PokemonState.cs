@@ -31,6 +31,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public IReadOnlyList<IMove> Moves => _state.Moves;
         public IMove? LastUsedMove => _state.LastUsedMove;
         public IHeldItem? HeldItem => _state.HeldItem;
+        public IAbility? Ability => _state.Ability;
         public bool WasStatLoweredThisTurn => _state.WasStatLoweredThisTurn;
 
         public int turnsActive;
