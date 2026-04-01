@@ -13,6 +13,8 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public BattleTerrainService TerrainService { get; } 
         public BattleLogger Logger { get; } = new();
         public BattleTurnResolver TurnResolver { get; }
+        public BattleFieldState Field { get; } = new();
+        public bool IsGravityActive => Field.IsGravityActive;
 
         public BattleState(BattleDomain state)
         {
@@ -49,6 +51,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         {
             WeatherService.TickWeather();
             TerrainService.TickTerrain();
+            Field.Tick();
             AttackerSide.Tick();
             DefenderSide.Tick();
             StatusService.ApplyEndOfTurnStatus(player);

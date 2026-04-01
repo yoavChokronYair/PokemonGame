@@ -53,16 +53,19 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public bool Check(T entity) => RandomHelper.NextBool(_probability);
     }
 
-    // Convenience alias — most common usage is against BattleDomain.
-    public class Probability : Probability<BattleState>
+    // ── Core Logic ───────────────────────────────────────────────────────────
+
+    public class Probability : ICondition<BattleState>
     {
-        public Probability(double probability) : base(probability) { }
+        private readonly double _probability;
+        public Probability(double probability) { _probability = MathHelper.Clamp(probability, 0.0, 1.0); }
+        public bool Check(BattleState battle) => RandomHelper.NextBool(_probability);
     }
 
-    // ── Battle Conditions ─────────────────────────────────────────────────────
+    // ── Battle/Environment Conditions ─────────────────────────────────────────
+
     public class IsNewPokemon : ICondition<BattleState>
     {
-        // Checks if the Attacker has spent 0 full turns on the field
         public bool Check(BattleState battle) => battle.Attacker.turnsActive == 0;
     }
 
@@ -72,6 +75,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public IsWeatherActive(Weather weather) { _weather = weather; }
         public bool Check(BattleState battle) => battle.WeatherService.IsWeatherActive(_weather);
     }
+
     public class IsTerrainActive : ICondition<BattleState>
     {
         private readonly TerrainType _terrain;
@@ -83,119 +87,107 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     {
         public bool Check(BattleState battle) => battle.TerrainService.CurrentTerrain != TerrainType.None;
     }
+
     public class IsBattleOver : ICondition<BattleState>
     {
         public bool Check(BattleState battle) => battle.IsBattleOver;
     }
 
-    // ── Pokemon Conditions ────────────────────────────────────────────────────
+    // ── Move-Based Conditions (on Attacker's last move) ───────────────────────
+
     public class WasHitByContact : ICondition<BattleState>
     {
         public bool Check(BattleState battle)
         {
-            if(battle.LastUsedMove != null)
+            if (battle.LastUsedMove is MoveState lastMove)
             {
-                MoveState lastMoveState = (MoveState)battle.LastUsedMove;
-                if(lastMoveState.Category == MoveCategory.Physical )
-                {
-                    return true;
-                }
+                // Note: In modern Pokémon, some Special moves make contact and some Physical don't.
+                // You might want to use a specific .MakesContact flag here later.
+                return lastMove.Category == MoveCategory.Physical;
             }
             return false;
         }
     }
+
     public class MoveHasTag : ICondition<BattleState>
     {
         private readonly MoveTag _tag;
         public MoveHasTag(MoveTag tag) { _tag = tag; }
-        public bool Check(BattleState battle) 
-        {
-            if(battle.LastUsedMove != null)
-            {
-                return ((MoveState) battle.LastUsedMove).Tag == _tag;
-            }
-            return false;
-        }
+        public bool Check(BattleState battle) =>
+            battle.LastUsedMove is MoveState lastMove && lastMove.Tag == _tag;
     }
-   
+
     public class MoveIsCategory : ICondition<BattleState>
     {
         private readonly MoveCategory _category;
         public MoveIsCategory(MoveCategory category) { _category = category; }
-        public bool Check(BattleState battle)
-        {
-            if(battle.LastUsedMove != null)
-            {
-                return ((MoveState)battle.LastUsedMove).Category == _category;
-            }
-            return false;
-        }
+        public bool Check(BattleState battle) =>
+            battle.LastUsedMove is MoveState lastMove && lastMove.Category == _category;
     }
+
+    // ── Attacker State Conditions ─────────────────────────────────────────────
+
     public class DidKnockoutOpponent : ICondition<BattleState>
     {
         public bool Check(BattleState battle) => battle.Defender.IsFainted && !battle.Attacker.IsFainted;
     }
-    public class TookDamageThisTurn : ICondition<PokemonState>
+
+    public class TookDamageThisTurn : ICondition<BattleState>
     {
-        public bool Check(PokemonState pokemon) => pokemon.LastDamageTaken > 0;
+        public bool Check(BattleState battle) => battle.Attacker.LastDamageTaken > 0;
     }
-    public class HasAnyStatus : ICondition<PokemonState>
+
+    public class HasAnyStatus : ICondition<BattleState>
     {
-        public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() != StatusCondition.None;
+        public bool Check(BattleState battle) => battle.Attacker.PokemonStatusCondition() != StatusCondition.None;
     }
-    public class HasStatus : ICondition<PokemonState>
+
+    public class HasStatus : ICondition<BattleState>
     {
         private readonly StatusCondition _status;
         public HasStatus(StatusCondition status) { _status = status; }
-        public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() == _status;
+        public bool Check(BattleState battle) => battle.Attacker.PokemonStatusCondition() == _status;
     }
-    //public class IsHoldingItem : ICondition<PokemonState>
-    //{
-    //    public bool Check(PokemonState pokemon) => pokemon.HeldItem != null;
-    //}
 
-    //public class WasItemConsumed : ICondition<PokemonState>
-    //{
-    //    // This requires a bool flag in PokemonState reset each switch-in
-    //    public bool Check(PokemonState pokemon) => pokemon.ItemWasConsumedThisBattle;
-    //}
-    public class HasVolatile : ICondition<PokemonState>
+    public class IsHoldingItem : ICondition<BattleState>
+    {
+        public bool Check(BattleState battle) => battle.Attacker.HeldItem != null;
+    }
+
+    public class HasVolatile : ICondition<BattleState>
     {
         private readonly VolatileStatus _status;
         public HasVolatile(VolatileStatus status) { _status = status; }
-        public bool Check(PokemonState pokemon) => pokemon.HasVolatileStatus(_status);
+        public bool Check(BattleState battle) => battle.Attacker.HasVolatileStatus(_status);
     }
+
     public class HasBaseStatChanged : ICondition<BattleState>
     {
-        public bool Check(BattleState entity)
-        {
-            // Competitive/Defiant only trigger if a stat was LOWERED
-            return entity.Attacker.WasStatLoweredThisTurn;
-        }
+        public bool Check(BattleState battle) => battle.Attacker.WasStatLoweredThisTurn;
     }
 
-    public class IsFainted : ICondition<PokemonState>
+    public class IsFainted : ICondition<BattleState>
     {
-        public bool Check(PokemonState pokemon) => pokemon.IsFainted;
+        public bool Check(BattleState battle) => battle.Attacker.IsFainted;
     }
 
-    public class IsFullHP : ICondition<PokemonState>
+    public class IsFullHP : ICondition<BattleState>
     {
-        public bool Check(PokemonState pokemon) => pokemon.CurrentHP == pokemon.MaxHP;
+        public bool Check(BattleState battle) => battle.Attacker.CurrentHP == battle.Attacker.MaxHP;
     }
 
-    public class HPBelow : ICondition<PokemonState>
+    public class HPBelow : ICondition<BattleState>
     {
         private readonly double _fraction;
         public HPBelow(double fraction) { _fraction = fraction; }
-        public bool Check(PokemonState pokemon) => pokemon.GetHPFraction() < _fraction;
+        public bool Check(BattleState battle) => battle.Attacker.GetHPFraction() < _fraction;
     }
 
-    public class HasType : ICondition<PokemonState>
+    public class HasType : ICondition<BattleState>
     {
         private readonly PokemonType _type;
         public HasType(PokemonType type) { _type = type; }
-        public bool Check(PokemonState pokemon) => pokemon.HasType(_type);
+        public bool Check(BattleState battle) => battle.Attacker.HasType(_type);
     }
 
     // Adapter: wraps a PokemonDomain condition so it can be used as ICondition<BattleDomain>.
@@ -205,7 +197,15 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public UserCondition(ICondition<PokemonState> inner) { _inner = inner; }
         public bool Check(BattleState battle) => _inner.Check(battle.Attacker);
     }
-
+    public class IsGrounded : ICondition<BattleState>
+    {
+        public bool Check(BattleState battle) =>
+            !battle.Defender.HasType(PokemonType.Flying) ||
+            battle.Defender.HeldItem is HeldItemState item && item.Name == "Iron Ball" ||
+            battle.Defender.HasVolatileStatus(VolatileStatus.Ingrain) ||
+            battle.Defender.HasVolatileStatus(VolatileStatus.SmackDown) ||
+            battle.IsGravityActive;
+    }
     public class OpponentCondition : ICondition<BattleState>
     {
         private readonly ICondition<PokemonState> _inner;
@@ -222,7 +222,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     }
 
     public class DefenderTarget : ITarget
-    {
+    {   
         public PokemonState Resolve(BattleState battle) => battle.Defender;
     }
 

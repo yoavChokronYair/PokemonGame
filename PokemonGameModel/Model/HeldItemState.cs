@@ -10,6 +10,7 @@ namespace PokemonGame.Model.Model
         private readonly HeldItemDomain _HeldItemDomain;
         private readonly ICondition<BattleState> _condition;
         private readonly IEffect _effect;
+        public string Name => _HeldItemDomain.Name;
 
         public HeldItemState(HeldItemDomain heldItemDomain, ICondition<BattleState> condition, IEffect effect)
         {

@@ -30,11 +30,13 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public int Speed => _state.BaseSpeed;
         public IReadOnlyList<IMove> Moves => _state.Moves;
         public IMove? LastUsedMove => _state.LastUsedMove;
+        public IHeldItem? HeldItem => _state.HeldItem;
         public bool WasStatLoweredThisTurn => _state.WasStatLoweredThisTurn;
 
         public int turnsActive;
         public double LastDamageDealt { get; internal set; }
         public double LastDamageTaken { get; internal set; }
+        
 
         // --- HP ---
         public void TakeDamage(int amount)
