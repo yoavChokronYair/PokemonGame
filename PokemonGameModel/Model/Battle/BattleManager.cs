@@ -168,33 +168,15 @@ namespace PokemonGame.Model.Model.Battle
 
         private void ExecuteMove(IMove move, PokemonState user, PokemonState target)
         {
-            if (user.IsFainted)
-            {
-                return;
-            }
+            if (user.IsFainted) return;
 
             _state.RegisterMove(move);
 
-            bool userIsPlayer = ReferenceEquals(user, PlayerActive);
-
-            // Always set Attacker = actual user, Defender = actual target
+            // Set domain directly — no swap needed
             _domain.Attacker = user;
             _domain.Defender = target;
 
-            // If the bot is acting, flip the state's perspective so move
-            // logic that reads _state.Attacker/Defender sees the right sides
-            if (!userIsPlayer)
-            {
-                _state.SwitchAttackerDefender();
-            }
-
             move.Execute(_state);
-
-            // Restore to player-perspective after bot's move
-            if (!userIsPlayer)
-            {
-                _state.SwitchAttackerDefender();
-            }
         }
 
         // ── Post-turn faint handling ───────────────────────────────────────────

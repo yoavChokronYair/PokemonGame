@@ -28,6 +28,10 @@ namespace PokemonGame.Model.Helper
         {
             lock (_lock) { return _rng.NextDouble(); }
         }
+        public static double NextDouble(double minValue, double maxValue)
+        {
+            lock (_lock) { return _rng.NextDouble() * (maxValue - minValue) + minValue; }
+        }
 
         public static bool NextBool(double probabilityTrue = 0.5)
         {
