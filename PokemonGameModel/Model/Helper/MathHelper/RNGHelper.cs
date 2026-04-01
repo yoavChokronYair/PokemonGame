@@ -145,6 +145,10 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             return new RNGHelper(pid, tid, sid);
         }
 
-
+        public static double getCritModifyer()
+        {
+            // 1/24 chance for a critical hit
+            return RandomHelper.Next(0, 16) == 0 ? 2 : 1.0;
+        }
     }
 }

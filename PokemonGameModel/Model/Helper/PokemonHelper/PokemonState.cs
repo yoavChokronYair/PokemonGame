@@ -1,4 +1,5 @@
-﻿using PokemonGame.Model.Domain.Pokemon;
+﻿using System.Security.Authentication.ExtendedProtection;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
@@ -22,7 +23,11 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public int MaxHP => _state.MaxHP;
         public int CurrentHP => _state.CurrentHP;
         public bool IsFainted => _state.CurrentHP <= 0;
-
+        public int Attack => _state.BaseAttack;
+        public int Defense => _state.BaseDefense;
+        public int SpAttack => _state.BaseSpecialAttack;
+        public int SpDefense => _state.BaseSpecialDefense;
+        public int Speed => _state.BaseSpeed;
         public IReadOnlyList<IMove> Moves => _state.Moves;
         public IMove? LastUsedMove => _state.LastUsedMove;
 
@@ -113,7 +118,10 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
 
         // --- Type helpers ---
         public bool HasType(PokemonType type) => _state.PrimaryType == type || _state.SecondaryType == type;
-
+        public PokemonType[] GetPokemonTypes() =>
+            new[] { _state.PrimaryType, _state.SecondaryType ?? PokemonType.None }
+            .Where(t => t != PokemonType.None)
+            .ToArray();
         // --- Moves ---
         public void CopyMove(IMove? move) => _state.LastUsedMove = move;
 
