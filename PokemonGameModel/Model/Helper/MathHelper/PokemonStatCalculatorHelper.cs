@@ -82,8 +82,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             var attacker = Battle.Attacker;
             var defender = Battle.Defender;
             double modifier = getStabBonus(attacker, move.Element) *
-                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) * 
-                RNGHelper.getCritModifyer() * 
+                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(),Battle.Logger) * 
+                RNGHelper.getCritModifier(Battle.Logger) * 
                 RandomHelper.NextDouble(0.85,1.0);
 
             double levelFactor = ((2.0 * attacker.Level) + 10 ) / 250;

@@ -38,7 +38,8 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         {
             _state.TurnNumber++;
             _state.LastDamageDealt = 0;
-            Logger.Log($"--- Turn {_state.TurnNumber} ---");
+            Logger.LogTurnStart($"--- Turn {_state.TurnNumber} ---");
+            Logger.LogTurnStart($"what will {_state.Attacker.Name} do?");
         }
 
         public void EndTurn(PokemonState player, PokemonState bot)

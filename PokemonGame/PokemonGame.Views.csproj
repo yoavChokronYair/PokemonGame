@@ -217,6 +217,9 @@
     <Compile Include="Views\UserControls\BattleMenu\EnemyBattleStatusControl.xaml.cs">
       <DependentUpon>EnemyBattleStatusControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UserControls\BattleMenu\LoggerUserControl.xaml.cs">
+      <DependentUpon>LoggerUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UserControls\BattleMenu\PokemonBattleStatusControl.xaml.cs">
       <DependentUpon>PokemonBattleStatusControl.xaml</DependentUpon>
     </Compile>
@@ -326,6 +329,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserControls\BattleMenu\EnemyBattleStatusControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\BattleMenu\LoggerUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
