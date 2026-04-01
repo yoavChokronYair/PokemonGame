@@ -50,7 +50,6 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             StatusService.ApplyEndOfTurnStatus(bot);
         }
 
-        public void SwitchAttackerDefender() => (_state.Attacker, _state.Defender) = (_state.Defender, _state.Attacker);
 
         public bool AttackerMovesFirst(int attackerPriority, int defenderPriority)
             => TurnResolver.AttackerMovesFirst(_state.Attacker, _state.Defender, attackerPriority, defenderPriority);

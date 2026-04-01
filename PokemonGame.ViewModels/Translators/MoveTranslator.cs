@@ -68,7 +68,7 @@ namespace PokemonGame.ViewModels.Translators
             if (tree.Attempts.Count == 0)
                 throw new InvalidOperationException($"Move '{moveName}' has no attempts.");
 
-            return TranslateAttempt(tree.Attempts[0]);
+            return TranslateAttempt(tree.Attempts[0]);  
         }
         public IAttempt TranslateAttempt(MoveAttempt a) => a.Type switch
         {
