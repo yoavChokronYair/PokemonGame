@@ -1,3 +1,4 @@
+using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
@@ -86,7 +87,8 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle)
         {
             var defender = _target.Resolve(battle);
-            int amount = (int)_power.Evaluate(battle);
+            int baseAmount = (int)_power.Evaluate(battle);
+            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle,baseAmount);
             defender.TakeDamage(amount);
             battle.Attacker.RegisterDamageDealt(amount);
             battle.LastDamageDealt = amount;

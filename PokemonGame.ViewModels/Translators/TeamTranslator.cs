@@ -19,7 +19,11 @@ namespace PokemonGame.ViewModels.Translators
             _pokemonService = new PokemonService();
             _moveTranslator = new MoveTranslator();
         }
-
+        public TeamTranslator(IPokemonService pokemonService, MoveTranslator moveTranslator)
+        {
+            _pokemonService = pokemonService;
+            _moveTranslator = moveTranslator;
+        }
         public PokemonTeam LoadTeam(int battlePlayerId)
         {
             // The service handles all DB coordination
@@ -89,9 +93,7 @@ namespace PokemonGame.ViewModels.Translators
         private IMove BuildMove(string moveName)
         {
             var domain = _moveTranslator.Translate(moveName);
-            var tree = new MoveService().GetMove(moveName)
-                ?? throw new InvalidOperationException($"Move '{moveName}' data missing.");
-            var attempt = _moveTranslator.TranslateAttempt(tree.Attempts[0]);
+            var attempt = _moveTranslator.TranslateAttemptForMove(moveName);
             return new MoveState(domain, attempt);
         }
 

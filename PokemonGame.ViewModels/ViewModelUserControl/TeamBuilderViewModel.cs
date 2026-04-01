@@ -54,7 +54,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public int SpD { get; }
         public int Spe { get; }
         public int BST => HP + Atk + Def + SpA + SpD + Spe;
-        public BitmapImage SpriteImage { get; }
         public List<string> Types { get; }
 
         public TeamSlotEntry(PokemonDisplayEntry src)
@@ -76,7 +75,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             SelectedAbility = src.Abilities.Count > 0 ? src.Abilities[0] : null;
             IvHP = 31; IvAtk = 31; IvDef = 31;
             IvSpA = 31; IvSpD = 31; IvSpe = 31;
-            SpriteImage = src.SpriteImage;
             Types = src.Types;
         }
 

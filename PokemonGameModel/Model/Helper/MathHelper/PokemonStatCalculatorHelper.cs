@@ -3,7 +3,12 @@
 // CANONICAL stat calculator — PokemonDomain delegates to this class (no duplicate formulas elsewhere).
 // Uses NatureHelper.GetNatureModifiers for nature modifier lookups.
 using PokemonGame.Enums;
+using PokemonGame.Model.Enums;
+using PokemonGame.Model.Helper;
 using PokemonGame.Model.Model.Helper;
+using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model.Helper.MoveHelper;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -71,5 +76,37 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             int baseValue = ((2 * baseStat + iv + evContribution) * level) / 100 + 5;
             return (int)Math.Floor(baseValue * natureModifier);
         }
+        public static int PokemonDamageFormulaCaculator(BattleState Battle,int basePower)
+        {
+            var move = (MoveState)Battle.LastUsedMove;
+            var attacker = Battle.Attacker;
+            var defender = Battle.Defender;
+            double modifier = getStabBonus(attacker, move.Element) *
+                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) * 
+                RNGHelper.getCritModifyer() * 
+                RandomHelper.NextDouble(0.85,1.0);
+
+            double levelFactor = ((2.0 * attacker.Level) + 10 ) / 250;
+
+            // Determine the offensive and defensive stats based on the move category
+            double statRatio = move.Category switch
+            {
+                MoveCategory.Physical => (double)attacker.Attack / defender.Defense,
+                MoveCategory.Special => (double)attacker.SpAttack / defender.SpDefense,
+                _ => 1.0 // Handles Status moves or edge cases safely
+            };
+
+            double baseDamage = (levelFactor * basePower * statRatio) + 2.0;
+
+            // Apply all outside modifiers (STAB, Type Effectiveness, Burn, Randomness, etc.)
+            double finalDamage = baseDamage * modifier;
+            return (int)Math.Floor(PokemonGame.Model.Helper.MathHelper.Clamp(finalDamage, 1, 32678));
+        }
+        public static double getStabBonus(PokemonState pokemon, PokemonType moveType)
+        {
+            return pokemon.HasType(moveType) ? 1.5 : 1.0;
+        }
+        
+
     }
 }
