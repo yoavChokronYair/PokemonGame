@@ -60,7 +60,16 @@ namespace PokemonGame.ViewModels.Translators
         }
 
         // ── Attempt ──────────────────────────────────────────────────────────
+        public IAttempt TranslateAttemptForMove(string moveName)
+        {
+            var tree = _moveService.GetMove(moveName)
+                ?? throw new InvalidOperationException($"Move '{moveName}' not found.");
 
+            if (tree.Attempts.Count == 0)
+                throw new InvalidOperationException($"Move '{moveName}' has no attempts.");
+
+            return TranslateAttempt(tree.Attempts[0]);
+        }
         public IAttempt TranslateAttempt(MoveAttempt a) => a.Type switch
         {
             "Attempt" => new Attempt(

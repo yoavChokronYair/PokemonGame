@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Media;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelUserControl
