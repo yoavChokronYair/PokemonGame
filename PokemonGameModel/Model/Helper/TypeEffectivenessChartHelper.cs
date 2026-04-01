@@ -153,7 +153,7 @@ namespace PokemonGame.Model.Model.Helper
                 : TypeEffectivenessChartConstants.normal;
         }
 
-        public static double GetTotalMoveEffectiveness(PokemonType attackType, PokemonType[] defenderTypes,BattleLogger logger)
+        public static double GetTotalMoveEffectiveness(PokemonType attackType, PokemonType[] defenderTypes, BattleLogger logger)
         {
             double total = 1.0;
             foreach (var defender in defenderTypes)

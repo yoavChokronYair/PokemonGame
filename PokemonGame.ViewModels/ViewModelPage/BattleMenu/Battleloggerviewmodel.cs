@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Helper.BattleHelper;
@@ -70,11 +69,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public void EnqueueEntries(IEnumerable<BattleLogEntry> entries)
         {
             foreach (var entry in entries)
+            {
                 _queue.Enqueue(entry);
+            }
 
             // Immediately show the first message so the box is never blank
             if (_queue.Count > 0 && !HasMore)
+            {
                 ShowNext();
+            }
         }
 
         /// <summary>
@@ -93,7 +96,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                     var remaining = new List<BattleLogEntry>(_queue) { };
                     _queue.Clear();
                     _queue.Enqueue(entry);
-                    foreach (var r in remaining) _queue.Enqueue(r);
+                    foreach (var r in remaining)
+                    {
+                        _queue.Enqueue(r);
+                    }
+
                     break;
                 }
                 ApplyEntry(entry);

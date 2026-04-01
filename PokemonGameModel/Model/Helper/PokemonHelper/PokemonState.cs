@@ -1,5 +1,4 @@
-﻿using System.Security.Authentication.ExtendedProtection;
-using PokemonGame.Model.Domain.Pokemon;
+﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;

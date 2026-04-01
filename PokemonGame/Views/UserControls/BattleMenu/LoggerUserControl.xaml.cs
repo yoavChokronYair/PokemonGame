@@ -23,7 +23,7 @@ namespace PokemonGame.Views.UserControls.BattleMenu
         public LoggerUserControl()
         {
             InitializeComponent();
-            
+
         }
     }
 }

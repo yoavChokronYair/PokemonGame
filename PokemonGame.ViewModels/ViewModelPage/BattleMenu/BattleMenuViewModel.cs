@@ -1,9 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Battle;
 using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.ViewModels.ViewModelHelper;
-using System.Windows.Input;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
@@ -25,8 +25,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             set
             {
                 if (SetProperty(ref _isMovesetVisible, value))
+                {
                     OnPropertyChanged(nameof(IsMainMenuVisible));
-            }   
+                }
+            }
         }
 
 

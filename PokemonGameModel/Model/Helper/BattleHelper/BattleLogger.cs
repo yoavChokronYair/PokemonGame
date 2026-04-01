@@ -37,13 +37,13 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             => _entries.Add(new BattleLogEntry(phase, CurrentTurn, message));
 
         // Convenience overloads so call sites are expressive
-        public void LogSetup(string message)      => Log(message, BattleLogPhase.Setup);
-        public void LogTurnStart(string message)  => Log(message, BattleLogPhase.TurnStart);
-        public void LogFaint(string message)      => Log(message, BattleLogPhase.Faint);
-        public void LogSwitch(string message)     => Log(message, BattleLogPhase.Switch);
-        public void LogWeather(string message)    => Log(message, BattleLogPhase.Weather);
-        public void LogStatus(string message)     => Log(message, BattleLogPhase.StatusEffect);
-        public void LogBattleEnd(string message)  => Log(message, BattleLogPhase.BattleEnd);
+        public void LogSetup(string message) => Log(message, BattleLogPhase.Setup);
+        public void LogTurnStart(string message) => Log(message, BattleLogPhase.TurnStart);
+        public void LogFaint(string message) => Log(message, BattleLogPhase.Faint);
+        public void LogSwitch(string message) => Log(message, BattleLogPhase.Switch);
+        public void LogWeather(string message) => Log(message, BattleLogPhase.Weather);
+        public void LogStatus(string message) => Log(message, BattleLogPhase.StatusEffect);
+        public void LogBattleEnd(string message) => Log(message, BattleLogPhase.BattleEnd);
     }
 
 

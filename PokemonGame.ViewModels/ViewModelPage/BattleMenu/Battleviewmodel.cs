@@ -1,10 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Battle;
-using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.Translators;
@@ -76,7 +74,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private void OnMoveChosen(int moveIndex)
         {
             if (_manager.Phase != BattlePhase.AwaitingPlayerAction)
+            {
                 return;
+            }
 
             _manager.RunTurn(moveIndex, botDecides: true);
             SyncAll();
@@ -86,7 +86,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private void OnSwitchChosen(int slotIndex)
         {
             if (_manager.Phase != BattlePhase.AwaitingPlayerSwitch)
+            {
                 return;
+            }
 
             _manager.PlayerSwitch(slotIndex);
             SyncAll();
@@ -124,7 +126,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 // On first call, setup messages ("Go! Charizard!") are shown
                 // immediately without requiring a button press
                 if (flushSetup)
+                {
                     Logger.FlushSetupMessages();
+                }
             }
 
             OnPropertyChanged(nameof(IsBattleOver));
@@ -164,8 +168,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             var slots = new[] { Move0, Move1, Move2, Move3 };
             for (int i = 0; i < 4; i++)
             {
-                if (i < moves.Count) slots[i].SetMove(moves[i]);
-                else slots[i].Clear();
+                if (i < moves.Count)
+                {
+                    slots[i].SetMove(moves[i]);
+                }
+                else
+                {
+                    slots[i].Clear();
+                }
             }
         }
     }
