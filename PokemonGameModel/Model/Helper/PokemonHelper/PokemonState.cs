@@ -1,5 +1,4 @@
-﻿using System.Security.Authentication.ExtendedProtection;
-using PokemonGame.Model.Domain.Pokemon;
+﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
@@ -14,6 +13,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public PokemonState(PokemonDomain state)
         {
             _state = state;
+            turnsActive = 0;
         }
 
         // --- Identity / stats ---
@@ -30,14 +30,19 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public int Speed => _state.BaseSpeed;
         public IReadOnlyList<IMove> Moves => _state.Moves;
         public IMove? LastUsedMove => _state.LastUsedMove;
+        public bool WasStatLoweredThisTurn => _state.WasStatLoweredThisTurn;
 
+        public int turnsActive;
         public double LastDamageDealt { get; internal set; }
+        public double LastDamageTaken { get; internal set; }
 
         // --- HP ---
         public void TakeDamage(int amount)
         {
             _state.LastDamageTaken = Math.Min(amount, _state.CurrentHP);
             _state.CurrentHP = Math.Max(0, _state.CurrentHP - amount);
+            RegisterDamageTaken(amount);
+            
         }
 
         public void RestoreHP(int amount)
@@ -46,6 +51,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         }
 
         public void RegisterDamageDealt(int amount) => _state.LastDamageDealt = amount;
+        public void RegisterDamageTaken(int amount) => _state.LastDamageTaken = amount;
         public double GetHPFraction() => (double)CurrentHP / MaxHP;
 
 

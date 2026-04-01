@@ -5,10 +5,12 @@
 // ICondition<T> and ITarget interfaces live in Interface/Move/IConditionAndTarget.cs.
 // NOTE: Probability uses RandomHelper — no inline new Random() anywhere in this file.
 
+using System.Reflection;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Model.Helper.DesignPatterns
@@ -58,6 +60,11 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     }
 
     // ── Battle Conditions ─────────────────────────────────────────────────────
+    public class IsNewPokemon : ICondition<BattleState>
+    {
+        // Checks if the Attacker has spent 0 full turns on the field
+        public bool Check(BattleState battle) => battle.Attacker.turnsActive == 0;
+    }
 
     public class IsWeatherActive : ICondition<BattleState>
     {
@@ -65,26 +72,106 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public IsWeatherActive(Weather weather) { _weather = weather; }
         public bool Check(BattleState battle) => battle.WeatherService.IsWeatherActive(_weather);
     }
+    public class IsTerrainActive : ICondition<BattleState>
+    {
+        private readonly TerrainType _terrain;
+        public IsTerrainActive(TerrainType terrain) { _terrain = terrain; }
+        public bool Check(BattleState battle) => battle.TerrainService.CurrentTerrain == _terrain;
+    }
 
+    public class IsAnyTerrainActive : ICondition<BattleState>
+    {
+        public bool Check(BattleState battle) => battle.TerrainService.CurrentTerrain != TerrainType.None;
+    }
     public class IsBattleOver : ICondition<BattleState>
     {
         public bool Check(BattleState battle) => battle.IsBattleOver;
     }
 
     // ── Pokemon Conditions ────────────────────────────────────────────────────
-
+    public class WasHitByContact : ICondition<BattleState>
+    {
+        public bool Check(BattleState battle)
+        {
+            if(battle.LastUsedMove != null)
+            {
+                MoveState lastMoveState = (MoveState)battle.LastUsedMove;
+                if(lastMoveState.Category == MoveCategory.Physical )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    public class MoveHasTag : ICondition<BattleState>
+    {
+        private readonly MoveTag _tag;
+        public MoveHasTag(MoveTag tag) { _tag = tag; }
+        public bool Check(BattleState battle) 
+        {
+            if(battle.LastUsedMove != null)
+            {
+                return ((MoveState) battle.LastUsedMove).Tag == _tag;
+            }
+            return false;
+        }
+    }
+   
+    public class MoveIsCategory : ICondition<BattleState>
+    {
+        private readonly MoveCategory _category;
+        public MoveIsCategory(MoveCategory category) { _category = category; }
+        public bool Check(BattleState battle)
+        {
+            if(battle.LastUsedMove != null)
+            {
+                return ((MoveState)battle.LastUsedMove).Category == _category;
+            }
+            return false;
+        }
+    }
+    public class DidKnockoutOpponent : ICondition<BattleState>
+    {
+        public bool Check(BattleState battle) => battle.Defender.IsFainted && !battle.Attacker.IsFainted;
+    }
+    public class TookDamageThisTurn : ICondition<PokemonState>
+    {
+        public bool Check(PokemonState pokemon) => pokemon.LastDamageTaken > 0;
+    }
+    public class HasAnyStatus : ICondition<PokemonState>
+    {
+        public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() != StatusCondition.None;
+    }
     public class HasStatus : ICondition<PokemonState>
     {
         private readonly StatusCondition _status;
         public HasStatus(StatusCondition status) { _status = status; }
         public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() == _status;
     }
+    //public class IsHoldingItem : ICondition<PokemonState>
+    //{
+    //    public bool Check(PokemonState pokemon) => pokemon.HeldItem != null;
+    //}
 
+    //public class WasItemConsumed : ICondition<PokemonState>
+    //{
+    //    // This requires a bool flag in PokemonState reset each switch-in
+    //    public bool Check(PokemonState pokemon) => pokemon.ItemWasConsumedThisBattle;
+    //}
     public class HasVolatile : ICondition<PokemonState>
     {
         private readonly VolatileStatus _status;
         public HasVolatile(VolatileStatus status) { _status = status; }
         public bool Check(PokemonState pokemon) => pokemon.HasVolatileStatus(_status);
+    }
+    public class HasBaseStatChanged : ICondition<BattleState>
+    {
+        public bool Check(BattleState entity)
+        {
+            // Competitive/Defiant only trigger if a stat was LOWERED
+            return entity.Attacker.WasStatLoweredThisTurn;
+        }
     }
 
     public class IsFainted : ICondition<PokemonState>

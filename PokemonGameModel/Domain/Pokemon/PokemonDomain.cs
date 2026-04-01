@@ -22,6 +22,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int PokedexNumber { get; set; }
         public PokemonType PrimaryType { get; set; }
         public PokemonType? SecondaryType { get; set; }
+        public IAbility? Ability { get; set; }
         public int Level { get; set; }
         public NatureType Nature { get; set; }
 
@@ -45,6 +46,7 @@ namespace PokemonGame.Model.Domain.Pokemon
             { Stat.SpecialAttack, 0 }, { Stat.SpecialDefense, 0 },
             { Stat.Speed, 0 }, { Stat.Accuracy, 0 }, { Stat.Evasion, 0 }
         };
+        public bool WasStatLoweredThisTurn { get; set; }
 
         // HP
         public int CurrentHP { get; set; }

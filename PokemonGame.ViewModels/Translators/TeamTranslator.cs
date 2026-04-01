@@ -48,6 +48,7 @@ namespace PokemonGame.ViewModels.Translators
             var b = result.Battler;
             var g = result.General;
             var s = result.Stats;
+            var a = result.MoveNames;
 
             var nature = ParseEnum<NatureType>(b.Nature ?? "Serious");
 
@@ -87,7 +88,7 @@ namespace PokemonGame.ViewModels.Translators
                 IVs = new[] { b.Iv_hp, b.Iv_atk, b.Iv_def, b.Iv_spAtk, b.Iv_spDef, b.Iv_speed },
                 EVs = new[] { b.Ev_hp, b.Ev_atk, b.Ev_def, b.Ev_spAtk, b.Ev_spDef, b.Ev_speed },
                 Moves = result.MoveNames.Select(BuildMove).ToList(),
-            };
+            }; 
         }
 
         private IMove BuildMove(string moveName)
@@ -96,6 +97,7 @@ namespace PokemonGame.ViewModels.Translators
             var attempt = _moveTranslator.TranslateAttemptForMove(moveName);
             return new MoveState(domain, attempt);
         }
+        
 
         private static int CalcStat(int @base, int iv, int ev, int level, Dictionary<Stat, double> modifiers, Stat stat)
         {

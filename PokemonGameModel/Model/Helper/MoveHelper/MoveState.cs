@@ -20,6 +20,7 @@ namespace PokemonGame.Model.Model.Helper.MoveHelper
         public PokemonType Element => _state.Element;
         public MoveCategory Category => _state.Category;
         public MoveTarget Target => _state.Target;
+        public MoveTag Tag => _state.tag;
         public int PP => _state.PP;
         public int MaxPP => _state.MaxPP;
         public int Priority => _state.Priority;

@@ -16,6 +16,7 @@ namespace PokemonGame.Services.Handler
         public BattlerPokemon Battler { get; set; } = null!;
         public PokemonGeneral General { get; set; } = null!;
         public PokemonStatsData Stats { get; set; } = null!;
+        
         public List<string> MoveNames { get; set; } = new();
     }
 

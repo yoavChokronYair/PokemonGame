@@ -10,6 +10,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         private readonly BattleDomain _state;
         public BattleWeatherService WeatherService { get; }
         public BattleStatusService StatusService { get; }
+        public BattleTerrainService TerrainService { get; } 
         public BattleLogger Logger { get; } = new();
         public BattleTurnResolver TurnResolver { get; }
 
@@ -19,6 +20,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             WeatherService = new BattleWeatherService(this, Logger);
             StatusService = new BattleStatusService(Logger);
             TurnResolver = new BattleTurnResolver();
+            TerrainService = new BattleTerrainService(this, Logger); // Initialize
         }
 
         // Data accessors
@@ -37,17 +39,22 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public void BeginTurn()
         {
             _state.TurnNumber++;
+            
             _state.LastDamageDealt = 0;
             Logger.Log($"--- Turn {_state.TurnNumber} ---");
+
         }
 
         public void EndTurn(PokemonState player, PokemonState bot)
         {
             WeatherService.TickWeather();
+            TerrainService.TickTerrain();
             AttackerSide.Tick();
             DefenderSide.Tick();
             StatusService.ApplyEndOfTurnStatus(player);
             StatusService.ApplyEndOfTurnStatus(bot);
+            _state.Attacker.turnsActive++;
+            _state.Defender.turnsActive++;
         }
 
 
