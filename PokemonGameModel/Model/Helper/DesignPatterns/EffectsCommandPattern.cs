@@ -88,7 +88,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         {
             var defender = _target.Resolve(battle);
             int baseAmount = (int)_power.Evaluate(battle);
-            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle,baseAmount);
+            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle, baseAmount);
             defender.TakeDamage(amount);
             battle.Attacker.RegisterDamageDealt(amount);
             battle.LastDamageDealt = amount;

@@ -66,7 +66,9 @@ namespace PokemonGame.ViewModels.Translators
                 ?? throw new InvalidOperationException($"Move '{moveName}' not found.");
 
             if (tree.Attempts.Count == 0)
+            {
                 throw new InvalidOperationException($"Move '{moveName}' has no attempts.");
+            }
 
             return TranslateAttempt(tree.Attempts[0]);
         }

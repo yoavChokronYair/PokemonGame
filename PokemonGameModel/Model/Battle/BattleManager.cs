@@ -168,7 +168,10 @@ namespace PokemonGame.Model.Model.Battle
 
         private void ExecuteMove(IMove move, PokemonState user, PokemonState target)
         {
-            if (user.IsFainted) return;
+            if (user.IsFainted)
+            {
+                return;
+            }
 
             _state.RegisterMove(move);
 
