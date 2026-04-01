@@ -167,7 +167,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
                 Stat.Defense => _state.BaseDefense,
                 Stat.SpecialAttack => _state.BaseSpecialAttack,
                 Stat.SpecialDefense => _state.BaseSpecialDefense,
-                Stat.Speed => _state.BaseSpeed,
+                Stat.Speed => (int)(_state.BaseSpeed * _state.SpeedMultiplier),
                 _ => 1
             };
 
@@ -224,9 +224,59 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
             _state.VolatileStatuses.Clear();
             _state.IsCharging = false;
             _state.IsRampaging = false;
+            _state.CritStage = 0;
+            _state.SpeedMultiplier = 1.0;
+            _state.AccuracyMultiplier = 1.0;
+            _state.EvasionMultiplier = 1.0;
+            _state.LockedMove = null;
+            _state.PriorityOverride = null;
             battle.Logger.Log($"{Name} was forced out!");
         }
+        // --- Stat stages ---
+        public void ResetNegativeStatStages()
+        {
+            foreach (var key in _state.StatStages.Keys.ToList())
+            {
+                if (_state.StatStages[key] < 0)
+                    _state.StatStages[key] = 0;
+            }
+        }
 
+        // --- Crit ---
+        public void RaiseCritStage(int stages)
+            => _state.CritStage = MathHelper.Clamp(_state.CritStage + stages, 0, 3);
+
+        public int GetCritStage() => _state.CritStage;
+
+        // --- Speed multiplier (Choice Scarf) ---
+        public void ApplySpeedMultiplier(double multiplier)
+            => _state.SpeedMultiplier *= multiplier;
+
+        public double GetSpeedMultiplier() => _state.SpeedMultiplier;
+
+        // --- Accuracy / Evasion multipliers ---
+        public void ApplyAccuracyMultiplier(double multiplier)
+            => _state.AccuracyMultiplier *= multiplier;
+
+        public double GetAccuracyMultiplier() => _state.AccuracyMultiplier;
+
+        public void ApplyEvasionMultiplier(double multiplier)
+            => _state.EvasionMultiplier *= multiplier;
+
+        public double GetEvasionMultiplier() => _state.EvasionMultiplier;
+
+        // --- Move lock (Choice items) ---
+        public void LockToLastMove()
+            => _state.LockedMove = _state.LastUsedMove;
+
+        public IMove? GetLockedMove() => _state.LockedMove;
+
+        // --- Priority override (Quick Claw) ---
+        public void SetPriorityOverride(int priority)
+            => _state.PriorityOverride = priority;
+
+        public int? GetPriorityOverride() => _state.PriorityOverride;
+        public void ClearPriorityOverride() => _state.PriorityOverride = null;
         public override string ToString() => $"{Name} (Lv.{Level}) {CurrentHP}/{MaxHP} HP [{_state.Status}]";
     }
 }

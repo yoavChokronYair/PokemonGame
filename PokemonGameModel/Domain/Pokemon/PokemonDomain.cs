@@ -35,7 +35,13 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int BaseSpecialAttack { get; set; }
         public int BaseSpecialDefense { get; set; }
         public int BaseSpeed { get; set; }
-
+        // Add to PokemonDomain:
+        public int CritStage { get; set; } = 0;
+        public double SpeedMultiplier { get; set; } = 1.0;
+        public double AccuracyMultiplier { get; set; } = 1.0;
+        public double EvasionMultiplier { get; set; } = 1.0;
+        public IMove? LockedMove { get; set; } = null;
+        public int? PriorityOverride { get; set; } = null;
         // IVs / EVs
         public int[] IVs { get; set; } = new int[PokemonConstants.IvsAndEvsNum];
         public int[] EVs { get; set; } = new int[PokemonConstants.IvsAndEvsNum];
