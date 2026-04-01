@@ -6,6 +6,7 @@
 
 using PokemonGame.Constants;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Model.Helper
 {
@@ -152,12 +153,26 @@ namespace PokemonGame.Model.Model.Helper
                 : TypeEffectivenessChartConstants.normal;
         }
 
-        public static double GetTotalMoveEffectiveness(PokemonType attackType, PokemonType[] defenderTypes)
+        public static double GetTotalMoveEffectiveness(PokemonType attackType, PokemonType[] defenderTypes,BattleLogger logger)
         {
             double total = 1.0;
             foreach (var defender in defenderTypes)
             {
                 total *= GetMoveEffectiveness(attackType, defender);
+            }
+
+            // Logging the result based on the total multiplier
+            if (total > 1.0)
+            {
+                logger.Log($"It's super effective!");
+            }
+            else if (total == 0)
+            {
+                logger.Log($"It doesn't affect the opponent...");
+            }
+            else if (total < 1.0)
+            {
+                logger.Log("It's not very effective...");
             }
 
             return total;
