@@ -60,17 +60,17 @@ namespace PokemonGame.Services.Handler
                 var abilities = new List<string>();
                 if (p.FirstAbilityID != null)
                 {
-                    abilities.Add(_abilities.GetAbility(p.FirstAbilityID.Value)?.Name ?? "");
+                    abilities.Add(_abilities.GetAbilityById(p.FirstAbilityID.Value)?.Name ?? "");
                 }
 
                 if (p.SecondAbilityID != null)
                 {
-                    abilities.Add(_abilities.GetAbility(p.SecondAbilityID.Value)?.Name ?? "");
+                    abilities.Add(_abilities.GetAbilityById(p.SecondAbilityID.Value)?.Name ?? "");
                 }
 
                 if (p.HiddenAbilityID != null)
                 {
-                    abilities.Add(_abilities.GetAbility(p.HiddenAbilityID.Value)?.Name ?? "");
+                    abilities.Add(_abilities.GetAbilityById(p.HiddenAbilityID.Value)?.Name ?? "");
                 }
 
                 abilities.RemoveAll(string.IsNullOrWhiteSpace);
@@ -327,7 +327,7 @@ namespace PokemonGame.Services.Handler
         }
         public string GetAbilityNameById(int abilityId)
         {
-            return _abilities.GetAbility(abilityId)?.Name ?? string.Empty;
+            return _abilities.GetAbilityById(abilityId)?.Name ?? string.Empty;
         }
         /// <summary>Looks up an ability ID by name. Returns 0 if not found.</summary>
         public int GetAbilityId(string? abilityName)

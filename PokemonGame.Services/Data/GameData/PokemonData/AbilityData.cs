@@ -7,5 +7,6 @@
         public string? Description { get; set; }
         public int? Effect_id { get; set; }
         public int? Condition_id { get; set; }
+        public string? trigger { get; set; }
     }
 }
