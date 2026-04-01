@@ -23,6 +23,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public PokemonType PrimaryType { get; set; }
         public PokemonType? SecondaryType { get; set; }
         public IAbility? Ability { get; set; }
+        public IHeldItem? HeldItem { get; set; }
         public int Level { get; set; }
         public NatureType Nature { get; set; }
 
