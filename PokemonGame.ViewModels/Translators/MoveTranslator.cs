@@ -192,7 +192,7 @@ namespace PokemonGame.ViewModels.Translators
             "HasVolatile" => new HasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
             "IsFainted" => new IsFainted(),
             "IsFullHP" => new IsFullHP(),
-            "HPBelow" => new HPBelow(c.HpFraction ?? 0),
+            "HPBelow" => new HPBelow(c.HpFraction ?? 0),    
             "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
             "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
             "And" => new And<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),

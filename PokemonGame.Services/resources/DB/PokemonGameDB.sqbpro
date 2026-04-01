@@ -791,7 +791,7 @@ FROM abilities a
 LEFT JOIN effects e ON a.effect_id = e.id
 LEFT JOIN numbers n ON e.number_id = n.id
 LEFT JOIN conditions c ON a.condition_id = c.id
-WHERE a.name LIKE 'Intimidate'; -- Replace 'Intimidate' with the name you want</sql><sql name="SQL 9">SELECT 
+WHERE a.id IN (SELECT id FROM abilities ORDER BY RANDOM() LIMIT 1);</sql><sql name="SQL 9">SELECT 
     i.name AS &quot;Item Name&quot;,
     i.category AS &quot;Category&quot;,
     i.description AS &quot;Description&quot;,
@@ -809,63 +809,26 @@ FROM items i
 LEFT JOIN effects e ON i.effect_id = e.id
 LEFT JOIN numbers n ON e.number_id = n.id
 LEFT JOIN conditions c ON i.condition_id = c.id
-WHERE i.id IN (SELECT id FROM items WHERE category = 'Held Item' and is_consumable = 0 ORDER BY RANDOM() LIMIT 1);</sql><sql name="SQL 10">-- on_entry: fire once when switching in
-UPDATE abilities SET trigger = 'on_entry' WHERE id IN (
-    15,  -- Drizzle
-    16,  -- Drought
-    17,  -- Sand Stream
-    18,  -- Snow Warning
-    38,  -- Intimidate
-    39,  -- Download
-    91,  -- Frisk
-    110, -- Anticipation
-    111  -- Forewarn
-);
+WHERE i.id IN (SELECT id FROM items WHERE category = 'Held Item' and is_consumable = 0 ORDER BY RANDOM() LIMIT 1);</sql><sql name="SQL 10">-- Hail weather condition (shared by Ice Body, Snow Cloak, Slush Rush)
+INSERT INTO conditions (id, type, weather) VALUES (79, 'IsWeatherActive', 'Hail');
 
--- on_hit: fire when the Pokémon is struck
-UPDATE abilities SET trigger = 'on_hit' WHERE id IN (
-    10,  -- Static
-    11,  -- Flame Body
-    12,  -- Poison Point
-    13,  -- Effect Spore
-    14,  -- Rough Skin
-    19,  -- Water Absorb
-    20,  -- Volt Absorb
-    21,  -- Flash Fire
-    77,  -- Sap Sipper
-    78,  -- Storm Drain
-    79,  -- Motor Drive
-    80,  -- Lightning Rod
-    106  -- Liquid Ooze
-);
+-- Sandstorm weather condition (shared by Sand Rush, Sand Veil)
+INSERT INTO conditions (id, type, weather) VALUES (80, 'IsWeatherActive', 'Sandstorm');
 
--- on_turn_end: fire at the end of each turn
-UPDATE abilities SET trigger = 'on_turn_end' WHERE id IN (
-    40,  -- Speed Boost
-    41,  -- Moody
-    46,  -- Rain Dish
-    47,  -- Ice Body
-    48,  -- Dry Skin
-    51,  -- Shed Skin
-    52,  -- Hydration
-    49   -- Poison Heal
-);
+-- Early Bird: HasStatus Sleep + UserCondition
+INSERT INTO conditions (id, type, status) VALUES (81, 'HasStatus', 'Sleep');
+INSERT INTO conditions (id, type, inner_condition_id) VALUES (82, 'UserCondition', 81);
 
--- on_damage: fire when the Pokémon takes damage
-UPDATE abilities SET trigger = 'on_damage' WHERE id IN (
-    103  -- Anger Point (triggers on critical hit received)
-);
+-- Synchronize: Burn OR Paralysis OR Poison -&gt; UserCondition
+INSERT INTO conditions (id, type, status) VALUES (83, 'HasStatus', 'Burn');
+INSERT INTO conditions (id, type, status) VALUES (84, 'HasStatus', 'Paralysis');
+INSERT INTO conditions (id, type, left_condition_id, right_condition_id) VALUES (85, 'Or', 83, 84);
+INSERT INTO conditions (id, type, status) VALUES (86, 'HasStatus', 'Poison');
+INSERT INTO conditions (id, type, left_condition_id, right_condition_id) VALUES (87, 'Or', 85, 86);
+INSERT INTO conditions (id, type, inner_condition_id) VALUES (88, 'UserCondition', 87);
 
--- on_exit: fire when the Pokémon is withdrawn
-UPDATE abilities SET trigger = 'on_exit' WHERE id IN (
-    50,  -- Natural Cure
-    100  -- Unburden
-);
-
--- on_attack: fire when the Pokémon uses a move
-UPDATE abilities SET trigger = 'on_attack' WHERE id IN (
-    61,  -- Stench
-    87,  -- Trace
-    89,  -- Color Change
-    97   -- Synchronize
-);</sql><current_tab id="8"/></tab_sql></sqlb_project>
+-- Poison Heal: HasStatus Poison OR Toxic -&gt; UserCondition
+INSERT INTO conditions (id, type, status) VALUES (89, 'HasStatus', 'Poison');
+INSERT INTO conditions (id, type, status) VALUES (90, 'HasStatus', 'Toxic');
+INSERT INTO conditions (id, type, left_condition_id, right_condition_id) VALUES (91, 'Or', 89, 90);
+INSERT INTO conditions (id, type, inner_condition_id) VALUES (92, 'UserCondition', 91);</sql><current_tab id="6"/></tab_sql></sqlb_project>

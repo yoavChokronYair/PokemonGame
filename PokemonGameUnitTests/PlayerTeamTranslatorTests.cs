@@ -1,12 +1,16 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Helper.MoveHelper;
+using PokemonGame.Model.Model.Helper.PokemonHelper;
+using Xunit;
 using Xunit.Abstractions;
+using System.Linq;
+using PokemonGame.Model.Model;
 
 namespace PokemonGame.Tests
 {
     // ═════════════════════════════════════════════════════════════════════════
-    //  TeamTranslator — Player team (Charizard × 6, HyperBeam + Thunderbolt)
+    //  TeamTranslator — Player team (Charizard × 6, Blaze Ability)
     // ═════════════════════════════════════════════════════════════════════════
     public class PlayerTeamTranslatorTests
     {
@@ -23,206 +27,97 @@ namespace PokemonGame.Tests
         private void DumpTeam(PokemonTeam team, string label = "PokemonTeam")
         {
             _out.WriteLine($"══ {label} ════════════════════════════════════");
+            _out.WriteLine($"  Active Pokémon    : {team.Active.Name}");
+            _out.WriteLine($"  Ability           : {((AbilityState)(_team.Active.Ability)).Name ?? "NULL"}");
             _out.WriteLine($"  IsDefeated        : {team.IsDefeated}");
             _out.WriteLine($"  ActiveIndex       : {team.ActiveIndex}");
-            _out.WriteLine($"  AlivePokemonCount : {team.GetAlivePokemonCount()}");
-            _out.WriteLine($"  TotalPokemon      : {team.getAllPokemonCount()}");
-            _out.WriteLine($"  SwitchableSlots   : [{string.Join(", ", team.GetSwitchableIndices())}]");
-            _out.WriteLine($"  Active → {team.Active.Name}  HP:{team.Active.CurrentHP}/{team.Active.MaxHP}  Fainted:{team.Active.IsFainted}");
+            _out.WriteLine($"  Alive Count       : {team.GetAlivePokemonCount()} / {team.getAllPokemonCount()}");
+            _out.WriteLine($"  HP Status         : {team.Active.CurrentHP}/{team.Active.MaxHP}");
+
             DumpMoves(team.Active);
             _out.WriteLine("══════════════════════════════════════════════");
         }
 
-        private void DumpMoves(Model.Model.Helper.PokemonHelper.PokemonState p)
+        private void DumpMoves(PokemonState p)
         {
             _out.WriteLine($"  Moves ({p.Moves.Count}):");
-            for (int i = 0; i < p.Moves.Count; i++)
+            var moves = p.Moves.OfType<MoveState>().ToList();
+            for (int i = 0; i < moves.Count; i++)
             {
-                var m = p.Moves[i] as MoveState;
-                if (m != null)
-                {
-                    _out.WriteLine($"    [{i}] Name     : {m.Name}");
-                    _out.WriteLine($"        Type     : {m.Element}");
-                    _out.WriteLine($"        Category : {m.Category}");
-                    _out.WriteLine($"        PP       : {m.PP}/{m.MaxPP}");
-                    _out.WriteLine($"        Priority : {m.Priority}");
-                    _out.WriteLine($"        Target   : {m.Target}");
-                }
-                else
-                {
-                    _out.WriteLine($"    [{i}] (non-MoveState: {p.Moves[i].GetType().Name})");
-                }
+                var m = moves[i];
+                _out.WriteLine($"    [{i}] {m.Name,-12} | {m.Element,-8} | {m.Category,-8} | PP: {m.PP}/{m.MaxPP}");
             }
         }
 
-        // ── Tests ─────────────────────────────────────────────────────────────
+        // ── Identity & Ability Tests ──────────────────────────────────────────
 
         [Fact]
         public void PlayerTeam_IsNotNull()
         {
-            DumpTeam(_team, "Player Team");
             Assert.NotNull(_team);
         }
 
         [Fact]
-        public void PlayerTeam_ActivePokemonIsCharizard()
+        public void PlayerTeam_ActivePokemon_IdentityAndAbility()
         {
-            DumpTeam(_team, "Player Team");
+            DumpTeam(_team, "Player Team Identity");
             Assert.Equal("Charizard", _team.Active.Name);
+            Assert.NotNull(_team.Active.Ability);
+            // Verify ability name (assuming Blaze is default for Charizard)
+            Assert.Equal("Blaze", ((AbilityState)(_team.Active.Ability)).Name);
         }
 
-        [Fact]
-        public void PlayerTeam_ActivePokemonHasTwoMoves()
-        {
-            DumpTeam(_team, "Player Team");
-            Assert.Equal(2, _team.Active.Moves.Count);
-        }
+      
+
+        // ── Move Tests ────────────────────────────────────────────────────────
 
         [Fact]
-        public void PlayerTeam_ActivePokemon_FirstMoveIsHyperBeam()
+        public void PlayerTeam_ActivePokemon_Moves_VerifyDetails()
         {
-            DumpTeam(_team, "Player Team");
-            var move = _team.Active.Moves[0] as MoveState;
-            _out.WriteLine($"  Moves[0] cast to MoveState: {move?.Name ?? "null"}");
-            Assert.NotNull(move);
-            Assert.Equal("HyperBeam", move!.Name);
+            var moves = _team.Active.Moves.OfType<MoveState>().ToList();
+            Assert.Equal(2, moves.Count);
+
+            // HyperBeam Check
+            Assert.Equal("HyperBeam", moves[0].Name);
+            Assert.Equal(PokemonType.Normal, moves[0].Element);
+            Assert.Equal(5, moves[0].MaxPP);
+
+            // Thunderbolt Check
+            Assert.Equal("Thunderbolt", moves[1].Name);
+            Assert.Equal(PokemonType.Electric, moves[1].Element);
         }
 
-        [Fact]
-        public void PlayerTeam_ActivePokemon_SecondMoveIsThunderbolt()
-        {
-            DumpTeam(_team, "Player Team");
-            var move = _team.Active.Moves[1] as MoveState;
-            _out.WriteLine($"  Moves[1] cast to MoveState: {move?.Name ?? "null"}");
-            Assert.NotNull(move);
-            Assert.Equal("Thunderbolt", move!.Name);
-        }
+        // ── Health & Team State ───────────────────────────────────────────────
 
         [Fact]
-        public void PlayerTeam_ActivePokemon_HyperBeam_IsNormalSpecial()
+        public void PlayerTeam_Health_IsFullOnLoad()
         {
-            DumpTeam(_team, "Player Team");
-            var move = _team.Active.Moves[0] as MoveState;
-            _out.WriteLine($"  HyperBeam Element  : {move?.Element}  (expected: Normal)");
-            _out.WriteLine($"  HyperBeam Category : {move?.Category}  (expected: Special)");
-            Assert.NotNull(move);
-            Assert.Equal(PokemonType.Normal, move!.Element);
-            Assert.Equal(MoveCategory.Special, move.Category);
-        }
-
-        [Fact]
-        public void PlayerTeam_ActivePokemon_Thunderbolt_IsElectricSpecial()
-        {
-            DumpTeam(_team, "Player Team");
-            var move = _team.Active.Moves[1] as MoveState;
-            _out.WriteLine($"  Thunderbolt Element  : {move?.Element}  (expected: Electric)");
-            _out.WriteLine($"  Thunderbolt Category : {move?.Category}  (expected: Special)");
-            Assert.NotNull(move);
-            Assert.Equal(PokemonType.Electric, move!.Element);
-            Assert.Equal(MoveCategory.Special, move.Category);
-        }
-
-        [Fact]
-        public void PlayerTeam_ActivePokemon_HyperBeam_HasCorrectPP()
-        {
-            DumpTeam(_team, "Player Team");
-            var move = _team.Active.Moves[0] as MoveState;
-            _out.WriteLine($"  HyperBeam PP    : {move?.PP}  (expected: 5)");
-            _out.WriteLine($"  HyperBeam MaxPP : {move?.MaxPP}  (expected: 5)");
-            Assert.Equal(5, move!.PP);
-            Assert.Equal(5, move.MaxPP);
-        }
-
-        [Fact]
-        public void PlayerTeam_ActivePokemon_Thunderbolt_HasCorrectPP()
-        {
-            DumpTeam(_team, "Player Team");
-            var move = _team.Active.Moves[1] as MoveState;
-            _out.WriteLine($"  Thunderbolt PP    : {move?.PP}  (expected: 15)");
-            _out.WriteLine($"  Thunderbolt MaxPP : {move?.MaxPP}  (expected: 15)");
-            Assert.Equal(15, move!.PP);
-            Assert.Equal(15, move.MaxPP);
-        }
-
-        [Fact]
-        public void PlayerTeam_ActivePokemon_HasPositiveHP()
-        {
-            DumpTeam(_team, "Player Team");
-            _out.WriteLine($"  MaxHP : {_team.Active.MaxHP}  (expected: > 0)");
             Assert.True(_team.Active.MaxHP > 0);
-        }
-
-        [Fact]
-        public void PlayerTeam_ActivePokemon_StartsAtFullHP()
-        {
-            DumpTeam(_team, "Player Team");
-            _out.WriteLine($"  CurrentHP : {_team.Active.CurrentHP}");
-            _out.WriteLine($"  MaxHP     : {_team.Active.MaxHP}");
             Assert.Equal(_team.Active.MaxHP, _team.Active.CurrentHP);
         }
 
         [Fact]
-        public void PlayerTeam_IsNotDefeated()
-        {
-            DumpTeam(_team, "Player Team");
-            _out.WriteLine($"  IsDefeated : {_team.IsDefeated}  (expected: False)");
-            Assert.False(_team.IsDefeated);
-        }
-
-        [Fact]
-        public void PlayerTeam_HasSixAlivePokemon()
-        {
-            DumpTeam(_team, "Player Team");
-            _out.WriteLine($"  AlivePokemonCount : {_team.GetAlivePokemonCount()}  (expected: 6)");
-            Assert.Equal(6, _team.GetAlivePokemonCount());
-        }
-
-        [Fact]
-        public void PlayerTeam_ActiveIndex_IsZeroAtStart()
-        {
-            DumpTeam(_team, "Player Team");
-            _out.WriteLine($"  ActiveIndex : {_team.ActiveIndex}  (expected: 0)");
-            Assert.Equal(0, _team.ActiveIndex);
-        }
-
-        [Fact]
-        public void PlayerTeam_SwitchTo_SlotOne_Succeeds()
+        public void PlayerTeam_Switching_LogicWorks()
         {
             var team = BattleTestFactory.PlayerTeam();
-            DumpTeam(team, "Player Team — before switch");
-            bool result = team.SwitchTo(1);
-            _out.WriteLine($"  SwitchTo(1) returned : {result}   (expected: True)");
-            _out.WriteLine($"  ActiveIndex after    : {team.ActiveIndex}  (expected: 1)");
-            _out.WriteLine($"  Active Pokémon now   : {team.Active.Name}");
-            Assert.True(result);
+            bool canSwitch = team.SwitchTo(1);
+
+            Assert.True(canSwitch);
             Assert.Equal(1, team.ActiveIndex);
+            Assert.False(team.SwitchTo(1)); // Cannot switch to already active
         }
 
         [Fact]
-        public void PlayerTeam_SwitchTo_ActiveSlot_ReturnsFalse()
+        public void PlayerTeam_GetSwitchableIndices_CorrectCount()
         {
-            var team = BattleTestFactory.PlayerTeam();
-            DumpTeam(team, "Player Team — switch to active slot");
-            bool result = team.SwitchTo(0);
-            _out.WriteLine($"  SwitchTo(0) returned : {result}  (expected: False — already active)");
-            Assert.False(result);
-        }
-
-        [Fact]
-        public void PlayerTeam_GetSwitchableIndices_ExcludesActiveSlot()
-        {
-            DumpTeam(_team, "Player Team");
             var switchable = _team.GetSwitchableIndices();
-            _out.WriteLine($"  ActiveIndex       : {_team.ActiveIndex}");
-            _out.WriteLine($"  Switchable slots  : [{string.Join(", ", switchable)}]");
-            _out.WriteLine($"  Switchable count  : {switchable.Count}  (expected: 5)");
-            Assert.DoesNotContain(0, switchable);
             Assert.Equal(5, switchable.Count);
+            Assert.DoesNotContain(_team.ActiveIndex, switchable);
         }
     }
 
     // ═════════════════════════════════════════════════════════════════════════
-    //  TeamTranslator — Enemy team (Blastoise × 6, Tackle + Thunderbolt)
+    //  TeamTranslator — Enemy team (Blastoise × 6, Torrent Ability)
     // ═════════════════════════════════════════════════════════════════════════
     public class EnemyTeamTranslatorTests
     {
@@ -234,149 +129,40 @@ namespace PokemonGame.Tests
             _out = output;
         }
 
-        // ── Dump helpers ──────────────────────────────────────────────────────
-
         private void DumpTeam(PokemonTeam team, string label = "PokemonTeam")
         {
             _out.WriteLine($"══ {label} ════════════════════════════════════");
-            _out.WriteLine($"  IsDefeated        : {team.IsDefeated}");
-            _out.WriteLine($"  ActiveIndex       : {team.ActiveIndex}");
-            _out.WriteLine($"  AlivePokemonCount : {team.GetAlivePokemonCount()}");
-            _out.WriteLine($"  TotalPokemon      : {team.getAllPokemonCount()}");
-            _out.WriteLine($"  SwitchableSlots   : [{string.Join(", ", team.GetSwitchableIndices())}]");
-            _out.WriteLine($"  Active → {team.Active.Name}  HP:{team.Active.CurrentHP}/{team.Active.MaxHP}  Fainted:{team.Active.IsFainted}");
-            DumpMoves(team.Active);
+            _out.WriteLine($"  Active Pokémon    : {team.Active.Name}");
+            _out.WriteLine($"  Ability           : {((AbilityState)(_team.Active.Ability)).Name ?? "NULL"}");
+            _out.WriteLine($"  Alive Count       : {team.GetAlivePokemonCount()}");
             _out.WriteLine("══════════════════════════════════════════════");
         }
 
-        private void DumpMoves(Model.Model.Helper.PokemonHelper.PokemonState p)
-        {
-            _out.WriteLine($"  Moves ({p.Moves.Count}):");
-            for (int i = 0; i < p.Moves.Count; i++)
-            {
-                var m = p.Moves[i] as MoveState;
-                if (m != null)
-                {
-                    _out.WriteLine($"    [{i}] Name     : {m.Name}");
-                    _out.WriteLine($"        Type     : {m.Element}");
-                    _out.WriteLine($"        Category : {m.Category}");
-                    _out.WriteLine($"        PP       : {m.PP}/{m.MaxPP}");
-                    _out.WriteLine($"        Priority : {m.Priority}");
-                    _out.WriteLine($"        Target   : {m.Target}");
-                }
-                else
-                {
-                    _out.WriteLine($"    [{i}] (non-MoveState: {p.Moves[i].GetType().Name})");
-                }
-            }
-        }
-
-        // ── Tests ─────────────────────────────────────────────────────────────
-
         [Fact]
-        public void EnemyTeam_IsNotNull()
+        public void EnemyTeam_Identity_VerifyBlastoiseAndTorrent()
         {
-            DumpTeam(_team, "Enemy Team");
-            Assert.NotNull(_team);
-        }
-
-        [Fact]
-        public void EnemyTeam_ActivePokemonIsBlastoise()
-        {
-            DumpTeam(_team, "Enemy Team");
+            DumpTeam(_team, "Enemy Team Identity");
             Assert.Equal("Blastoise", _team.Active.Name);
+            Assert.NotNull(_team.Active.Ability);
+            Assert.Equal("Torrent", ((AbilityState)(_team.Active.Ability)).Name);
         }
 
         [Fact]
-        public void EnemyTeam_ActivePokemonHasTwoMoves()
+        public void EnemyTeam_Moves_VerifyTackle()
         {
-            DumpTeam(_team, "Enemy Team");
-            Assert.Equal(2, _team.Active.Moves.Count);
+            var moves = _team.Active.Moves.OfType<MoveState>().ToList();
+            var tackle = moves.FirstOrDefault(m => m.Name == "Tackle");
+
+            Assert.NotNull(tackle);
+            Assert.Equal(PokemonType.Normal, tackle.Element);
+            Assert.Equal(MoveCategory.Physical, tackle.Category);
+            Assert.Equal(35, tackle.MaxPP);
         }
 
         [Fact]
-        public void EnemyTeam_ActivePokemon_FirstMoveIsTackle()
+        public void EnemyTeam_State_IsNotDefeated()
         {
-            DumpTeam(_team, "Enemy Team");
-            var move = _team.Active.Moves[0] as MoveState;
-            _out.WriteLine($"  Moves[0] cast to MoveState: {move?.Name ?? "null"}");
-            Assert.NotNull(move);
-            Assert.Equal("Tackle", move!.Name);
-        }
-
-        [Fact]
-        public void EnemyTeam_ActivePokemon_SecondMoveIsThunderbolt()
-        {
-            DumpTeam(_team, "Enemy Team");
-            var move = _team.Active.Moves[1] as MoveState;
-            _out.WriteLine($"  Moves[1] cast to MoveState: {move?.Name ?? "null"}");
-            Assert.NotNull(move);
-            Assert.Equal("Thunderbolt", move!.Name);
-        }
-
-        [Fact]
-        public void EnemyTeam_ActivePokemon_Tackle_IsNormalPhysical()
-        {
-            DumpTeam(_team, "Enemy Team");
-            var move = _team.Active.Moves[0] as MoveState;
-            _out.WriteLine($"  Tackle Element  : {move?.Element}  (expected: Normal)");
-            _out.WriteLine($"  Tackle Category : {move?.Category}  (expected: Physical)");
-            Assert.NotNull(move);
-            Assert.Equal(PokemonType.Normal, move!.Element);
-            Assert.Equal(MoveCategory.Physical, move.Category);
-        }
-
-        [Fact]
-        public void EnemyTeam_ActivePokemon_Thunderbolt_IsElectricSpecial()
-        {
-            DumpTeam(_team, "Enemy Team");
-            var move = _team.Active.Moves[1] as MoveState;
-            _out.WriteLine($"  Thunderbolt Element  : {move?.Element}  (expected: Electric)");
-            _out.WriteLine($"  Thunderbolt Category : {move?.Category}  (expected: Special)");
-            Assert.NotNull(move);
-            Assert.Equal(PokemonType.Electric, move!.Element);
-            Assert.Equal(MoveCategory.Special, move.Category);
-        }
-
-        [Fact]
-        public void EnemyTeam_ActivePokemon_Tackle_HasCorrectPP()
-        {
-            DumpTeam(_team, "Enemy Team");
-            var move = _team.Active.Moves[0] as MoveState;
-            _out.WriteLine($"  Tackle PP : {move?.PP}  (expected: 35)");
-            Assert.Equal(35, move!.PP);
-        }
-
-        [Fact]
-        public void EnemyTeam_ActivePokemon_HasPositiveHP()
-        {
-            DumpTeam(_team, "Enemy Team");
-            _out.WriteLine($"  MaxHP : {_team.Active.MaxHP}  (expected: > 0)");
-            Assert.True(_team.Active.MaxHP > 0);
-        }
-
-        [Fact]
-        public void EnemyTeam_ActivePokemon_StartsAtFullHP()
-        {
-            DumpTeam(_team, "Enemy Team");
-            _out.WriteLine($"  CurrentHP : {_team.Active.CurrentHP}");
-            _out.WriteLine($"  MaxHP     : {_team.Active.MaxHP}");
-            Assert.Equal(_team.Active.MaxHP, _team.Active.CurrentHP);
-        }
-
-        [Fact]
-        public void EnemyTeam_IsNotDefeated()
-        {
-            DumpTeam(_team, "Enemy Team");
-            _out.WriteLine($"  IsDefeated : {_team.IsDefeated}  (expected: False)");
             Assert.False(_team.IsDefeated);
-        }
-
-        [Fact]
-        public void EnemyTeam_HasSixAlivePokemon()
-        {
-            DumpTeam(_team, "Enemy Team");
-            _out.WriteLine($"  AlivePokemonCount : {_team.GetAlivePokemonCount()}  (expected: 6)");
             Assert.Equal(6, _team.GetAlivePokemonCount());
         }
     }

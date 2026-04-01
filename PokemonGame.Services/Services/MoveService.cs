@@ -174,6 +174,9 @@ namespace PokemonGame.Services.Handler
                 BattleSide = row.BattleSide,
                 Hazard = row.Hazard,
                 ChargeTurns = row.ChargeTurns,
+                Multiplier = row.Multiplier,
+                Fraction = row.Fraction,
+                VolatileStatus = row.VolatileStatus,  // careful — MoveEffect already has VolatileStatus? if not, it's new
             };
 
             // Number (damage/healing formula)

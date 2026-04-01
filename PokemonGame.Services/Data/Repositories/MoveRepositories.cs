@@ -7,7 +7,7 @@ namespace PokemonGame.Services.Data.Repositories
     internal class MoveRepository : DbRepository<string, MoveData>
     {
         // Secondary caches for sub-tables
-        private readonly Dictionary<int, MoveNumberData> _numberCache = new();
+        private readonly Dictionary<int, NumberData> _numberCache = new();
         private readonly Dictionary<int, ConditionRow> _conditionCache = new();
         private readonly Dictionary<int, EffectRow> _effectCache = new();
         private readonly Dictionary<int, AttemptRow> _attemptCache = new();
@@ -101,14 +101,14 @@ namespace PokemonGame.Services.Data.Repositories
             return row;
         }
 
-        public MoveNumberData? LoadNumber(int id)
+        public NumberData? LoadNumber(int id)
         {
             if (_numberCache.TryGetValue(id, out var cached))
             {
                 return cached;
             }
 
-            var row = _db.QuerySingle<MoveNumberData?>(
+            var row = _db.QuerySingle<NumberData?>(
                 @"SELECT id AS Id, type AS Type, exact_value AS ExactValue, 
                      range_min AS RangeMin, range_max AS RangeMax, 
                      left_number_id AS LeftNumberId, right_number_id AS RightNumberId, 
