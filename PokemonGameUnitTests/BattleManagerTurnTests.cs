@@ -299,6 +299,7 @@ namespace PokemonGame.Tests
                 if (b.Phase == BattlePhase.AwaitingPlayerAction)
                 {
                     b.RunTurn(playerMoveIndex: 1, botDecides: false);
+                    turns++;
                 }
                 else if (b.Phase == BattlePhase.AwaitingPlayerSwitch)
                 {
@@ -306,7 +307,6 @@ namespace PokemonGame.Tests
                     if (opts.Count > 0) b.PlayerSwitch(opts[0]);
                     else break;
                 }
-                turns++;
             }
 
             _out.WriteLine($"  Simulation ended after {turns} turn(s).");
