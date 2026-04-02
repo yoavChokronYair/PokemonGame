@@ -8,9 +8,11 @@ namespace PokemonGame.Model.Model
     public class HeldItemState : IHeldItem
     {
         private readonly HeldItemDomain _HeldItemDomain;
-        private readonly ICondition<BattleState> _condition;
-        private readonly IEffect _effect;
+        public readonly ICondition<BattleState> _condition;
+        public readonly IEffect _effect;
         public string Name => _HeldItemDomain.Name;
+        public string Description => _HeldItemDomain.Description;
+        public bool IsConsumable => _HeldItemDomain.IsConsumable;
 
         public HeldItemState(HeldItemDomain heldItemDomain, ICondition<BattleState> condition, IEffect effect)
         {

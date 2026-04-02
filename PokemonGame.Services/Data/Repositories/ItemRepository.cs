@@ -3,40 +3,32 @@ using PokemonGame.Services.Data.GameData;
 
 namespace PokemonGame.Services.Data.Repositories
 {
-    internal class ItemRepository
+    internal class ItemRepository : DbRepository<int, ItemData>
     {
-        private readonly IDbConnectionService _db;
-        private Dictionary<int, ItemData>? _cache;
+        internal ItemRepository(IDbConnectionService db) : base(db) { }
 
-        internal ItemRepository(IDbConnectionService db) => _db = db;
+        public ItemData? GetById(int id) =>
+            GetCached(id, () => _db.QuerySingle<ItemData?>(
+                @"SELECT id AS Id, name AS Name, category AS Category, 
+                     description AS Description, price AS Price, 
+                     is_consumable AS Is_consumable, effect_id AS Effect_id, 
+                     condition_id AS Condition_id
+              FROM items WHERE id = @id", new { id }));
 
-        private void EnsureLoaded()
-        {
-            if (_cache == null)
-            {
-                // Queries all items once and stores them for O(1) lookups
-                var items = _db.Query<ItemData>("SELECT * FROM items");
-                _cache = items.ToDictionary(i => i.Id);
-            }
-        }
+        public ItemData? GetByName(string name) =>
+            _db.QuerySingle<ItemData?>(
+                @"SELECT id AS Id, name AS Name, category AS Category, 
+                     description AS Description, price AS Price, 
+                     is_consumable AS Is_consumable, effect_id AS Effect_id, 
+                     condition_id AS Condition_id
+              FROM items WHERE name = @name", new { name });
 
-        public ItemData? GetItem(int itemID)
-        {
-            EnsureLoaded();
-            return _cache!.TryGetValue(itemID, out var item) ? item : null;
-        }
-
-        public List<ItemData> GetAllItems()
-        {
-            EnsureLoaded();
-            return _cache!.Values.ToList();
-        }
-
-        // Useful for Shop UIs to filter by category
-        public List<ItemData> GetItemsByCategory(string category)
-        {
-            EnsureLoaded();
-            return _cache!.Values.Where(i => i.Category == category).ToList();
-        }
+        public List<ItemData> GetAllItems() =>
+            GetAllCached(
+                () => _db.Query<ItemData>("SELECT * FROM items").ToList(),
+                i => i.Id);
+        public List<ItemData> GetAllHeldItems() =>
+            _db.Query<ItemData>(
+                "SELECT * FROM items WHERE category = 'Held Item'").ToList();
     }
 }

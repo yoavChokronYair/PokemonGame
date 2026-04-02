@@ -134,7 +134,7 @@ namespace PokemonGame.Services.Handler
         // ── Item list ─────────────────────────────────────────────────────────
 
         public List<ItemData> GetHeldItems() =>
-            _items.GetAllItems().Where(i => i.Category != "Pokeball").ToList();
+           _items.GetAllHeldItems();
 
         // ── Team members ──────────────────────────────────────────────────────
 

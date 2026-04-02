@@ -17,49 +17,36 @@ namespace PokemonGame.ViewModels.Translators
         private readonly IPokemonService _pokemonService;
         private readonly MoveTranslator _moveTranslator;
         private readonly AbilityTranslator _abilityTranslator;
+        private readonly ItemTranslator _itemTranslator;
 
-        /// <summary>
-        /// Default constructor using standard service implementations.
-        /// </summary>
         public TeamTranslator()
         {
             _pokemonService = new PokemonService();
             _moveTranslator = new MoveTranslator();
-            // Assuming AbilityService is the standard implementation for IAbilityService
             _abilityTranslator = new AbilityTranslator(new AbilityService(), _moveTranslator);
+            _itemTranslator = new ItemTranslator(new ItemService(), _moveTranslator);
         }
 
-        /// <summary>
-        /// Injection constructor for testing or custom service configurations.
-        /// </summary>
-        public TeamTranslator(IPokemonService pokemonService, MoveTranslator moveTranslator, AbilityTranslator abilityTranslator)
+        public TeamTranslator(IPokemonService pokemonService, MoveTranslator moveTranslator,
+                              AbilityTranslator abilityTranslator, ItemTranslator itemTranslator)
         {
             _pokemonService = pokemonService;
             _moveTranslator = moveTranslator;
             _abilityTranslator = abilityTranslator;
+            _itemTranslator = itemTranslator;
         }
 
         public PokemonTeam LoadTeam(int battlePlayerId)
         {
-            // The service handles all DB coordination (Joining Battler, General, and Stats)
             var results = _pokemonService.LoadTeamResults(battlePlayerId);
 
             if (results == null || results.Count == 0)
-            {
                 throw new InvalidOperationException($"No team found for Player ID {battlePlayerId}.");
-            }
 
-            // Standard Pokémon team constraint (usually 1-6)
             if (results.Count > 6)
-            {
                 throw new InvalidOperationException($"Expected maximum 6 members, found {results.Count}.");
-            }
 
-            // Transform data results into Domain objects
-            var roster = results
-                .Select(TranslateToDomain)
-                .ToList();
-
+            var roster = results.Select(TranslateToDomain).ToList();
             return PokemonTeam.Create(roster);
         }
 
@@ -69,23 +56,20 @@ namespace PokemonGame.ViewModels.Translators
             var g = result.General;
             var s = result.Stats;
 
-            // 1. Resolve Nature and Modifiers
             var nature = ParseEnum<NatureType>(b.Nature ?? "Serious");
             var mods = NatureHelper.GetNatureModifiers(nature);
 
             var modifierDict = new Dictionary<Stat, double>
             {
-                { Stat.Attack, mods.atk },
-                { Stat.Defense, mods.def },
-                { Stat.SpecialAttack, mods.spAtk },
-                { Stat.SpecialDefense, mods.spDef },
-                { Stat.Speed, mods.speed }
+                { Stat.Attack,          mods.atk   },
+                { Stat.Defense,         mods.def   },
+                { Stat.SpecialAttack,   mods.spAtk },
+                { Stat.SpecialDefense,  mods.spDef },
+                { Stat.Speed,           mods.speed }
             };
 
-            // 2. Calculate HP
             int maxHp = PokemonStatCalculatorHelper.CalculateHP(s.HP, b.Iv_hp, b.Ev_hp, b.Level);
 
-            // 3. Build the Domain Object
             return new PokemonDomain
             {
                 Name = g.Name ?? "MissingNo",
@@ -97,27 +81,29 @@ namespace PokemonGame.ViewModels.Translators
                 MaxHP = maxHp,
                 CurrentHP = maxHp,
 
-                // Stat calculations using the helper and modifiers
                 BaseAttack = CalcStat(s.Attack, b.Iv_atk, b.Ev_atk, b.Level, modifierDict, Stat.Attack),
                 BaseDefense = CalcStat(s.Defense, b.Iv_def, b.Ev_def, b.Level, modifierDict, Stat.Defense),
                 BaseSpecialAttack = CalcStat(s.SpAtk, b.Iv_spAtk, b.Ev_spAtk, b.Level, modifierDict, Stat.SpecialAttack),
                 BaseSpecialDefense = CalcStat(s.SpDef, b.Iv_spDef, b.Ev_spDef, b.Level, modifierDict, Stat.SpecialDefense),
                 BaseSpeed = CalcStat(s.Speed, b.Iv_speed, b.Ev_speed, b.Level, modifierDict, Stat.Speed),
 
-                // Array mappings for bulk processing
                 IVs = new[] { b.Iv_hp, b.Iv_atk, b.Iv_def, b.Iv_spAtk, b.Iv_spDef, b.Iv_speed },
                 EVs = new[] { b.Ev_hp, b.Ev_atk, b.Ev_def, b.Ev_spAtk, b.Ev_spDef, b.Ev_speed },
 
-                // Functional Logic Objects (Moves & Ability)
                 Moves = result.MoveNames.Where(m => !string.IsNullOrEmpty(m)).Select(BuildMove).ToList(),
-                Ability = BuildAbility(b.AbilityID)
+                Ability = BuildAbility(b.AbilityID),
+                HeldItem = BuildHeldItem(b.ItemID),
             };
         }
 
-        private AbilityState BuildAbility(int abilityId)
+        private AbilityState BuildAbility(int abilityId) =>
+            _abilityTranslator.TranslateById(abilityId);
+
+        // Returns null if the pokemon has no item
+        private HeldItemState? BuildHeldItem(int? itemId)
         {
-            return _abilityTranslator.TranslateById(abilityId);
-          
+            if (itemId == null || itemId <= 0) return null;
+            return _itemTranslator.TranslateById(itemId.Value);
         }
 
         private IMove BuildMove(string moveName)
@@ -127,15 +113,14 @@ namespace PokemonGame.ViewModels.Translators
             return new MoveState(domain, attempt);
         }
 
-        private static int CalcStat(int @base, int iv, int ev, int level, Dictionary<Stat, double> modifiers, Stat stat)
+        private static int CalcStat(int @base, int iv, int ev, int level,
+                                    Dictionary<Stat, double> modifiers, Stat stat)
         {
             double mod = modifiers.TryGetValue(stat, out double m) ? m : 1.0;
             return PokemonStatCalculatorHelper.CalculateStat(@base, iv, ev, level, mod);
         }
 
-        private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum
-        {
-            return Enum.TryParse<TEnum>(value, true, out var result) ? result : default;
-        }
+        private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum =>
+            Enum.TryParse<TEnum>(value, true, out var result) ? result : default;
     }
 }
