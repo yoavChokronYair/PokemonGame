@@ -63,8 +63,9 @@ namespace PokemonGame.Model.Domain.Pokemon
             {
                 return false;
             }
-
+            _slots[_activeIndex].turnsActive = 0; // reset turns active for the old active Pokémon
             _activeIndex = slotIndex;
+            _slots[_activeIndex].turnsActive = 0;
             return true;
         }
 
@@ -79,7 +80,9 @@ namespace PokemonGame.Model.Domain.Pokemon
             {
                 if (i != _activeIndex && !_slots[i].IsFainted)
                 {
+                    _slots[_activeIndex].turnsActive = 0; // reset turns active for the old active Pokémon
                     _activeIndex = i;
+                    _slots[_activeIndex].turnsActive = 0; // reset turns active for the old active Pokémon
                     return true;
                 }
             }

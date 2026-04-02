@@ -24,8 +24,18 @@ namespace PokemonGame.Services.Factory
         // Pokemon & Moves
         internal PokemonRepository PokemonRepository { get; }
         internal BattlerPokemonRepository BattlerPokemonRepository { get; }
+        internal PokemonStatsRepository PokemonStatsRepository { get; }
+
+        // Move tree repositories
         internal MoveRepository MoveRepository { get; }
-        internal PokemonStatsRepository pokemonStatsRepository { get; }
+        internal AttemptRepository AttemptRepository { get; }
+        internal CascadeStepRepository CascadeStepRepository { get; }
+        internal EffectRepository EffectRepository { get; }
+        internal SequenceStepRepository SequenceStepRepository { get; }
+        internal MultiStatChangeRepository MultiStatChangeRepository { get; }
+        internal NumberRepository NumberRepository { get; }
+        internal WeightedEntryRepository WeightedEntryRepository { get; }
+        internal ConditionRepository ConditionRepository { get; }
 
         // Static Lookups (Cached)
         internal AbilityRepository AbilityRepository { get; }
@@ -39,7 +49,6 @@ namespace PokemonGame.Services.Factory
             var db = new SQLiteConnectionService(
                 "..\\..\\..\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db");
 
-            // Initialize all repositories with the shared connection service
             UserRepository = new UserRepository(db);
             OnlinePlayerRepository = new OnlinePlayerRepository(db);
             FriendRepository = new FriendRepository(db);
@@ -51,8 +60,17 @@ namespace PokemonGame.Services.Factory
 
             PokemonRepository = new PokemonRepository(db);
             BattlerPokemonRepository = new BattlerPokemonRepository(db);
+            PokemonStatsRepository = new PokemonStatsRepository(db);
+
             MoveRepository = new MoveRepository(db);
-            pokemonStatsRepository = new PokemonStatsRepository(db);
+            AttemptRepository = new AttemptRepository(db);
+            CascadeStepRepository = new CascadeStepRepository(db);
+            EffectRepository = new EffectRepository(db);
+            SequenceStepRepository = new SequenceStepRepository(db);
+            MultiStatChangeRepository = new MultiStatChangeRepository(db);
+            NumberRepository = new NumberRepository(db);
+            WeightedEntryRepository = new WeightedEntryRepository(db);
+            ConditionRepository = new ConditionRepository(db);
 
             AbilityRepository = new AbilityRepository(db);
             ItemRepository = new ItemRepository(db);

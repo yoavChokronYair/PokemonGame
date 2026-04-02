@@ -320,7 +320,29 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     }
 
     // ── Utility ───────────────────────────────────────────────────────────────
+    public class CureVolatile : IEffect
+    {
+        // Mental Herb — removes a specific volatile status
+        private readonly ITarget _target;
+        private readonly VolatileStatus _status;
+        public CureVolatile(ITarget target, VolatileStatus status) { _target = target; _status = status; }
+        public void Apply(BattleState battle) => _target.Resolve(battle).RemoveVolatileStatus(_status);
+    }
 
+    public class SkipChargeTurn : IEffect
+    {
+        // Power Herb — forces the charge release immediately if the Pokémon is charging
+        private readonly ITarget _target;
+        public SkipChargeTurn(ITarget target) { _target = target; }
+        public void Apply(BattleState battle)
+        {
+            var battler = _target.Resolve(battle);
+            if (battler.IsCharging())
+            {
+                battler.EndCharge();
+            }
+        }
+    }
     public class ForceSwitch : IEffect
     {
         private readonly ITarget _target;
@@ -352,5 +374,136 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         private readonly int _chargeTurns;
         public StoreAndRelease(ITarget target, int chargeTurns = 2) { _target = target; _chargeTurns = chargeTurns; }
         public void Apply(BattleState battle) => _target.Resolve(battle).StartBide(_chargeTurns);
+    }
+
+    public class ModifyDamageDealt : IEffect
+    {
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        public ModifyDamageDealt(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
+        public void Apply(BattleState battle)
+        {
+            // Multiplies the last damage dealt — called after FormulaDamage resolves
+            int boosted = (int)(battle.LastDamageDealt * _multiplier);
+            int extra = boosted - battle.LastDamageDealt;
+            _target.Resolve(battle).TakeDamage(extra);
+            battle.LastDamageDealt = boosted;
+        }
+    }
+
+    public class DamageOnAttack : IEffect
+    {
+        // Life Orb recoil — damages the attacker after dealing damage
+        private readonly ITarget _target;
+        private readonly double _fraction;
+        public DamageOnAttack(ITarget target, double fraction) { _target = target; _fraction = fraction; }
+        public void Apply(BattleState battle)
+        {
+            int recoil = (int)(_target.Resolve(battle).MaxHP * _fraction);
+            _target.Resolve(battle).TakeDamage(recoil);
+        }
+    }
+
+    // ── Stat Modifiers ────────────────────────────────────────────────────────────
+
+    public class ModifySpeedMultiplier : IEffect
+    {
+        // Choice Scarf — multiplies speed directly rather than using stat stages
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        public ModifySpeedMultiplier(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
+        public void Apply(BattleState battle) => _target.Resolve(battle).ApplySpeedMultiplier(_multiplier);
+    }
+
+    public class ResetNegativeStatStages : IEffect
+    {
+        // White Herb — clears only lowered stat stages, leaves boosts intact
+        private readonly ITarget _target;
+        public ResetNegativeStatStages(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) => _target.Resolve(battle).ResetNegativeStatStages();
+    }
+
+    public class LockMove : IEffect
+    {
+        // Choice Band/Specs/Scarf — locks the holder to the first move used
+        private readonly ITarget _target;
+        public LockMove(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) => _target.Resolve(battle).LockToLastMove();
+    }
+
+    // ── Accuracy / Evasion Modifiers ──────────────────────────────────────────────
+
+    public class ModifyAccuracy : IEffect
+    {
+        // Wide Lens — flat accuracy multiplier applied when calculating hit chance
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        public ModifyAccuracy(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
+        public void Apply(BattleState battle) => _target.Resolve(battle).ApplyAccuracyMultiplier(_multiplier);
+    }
+
+    public class ModifyEvasion : IEffect
+    {
+        // Bright Powder / Lax Incense — raises holder's evasion multiplier
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        public ModifyEvasion(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
+        public void Apply(BattleState battle) => _target.Resolve(battle).ApplyEvasionMultiplier(_multiplier);
+    }
+
+    // ── Crit Modifier ─────────────────────────────────────────────────────────────
+
+    public class ModifyCritRatio : IEffect
+    {
+        // Scope Lens / Razor Claw — raises crit stage by a flat amount
+        private readonly ITarget _target;
+        private readonly int _stages;
+        public ModifyCritRatio(ITarget target, int stages) { _target = target; _stages = stages; }
+        public void Apply(BattleState battle) => _target.Resolve(battle).RaiseCritStage(_stages);
+    }
+
+    // ── Flinch on Attack ──────────────────────────────────────────────────────────
+
+    public class ChanceFlinch : IEffect
+    {
+        // King's Rock / Razor Fang — chance to flinch the defender after the move hits
+        private readonly double _probability;
+        public ChanceFlinch(double probability) { _probability = probability; }
+        public void Apply(BattleState battle)
+        {
+            if (RandomHelper.NextBool(_probability))
+                battle.Defender.ApplyVolatileStatus(VolatileStatus.Flinch);
+        }
+    }
+
+    // ── Priority Modifier ─────────────────────────────────────────────────────────
+
+    public class ModifyPriority : IEffect
+    {
+        // Quick Claw — grants a chance to move first regardless of speed
+        private readonly ITarget _target;
+        private readonly double _probability;
+        public ModifyPriority(ITarget target, double probability) { _target = target; _probability = probability; }
+        public void Apply(BattleState battle)
+        {
+            if (RandomHelper.NextBool(_probability))
+                _target.Resolve(battle).SetPriorityOverride(1);
+        }
+    }
+
+    // ── Status ────────────────────────────────────────────────────────────────────
+
+    public class CureSpecificStatus : IEffect
+    {
+        // Status berries — only cures if the Pokémon has the specific status
+        private readonly ITarget _target;
+        private readonly StatusCondition _status;
+        public CureSpecificStatus(ITarget target, StatusCondition status) { _target = target; _status = status; }
+        public void Apply(BattleState battle)
+        {
+            var battler = _target.Resolve(battle);
+            if (battler.PokemonStatusCondition() == _status)
+                battler.ClearStatus();
+        }
     }
 }

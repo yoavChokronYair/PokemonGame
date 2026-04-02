@@ -44,6 +44,10 @@
 
         // Not / UserCondition / OpponentCondition
         public MoveCondition? Inner { get; set; }
+        public string? Terrain { get; set; }
+        public string? MoveTag { get; set; }
+        public string? MoveCategory { get; set; }
+        public double? Fraction { get; set; }
     }
 
     // ── Assembled Effect ─────────────────────────────────────────────────────────
@@ -97,6 +101,9 @@
 
         // Sequence — ordered child effects
         public List<MoveEffect> SequenceSteps { get; set; } = new();
+        public double? Multiplier { get; set; }
+        public string? Status { get; set; }
+        
     }
 
     // ── Assembled Attempt ────────────────────────────────────────────────────────

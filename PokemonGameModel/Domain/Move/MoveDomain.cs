@@ -15,6 +15,7 @@ namespace PokemonGame.Model.Domain.Move
         public PokemonType Element { get; set; }
         public MoveCategory Category { get; set; }
         public MoveTarget Target { get; set; }
+        public MoveTag tag { get; set; }
         public int PP { get; set; }
         public int MaxPP { get; set; }
         public int Priority { get; set; }
