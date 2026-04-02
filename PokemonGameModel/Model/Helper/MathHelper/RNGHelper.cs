@@ -4,6 +4,7 @@
 // Instance holds PID/TID/SID for shiny and gender checks.
 using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -145,10 +146,17 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             return new RNGHelper(pid, tid, sid);
         }
 
-        public static double getCritModifyer()
+        public static double getCritModifier(BattleLogger logger)
         {
-            // 1/24 chance for a critical hit
-            return RandomHelper.Next(0, 16) == 0 ? 2 : 1.0;
+            bool isCrit = RandomHelper.Next(0, 24) == 0;
+
+            if (isCrit)
+            {
+                logger.Log("A critical hit!");
+                return 2.0;
+            }
+
+            return 1.0;
         }
     }
 }

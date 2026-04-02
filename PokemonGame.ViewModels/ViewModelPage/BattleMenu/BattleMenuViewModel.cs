@@ -12,6 +12,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private readonly Action<int> _onMoveChosen;
         private readonly Action<int> _onSwitchChosen;
         private readonly BattleManager _manager;
+        private readonly BattleLoggerViewModel _logger;
+        private bool _isWaitingForLog = false;
+
+        public bool IsMainMenuVisible => !IsMovesetVisible && !_isWaitingForLog;
 
         private bool _isMovesetVisible;
 
@@ -27,12 +31,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
         }
 
-        public bool IsMainMenuVisible => !IsMovesetVisible;
 
-        // ── Moveset chooser child VM ─────────────────────────────────────────
+        // ── Moveset chooser child VM ──────────────────────────────────────────
         public BattlePokemonMovesetChooserViewModel MovesetChooser { get; }
 
-        // ── Selected move info (shown in the right panel) ────────────────────
+        // ── Selected move info panel ──────────────────────────────────────────
         private IMove? _selectedMove;
         public IMove? SelectedMove
         {
@@ -50,20 +53,52 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public string SelectedMovePP => SelectedMove is MoveState ms ? $"PP {ms.PP}/{ms.MaxPP}" : "PP --/--";
         public string SelectedMoveType => SelectedMove is MoveState ms2 ? $"TYPE/ {ms2.Element}" : "TYPE/ --";
 
-        // ── Commands ─────────────────────────────────────────────────────────
+        // ── Commands ──────────────────────────────────────────────────────────
         public ICommand OpenMovesetCommand { get; }
         public ICommand CloseMovesetCommand { get; }
 
-        public BattleMenuViewModel(Action<int> onMoveChosen, Action<int> onSwitchChosen, BattleManager manager)
+        public BattleMenuViewModel(
+            Action<int> onMoveChosen,
+            Action<int> onSwitchChosen,
+            BattleManager manager,
+            BattleLoggerViewModel logger)
         {
             _onMoveChosen = onMoveChosen;
             _onSwitchChosen = onSwitchChosen;
             _manager = manager;
+            _logger = logger;
 
-            MovesetChooser = new BattlePokemonMovesetChooserViewModel(OnMoveButtonClicked, OnMoveHovered);
+            MovesetChooser = new BattlePokemonMovesetChooserViewModel(
+                OnMoveButtonClicked,
+                OnMoveHovered,
+                logger);
 
-            OpenMovesetCommand = new RelayCommand(() => IsMovesetVisible = true);
-            CloseMovesetCommand = new RelayCommand(() => { IsMovesetVisible = false; SelectedMove = null; });
+            OpenMovesetCommand = new RelayCommand(
+                () => IsMovesetVisible = true,
+                // Can't open moveset while log messages are pending
+                () => _logger.AreActionsUnlocked);
+
+            CloseMovesetCommand = new RelayCommand(() =>
+            {
+                IsMovesetVisible = false;
+                SelectedMove = null;
+            });
+
+            // When the logger drains its queue, re-evaluate the open command
+            _logger.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(BattleLoggerViewModel.AreActionsUnlocked))
+                {
+                    // Queue just drained — re-show the main menu
+                    if (_logger.AreActionsUnlocked)
+                    {
+                        _isWaitingForLog = false;
+                    }
+
+                    OnPropertyChanged(nameof(IsMainMenuVisible));
+                    ((RelayCommand)OpenMovesetCommand).NotifyCanExecuteChanged();
+                }
+            };
         }
 
         public void RefreshMoves(IReadOnlyList<IMove> moves)
@@ -75,6 +110,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             IsMovesetVisible = false;
             SelectedMove = null;
+
+            // Also hide the main menu until the log queue drains
+            _isWaitingForLog = true;
+            OnPropertyChanged(nameof(IsMainMenuVisible));
+
             _onMoveChosen(index);
         }
 

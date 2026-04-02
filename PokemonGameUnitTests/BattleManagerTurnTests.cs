@@ -130,7 +130,7 @@ namespace PokemonGame.Tests
             var b = NewBattle();
             DumpBattleState(b);
             _out.WriteLine("  → Running turn (playerMoveIndex=1, botDecides=false)");
-            bool result = b.RunTurn(playerMoveIndex: 0, botDecides: false);
+            bool result = b.RunTurn(playerMoveIndex: 1, botDecides: false);
             _out.WriteLine($"  RunTurn returned: {result}");
             DumpBattleState(b);
             DumpLog(b, "Log After Turn 1");
@@ -340,7 +340,7 @@ namespace PokemonGame.Tests
             {
                 if (b.Phase == BattlePhase.AwaitingPlayerAction)
                 {
-                    b.RunTurn(playerMoveIndex: 0, botDecides: false);
+                    b.RunTurn(playerMoveIndex: 1, botDecides: false);
                     turns++;
                 }
                 else if (b.Phase == BattlePhase.AwaitingPlayerSwitch)
