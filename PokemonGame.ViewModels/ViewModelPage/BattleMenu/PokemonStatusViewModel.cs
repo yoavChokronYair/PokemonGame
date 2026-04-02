@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using PokemonGame.ViewModels.ViewModelHelper;
+﻿using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {

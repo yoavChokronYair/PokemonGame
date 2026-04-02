@@ -76,17 +76,17 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             int baseValue = ((2 * baseStat + iv + evContribution) * level) / 100 + 5;
             return (int)Math.Floor(baseValue * natureModifier);
         }
-        public static int PokemonDamageFormulaCaculator(BattleState Battle,int basePower)
+        public static int PokemonDamageFormulaCaculator(BattleState Battle, int basePower)
         {
             var move = (MoveState)Battle.LastUsedMove;
             var attacker = Battle.Attacker;
             var defender = Battle.Defender;
             double modifier = getStabBonus(attacker, move.Element) *
-                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) * 
-                RNGHelper.getCritModifyer() * 
-                RandomHelper.NextDouble(0.85,1.0);
+                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), Battle.Logger) *
+                RNGHelper.getCritModifier(Battle.Logger) *
+                RandomHelper.NextDouble(0.85, 1.0);
 
-            double levelFactor = ((2.0 * attacker.Level) + 10 ) / 250;
+            double levelFactor = ((2.0 * attacker.Level) + 10) / 250;
 
             // Determine the offensive and defensive stats based on the move category
             double statRatio = move.Category switch
@@ -106,7 +106,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         {
             return pokemon.HasType(moveType) ? 1.5 : 1.0;
         }
-        
+
 
     }
 }

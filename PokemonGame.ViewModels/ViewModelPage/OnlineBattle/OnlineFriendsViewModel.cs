@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Handler;
