@@ -74,7 +74,7 @@ namespace PokemonGame.ViewModels.Translators
 
         public ICondition<BattleState> TranslateCondition(MoveCondition c) => c.Type switch
         {
-            // ── Ability-exclusive ────────────────────────────────────────────
+            // ── Parameterless ────────────────────────────────────────────────
             "IsNewPokemon" => new IsNewPokemon(),
             "WasHitByContact" => new WasHitByContact(),
             "TookDamageThisTurn" => new TookDamageThisTurn(),
@@ -85,20 +85,30 @@ namespace PokemonGame.ViewModels.Translators
             "IsGrounded" => new IsGrounded(),
             "IsAnyTerrainActive" => new IsAnyTerrainActive(),
             "IsBattleOver" => new IsBattleOver(),
+            "IsFainted" => new IsFainted(),
+            "IsFullHP" => new IsFullHP(),
 
+            // ── Parameterized ────────────────────────────────────────────────
+            "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
             "IsTerrainActive" => new IsTerrainActive(ParseEnum<TerrainType>(c.Terrain!)),
             "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
             "MoveIsCategory" => new MoveIsCategory(ParseEnum<MoveCategory>(c.MoveCategory!)),
+            "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),
+            "HasVolatile" => new HasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
+            "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
+            "HPBelow" => new HPBelow(c.HpFraction!.Value),
+            "Probability" => new Probability(c.Probability!.Value),
 
-            // ── Combinators (recursive, ability-aware) ───────────────────────
+            // ── Combinators ──────────────────────────────────────────────────
             "And" => new And<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
             "Or" => new Or<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
             "Not" => new Not<BattleState>(TranslateCondition(c.Inner!)),
 
+            // ── Adapters ─────────────────────────────────────────────────────
             "UserCondition" => new UserCondition(TranslatePokemonCondition(c.Inner!)),
             "OpponentCondition" => new OpponentCondition(TranslatePokemonCondition(c.Inner!)),
 
-            // ── Shared with moves — delegate ─────────────────────────────────
+            // ── Fallback ─────────────────────────────────────────────────────
             _ => _moveTranslator.TranslateCondition(c)
         };
 
@@ -107,6 +117,12 @@ namespace PokemonGame.ViewModels.Translators
             "And" => new And<PokemonState>(TranslatePokemonCondition(c.Left!), TranslatePokemonCondition(c.Right!)),
             "Or" => new Or<PokemonState>(TranslatePokemonCondition(c.Left!), TranslatePokemonCondition(c.Right!)),
             "Not" => new Not<PokemonState>(TranslatePokemonCondition(c.Inner!)),
+            "HasStatus" => new PokemonHasStatus(ParseEnum<StatusCondition>(c.Status!)),
+            "HasVolatile" => new PokemonHasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
+            "HasType" => new PokemonHasType(ParseEnum<PokemonType>(c.PokemonType!)),
+            "HPBelow" => new PokemonHPBelow(c.HpFraction!.Value),
+            "IsFullHP" => new PokemonIsFullHP(),
+            "IsFainted" => new PokemonIsFainted(),
             _ => throw new NotSupportedException($"Unknown pokemon condition type: '{c.Type}'")
         };
 

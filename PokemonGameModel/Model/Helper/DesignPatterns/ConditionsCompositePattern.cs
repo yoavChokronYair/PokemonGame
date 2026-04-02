@@ -212,7 +212,43 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public OpponentCondition(ICondition<PokemonState> inner) { _inner = inner; }
         public bool Check(BattleState battle) => _inner.Check(battle.Defender); // ← fix
     }
+    public class PokemonHasStatus : ICondition<PokemonState>
+    {
+        private readonly StatusCondition _status;
+        public PokemonHasStatus(StatusCondition status) { _status = status; }
+        public bool Check(PokemonState pokemon) => pokemon.PokemonStatusCondition() == _status;
+    }
 
+    public class PokemonHasVolatile : ICondition<PokemonState>
+    {
+        private readonly VolatileStatus _status;
+        public PokemonHasVolatile(VolatileStatus status) { _status = status; }
+        public bool Check(PokemonState pokemon) => pokemon.HasVolatileStatus(_status);
+    }
+
+    public class PokemonHasType : ICondition<PokemonState>
+    {
+        private readonly PokemonType _type;
+        public PokemonHasType(PokemonType type) { _type = type; }
+        public bool Check(PokemonState pokemon) => pokemon.HasType(_type);
+    }
+
+    public class PokemonHPBelow : ICondition<PokemonState>
+    {
+        private readonly double _fraction;
+        public PokemonHPBelow(double fraction) { _fraction = fraction; }
+        public bool Check(PokemonState pokemon) => pokemon.GetHPFraction() < _fraction;
+    }
+
+    public class PokemonIsFullHP : ICondition<PokemonState>
+    {
+        public bool Check(PokemonState pokemon) => pokemon.CurrentHP == pokemon.MaxHP;
+    }
+
+    public class PokemonIsFainted : ICondition<PokemonState>
+    {
+        public bool Check(PokemonState pokemon) => pokemon.IsFainted;
+    }
     // ── Target Implementations ────────────────────────────────────────────────
     // ITarget interface lives in Interface/Move/IConditionAndTarget.cs.
 

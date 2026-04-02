@@ -116,20 +116,8 @@ namespace PokemonGame.ViewModels.Translators
 
         private AbilityState BuildAbility(int abilityId)
         {
-            try
-            {
-                // Delegate to the AbilityTranslator to handle tree building
-                return _abilityTranslator.TranslateById(abilityId);
-            }
-            catch (Exception ex)
-            {
-                // Safety fallback: Provide a "No Ability" state so the game doesn't crash
-                return new AbilityState(
-                    new AbillityDomain { Name = "None", Description = "No functional ability found." },
-                    new PokemonGame.Model.Model.Helper.DesignPatterns.Probability<BattleState>(1.0),
-                    new PokemonGame.Model.Model.Helper.DesignPatterns.NoEffect()
-                );
-            }
+            return _abilityTranslator.TranslateById(abilityId);
+          
         }
 
         private IMove BuildMove(string moveName)

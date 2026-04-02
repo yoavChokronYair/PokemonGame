@@ -60,16 +60,30 @@ namespace PokemonGame.Services.Handler
             var allIds = _pokemonRepo.GetAllPokedexIds(); // You'll need this simple query in PokemonRepository
             var random = new Random();
             var results = new List<PokemonLoadResult>();
-
+            
             for (int i = 0; i < count; i++)
             {
                 int randomPokedexId = allIds[random.Next(allIds.Count)];
+                var pokemonData = _pokemonRepo.GetPokemonById(randomPokedexId);
 
+                var abilityPool = new List<int?>
+                {
+                    pokemonData.FirstAbilityID,
+                    pokemonData.SecondAbilityID,
+                    pokemonData.HiddenAbilityID
+                }
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .ToList();
+
+                int randomAbilityId = abilityPool[random.Next(abilityPool.Count)];
                 // 2. Create a "Fake" BattlerPokemon (in-memory only)
                 var randomBattler = new BattlerPokemon
                 {
                     PokedexID = randomPokedexId,
                     Level = level,
+                    AbilityID = randomAbilityId,
+
                     Iv_hp = 31,
                     Iv_atk = 31,
                     Iv_def = 31,
