@@ -84,8 +84,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             var defender = Battle.Defender;
 
             double modifier = getStabBonus(attacker, move.Element) *
-                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) *
-                RNGHelper.getCritModifyer() *
+                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), Battle.Logger) *
+                RNGHelper.getCritModifier(Battle.Logger) *
                 RandomHelper.NextDouble(0.85, 1.0) *
                 GetHeldItemAndAbilityModifier(Battle, move, basePower);
 
@@ -135,7 +135,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
                 // Expert Belt - 1.2x on super effective
                 else if (item.Name == "Expert Belt" &&
-                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) > 1.0)
+                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), battle.Logger) > 1.0)
                 {
                     modifier *= 1.2;
                 }
@@ -193,7 +193,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
                 // Tinted Lens - 2x not very effective moves
                 else if (ability.Name == "Tinted Lens" &&
-                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) < 1.0)
+                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(),battle.Logger) < 1.0)
                 {
                     modifier *= 2.0;
                 }
@@ -222,7 +222,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                 // Filter / Solid Rock - 0.75x damage received when super effective (defender ability)
                 else if (defender.Ability is AbilityState defAbility &&
                     defAbility.Name is "Filter" or "Solid Rock" &&
-                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) > 1.0)
+                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), battle.Logger) > 1.0)
                 {
                     modifier *= 0.75;
                 }

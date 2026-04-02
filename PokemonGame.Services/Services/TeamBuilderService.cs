@@ -442,7 +442,6 @@ namespace PokemonGame.Services.Handler
         public string? Type2 { get; set; }
         public List<string> Abilities { get; set; } = new();
         public List<MoveDisplayEntry> AvailableMoves { get; set; } = new();
-        public BitmapImage SpriteImage { get; set; }
         public List<string> Types { get; set; } = new();
         public string AbilityPrimary => Abilities.Count > 0 ? Abilities[0] : string.Empty;
         public string AbilityHidden => Abilities.Count > 2 ? Abilities[2] : string.Empty;
