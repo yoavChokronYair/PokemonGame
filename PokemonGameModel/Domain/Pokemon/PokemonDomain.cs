@@ -22,6 +22,8 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int PokedexNumber { get; set; }
         public PokemonType PrimaryType { get; set; }
         public PokemonType? SecondaryType { get; set; }
+        public IAbility? Ability { get; set; }
+        public IHeldItem? HeldItem { get; set; }
         public int Level { get; set; }
         public NatureType Nature { get; set; }
 
@@ -33,7 +35,13 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int BaseSpecialAttack { get; set; }
         public int BaseSpecialDefense { get; set; }
         public int BaseSpeed { get; set; }
-
+        // Add to PokemonDomain:
+        public int CritStage { get; set; } = 0;
+        public double SpeedMultiplier { get; set; } = 1.0;
+        public double AccuracyMultiplier { get; set; } = 1.0;
+        public double EvasionMultiplier { get; set; } = 1.0;
+        public IMove? LockedMove { get; set; } = null;
+        public int? PriorityOverride { get; set; } = null;
         // IVs / EVs
         public int[] IVs { get; set; } = new int[PokemonConstants.IvsAndEvsNum];
         public int[] EVs { get; set; } = new int[PokemonConstants.IvsAndEvsNum];
@@ -45,6 +53,7 @@ namespace PokemonGame.Model.Domain.Pokemon
             { Stat.SpecialAttack, 0 }, { Stat.SpecialDefense, 0 },
             { Stat.Speed, 0 }, { Stat.Accuracy, 0 }, { Stat.Evasion, 0 }
         };
+        public bool WasStatLoweredThisTurn { get; set; }
 
         // HP
         public int CurrentHP { get; set; }

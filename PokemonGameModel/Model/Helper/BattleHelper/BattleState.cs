@@ -10,8 +10,11 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         private readonly BattleDomain _state;
         public BattleWeatherService WeatherService { get; }
         public BattleStatusService StatusService { get; }
+        public BattleTerrainService TerrainService { get; }
         public BattleLogger Logger { get; } = new();
         public BattleTurnResolver TurnResolver { get; }
+        public BattleFieldState Field { get; } = new();
+        public bool IsGravityActive => Field.IsGravityActive;
 
         public BattleState(BattleDomain state)
         {
@@ -19,6 +22,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             WeatherService = new BattleWeatherService(this, Logger);
             StatusService = new BattleStatusService(Logger);
             TurnResolver = new BattleTurnResolver();
+            TerrainService = new BattleTerrainService(this, Logger); // Initialize
         }
 
         // Data accessors
@@ -37,6 +41,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public void BeginTurn()
         {
             _state.TurnNumber++;
+
             _state.LastDamageDealt = 0;
             Logger.LogTurnStart($"--- Turn {_state.TurnNumber} ---");
             Logger.LogTurnStart($"what will {_state.Attacker.Name} do?");
@@ -45,13 +50,16 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public void EndTurn(PokemonState player, PokemonState bot)
         {
             WeatherService.TickWeather();
+            TerrainService.TickTerrain();
+            Field.Tick();
             AttackerSide.Tick();
             DefenderSide.Tick();
             StatusService.ApplyEndOfTurnStatus(player);
             StatusService.ApplyEndOfTurnStatus(bot);
+            _state.Attacker.turnsActive++;
+            _state.Defender.turnsActive++;
         }
 
-        public void SwitchAttackerDefender() => (_state.Attacker, _state.Defender) = (_state.Defender, _state.Attacker);
 
         public bool AttackerMovesFirst(int attackerPriority, int defenderPriority)
             => TurnResolver.AttackerMovesFirst(_state.Attacker, _state.Defender, attackerPriority, defenderPriority);

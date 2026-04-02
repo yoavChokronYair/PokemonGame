@@ -13,7 +13,7 @@
         public string Description { get; set; } = string.Empty;
     }
 
-    public sealed class MoveNumberData
+    public sealed class NumberData
     {
         public int Id { get; set; }
         public string Type { get; set; } = string.Empty;
@@ -26,8 +26,8 @@
 
         // FK children
         public List<MoveWeightedEntryData> WeightedEntries { get; set; } = new();  // Weighted type only
-        public MoveNumberData? LeftNumber { get; set; }                             // Product / Sum / Quotient
-        public MoveNumberData? RightNumber { get; set; }                            // Product / Sum / Quotient
+        public NumberData? LeftNumber { get; set; }                             // Product / Sum / Quotient
+        public NumberData? RightNumber { get; set; }                            // Product / Sum / Quotient
     }
 
     public class MoveWeightedEntryData
@@ -75,6 +75,7 @@
         public int? RampageMaxTurns { get; set; }
         public int? AfterRampageEffectId { get; set; }
         public List<CascadeStepRow> CascadeSteps { get; set; } = new();
+
     }
 
     public class EffectRow
@@ -103,6 +104,8 @@
         public string? BattleSide { get; set; }
         public string? Hazard { get; set; }
         public int? ChargeTurns { get; set; }
+        public double? Multiplier { get; set; }
+        public string? Status { get; set; }
     }
 
     public class SequenceStepRow

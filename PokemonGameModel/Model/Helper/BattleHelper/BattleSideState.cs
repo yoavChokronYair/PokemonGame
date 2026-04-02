@@ -47,5 +47,24 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             }
         }
     }
+    public class BattleFieldState
+    {
+        public bool IsGravityActive { get; private set; }
+        private int _gravityTurns;
+
+        public void ActivateGravity(int turns = 5)
+        {
+            IsGravityActive = true;
+            _gravityTurns = turns;
+        }
+
+        public void Tick()
+        {
+            if (IsGravityActive && --_gravityTurns <= 0)
+            {
+                IsGravityActive = false;
+            }
+        }
+    }
 
 }

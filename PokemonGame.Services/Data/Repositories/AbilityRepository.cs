@@ -3,35 +3,34 @@ using PokemonGame.Services.Data.GameData.PokemonData;
 
 namespace PokemonGame.Services.Data.Repositories
 {
-    internal class AbilityRepository
+    internal class AbilityRepository : DbRepository<int, AbilityData>
     {
-        private readonly IDbConnectionService _db;
-        private Dictionary<int, AbilityData>? _cache;
 
-        internal AbilityRepository(IDbConnectionService db) => _db = db;
+        internal AbilityRepository(IDbConnectionService db) : base(db) { }
 
-        // Ensures the database is read into memory only once
-        private void EnsureLoaded()
-        {
-            if (_cache == null)
-            {
-                var allAbilities = _db.Query<AbilityData>("SELECT * FROM abilities");
-                _cache = allAbilities.ToDictionary(a => a.Id);
-            }
-        }
+        // ─── AbilityData ────────────────────────────────────────────────────────
 
-        // Get an ability by its ID from memory
-        public AbilityData? GetAbility(int abilityID)
-        {
-            EnsureLoaded();
-            return _cache!.TryGetValue(abilityID, out var ability) ? ability : null;
-        }
+        public AbilityData? GetAbilityById(int id) =>
+            _db.QuerySingle<AbilityData>(
+                "SELECT * FROM abilities WHERE id = @id",
+                new { id });
 
-        // Get all abilities (useful for admin tools or UI pickers)
-        public List<AbilityData> GetAllAbilities()
-        {
-            EnsureLoaded();
-            return _cache!.Values.ToList();
-        }
+        public AbilityData? GetAbilityByName(string name) =>
+            _db.QuerySingle<AbilityData>(
+                "SELECT * FROM abilities WHERE name = @name",
+                new { name });
+
+        public List<AbilityData> GetAllAbilities() =>
+            _db.Query<AbilityData>("SELECT * FROM abilities ORDER BY id ASC").ToList();
+
+        public List<AbilityData> GetAbilitiesByTrigger(string trigger) =>
+            _db.Query<AbilityData>(
+                "SELECT * FROM abilities WHERE trigger = @trigger",
+                new { trigger }).ToList();
+
+        public List<AbilityData> GetAbilitiesByEffectId(int effectId) =>
+            _db.Query<AbilityData>(
+                "SELECT * FROM abilities WHERE effect_id = @effectId",
+                new { effectId }).ToList();
     }
 }

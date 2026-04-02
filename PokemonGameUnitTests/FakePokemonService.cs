@@ -46,6 +46,7 @@ namespace PokemonGame.Tests
                 PokemonID = 100 + slot,
                 PokedexID = 6,   // Charizard
                 Level = 50,
+                AbilityID = 2,   // ID for "Blaze"
                 Nature = "Timid",
                 Iv_hp = 31,
                 Iv_atk = 31,
@@ -98,6 +99,7 @@ namespace PokemonGame.Tests
                 PokedexID = 9,   // Blastoise
                 Level = 50,
                 Nature = "Calm",
+                AbilityID = 3,  // ID for "Torrent"
                 Iv_hp = 31,
                 Iv_atk = 31,
                 Iv_def = 31,

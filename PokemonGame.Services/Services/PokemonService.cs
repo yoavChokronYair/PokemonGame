@@ -16,6 +16,7 @@ namespace PokemonGame.Services.Handler
         public BattlerPokemon Battler { get; set; } = null!;
         public PokemonGeneral General { get; set; } = null!;
         public PokemonStatsData Stats { get; set; } = null!;
+
         public List<string> MoveNames { get; set; } = new();
     }
 
@@ -35,7 +36,7 @@ namespace PokemonGame.Services.Handler
             _teamRepo = ServiceFactory.Instance.TeamRepository;
             _memberRepo = ServiceFactory.Instance.TeamMemberRepository;
             _moveLearnsetRepository = ServiceFactory.Instance.MoveLearnsetRepository;
-            _pokemonStatsRepository = ServiceFactory.Instance.pokemonStatsRepository;
+            _pokemonStatsRepository = ServiceFactory.Instance.PokemonStatsRepository;
             _moveRepository = ServiceFactory.Instance.MoveRepository;
         }
 
@@ -63,12 +64,26 @@ namespace PokemonGame.Services.Handler
             for (int i = 0; i < count; i++)
             {
                 int randomPokedexId = allIds[random.Next(allIds.Count)];
+                var pokemonData = _pokemonRepo.GetPokemonById(randomPokedexId);
 
+                var abilityPool = new List<int?>
+                {
+                    pokemonData.FirstAbilityID,
+                    pokemonData.SecondAbilityID,
+                    pokemonData.HiddenAbilityID
+                }
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .ToList();
+
+                int randomAbilityId = abilityPool[random.Next(abilityPool.Count)];
                 // 2. Create a "Fake" BattlerPokemon (in-memory only)
                 var randomBattler = new BattlerPokemon
                 {
                     PokedexID = randomPokedexId,
                     Level = level,
+                    AbilityID = randomAbilityId,
+
                     Iv_hp = 31,
                     Iv_atk = 31,
                     Iv_def = 31,
@@ -109,7 +124,7 @@ namespace PokemonGame.Services.Handler
                 ?? throw new InvalidOperationException($"No base stats for PokedexID {battler.PokedexID}.");
 
             var moveNames = GetMoveIds(battler)
-                .Select(id => _moveRepository.GetMoveName(id)
+                .Select(id => _moveRepository.GetName(id)
                     ?? throw new InvalidOperationException($"Move ID {id} not found."))
                 .ToList();
 

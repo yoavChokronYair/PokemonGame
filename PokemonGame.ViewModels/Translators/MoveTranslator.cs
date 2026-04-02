@@ -190,6 +190,12 @@ namespace PokemonGame.ViewModels.Translators
         public ICondition<BattleState> TranslateCondition(MoveCondition c) => c.Type switch
         {
             "Probability" => new Probability(c.Probability ?? 0),
+            "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),
+            "HasVolatile" => new HasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
+            "IsFainted" => new IsFainted(),
+            "IsFullHP" => new IsFullHP(),
+            "HPBelow" => new HPBelow(c.HpFraction ?? 0),
+            "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
             "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
             "And" => new And<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
             "Or" => new Or<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
@@ -201,12 +207,7 @@ namespace PokemonGame.ViewModels.Translators
 
         public ICondition<PokemonState> TranslatePokemonCondition(MoveCondition c) => c.Type switch
         {
-            "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),
-            "HasVolatile" => new HasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
-            "IsFainted" => new IsFainted(),
-            "IsFullHP" => new IsFullHP(),
-            "HPBelow" => new HPBelow(c.HpFraction ?? 0),
-            "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
+
             "And" => new And<PokemonState>(TranslatePokemonCondition(c.Left!), TranslatePokemonCondition(c.Right!)),
             "Or" => new Or<PokemonState>(TranslatePokemonCondition(c.Left!), TranslatePokemonCondition(c.Right!)),
             "Not" => new Not<PokemonState>(TranslatePokemonCondition(c.Inner!)),

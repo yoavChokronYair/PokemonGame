@@ -202,10 +202,13 @@ namespace PokemonGame.Tests
 
         public static MoveTranslator MoveTranslator() =>
             new MoveTranslator(new FakeBattleMoveService());
+        public static AbilityTranslator AbilityTranslator() =>
+            new AbilityTranslator(); // No abilities in this test, so no fake service needed.
+        public static ItemTranslator itemTranslator() => new ItemTranslator();
 
         public static TeamTranslator TeamTranslator() =>
             new TeamTranslator(new FakePokemonService(PlayerMoves, EnemyMoves),
-                               MoveTranslator());
+                               MoveTranslator(), AbilityTranslator(), itemTranslator());
 
         public static PokemonTeam PlayerTeam() =>
             TeamTranslator().LoadTeam(battlePlayerId: 1);
