@@ -188,6 +188,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                 // Adaptability - 2.0x STAB instead of 1.5x (applied as extra on top of getStabBonus)
                 else if (ability.Name == "Adaptability" && attacker.HasType(move.Element))
                 {
+
                     modifier *= (2.0 / 1.5); // neutralize normal STAB and apply 2x
                 }
 
