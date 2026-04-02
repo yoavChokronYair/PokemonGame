@@ -1,5 +1,4 @@
-﻿using System.Windows.Media.Imaging;
-using PokemonGame.Services.Data.GameData;
+﻿using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Data.Repositories;

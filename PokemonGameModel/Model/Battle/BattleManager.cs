@@ -48,6 +48,8 @@ namespace PokemonGame.Model.Model.Battle
         public PokemonState PlayerActive => _playerTeam.Active;
         public PokemonState BotActive => _botTeam.Active;
         public IReadOnlyList<string> BattleLog => _state.Logger.BattleLog;
+        public IReadOnlyList<BattleLogEntry> BattleLogEntries => _state.Logger.Entries;
+
         public bool IsBattleOver => Phase == BattlePhase.BattleOver;
 
         /// <summary>Null until the battle ends.</summary>
@@ -67,8 +69,8 @@ namespace PokemonGame.Model.Model.Battle
             };
 
             _state = new BattleState(_domain);
-
-            _state.Logger.Log($"Battle start! {_playerTeam.Active.Name} vs {_botTeam.Active.Name}");
+            _state.Logger.LogSetup($"enemy sent out {_botTeam.Active.Name}");
+            _state.Logger.LogSetup($"go! {_playerTeam.Active.Name}!");
         }
 
         // ── Primary API ────────────────────────────────────────────────────────
@@ -168,7 +170,10 @@ namespace PokemonGame.Model.Model.Battle
 
         private void ExecuteMove(IMove move, PokemonState user, PokemonState target)
         {
-            if (user.IsFainted) return;
+            if (user.IsFainted)
+            {
+                return;
+            }
 
             _state.RegisterMove(move);
 

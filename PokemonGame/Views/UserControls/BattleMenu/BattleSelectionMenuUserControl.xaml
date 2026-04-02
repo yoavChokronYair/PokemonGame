@@ -21,13 +21,10 @@
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
 
-        <!--  Battle text — always visible  -->
-        <controls:BoardBackground Grid.ColumnSpan="2">
-            <TextBlock
-                Margin="10,0"
-                VerticalAlignment="Center"
-                Text="What will Pokemon do?" />
-        </controls:BoardBackground>
+        <local:LoggerUserControl
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            DataContext="{Binding DataContext.Logger, RelativeSource={RelativeSource AncestorType=Page}}" />
 
         <!--  Main menu: FIGHT / BAG / POKEMON / RUN  -->
         <controls:BoardBackground Grid.Column="1" Visibility="{Binding IsMainMenuVisible, Converter={StaticResource BoolToVis}}">

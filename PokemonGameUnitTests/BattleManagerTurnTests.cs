@@ -40,9 +40,13 @@ namespace PokemonGame.Tests
             {
                 var m = p.Moves[i] as MoveState;
                 if (m != null)
+                {
                     _out.WriteLine($"    Move[{i}] {m.Name,-16} PP:{m.PP}/{m.MaxPP}  Type:{m.Element}  Cat:{m.Category}");
+                }
                 else
+                {
                     _out.WriteLine($"    Move[{i}] (non-MoveState: {p.Moves[i].GetType().Name})");
+                }
             }
         }
 
@@ -50,7 +54,10 @@ namespace PokemonGame.Tests
         {
             _out.WriteLine($"── {header} ({'─',-40}");
             foreach (var line in b.BattleLog)
+            {
                 _out.WriteLine($"  | {line}");
+            }
+
             _out.WriteLine($"{'─',50}");
         }
 
@@ -123,7 +130,7 @@ namespace PokemonGame.Tests
             var b = NewBattle();
             DumpBattleState(b);
             _out.WriteLine("  → Running turn (playerMoveIndex=1, botDecides=false)");
-            bool result = b.RunTurn(playerMoveIndex: 0, botDecides: false);
+            bool result = b.RunTurn(playerMoveIndex: 1, botDecides: false);
             _out.WriteLine($"  RunTurn returned: {result}");
             DumpBattleState(b);
             DumpLog(b, "Log After Turn 1");
@@ -152,9 +159,13 @@ namespace PokemonGame.Tests
             DumpLog(b, "Log After Thunderbolt Turn");
 
             if (!b.IsBattleOver)
+            {
                 Assert.Equal(BattlePhase.AwaitingPlayerAction, b.Phase);
+            }
             else
+            {
                 _out.WriteLine("  (battle ended in one turn — phase check skipped)");
+            }
         }
         [Fact]
         public void RunTurn_HyperBeam_ReducesBotHP()
@@ -329,14 +340,20 @@ namespace PokemonGame.Tests
             {
                 if (b.Phase == BattlePhase.AwaitingPlayerAction)
                 {
-                    b.RunTurn(playerMoveIndex: 0, botDecides: false);
+                    b.RunTurn(playerMoveIndex: 1, botDecides: false);
                     turns++;
                 }
                 else if (b.Phase == BattlePhase.AwaitingPlayerSwitch)
                 {
                     var opts = b.GetPlayerSwitchOptions();
-                    if (opts.Count > 0) b.PlayerSwitch(opts[0]);
-                    else break;
+                    if (opts.Count > 0)
+                    {
+                        b.PlayerSwitch(opts[0]);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
 

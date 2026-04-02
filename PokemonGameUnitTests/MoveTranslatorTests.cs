@@ -51,19 +51,36 @@ namespace PokemonGame.Tests
             _out.WriteLine($"{pad}   AccuracyValue : {a.AccuracyValue}");
 
             if (a.ChargeEffect != null)
+            {
                 DumpEffect(a.ChargeEffect, "ChargeEffect", indent + 3);
+            }
+
             if (a.ReleaseAttempt != null)
+            {
                 DumpAttempt(a.ReleaseAttempt, "ReleaseAttempt", indent + 3);
+            }
+
             if (a.OnHit != null)
+            {
                 DumpEffect(a.OnHit, "OnHit", indent + 3);
+            }
+
             if (a.OnMiss != null)
+            {
                 DumpEffect(a.OnMiss, "OnMiss", indent + 3);
+            }
+
             if (a.After != null)
+            {
                 DumpEffect(a.After, "After", indent + 3);
+            }
+
             if (a.CascadeSteps.Count > 0)
             {
                 for (int i = 0; i < a.CascadeSteps.Count; i++)
+                {
                     DumpAttempt(a.CascadeSteps[i], $"CascadeSteps[{i}]", indent + 3);
+                }
             }
         }
 
@@ -75,15 +92,26 @@ namespace PokemonGame.Tests
             _out.WriteLine($"{pad}   Target : {e.Target}");
 
             if (e.Number != null)
+            {
                 _out.WriteLine($"{pad}   Number : Type={e.Number.Type}, ExactValue={e.Number.ExactValue}, Min={e.Number.RangeMin}, Max={e.Number.RangeMax}");
+            }
+
             if (e.ChanceProbability.HasValue)
+            {
                 _out.WriteLine($"{pad}   ChanceProbability : {e.ChanceProbability}");
+            }
+
             if (e.ChanceChild != null)
+            {
                 DumpEffect(e.ChanceChild, "ChanceChild", indent + 3);
+            }
+
             if (e.SequenceSteps.Count > 0)
             {
                 for (int i = 0; i < e.SequenceSteps.Count; i++)
+                {
                     DumpEffect(e.SequenceSteps[i], $"SequenceSteps[{i}]", indent + 3);
+                }
             }
         }
 
@@ -417,9 +445,15 @@ namespace PokemonGame.Tests
                         _out.WriteLine($"    SequenceSteps[{i}].Target            : {step.Target}");
 
                         if (step.Number != null)
+                        {
                             _out.WriteLine($"    SequenceSteps[{i}].Number.ExactValue: {step.Number.ExactValue}");
+                        }
+
                         if (step.ChanceProbability.HasValue)
+                        {
                             _out.WriteLine($"    SequenceSteps[{i}].ChanceProbability: {step.ChanceProbability}");
+                        }
+
                         if (step.ChanceChild != null)
                         {
                             _out.WriteLine($"    SequenceSteps[{i}].ChanceChild.Type : {step.ChanceChild.Type}");
