@@ -61,7 +61,9 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public void Tick()
         {
             if (IsGravityActive && --_gravityTurns <= 0)
+            {
                 IsGravityActive = false;
+            }
         }
     }
 

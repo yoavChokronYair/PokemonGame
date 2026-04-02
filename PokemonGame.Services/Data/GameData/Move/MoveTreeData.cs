@@ -103,7 +103,7 @@
         public List<MoveEffect> SequenceSteps { get; set; } = new();
         public double? Multiplier { get; set; }
         public string? Status { get; set; }
-        
+
     }
 
     // ── Assembled Attempt ────────────────────────────────────────────────────────

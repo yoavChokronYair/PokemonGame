@@ -37,7 +37,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public int turnsActive;
         public double LastDamageDealt { get; internal set; }
         public double LastDamageTaken { get; internal set; }
-        
+
 
         // --- HP ---
         public void TakeDamage(int amount)
@@ -45,7 +45,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
             _state.LastDamageTaken = Math.Min(amount, _state.CurrentHP);
             _state.CurrentHP = Math.Max(0, _state.CurrentHP - amount);
             RegisterDamageTaken(amount);
-            
+
         }
 
         public void RestoreHP(int amount)
@@ -239,7 +239,9 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
             foreach (var key in _state.StatStages.Keys.ToList())
             {
                 if (_state.StatStages[key] < 0)
+                {
                     _state.StatStages[key] = 0;
+                }
             }
         }
 

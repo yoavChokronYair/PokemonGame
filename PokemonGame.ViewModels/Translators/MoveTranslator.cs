@@ -66,9 +66,11 @@ namespace PokemonGame.ViewModels.Translators
                 ?? throw new InvalidOperationException($"Move '{moveName}' not found.");
 
             if (tree.Attempts.Count == 0)
+            {
                 throw new InvalidOperationException($"Move '{moveName}' has no attempts.");
+            }
 
-            return TranslateAttempt(tree.Attempts[0]);  
+            return TranslateAttempt(tree.Attempts[0]);
         }
         public IAttempt TranslateAttempt(MoveAttempt a) => a.Type switch
         {
@@ -192,7 +194,7 @@ namespace PokemonGame.ViewModels.Translators
             "HasVolatile" => new HasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
             "IsFainted" => new IsFainted(),
             "IsFullHP" => new IsFullHP(),
-            "HPBelow" => new HPBelow(c.HpFraction ?? 0),    
+            "HPBelow" => new HPBelow(c.HpFraction ?? 0),
             "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
             "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
             "And" => new And<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
@@ -205,7 +207,7 @@ namespace PokemonGame.ViewModels.Translators
 
         public ICondition<PokemonState> TranslatePokemonCondition(MoveCondition c) => c.Type switch
         {
-            
+
             "And" => new And<PokemonState>(TranslatePokemonCondition(c.Left!), TranslatePokemonCondition(c.Right!)),
             "Or" => new Or<PokemonState>(TranslatePokemonCondition(c.Left!), TranslatePokemonCondition(c.Right!)),
             "Not" => new Not<PokemonState>(TranslatePokemonCondition(c.Inner!)),

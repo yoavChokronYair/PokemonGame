@@ -1,12 +1,10 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Enums;
-using PokemonGame.Model.Domain;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model;
 using PokemonGame.Model.Model.Helper;
-using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.Services.Handler;
 
@@ -41,10 +39,14 @@ namespace PokemonGame.ViewModels.Translators
             var results = _pokemonService.LoadTeamResults(battlePlayerId);
 
             if (results == null || results.Count == 0)
+            {
                 throw new InvalidOperationException($"No team found for Player ID {battlePlayerId}.");
+            }
 
             if (results.Count > 6)
+            {
                 throw new InvalidOperationException($"Expected maximum 6 members, found {results.Count}.");
+            }
 
             var roster = results.Select(TranslateToDomain).ToList();
             return PokemonTeam.Create(roster);
@@ -102,7 +104,11 @@ namespace PokemonGame.ViewModels.Translators
         // Returns null if the pokemon has no item
         private HeldItemState? BuildHeldItem(int? itemId)
         {
-            if (itemId == null || itemId <= 0) return null;
+            if (itemId == null || itemId <= 0)
+            {
+                return null;
+            }
+
             return _itemTranslator.TranslateById(itemId.Value);
         }
 

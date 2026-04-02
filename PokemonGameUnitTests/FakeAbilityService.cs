@@ -1,5 +1,4 @@
-﻿using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model.Helper.DesignPatterns;
+﻿using PokemonGame.Model.Model.Helper.DesignPatterns;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.GameData.PokemonData;
 using PokemonGame.Services.Handler;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Model.Enums
+﻿namespace PokemonGame.Model.Enums
 {
     public enum TerrainType
     {

@@ -54,10 +54,14 @@ namespace PokemonGame.Services.Handler
             };
 
             if (item.Effect_id.HasValue)
+            {
                 tree.Effect = BuildEffect(item.Effect_id.Value);
+            }
 
             if (item.Condition_id.HasValue)
+            {
                 tree.Condition = BuildCondition(item.Condition_id.Value);
+            }
 
             return tree;
         }
@@ -67,7 +71,10 @@ namespace PokemonGame.Services.Handler
         private MoveEffect? BuildEffect(int id)
         {
             var row = _effectRepository.Load(id);
-            if (row == null) return null;
+            if (row == null)
+            {
+                return null;
+            }
 
             var effect = new MoveEffect
             {
@@ -93,11 +100,30 @@ namespace PokemonGame.Services.Handler
                 Multiplier = row.Multiplier,
             };
 
-            if (row.NumberId.HasValue) effect.Number = BuildNumber(row.NumberId.Value);
-            if (row.ChildEffectId.HasValue) effect.ChanceChild = BuildEffect(row.ChildEffectId.Value);
-            if (row.ConditionId.HasValue) effect.Condition = BuildCondition(row.ConditionId.Value);
-            if (row.OnPassEffectId.HasValue) effect.OnPass = BuildEffect(row.OnPassEffectId.Value);
-            if (row.OnFailEffectId.HasValue) effect.OnFail = BuildEffect(row.OnFailEffectId.Value);
+            if (row.NumberId.HasValue)
+            {
+                effect.Number = BuildNumber(row.NumberId.Value);
+            }
+
+            if (row.ChildEffectId.HasValue)
+            {
+                effect.ChanceChild = BuildEffect(row.ChildEffectId.Value);
+            }
+
+            if (row.ConditionId.HasValue)
+            {
+                effect.Condition = BuildCondition(row.ConditionId.Value);
+            }
+
+            if (row.OnPassEffectId.HasValue)
+            {
+                effect.OnPass = BuildEffect(row.OnPassEffectId.Value);
+            }
+
+            if (row.OnFailEffectId.HasValue)
+            {
+                effect.OnFail = BuildEffect(row.OnFailEffectId.Value);
+            }
 
             return effect;
         }
@@ -107,7 +133,10 @@ namespace PokemonGame.Services.Handler
         private MoveNumber? BuildNumber(int id)
         {
             var row = _numberRepository.Load(id);
-            if (row == null) return null;
+            if (row == null)
+            {
+                return null;
+            }
 
             var number = new MoveNumber
             {
@@ -119,8 +148,15 @@ namespace PokemonGame.Services.Handler
                 Target = row.Target,
             };
 
-            if (row.LeftNumberId.HasValue) number.Left = BuildNumber(row.LeftNumberId.Value);
-            if (row.RightNumberId.HasValue) number.Right = BuildNumber(row.RightNumberId.Value);
+            if (row.LeftNumberId.HasValue)
+            {
+                number.Left = BuildNumber(row.LeftNumberId.Value);
+            }
+
+            if (row.RightNumberId.HasValue)
+            {
+                number.Right = BuildNumber(row.RightNumberId.Value);
+            }
 
             return number;
         }
@@ -130,7 +166,10 @@ namespace PokemonGame.Services.Handler
         private MoveCondition? BuildCondition(int id)
         {
             var row = _conditionRepository.Load(id);
-            if (row == null) return null;
+            if (row == null)
+            {
+                return null;
+            }
 
             var condition = new MoveCondition
             {
@@ -144,9 +183,20 @@ namespace PokemonGame.Services.Handler
                 PokemonType = row.PokemonType,
             };
 
-            if (row.LeftConditionId.HasValue) condition.Left = BuildCondition(row.LeftConditionId.Value);
-            if (row.RightConditionId.HasValue) condition.Right = BuildCondition(row.RightConditionId.Value);
-            if (row.InnerConditionId.HasValue) condition.Inner = BuildCondition(row.InnerConditionId.Value);
+            if (row.LeftConditionId.HasValue)
+            {
+                condition.Left = BuildCondition(row.LeftConditionId.Value);
+            }
+
+            if (row.RightConditionId.HasValue)
+            {
+                condition.Right = BuildCondition(row.RightConditionId.Value);
+            }
+
+            if (row.InnerConditionId.HasValue)
+            {
+                condition.Inner = BuildCondition(row.InnerConditionId.Value);
+            }
 
             return condition;
         }

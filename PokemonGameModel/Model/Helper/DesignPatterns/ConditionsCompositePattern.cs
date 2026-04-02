@@ -5,7 +5,6 @@
 // ICondition<T> and ITarget interfaces live in Interface/Move/IConditionAndTarget.cs.
 // NOTE: Probability uses RandomHelper — no inline new Random() anywhere in this file.
 
-using System.Reflection;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
@@ -258,7 +257,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     }
 
     public class DefenderTarget : ITarget
-    {   
+    {
         public PokemonState Resolve(BattleState battle) => battle.Defender;
     }
 

@@ -46,7 +46,10 @@ namespace PokemonGame.Services.Handler
         public MoveTree? GetMove(string name)
         {
             var move = _moves.LoadByName(name);
-            if (move == null) return null;
+            if (move == null)
+            {
+                return null;
+            }
 
             _visitedEffects.Clear();
             _visitedNumbers.Clear();
@@ -61,7 +64,9 @@ namespace PokemonGame.Services.Handler
             };
 
             foreach (var row in _attempts.LoadForMove(move.Id))
+            {
                 tree.Attempts.Add(BuildAttempt(row));
+            }
 
             return tree;
         }
@@ -71,7 +76,9 @@ namespace PokemonGame.Services.Handler
         private MoveAttempt BuildAttempt(AttemptRow row)
         {
             if (_visitedAttempts.Contains(row.Id))
+            {
                 return new MoveAttempt { Id = row.Id, Type = row.Type };
+            }
 
             _visitedAttempts.Add(row.Id);
 
@@ -85,27 +92,53 @@ namespace PokemonGame.Services.Handler
                 RampageMaxTurns = row.RampageMaxTurns,
             };
 
-            if (row.OnHitEffectId.HasValue) attempt.OnHit = BuildEffect(row.OnHitEffectId.Value);
-            if (row.OnMissEffectId.HasValue) attempt.OnMiss = BuildEffect(row.OnMissEffectId.Value);
-            if (row.AfterEffectId.HasValue) attempt.After = BuildEffect(row.AfterEffectId.Value);
+            if (row.OnHitEffectId.HasValue)
+            {
+                attempt.OnHit = BuildEffect(row.OnHitEffectId.Value);
+            }
+
+            if (row.OnMissEffectId.HasValue)
+            {
+                attempt.OnMiss = BuildEffect(row.OnMissEffectId.Value);
+            }
+
+            if (row.AfterEffectId.HasValue)
+            {
+                attempt.After = BuildEffect(row.AfterEffectId.Value);
+            }
 
             foreach (var step in _cascadeSteps.LoadForAttempt(row.Id))
             {
                 var child = _attempts.Load(step.ChildAttemptId);
-                if (child != null) attempt.CascadeSteps.Add(BuildAttempt(child));
+                if (child != null)
+                {
+                    attempt.CascadeSteps.Add(BuildAttempt(child));
+                }
             }
 
-            if (row.HitsNumberId.HasValue) attempt.HitsNumber = BuildNumber(row.HitsNumberId.Value);
-            if (row.ChargeEffectId.HasValue) attempt.ChargeEffect = BuildEffect(row.ChargeEffectId.Value);
+            if (row.HitsNumberId.HasValue)
+            {
+                attempt.HitsNumber = BuildNumber(row.HitsNumberId.Value);
+            }
+
+            if (row.ChargeEffectId.HasValue)
+            {
+                attempt.ChargeEffect = BuildEffect(row.ChargeEffectId.Value);
+            }
 
             if (row.ReleaseAttemptId.HasValue)
             {
                 var release = _attempts.Load(row.ReleaseAttemptId.Value);
-                if (release != null) attempt.ReleaseAttempt = BuildAttempt(release);
+                if (release != null)
+                {
+                    attempt.ReleaseAttempt = BuildAttempt(release);
+                }
             }
 
             if (row.AfterRampageEffectId.HasValue)
+            {
                 attempt.AfterRampage = BuildEffect(row.AfterRampageEffectId.Value);
+            }
 
             return attempt;
         }
@@ -114,11 +147,18 @@ namespace PokemonGame.Services.Handler
 
         private MoveEffect? BuildEffect(int id)
         {
-            if (_visitedEffects.Contains(id)) return null;
+            if (_visitedEffects.Contains(id))
+            {
+                return null;
+            }
+
             _visitedEffects.Add(id);
 
             var row = _effects.Load(id);
-            if (row == null) return null;
+            if (row == null)
+            {
+                return null;
+            }
 
             var effect = new MoveEffect
             {
@@ -143,21 +183,43 @@ namespace PokemonGame.Services.Handler
                 ChargeTurns = row.ChargeTurns,
                 Multiplier = row.Multiplier,
                 Status = row.Status,
-                
+
             };
 
-            if (row.NumberId.HasValue) effect.Number = BuildNumber(row.NumberId.Value);
-            if (row.ChildEffectId.HasValue) effect.ChanceChild = BuildEffect(row.ChildEffectId.Value);
-            if (row.ConditionId.HasValue) effect.Condition = BuildCondition(row.ConditionId.Value);
-            if (row.OnPassEffectId.HasValue) effect.OnPass = BuildEffect(row.OnPassEffectId.Value);
-            if (row.OnFailEffectId.HasValue) effect.OnFail = BuildEffect(row.OnFailEffectId.Value);
+            if (row.NumberId.HasValue)
+            {
+                effect.Number = BuildNumber(row.NumberId.Value);
+            }
+
+            if (row.ChildEffectId.HasValue)
+            {
+                effect.ChanceChild = BuildEffect(row.ChildEffectId.Value);
+            }
+
+            if (row.ConditionId.HasValue)
+            {
+                effect.Condition = BuildCondition(row.ConditionId.Value);
+            }
+
+            if (row.OnPassEffectId.HasValue)
+            {
+                effect.OnPass = BuildEffect(row.OnPassEffectId.Value);
+            }
+
+            if (row.OnFailEffectId.HasValue)
+            {
+                effect.OnFail = BuildEffect(row.OnFailEffectId.Value);
+            }
 
             effect.StatChanges = _multiStatChanges.LoadForEffect(id);
 
             foreach (var step in _sequenceSteps.LoadForEffect(id))
             {
                 var child = BuildEffect(step.ChildEffectId);
-                if (child != null) effect.SequenceSteps.Add(child);
+                if (child != null)
+                {
+                    effect.SequenceSteps.Add(child);
+                }
             }
 
             _visitedEffects.Remove(id);
@@ -168,11 +230,18 @@ namespace PokemonGame.Services.Handler
 
         private MoveNumber? BuildNumber(int id)
         {
-            if (_visitedNumbers.Contains(id)) return null;
+            if (_visitedNumbers.Contains(id))
+            {
+                return null;
+            }
+
             _visitedNumbers.Add(id);
 
             var row = _numbers.Load(id);
-            if (row == null) return null;
+            if (row == null)
+            {
+                return null;
+            }
 
             var number = new MoveNumber
             {
@@ -185,10 +254,19 @@ namespace PokemonGame.Services.Handler
             };
 
             if (row.Type == "Weighted")
+            {
                 number.WeightedEntries = _weightedEntries.LoadForNumber(id);
+            }
 
-            if (row.LeftNumberId.HasValue) number.Left = BuildNumber(row.LeftNumberId.Value);
-            if (row.RightNumberId.HasValue) number.Right = BuildNumber(row.RightNumberId.Value);
+            if (row.LeftNumberId.HasValue)
+            {
+                number.Left = BuildNumber(row.LeftNumberId.Value);
+            }
+
+            if (row.RightNumberId.HasValue)
+            {
+                number.Right = BuildNumber(row.RightNumberId.Value);
+            }
 
             _visitedNumbers.Remove(id);
             return number;
@@ -199,7 +277,10 @@ namespace PokemonGame.Services.Handler
         private MoveCondition? BuildCondition(int id)
         {
             var row = _conditions.Load(id);
-            if (row == null) return null;
+            if (row == null)
+            {
+                return null;
+            }
 
             var condition = new MoveCondition
             {
@@ -214,9 +295,20 @@ namespace PokemonGame.Services.Handler
                 Fraction = row.HpFraction
             };
 
-            if (row.LeftConditionId.HasValue) condition.Left = BuildCondition(row.LeftConditionId.Value);
-            if (row.RightConditionId.HasValue) condition.Right = BuildCondition(row.RightConditionId.Value);
-            if (row.InnerConditionId.HasValue) condition.Inner = BuildCondition(row.InnerConditionId.Value);
+            if (row.LeftConditionId.HasValue)
+            {
+                condition.Left = BuildCondition(row.LeftConditionId.Value);
+            }
+
+            if (row.RightConditionId.HasValue)
+            {
+                condition.Right = BuildCondition(row.RightConditionId.Value);
+            }
+
+            if (row.InnerConditionId.HasValue)
+            {
+                condition.Inner = BuildCondition(row.InnerConditionId.Value);
+            }
 
             return condition;
         }

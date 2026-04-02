@@ -19,4 +19,3 @@ namespace PokemonGame.Model.Enums
         Wind           // Trigger for Wind Power / Wind Rider
     }
 }
-    

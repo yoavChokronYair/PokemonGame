@@ -43,7 +43,7 @@ namespace PokemonGame.Services.Data.Repositories
                      after_rampage_effect_id AS AfterRampageEffectId
               FROM attempts WHERE move_id = @id", new { id = moveId }).ToList();
 
-            
+
 
             return rows;
         }
@@ -52,7 +52,7 @@ namespace PokemonGame.Services.Data.Repositories
             GetCached(id, () => _db.QuerySingle<AttemptRow?>(
                 "SELECT * FROM attempts WHERE id = @id", new { id }));
 
-        
+
     }
     // CascadeStepRepository.cs
     internal class CascadeStepRepository : DbRepository<int, List<CascadeStepRow>>

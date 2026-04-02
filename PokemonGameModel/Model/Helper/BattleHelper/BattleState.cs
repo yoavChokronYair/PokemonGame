@@ -10,7 +10,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         private readonly BattleDomain _state;
         public BattleWeatherService WeatherService { get; }
         public BattleStatusService StatusService { get; }
-        public BattleTerrainService TerrainService { get; } 
+        public BattleTerrainService TerrainService { get; }
         public BattleLogger Logger { get; } = new();
         public BattleTurnResolver TurnResolver { get; }
         public BattleFieldState Field { get; } = new();
@@ -41,7 +41,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
         public void BeginTurn()
         {
             _state.TurnNumber++;
-            
+
             _state.LastDamageDealt = 0;
             Logger.Log($"--- Turn {_state.TurnNumber} ---");
 

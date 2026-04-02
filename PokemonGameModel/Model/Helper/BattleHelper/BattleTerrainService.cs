@@ -18,7 +18,10 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 
         public void SetTerrain(TerrainType terrain, int duration = 5)
         {
-            if (CurrentTerrain == terrain) return;
+            if (CurrentTerrain == terrain)
+            {
+                return;
+            }
 
             CurrentTerrain = terrain;
             TurnsRemaining = duration;
@@ -27,7 +30,10 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
 
         public void TickTerrain()
         {
-            if (CurrentTerrain == TerrainType.None) return;
+            if (CurrentTerrain == TerrainType.None)
+            {
+                return;
+            }
 
             TurnsRemaining--;
             if (TurnsRemaining <= 0)

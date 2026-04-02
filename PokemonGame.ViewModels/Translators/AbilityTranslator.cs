@@ -170,7 +170,9 @@ namespace PokemonGame.ViewModels.Translators
         private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum
         {
             if (Enum.TryParse<TEnum>(value, ignoreCase: true, out var result))
+            {
                 return result;
+            }
 
             throw new InvalidOperationException($"Cannot parse '{value}' as {typeof(TEnum).Name}");
         }

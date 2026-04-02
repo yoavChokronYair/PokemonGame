@@ -87,7 +87,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                 TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) *
                 RNGHelper.getCritModifyer() *
                 RandomHelper.NextDouble(0.85, 1.0) *
-                GetHeldItemAndAbilityModifier(Battle, move,basePower); 
+                GetHeldItemAndAbilityModifier(Battle, move, basePower);
 
             double levelFactor = ((2.0 * attacker.Level) + 10) / 250;
 
@@ -106,7 +106,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         {
             return pokemon.HasType(moveType) ? 1.5 : 1.0;
         }
-        public static double GetHeldItemAndAbilityModifier(BattleState battle, MoveState move,double BasePower)
+        public static double GetHeldItemAndAbilityModifier(BattleState battle, MoveState move, double BasePower)
         {
             var attacker = battle.Attacker;
             var defender = battle.Defender;
@@ -117,32 +117,46 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             {
                 // Life Orb - 1.3x all damage
                 if (item.Name == "Life Orb")
+                {
                     modifier *= 1.3;
+                }
 
                 // Choice Band - 1.5x physical
                 else if (item.Name == "Choice Band" && move.Category == MoveCategory.Physical)
+                {
                     modifier *= 1.5;
+                }
 
                 // Choice Specs - 1.5x special
                 else if (item.Name == "Choice Specs" && move.Category == MoveCategory.Special)
+                {
                     modifier *= 1.5;
+                }
 
                 // Expert Belt - 1.2x on super effective
                 else if (item.Name == "Expert Belt" &&
                     TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) > 1.0)
+                {
                     modifier *= 1.2;
+                }
 
                 // Wise Glasses - 1.1x special
                 else if (item.Name == "Wise Glasses" && move.Category == MoveCategory.Special)
+                {
                     modifier *= 1.1;
+                }
 
                 // Muscle Band - 1.1x physical
                 else if (item.Name == "Muscle Band" && move.Category == MoveCategory.Physical)
+                {
                     modifier *= 1.1;
+                }
 
                 // Type boosters - 1.2x matching type
                 else if (GetTypeBoosterType(item.Name) is PokemonType boostedType && move.Element == boostedType)
+                {
                     modifier *= 1.2;
+                }
             }
 
             // ── Ability Modifiers ─────────────────────────────────────────────────────
@@ -160,25 +174,35 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                         _ => PokemonType.None
                     };
                     if (move.Element == boostedType && attacker.GetHPFraction() < 0.33)
+                    {
                         modifier *= 1.5;
+                    }
                 }
 
                 // Technician - 1.5x moves with base power <= 60
                 else if (ability.Name == "Technician" && BasePower <= 60)
+                {
                     modifier *= 1.5;
+                }
 
                 // Adaptability - 2.0x STAB instead of 1.5x (applied as extra on top of getStabBonus)
                 else if (ability.Name == "Adaptability" && attacker.HasType(move.Element))
+                {
                     modifier *= (2.0 / 1.5); // neutralize normal STAB and apply 2x
+                }
 
                 // Tinted Lens - 2x not very effective moves
                 else if (ability.Name == "Tinted Lens" &&
                     TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) < 1.0)
+                {
                     modifier *= 2.0;
+                }
 
                 // Hustle - 1.5x physical attack
                 else if (ability.Name == "Hustle" && move.Category == MoveCategory.Physical)
+                {
                     modifier *= 1.5;
+                }
 
                 // Guts - 1.5x Attack when statused (burn Attack halving is already applied in GetEffectiveStat,
                 // so add extra 1.5x * 2 to compensate and apply Guts bonus)
@@ -187,7 +211,9 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                 {
                     modifier *= 1.5;
                     if (attacker.PokemonStatusCondition() == StatusCondition.Burn)
+                    {
                         modifier *= 2.0; // undo burn halving that was already applied in GetEffectiveStat
+                    }
                 }
 
                 // Sheer Force - 1.3x if move has secondary effect (NoEffect moves won't have child_effect)
@@ -197,7 +223,9 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                 else if (defender.Ability is AbilityState defAbility &&
                     defAbility.Name is "Filter" or "Solid Rock" &&
                     TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes()) > 1.0)
+                {
                     modifier *= 0.75;
+                }
             }
 
             return modifier;

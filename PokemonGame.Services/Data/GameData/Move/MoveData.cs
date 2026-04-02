@@ -75,7 +75,7 @@
         public int? RampageMaxTurns { get; set; }
         public int? AfterRampageEffectId { get; set; }
         public List<CascadeStepRow> CascadeSteps { get; set; } = new();
-       
+
     }
 
     public class EffectRow

@@ -88,7 +88,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         {
             var defender = _target.Resolve(battle);
             int baseAmount = (int)_power.Evaluate(battle);
-            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle,baseAmount);
+            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle, baseAmount);
             defender.TakeDamage(amount);
             battle.Attacker.RegisterDamageDealt(amount);
             battle.LastDamageDealt = amount;
@@ -472,7 +472,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle)
         {
             if (RandomHelper.NextBool(_probability))
+            {
                 battle.Defender.ApplyVolatileStatus(VolatileStatus.Flinch);
+            }
         }
     }
 
@@ -487,7 +489,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public void Apply(BattleState battle)
         {
             if (RandomHelper.NextBool(_probability))
+            {
                 _target.Resolve(battle).SetPriorityOverride(1);
+            }
         }
     }
 
@@ -503,7 +507,9 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         {
             var battler = _target.Resolve(battle);
             if (battler.PokemonStatusCondition() == _status)
+            {
                 battler.ClearStatus();
+            }
         }
     }
 }

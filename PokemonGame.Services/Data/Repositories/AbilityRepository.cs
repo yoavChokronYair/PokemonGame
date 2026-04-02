@@ -1,5 +1,4 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
-using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.GameData.PokemonData;
 
 namespace PokemonGame.Services.Data.Repositories

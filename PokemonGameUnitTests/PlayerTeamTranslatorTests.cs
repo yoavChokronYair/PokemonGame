@@ -1,11 +1,9 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model;
 using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.Model.Model.Helper.PokemonHelper;
-using Xunit;
 using Xunit.Abstractions;
-using System.Linq;
-using PokemonGame.Model.Model;
 
 namespace PokemonGame.Tests
 {
@@ -67,7 +65,7 @@ namespace PokemonGame.Tests
             Assert.Equal("Blaze", ((AbilityState)(_team.Active.Ability)).Name);
         }
 
-      
+
 
         // ── Move Tests ────────────────────────────────────────────────────────
 

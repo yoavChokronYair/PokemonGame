@@ -16,7 +16,7 @@ namespace PokemonGame.Services.Handler
         public BattlerPokemon Battler { get; set; } = null!;
         public PokemonGeneral General { get; set; } = null!;
         public PokemonStatsData Stats { get; set; } = null!;
-        
+
         public List<string> MoveNames { get; set; } = new();
     }
 
@@ -60,7 +60,7 @@ namespace PokemonGame.Services.Handler
             var allIds = _pokemonRepo.GetAllPokedexIds(); // You'll need this simple query in PokemonRepository
             var random = new Random();
             var results = new List<PokemonLoadResult>();
-            
+
             for (int i = 0; i < count; i++)
             {
                 int randomPokedexId = allIds[random.Next(allIds.Count)];
