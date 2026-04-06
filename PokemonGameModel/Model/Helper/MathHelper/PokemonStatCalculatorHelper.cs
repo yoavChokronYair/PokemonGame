@@ -231,7 +231,6 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
             return modifier;
         }
-
         private static PokemonType? GetTypeBoosterType(string itemName) => itemName switch
         {
             "Silk Scarf" => PokemonType.Normal,

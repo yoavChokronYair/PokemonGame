@@ -22,6 +22,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         public int Level => _state.Level;
         public int MaxHP => _state.MaxHP;
         public int CurrentHP => _state.CurrentHP;
+        public StatusCondition status => _state.Status;
         public bool IsFainted => _state.CurrentHP <= 0;
         public int Attack => _state.BaseAttack;
         public int Defense => _state.BaseDefense;
@@ -61,24 +62,38 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
         // --- Status ---
         public bool CanApplyStatus(StatusCondition newStatus)
         {
-            if (_state.Status != StatusCondition.None)
+            AbilityState ability = (AbilityState)Ability;
+            // 1. Fundamental check: If they already have a status, they can't get another.
+            if (status != StatusCondition.None) return false;
+            // 2. Specific Immunities based on the incoming condition
+            switch (newStatus)
             {
-                return false;
-            }
+                case StatusCondition.Burn:
+                    if (HasType(PokemonType.Fire)) return false;
+                    if (ability.Name == "Water Veil") return false;
+                    break;
 
-            if (newStatus == StatusCondition.Burn && HasType(PokemonType.Fire))
-            {
-                return false;
-            }
+                case StatusCondition.Freeze:
+                    if (HasType(PokemonType.Ice)) return false;
+                    if (ability.Name == "Magma Armor") return false;
+                    break;
 
-            if (newStatus == StatusCondition.Freeze && HasType(PokemonType.Ice))
-            {
-                return false;
-            }
+                case StatusCondition.Paralysis:
+                    if (HasType(PokemonType.Electric)) return false; // Gen 6+ logic, optional for FR
+                    if (ability.Name == "Limber") return false;
+                    break;
 
-            if (newStatus == StatusCondition.Poison && (HasType(PokemonType.Poison) || HasType(PokemonType.Steel)))
-            {
-                return false;
+                case StatusCondition.Poison:
+                    if (HasType(PokemonType.Poison) || HasType(PokemonType.Steel)) return false;
+                    if (ability.Name == "Immunity") return false;
+                    break;
+
+                case StatusCondition.Sleep:
+                    if (ability.Name == "Insomnia" || ability.Name == "Vital Spirit") return false;
+                    break;
+
+                default:
+                    return true;
             }
 
             return true;

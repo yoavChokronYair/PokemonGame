@@ -248,6 +248,8 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     {
         public bool Check(PokemonState pokemon) => pokemon.IsFainted;
     }
+    // status
+    
     // ── Target Implementations ────────────────────────────────────────────────
     // ITarget interface lives in Interface/Move/IConditionAndTarget.cs.
 
