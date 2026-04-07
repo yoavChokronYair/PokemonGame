@@ -65,7 +65,7 @@ namespace PokemonGame.ViewModels.Translators
                 ? TranslateEffect(tree.Effect)
                 : new NoEffect();
 
-            return new AbilityState(domain, condition, effect);
+            return new AbilityState(domain, effect);
         }
 
         // ── Condition ────────────────────────────────────────────────────────
@@ -125,8 +125,19 @@ namespace PokemonGame.ViewModels.Translators
             "HPBelow" => new PokemonHPBelow(c.HpFraction!.Value),
             "IsFullHP" => new PokemonIsFullHP(),
             "IsFainted" => new PokemonIsFainted(),
-            _ => throw new NotSupportedException($"Unknown pokemon condition type: '{c.Type}'")
+
+            // ── The Safety Net ──
+            _ => HandleUnknownCondition(c.Type)
         };
+
+        private ICondition<PokemonState> HandleUnknownCondition(string type)
+        {
+            // Log the error so you know to fix it in the DB or C# later
+            Console.WriteLine($"[WARNING] Condition type '{type}' is not implemented. Defaulting to AlwaysFalse.");
+
+            // Return a condition that simply fails so the game doesn't crash
+            return new AlwaysFalseCondition<PokemonState>();
+        }
 
         // ── Effect ───────────────────────────────────────────────────────────
         // Handles ability-specific effects first, then falls back to MoveTranslator.

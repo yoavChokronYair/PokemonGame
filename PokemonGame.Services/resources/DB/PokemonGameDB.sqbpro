@@ -674,13 +674,30 @@ GROUP BY
     left_condition_id, 
     right_condition_id,
     inner_condition_id 
-HAVING COUNT(*) &gt; 1;</sql><sql name="SQL 9">UPDATE abilities
+HAVING COUNT(*) &gt; 1;</sql><sql name="SQL 9*">UPDATE abilities
 SET effect_id = CASE id
-    WHEN 10 THEN 480  -- Static
-    WHEN 11 THEN 482  -- Flame Body
-    WHEN 12 THEN 484  -- Poison Point
-    WHEN 13 THEN 486  -- Effect Spore
-    ELSE effect_id    -- Safety: keep existing value for any other IDs
+    WHEN 51 THEN 528  -- Static
+    
 END
-WHERE id IN (10, 11, 12, 13);</sql><sql name="SQL 10">DELETE FROM conditions 
-WHERE id IN (26,30)</sql><current_tab id="6"/></tab_sql></sqlb_project>
+WHERE id IN (51);</sql><sql name="SQL 10*">INSERT INTO moves (
+    id, 
+    name, 
+    element, 
+    category, 
+    target, 
+    pp, 
+    priority, 
+    crit_stage, 
+    description
+)
+VALUES (
+    122, 
+    'Mega Drain', 
+    'Grass', 
+    'Special', 
+    'Opponent', 
+    15, 
+    0, 
+    0, 
+    'A nutrient-draining attack. The user recovers half the damage inflicted.'
+);</sql><current_tab id="7"/></tab_sql></sqlb_project>

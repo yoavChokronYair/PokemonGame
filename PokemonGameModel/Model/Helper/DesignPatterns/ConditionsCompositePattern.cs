@@ -23,7 +23,10 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public And(ICondition<T> left, ICondition<T> right) { _left = left; _right = right; }
         public bool Check(T entity) => _left.Check(entity) && _right.Check(entity);
     }
-
+    public class AlwaysFalseCondition<T> : ICondition<T>
+    {
+        public bool Check(T state) => false;
+    }
     public class Or<T> : ICondition<T>
     {
         private readonly ICondition<T> _left;
