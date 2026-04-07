@@ -1,45 +1,70 @@
-﻿using PokemonGame.Model.Domain.Move;
-using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Model.Helper.MoveHelper
 {
+    // Design: Entity + Decorator pattern.
+    // MoveState: core move entity (name, type, PP, Execute).
+    // WithPrecondition / WithApplicability / WithDisable / WithTypeOverride / WithFollowUp:
+    //   Decorators that wrap IMove and add conditional/override/lock behavior at the move level.
+    // Layer: Domain — move execution model.
+    // Note: MoveCategory and MoveTarget enums live in Enums/MovesEnum/MoveStateEnums.cs.
     public class MoveState : IMove
     {
-        private readonly MoveDomain _state;
         private readonly IAttempt _attempt;
 
-        public MoveState(MoveDomain state, IAttempt attempt)
-        {
-            _state = state;
-            _attempt = attempt;
-        }
+        public string Name { get; }
+        public PokemonType Element { get; }
+        public MoveCategory Category { get; }
+        public MoveTarget Target { get; }
+        public MoveTag Tag { get; }
+        public int PP { get; private set; }
+        public int MaxPP { get; }
+        public int Priority { get; }
+        public int CritStage { get; }
+        public string Description { get; }
+        public bool HasPP => PP > 0;
 
-        public string Name => _state.Name;
-        public PokemonType Element => _state.Element;
-        public MoveCategory Category => _state.Category;
-        public MoveTarget Target => _state.Target;
-        public MoveTag Tag => _state.tag;
-        public int PP => _state.PP;
-        public int MaxPP => _state.MaxPP;
-        public int Priority => _state.Priority;
+        public MoveState(
+            IAttempt attempt,
+            string name,
+            PokemonType element,
+            MoveCategory category,
+            int pp = 10,
+            MoveTarget target = MoveTarget.Opponent,
+            MoveTag tag = default,
+            int priority = 0,
+            int critStage = 0,
+            string description = "")
+        {
+            _attempt = attempt;
+            Name = name;
+            Element = element;
+            Category = category;
+            PP = pp;
+            MaxPP = pp;
+            Target = target;
+            Tag = tag;
+            Priority = priority;
+            CritStage = critStage;
+            Description = description;
+        }
 
         public void Execute(BattleState battle)
         {
-            if (_state.PP <= 0)
+            if (PP <= 0)
             {
                 battle.Logger.Log($"{Name} has no PP left!");
                 return;
             }
 
-            _state.PP--;
+            PP--;
             battle.RegisterMove(this);
             battle.Logger.Log($"{battle.Attacker.Name} used {Name}!");
             _attempt.Execute(battle);
         }
 
-        public void RestorePP(int amount) => _state.PP = Math.Min(_state.PP + amount, MaxPP);
-        public bool HasPP => _state.PP > 0;
+        public void RestorePP(int amount) => PP = Math.Min(PP + amount, MaxPP);
     }
 }
