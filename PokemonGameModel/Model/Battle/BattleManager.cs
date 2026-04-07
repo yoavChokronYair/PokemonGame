@@ -165,7 +165,7 @@ namespace PokemonGame.Model.Model.Battle
                 }
             }
 
-            _state.EndTurn(PlayerActive, BotActive);
+            _state.EndTurn();
         }
 
         private void ExecuteMove(IMove move, PokemonState user, PokemonState target)

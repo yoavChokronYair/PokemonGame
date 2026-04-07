@@ -14,6 +14,8 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             _ability = ability;
         }
 
+        public AbilityTrigger Trigger => throw new NotImplementedException();
+
         public void Apply(BattleState battle)
         {
             if (_condition.Check(battle))
@@ -32,6 +34,8 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
             _ability = ability;
         }
 
+        public AbilityTrigger Trigger => throw new NotImplementedException();
+
         public void Apply(BattleState battle)
         {
             _ability.Apply(battle);
@@ -41,14 +45,34 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     internal class OnTurnStart : IAbility
     {
         private readonly IAbility _ability;
-        public OnTurnStart(IAbility ability)
+        private readonly ICondition<BattleState> _condition;
+        public AbilityTrigger Trigger { get; }
+        public OnTurnStart(IAbility ability,AbilityTrigger trigger, ICondition<BattleState> condition)
         {
             _ability = ability;
+            Trigger = trigger;
+            _condition = condition;
         }
         public void Apply(BattleState battle)
         {
+            if(Trigger == AbilityTrigger.TurnStart && _condition.Check(battle))
+            {
+                _ability.Apply(battle);
+                battle.Logger.LogTurnStart($"ability triggered: {_ability.GetType().Name}");
+            }
+        }
+    }
+    internal class OnSwitchIn : IAbility
+    {
+        private readonly IAbility _ability;
+        public OnSwitchIn(IAbility ability) => _ability = ability;
+
+        public AbilityTrigger Trigger => throw new NotImplementedException();
+
+        public void Apply(BattleState battle)
+        {
             _ability.Apply(battle);
-             battle.Logger.Log($"ability triggered: {_ability.GetType().Name}");
+            battle.Logger.Log($"{_ability.GetType().Name} activated on switch-in!");
         }
     }
 }

@@ -46,16 +46,23 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
             Logger.LogTurnStart($"--- Turn {_state.TurnNumber} ---");
             Logger.LogTurnStart($"what will {_state.Attacker.Name} do?");
         }
-
-        public void EndTurn(PokemonState player, PokemonState bot)
+        public void UpdateActivePair(PokemonHelper.PokemonState attacker, PokemonHelper.PokemonState defender)
+        {
+            _state.Attacker = attacker;
+            _state.Defender = defender;
+        }
+        public void EndTurn() // Remove parameters
         {
             WeatherService.TickWeather();
             TerrainService.TickTerrain();
             Field.Tick();
             AttackerSide.Tick();
             DefenderSide.Tick();
-            StatusService.ApplyEndOfTurnStatus(player);
-            StatusService.ApplyEndOfTurnStatus(bot);
+
+            // Use the internal state references
+            StatusService.ApplyEndOfTurnStatus(Attacker);
+            StatusService.ApplyEndOfTurnStatus(Defender);
+
             _state.Attacker.turnsActive++;
             _state.Defender.turnsActive++;
         }

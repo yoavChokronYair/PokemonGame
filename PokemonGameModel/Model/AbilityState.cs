@@ -11,6 +11,8 @@ namespace PokemonGame.Model.Model
         private readonly IEffect _effect;
         public string Name => _abillityDomain.Name;
 
+        public AbilityTrigger Trigger => throw new NotImplementedException();
+
         public AbilityState(AbillityDomain abillityDomain, IEffect effect)
         {
             _abillityDomain = abillityDomain;
