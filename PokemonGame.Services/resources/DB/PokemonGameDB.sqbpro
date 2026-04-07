@@ -615,9 +615,7 @@ FROM
 JOIN 
     pragma_foreign_key_list(m.name) p ON p.&quot;table&quot; = 'conditions'
 WHERE 
-    m.type = 'table';</sql><sql name="SQL 5">UPDATE items 
-SET condition_id = 14
-WHERE id =51</sql><sql name="SQL 6">SELECT DISTINCT id, type 
+    m.type = 'table';</sql><sql name="SQL 6">SELECT DISTINCT id, type 
 FROM conditions 
 WHERE type NOT IN (
     -- Parameterless
@@ -676,7 +674,13 @@ GROUP BY
     left_condition_id, 
     right_condition_id,
     inner_condition_id 
-HAVING COUNT(*) &gt; 1;</sql><sql name="SQL 9">UPDATE conditions 
-SET left_condition_id = 13
-WHERE id = 85</sql><sql name="SQL 10*">DELETE FROM conditions 
-WHERE id IN (57,91)</sql><current_tab id="8"/></tab_sql></sqlb_project>
+HAVING COUNT(*) &gt; 1;</sql><sql name="SQL 9">UPDATE abilities
+SET effect_id = CASE id
+    WHEN 10 THEN 480  -- Static
+    WHEN 11 THEN 482  -- Flame Body
+    WHEN 12 THEN 484  -- Poison Point
+    WHEN 13 THEN 486  -- Effect Spore
+    ELSE effect_id    -- Safety: keep existing value for any other IDs
+END
+WHERE id IN (10, 11, 12, 13);</sql><sql name="SQL 10">DELETE FROM conditions 
+WHERE id IN (26,30)</sql><current_tab id="6"/></tab_sql></sqlb_project>
