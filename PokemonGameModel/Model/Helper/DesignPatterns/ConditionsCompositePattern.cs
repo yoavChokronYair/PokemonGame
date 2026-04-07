@@ -100,12 +100,18 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         {
             if (battle.LastUsedMove is MoveState lastMove)
             {
-                // Note: In modern Pokémon, some Special moves make contact and some Physical don't.
-                // You might want to use a specific .MakesContact flag here later.
+                
                 return lastMove.Category == MoveCategory.Physical;
             }
             return false;
         }
+    }
+    public class WasHitByMoveType : ICondition<BattleState>
+    {
+        private readonly PokemonType _moveType;
+        public WasHitByMoveType(PokemonType moveName) { _moveType = moveName; }
+        public bool Check(BattleState battle) =>
+            battle.LastUsedMove is MoveState lastMove && lastMove.Element == _moveType;
     }
 
     public class MoveHasTag : ICondition<BattleState>
@@ -164,6 +170,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     {
         public bool Check(BattleState battle) => battle.Attacker.WasStatLoweredThisTurn;
     }
+   
 
     public class IsFainted : ICondition<BattleState>
     {

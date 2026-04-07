@@ -105,7 +105,6 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
             {
                 return;
             }
-
             _state.Status = status;
             _state.ToxicCounter = 0;
             if (status == StatusCondition.Sleep)
@@ -188,6 +187,7 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
             };
 
             int stage = _state.StatStages[stat];
+            
 
             // Apply status modifiers
             if (stat == Stat.Speed && _state.Status == StatusCondition.Paralysis)
@@ -224,7 +224,14 @@ namespace PokemonGame.Model.Model.Helper.PokemonHelper
 
         public void ChangeStatStage(Stat stat, int stages)
             => _state.StatStages[stat] = MathHelper.Clamp(_state.StatStages[stat] + stages, -6, 6);
-
+        public bool CanIncreaseStat(Stat stat)
+        {
+            if (_state.StatStages.TryGetValue(stat, out int currentStage))
+            {
+                return currentStage < 6;
+            }
+            return false;
+        }
         public void ResetStatStages()
         {
             foreach (var key in _state.StatStages.Keys.ToList())

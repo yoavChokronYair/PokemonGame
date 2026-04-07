@@ -10,5 +10,5 @@ namespace PokemonGame.Model.Enums
     public enum Hazard { Spikes, ToxicSpikes, StealthRock, StickyWeb }
     public enum Stat { Attack, Defense, SpecialAttack, SpecialDefense, Speed, Accuracy, Evasion }
     public enum StatusCondition { None, Paralysis, Burn, Poison, Toxic, Sleep, Freeze }
-    public enum VolatileStatus { Confusion, Flinch, Infatuation, Curse, LeechSeed, SmackDown, Ingrain }
+    public enum VolatileStatus { Confusion, Flinch, Infatuation, Curse, LeechSeed, SmackDown, Ingrain,None }
 }

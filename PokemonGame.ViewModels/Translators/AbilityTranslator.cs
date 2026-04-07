@@ -87,8 +87,9 @@ namespace PokemonGame.ViewModels.Translators
             "IsBattleOver" => new IsBattleOver(),
             "IsFainted" => new IsFainted(),
             "IsFullHP" => new IsFullHP(),
-
+            "ContactHit" => new WasHitByContact(),
             // ── Parameterized ────────────────────────────────────────────────
+            "WasHitByMoveType" => new WasHitByMoveType(ParseEnum<PokemonType>(c.PokemonType!)),
             "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
             "IsTerrainActive" => new IsTerrainActive(ParseEnum<TerrainType>(c.Terrain!)),
             "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
@@ -98,6 +99,7 @@ namespace PokemonGame.ViewModels.Translators
             "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
             "HPBelow" => new HPBelow(c.HpFraction!.Value),
             "Probability" => new Probability(c.Probability!.Value),
+            //"HasBeenCrit"
 
             // ── Combinators ──────────────────────────────────────────────────
             "And" => new And<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
