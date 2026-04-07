@@ -1,79 +1,62 @@
-﻿using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Model.Helper.BattleHelper
 {
+    // Design: Aggregate Root for a single battle (holds both sides, weather, turn count).
+    // Layer: Domain — processed battle state; no SQLite, no UI.
+    // OOP: Encapsulation — all mutation through public methods; sides exposed as read-only.
+    // Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
     public class BattleState
     {
-        private readonly BattleDomain _state;
+        // ── Core State ────────────────────────────────────────────────────────
+        public PokemonState Attacker { get; set; }
+        public PokemonState Defender { get; set; }
+        public BattleSideState AttackerSide { get; } = new();
+        public BattleSideState DefenderSide { get; } = new();
+        public IMove? LastUsedMove { get; set; }
+        public PokemonType? ActiveTypeOverride { get; set; } = null;
+        public int TurnNumber { get; set; } = 0;
+        public int LastDamageDealt { get; set; } = 0;
+
+        // ── Services ──────────────────────────────────────────────────────────
         public BattleWeatherService WeatherService { get; }
         public BattleStatusService StatusService { get; }
         public BattleTerrainService TerrainService { get; }
         public BattleLogger Logger { get; } = new();
         public BattleTurnResolver TurnResolver { get; }
         public BattleFieldState Field { get; } = new();
+
         public bool IsGravityActive => Field.IsGravityActive;
 
-        public BattleState(BattleDomain state)
+        public BattleState(PokemonState attacker, PokemonState defender)
         {
-            _state = state;
+            Attacker = attacker;
+            Defender = defender;
             WeatherService = new BattleWeatherService(this, Logger);
             StatusService = new BattleStatusService(Logger);
             TurnResolver = new BattleTurnResolver();
-            TerrainService = new BattleTerrainService(this, Logger); // Initialize
+            TerrainService = new BattleTerrainService(this, Logger);
         }
 
-        // Data accessors
-        public PokemonHelper.PokemonState Attacker => _state.Attacker;
-        public PokemonHelper.PokemonState Defender => _state.Defender;
-        public BattleSideState AttackerSide => _state.AttackerSide;
-        public BattleSideState DefenderSide => _state.DefenderSide;
-        public IMove? LastUsedMove => _state.LastUsedMove;
-        public PokemonType? ActiveTypeOverride { get => _state.ActiveTypeOverride; set => _state.ActiveTypeOverride = value; }
-        public int TurnNumber => _state.TurnNumber;
-        public int LastDamageDealt { get => _state.LastDamageDealt; set => _state.LastDamageDealt = value; }
+        // ── Helpers ───────────────────────────────────────────────────────────
+        public void RegisterMove(IMove move) => LastUsedMove = move;
 
-        // Logic
-        public void RegisterMove(IMove move) => _state.LastUsedMove = move;
-
-        public void BeginTurn()
+        public void UpdateActivePair(PokemonState attacker, PokemonState defender)
         {
-            _state.TurnNumber++;
-
-            _state.LastDamageDealt = 0;
-            Logger.LogTurnStart($"--- Turn {_state.TurnNumber} ---");
-            Logger.LogTurnStart($"what will {_state.Attacker.Name} do?");
+            Attacker = attacker;
+            Defender = defender;
         }
-        public void UpdateActivePair(PokemonHelper.PokemonState attacker, PokemonHelper.PokemonState defender)
-        {
-            _state.Attacker = attacker;
-            _state.Defender = defender;
-        }
-        public void EndTurn() // Remove parameters
-        {
-            WeatherService.TickWeather();
-            TerrainService.TickTerrain();
-            Field.Tick();
-            AttackerSide.Tick();
-            DefenderSide.Tick();
-
-            // Use the internal state references
-            StatusService.ApplyEndOfTurnStatus(Attacker);
-            StatusService.ApplyEndOfTurnStatus(Defender);
-
-            _state.Attacker.turnsActive++;
-            _state.Defender.turnsActive++;
-        }
-
 
         public bool AttackerMovesFirst(int attackerPriority, int defenderPriority)
-            => TurnResolver.AttackerMovesFirst(_state.Attacker, _state.Defender, attackerPriority, defenderPriority);
+            => TurnResolver.AttackerMovesFirst(Attacker, Defender, attackerPriority, defenderPriority);
 
-        public BattleSideState GetSide(BattleSide side) => side == BattleSide.Attacker ? AttackerSide : DefenderSide;
-
-        public bool IsBattleOver => _state.Attacker.IsFainted || _state.Defender.IsFainted;
-        public PokemonHelper.PokemonState? Winner => _state.Attacker.IsFainted ? _state.Defender : _state.Defender.IsFainted ? _state.Attacker : null;
+        public BattleSideState GetSide(BattleSide side)
+            => side == BattleSide.Attacker ? AttackerSide : DefenderSide;
+        public void IncrementTurn() => TurnNumber++;
+        public void ResetDamage() => LastDamageDealt = 0;
+        public bool IsBattleOver => Attacker.IsFainted || Defender.IsFainted;
+        public PokemonState? Winner => Attacker.IsFainted ? Defender : Defender.IsFainted ? Attacker : null;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.Model.Model.Helper.DesignPatterns;
+using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Interface
@@ -18,6 +19,7 @@ namespace PokemonGame.Model.Interface
             // Trigger switch-in effects for the starting two
             new SwitchIn(state.Attacker).Run(state);
             new SwitchIn(state.Defender).Run(state);
+           
         }
     }
 
@@ -45,7 +47,11 @@ namespace PokemonGame.Model.Interface
     {
         public void Run(BattleState state)
         {
-            state.BeginTurn();
+            state.IncrementTurn();
+            state.ResetDamage();
+            state.Logger.LogTurnStart($"--- Turn {state.TurnNumber} ---");
+            state.Logger.LogTurnStart($"What will {state.Attacker.Name} do?");
+
             ApplyIfTurnStart(state.Attacker.Ability, state);
             ApplyIfTurnStart(state.Defender.Ability, state);
         }
@@ -56,6 +62,8 @@ namespace PokemonGame.Model.Interface
                 turnStartAbility.Apply(state);
         }
     }
+
+   
 
     // ── 4. Move Execution ────────────────────────────────────────────
     public class MoveExecution : IPhase
@@ -116,11 +124,74 @@ namespace PokemonGame.Model.Interface
     {
         public void Run(BattleState state)
         {
-            // Handle Poison/Burn/Sandstorm damage
-            state.EndTurn();
+            state.WeatherService.TickWeather();
+            state.TerrainService.TickTerrain();
+            state.Field.Tick();
+            state.AttackerSide.Tick();
+            state.DefenderSide.Tick();
+            state.StatusService.ApplyEndOfTurnStatus(state.Attacker);
+            state.StatusService.ApplyEndOfTurnStatus(state.Defender);
+            state.Attacker.turnsActive++;
+            state.Defender.turnsActive++;
+        }
+    }
+    // ── 7. Resolve Turn ──────────────────────────────────────────────────
+    public class ResolveTurn : IPhase
+    {
+        private readonly IMove _playerMove;
+        private readonly IMove _botMove;
+        private readonly PokemonState _player;
+        private readonly PokemonState _bot;
 
-            // Abilities like Speed Boost or Shed Skin trigger here
-            // (You would need an OnTurnEnd decorator for this)
+        public ResolveTurn(IMove playerMove, IMove botMove, PokemonState player, PokemonState bot)
+        {
+            _playerMove = playerMove;
+            _botMove = botMove;
+            _player = player;
+            _bot = bot;
+        }
+
+        public void Run(BattleState state)
+        {
+            int playerPriority = (_playerMove as MoveState)?.Priority ?? 0;
+            int botPriority = (_botMove as MoveState)?.Priority ?? 0;
+
+            bool playerFirst = state.AttackerMovesFirst(playerPriority, botPriority);
+
+            if (playerFirst)
+            {
+                new MoveExecution(_playerMove, _player, _bot).Run(state);
+                if (!_bot.IsFainted)
+                    new MoveExecution(_botMove, _bot, _player).Run(state);
+            }
+            else
+            {
+                new MoveExecution(_botMove, _bot, _player).Run(state);
+                if (!_player.IsFainted)
+                    new MoveExecution(_playerMove, _player, _bot).Run(state);
+            }
+        }
+    }
+
+    // ── 8. Handle Faints ─────────────────────────────────────────────────
+    public class HandleFaints : IPhase
+    {
+        private readonly PokemonState _player;
+        private readonly PokemonState _bot;
+
+        public HandleFaints(PokemonState player, PokemonState bot)
+        {
+            _player = player;
+            _bot = bot;
+        }
+
+        public void Run(BattleState state)
+        {
+            if (_player.IsFainted)
+                state.Logger.Log($"{_player.Name} fainted!");
+
+            if (_bot.IsFainted)
+                state.Logger.Log($"{_bot.Name} fainted!");
         }
     }
 }
