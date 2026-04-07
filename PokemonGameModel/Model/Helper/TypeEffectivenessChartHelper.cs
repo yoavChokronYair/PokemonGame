@@ -5,8 +5,8 @@
 // Depends on TypeEffectivenessChartConstants which remains in Config/.
 
 using PokemonGame.Constants;
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Model.Helper
 {

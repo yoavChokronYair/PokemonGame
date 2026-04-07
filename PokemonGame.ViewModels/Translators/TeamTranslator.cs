@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Enums;
+using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model;
 using PokemonGame.Model.Model.Helper;
-using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.Services.Handler;
 
 namespace PokemonGame.ViewModels.Translators
@@ -114,9 +114,25 @@ namespace PokemonGame.ViewModels.Translators
 
         private IMove BuildMove(string moveName)
         {
-            var domain = _moveTranslator.Translate(moveName);
+            // 1. Get the raw data from the database/translator
+            var data = _moveTranslator.Translate(moveName);
+
+            // 2. Get the execution logic (IAttempt)
             var attempt = _moveTranslator.TranslateAttemptForMove(moveName);
-            return new MoveState(domain, attempt);
+
+            // 3. Map the data properties to the MoveState constructor
+            return new MoveState(
+                attempt,
+                data.Name,
+                data.Element,
+                data.Category,
+                data.PP,
+                data.Target,
+                MoveTag.Sound,
+                data.Priority,
+                data.CritStage,
+                data.Description
+            );
         }
 
         private static int CalcStat(int @base, int iv, int ev, int level,

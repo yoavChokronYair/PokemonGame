@@ -1,7 +1,7 @@
-﻿using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.DesignPatterns;
-using PokemonGame.Model.Model.Helper.MoveHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Interface
 {

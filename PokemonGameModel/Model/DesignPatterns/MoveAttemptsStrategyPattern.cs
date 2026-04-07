@@ -7,10 +7,10 @@
 // Layer: Domain/Move — move attempt implementations.
 // IAttempt interface lives in Interface/Move/IAttempt.cs.
 
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
 
-namespace PokemonGame.Model.Model.Helper.DesignPatterns
+namespace PokemonGame.Model.Model.DesignPatterns
 {
     // Single move attempt — hits or misses, with optional after effect.
     // e.g. Flamethrower: accuracy check → damage + 10% burn chance, crash on miss.

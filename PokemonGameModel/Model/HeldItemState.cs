@@ -1,7 +1,7 @@
 ﻿
 using PokemonGame.Model.Domain;
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
 
 namespace PokemonGame.Model.Model
 {

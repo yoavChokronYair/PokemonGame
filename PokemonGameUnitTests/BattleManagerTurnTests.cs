@@ -1,5 +1,6 @@
-﻿using PokemonGame.Model.Model.Battle;
-using PokemonGame.Model.Model.Helper.MoveHelper;
+﻿using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Model.Battle;
 using Xunit.Abstractions;
 
 namespace PokemonGame.Tests
@@ -33,7 +34,7 @@ namespace PokemonGame.Tests
             _out.WriteLine("══════════════════════════════════════════════");
         }
 
-        private void DumpSide(string label, Model.Model.Helper.PokemonHelper.PokemonState p)
+        private void DumpSide(string label, PokemonState p)
         {
             _out.WriteLine($"  [{label}] {p.Name}  HP: {p.CurrentHP}/{p.MaxHP}  Fainted: {p.IsFainted}");
             for (int i = 0; i < p.Moves.Count; i++)

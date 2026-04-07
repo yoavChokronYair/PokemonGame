@@ -1,10 +1,11 @@
-﻿using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Model.Helper.BattleHelper
+namespace PokemonGame.Model.Domain.Battle
 {
     public class BattleTurnResolver
     {
-        public bool AttackerMovesFirst(PokemonHelper.PokemonState attacker, PokemonHelper.PokemonState defender, int attackerPriority, int defenderPriority)
+        public bool AttackerMovesFirst(PokemonState attacker, PokemonState defender, int attackerPriority, int defenderPriority)
         {
             if (attackerPriority != defenderPriority)
             {

@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model.Helper.BattleHelper;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu

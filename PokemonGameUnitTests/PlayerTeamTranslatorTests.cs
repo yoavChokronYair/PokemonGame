@@ -1,8 +1,7 @@
-﻿using PokemonGame.Model.Domain.Pokemon;
+﻿using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model;
-using PokemonGame.Model.Model.Helper.MoveHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 using Xunit.Abstractions;
 
 namespace PokemonGame.Tests

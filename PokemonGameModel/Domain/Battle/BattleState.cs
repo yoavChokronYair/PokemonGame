@@ -1,8 +1,8 @@
-﻿using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
-namespace PokemonGame.Model.Model.Helper.BattleHelper
+namespace PokemonGame.Model.Domain.Battle
 {
     // Design: Aggregate Root for a single battle (holds both sides, weather, turn count).
     // Layer: Domain — processed battle state; no SQLite, no UI.

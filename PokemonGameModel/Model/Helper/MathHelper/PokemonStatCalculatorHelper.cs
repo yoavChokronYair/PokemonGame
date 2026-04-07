@@ -3,13 +3,13 @@
 // CANONICAL stat calculator — PokemonDomain delegates to this class (no duplicate formulas elsewhere).
 // Uses NatureHelper.GetNatureModifiers for nature modifier lookups.
 using PokemonGame.Enums;
+using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Model;
 using PokemonGame.Model.Model.Helper;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.MoveHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -93,8 +93,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
             double statRatio = move.Category switch
             {
-                MoveCategory.Physical => (double)attacker.Attack / defender.Defense,
-                MoveCategory.Special => (double)attacker.SpAttack / defender.SpDefense,
+                MoveCategory.Physical => (double)attacker.BaseAttack / defender.BaseDefense,
+                MoveCategory.Special => (double)attacker.BaseSpecialAttack / defender.BaseSpecialDefense,
                 _ => 1.0
             };
 

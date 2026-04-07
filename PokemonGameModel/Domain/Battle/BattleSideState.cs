@@ -1,6 +1,6 @@
 ﻿using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Model.Helper.BattleHelper
+namespace PokemonGame.Model.Domain.Battle
 {
     public class BattleSideState
     {

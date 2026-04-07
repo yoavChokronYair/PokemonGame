@@ -1,7 +1,7 @@
-﻿using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Interface;
 
-namespace PokemonGame.Model.Model.Helper.DesignPatterns
+namespace PokemonGame.Model.Model.DesignPatterns
 {
     internal class OnHit : IAbility
     {

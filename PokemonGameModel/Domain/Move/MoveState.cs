@@ -1,8 +1,8 @@
-﻿using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
 
-namespace PokemonGame.Model.Model.Helper.MoveHelper
+namespace PokemonGame.Model.Domain.Move
 {
     // Design: Entity + Decorator pattern.
     // MoveState: core move entity (name, type, PP, Execute).

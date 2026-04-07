@@ -1,10 +1,10 @@
 using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
 
-namespace PokemonGame.Model.Model.Helper.DesignPatterns
+namespace PokemonGame.Model.Model.DesignPatterns
 {
     #region Combinators
 

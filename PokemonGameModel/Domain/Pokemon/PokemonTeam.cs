@@ -1,5 +1,4 @@
 ﻿using PokemonGame.Core.Config;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -17,7 +16,7 @@ namespace PokemonGame.Model.Domain.Pokemon
                     $"A team must have exactly {PokemonConstants.PartyCapacity} Pokémon, got {roster.Count}.");
             }
 
-            _slots = roster.Select(d => new PokemonState(d)).ToArray();
+            _slots = roster.Select(d => new PokemonState()).ToArray();
             _activeIndex = 0;
         }
 

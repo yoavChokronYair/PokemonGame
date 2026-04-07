@@ -1,9 +1,9 @@
-﻿using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
-namespace PokemonGame.Model.Model.Helper.Decorator
+namespace PokemonGame.Model.Model.DesignPatterns
 {
     internal class WithPrecondition : IMove
     {

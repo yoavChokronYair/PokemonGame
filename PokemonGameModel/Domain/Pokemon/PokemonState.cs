@@ -1,12 +1,12 @@
 ﻿using PokemonGame.Core.Config;
 using PokemonGame.Enums;
-using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model;
 
-namespace PokemonGame.Model.Model.Helper.PokemonHelper
+namespace PokemonGame.Model.Domain.Pokemon
 {
     // Design: Entity — represents one Pokemon in an active battle.
     // Holds: identity, computed final stats, stat stages, HP, status, moves, charge/rampage state.
