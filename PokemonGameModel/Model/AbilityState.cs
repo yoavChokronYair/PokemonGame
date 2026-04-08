@@ -1,30 +1,30 @@
-﻿using PokemonGame.Model.Domain;
-using PokemonGame.Model.Domain.Battle;
+﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model
 {
     public class AbilityState : IAbility
     {
-        private readonly AbillityDomain _abillityDomain;
-        
         private readonly IEffect _effect;
-        public string Name => _abillityDomain.Name;
+        private bool _used;
 
+        public string Name { get; }
+        public string Description { get; }
         public AbilityTrigger Trigger => throw new NotImplementedException();
 
-        public AbilityState(AbillityDomain abillityDomain, IEffect effect)
+        public AbilityState(string name, IEffect effect, string description = "")
         {
-            _abillityDomain = abillityDomain;
+            Name = name;
+            Description = description;
             _effect = effect;
         }
 
         public void Apply(BattleState battle)
         {
-            if (!_abillityDomain.Used)
+            if (!_used)
             {
-                _effect.Apply(battle);  
-                _abillityDomain.Used = true;
+                _effect.Apply(battle);
+                _used = true;
             }
         }
     }
