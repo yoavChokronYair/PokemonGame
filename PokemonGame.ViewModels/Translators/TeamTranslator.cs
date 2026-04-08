@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Enums;
+using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model;
-using PokemonGame.Model.Model.Helper;
 using PokemonGame.Services.Handler;
 
 namespace PokemonGame.ViewModels.Translators
@@ -59,7 +59,7 @@ namespace PokemonGame.ViewModels.Translators
             var s = result.Stats;
 
             var nature = ParseEnum<NatureType>(b.Nature ?? "Serious");
-            var mods = NatureHelper.GetNatureModifiers(nature);
+            var mods = NatureConstants.GetNatureModifiers(nature);
 
             var modifierDict = new Dictionary<Stat, double>
             {

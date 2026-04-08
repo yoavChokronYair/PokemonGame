@@ -8,9 +8,9 @@ using PokemonGame.Constants;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Model.Helper
+namespace PokemonGame.Model.Config
 {
-    public static class TypeEffectivenessChartHelper
+    public static class TypeEffectivenessChartConst
     {
         private static readonly Dictionary<(PokemonType, PokemonType), double> _chart =
             new Dictionary<(PokemonType, PokemonType), double>()

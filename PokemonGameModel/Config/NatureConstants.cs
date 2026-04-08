@@ -1,8 +1,8 @@
 using PokemonGame.Enums;
 
-namespace PokemonGame.Model.Model.Helper
+namespace PokemonGame.Model.Config
 {
-    public static class NatureHelper
+    public static class NatureConstants
     {
         private static readonly Dictionary<NatureType, (double atk, double def, double spAtk, double spDef, double speed)> _modifiers
             = new()
