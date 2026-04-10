@@ -1,10 +1,8 @@
-﻿using PokemonGame.Model.Domain;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.DesignPatterns;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
+using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.GameData.PokemonData;
 using PokemonGame.Services.Handler;
@@ -50,13 +48,6 @@ namespace PokemonGame.ViewModels.Translators
 
         private AbilityState BuildAbilityState(AbilityTree tree)
         {
-            var domain = new AbillityDomain
-            {
-                Name = tree.Name,
-                Description = tree.Description,
-                Used = false,
-            };
-
             ICondition<BattleState> condition = tree.Condition != null
              ? TranslateCondition(tree.Condition)
              : new Probability<BattleState>(1.0);   // always passes
@@ -64,8 +55,7 @@ namespace PokemonGame.ViewModels.Translators
             IEffect effect = tree.Effect != null
                 ? TranslateEffect(tree.Effect)
                 : new NoEffect();
-
-            return new AbilityState(domain, condition, effect);
+            return new AbilityState(tree.Name, effect,tree.Description);
         }
 
         // ── Condition ────────────────────────────────────────────────────────
@@ -87,8 +77,9 @@ namespace PokemonGame.ViewModels.Translators
             "IsBattleOver" => new IsBattleOver(),
             "IsFainted" => new IsFainted(),
             "IsFullHP" => new IsFullHP(),
-
+            "ContactHit" => new WasHitByContact(),
             // ── Parameterized ────────────────────────────────────────────────
+            "WasHitByMoveType" => new WasHitByMoveType(ParseEnum<PokemonType>(c.PokemonType!)),
             "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
             "IsTerrainActive" => new IsTerrainActive(ParseEnum<TerrainType>(c.Terrain!)),
             "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
@@ -98,6 +89,7 @@ namespace PokemonGame.ViewModels.Translators
             "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
             "HPBelow" => new HPBelow(c.HpFraction!.Value),
             "Probability" => new Probability(c.Probability!.Value),
+            //"HasBeenCrit"
 
             // ── Combinators ──────────────────────────────────────────────────
             "And" => new And<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
@@ -123,8 +115,19 @@ namespace PokemonGame.ViewModels.Translators
             "HPBelow" => new PokemonHPBelow(c.HpFraction!.Value),
             "IsFullHP" => new PokemonIsFullHP(),
             "IsFainted" => new PokemonIsFainted(),
-            _ => throw new NotSupportedException($"Unknown pokemon condition type: '{c.Type}'")
+
+            // ── The Safety Net ──
+            _ => HandleUnknownCondition(c.Type)
         };
+
+        private ICondition<PokemonState> HandleUnknownCondition(string type)
+        {
+            // Log the error so you know to fix it in the DB or C# later
+            Console.WriteLine($"[WARNING] Condition type '{type}' is not implemented. Defaulting to AlwaysFalse.");
+
+            // Return a condition that simply fails so the game doesn't crash
+            return new AlwaysFalseCondition<PokemonState>();
+        }
 
         // ── Effect ───────────────────────────────────────────────────────────
         // Handles ability-specific effects first, then falls back to MoveTranslator.

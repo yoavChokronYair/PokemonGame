@@ -1,10 +1,9 @@
-﻿using PokemonGame.Model.Domain;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.DesignPatterns;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
+using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Handler;
 
@@ -49,12 +48,7 @@ namespace PokemonGame.ViewModels.Translators
 
         private HeldItemState BuildItemState(ItemTree tree)
         {
-            var domain = new HeldItemDomain
-            {
-                Name = tree.Name,
-                Description = tree.Description,
-                IsConsumable = tree.IsConsumable,
-            };
+           
 
             ICondition<BattleState> condition = tree.Condition != null
                 ? TranslateCondition(tree.Condition)
@@ -64,7 +58,7 @@ namespace PokemonGame.ViewModels.Translators
                 ? TranslateEffect(tree.Effect)
                 : new NoEffect();
 
-            return new HeldItemState(domain, condition, effect);
+            return new HeldItemState(tree.Name, condition, effect,tree.IsConsumable,tree.Description);
         }
 
         // ── Condition ────────────────────────────────────────────────────────

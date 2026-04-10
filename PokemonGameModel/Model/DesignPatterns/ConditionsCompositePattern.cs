@@ -5,14 +5,15 @@
 // ICondition<T> and ITarget interfaces live in Interface/Move/IConditionAndTarget.cs.
 // NOTE: Probability uses RandomHelper — no inline new Random() anywhere in this file.
 
+using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.MoveHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
-namespace PokemonGame.Model.Model.Helper.DesignPatterns
+namespace PokemonGame.Model.Model.DesignPatterns
 {
     // ── Condition Combinators ─────────────────────────────────────────────────
 
@@ -23,7 +24,10 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         public And(ICondition<T> left, ICondition<T> right) { _left = left; _right = right; }
         public bool Check(T entity) => _left.Check(entity) && _right.Check(entity);
     }
-
+    public class AlwaysFalseCondition<T> : ICondition<T>
+    {
+        public bool Check(T state) => false;
+    }
     public class Or<T> : ICondition<T>
     {
         private readonly ICondition<T> _left;
@@ -100,12 +104,18 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
         {
             if (battle.LastUsedMove is MoveState lastMove)
             {
-                // Note: In modern Pokémon, some Special moves make contact and some Physical don't.
-                // You might want to use a specific .MakesContact flag here later.
+                
                 return lastMove.Category == MoveCategory.Physical;
             }
             return false;
         }
+    }
+    public class WasHitByMoveType : ICondition<BattleState>
+    {
+        private readonly PokemonType _moveType;
+        public WasHitByMoveType(PokemonType moveName) { _moveType = moveName; }
+        public bool Check(BattleState battle) =>
+            battle.LastUsedMove is MoveState lastMove && lastMove.Element == _moveType;
     }
 
     public class MoveHasTag : ICondition<BattleState>
@@ -164,6 +174,7 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     {
         public bool Check(BattleState battle) => battle.Attacker.WasStatLoweredThisTurn;
     }
+   
 
     public class IsFainted : ICondition<BattleState>
     {
@@ -248,6 +259,8 @@ namespace PokemonGame.Model.Model.Helper.DesignPatterns
     {
         public bool Check(PokemonState pokemon) => pokemon.IsFainted;
     }
+    // status
+    
     // ── Target Implementations ────────────────────────────────────────────────
     // ITarget interface lives in Interface/Move/IConditionAndTarget.cs.
 

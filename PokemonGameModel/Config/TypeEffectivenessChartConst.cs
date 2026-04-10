@@ -6,11 +6,11 @@
 
 using PokemonGame.Constants;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model.Battle;
 
-namespace PokemonGame.Model.Model.Helper
+namespace PokemonGame.Model.Config
 {
-    public static class TypeEffectivenessChartHelper
+    public static class TypeEffectivenessChartConst
     {
         private static readonly Dictionary<(PokemonType, PokemonType), double> _chart =
             new Dictionary<(PokemonType, PokemonType), double>()

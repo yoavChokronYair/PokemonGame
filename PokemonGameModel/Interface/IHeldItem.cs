@@ -1,4 +1,4 @@
-﻿using PokemonGame.Model.Model.Helper.BattleHelper;
+﻿using PokemonGame.Model.Domain.Battle;
 
 namespace PokemonGame.Model.Interface
 {

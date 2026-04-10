@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Battle;
@@ -240,7 +241,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public void SetMove(IMove move)
         {
             _move = move;
-            MoveName = (_move as Model.Model.Helper.MoveHelper.MoveState)?.Name ?? "-";
+            MoveName = (((_move as MoveState)))?.Name ?? "-";
             _hasMove = true;
             OnPropertyChanged(nameof(IsEnabled));
             ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
