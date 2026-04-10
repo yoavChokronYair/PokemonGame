@@ -525,6 +525,7 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\TitleScreen.png" />
     <Resource Include="Assets\Images\MoveCategories\StatusIC.png" />
     <Resource Include="Assets\Images\MoveCategories\SpecialIC.png" />
     <Resource Include="Assets\Images\MoveCategories\PhysicalIC.png" />
