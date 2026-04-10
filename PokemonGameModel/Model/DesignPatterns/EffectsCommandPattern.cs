@@ -512,4 +512,254 @@ namespace PokemonGame.Model.Model.DesignPatterns
             }
         }
     }
+    // ── Ability Passive Hooks ─────────────────────────────────────────────────────
+
+    public class Immune : IEffect
+    {
+        private readonly ITarget _target;
+        private readonly StatusCondition? _status;
+        public Immune(ITarget target, StatusCondition? status = null) { _target = target; _status = status; }
+        public void Apply(BattleState battle) { } // Checked before effect application, not here
+    }
+
+    public class BlockCritical : IEffect
+    {
+        private readonly ITarget _target;
+        public BlockCritical(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in crit calculation
+    }
+
+    public class PreventStatReduction : IEffect
+    {
+        private readonly ITarget _target;
+        private readonly Stat? _stat;
+        public PreventStatReduction(ITarget target, Stat? stat = null) { _target = target; _stat = stat; }
+        public void Apply(BattleState battle) { } // Checked in ChangeStatStage
+    }
+
+    public class BlockSecondaryEffects : IEffect
+    {
+        private readonly ITarget _target;
+        public BlockSecondaryEffects(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked before secondary effect fires
+    }
+
+    public class BlockRecoil : IEffect
+    {
+        private readonly ITarget _target;
+        public BlockRecoil(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked before Recoil fires
+    }
+
+    public class BlockIndirectDamage : IEffect
+    {
+        private readonly ITarget _target;
+        public BlockIndirectDamage(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked before any non-attack damage
+    }
+
+    public class Endure : IEffect
+    {
+        private readonly ITarget _target;
+        public Endure(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in TakeDamage when HP would hit 0
+    }
+
+    public class SuperEffectiveOnly : IEffect
+    {
+        private readonly ITarget _target;
+        public SuperEffectiveOnly(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in hit/type effectiveness calc
+    }
+
+    public class ModifyStatStages : IEffect
+    {
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        public ModifyStatStages(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
+        public void Apply(BattleState battle) { } // Checked in ChangeStatStage
+    }
+
+    public class IgnoreStatChanges : IEffect
+    {
+        private readonly ITarget _target;
+        public IgnoreStatChanges(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in damage calculation
+    }
+
+    public class MaxMultiStrike : IEffect
+    {
+        private readonly ITarget _target;
+        public MaxMultiStrike(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in multi-hit move resolution
+    }
+
+    public class NormalizeType : IEffect
+    {
+        private readonly ITarget _target;
+        public NormalizeType(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in move type resolution
+    }
+
+    public class PreventFlee : IEffect
+    {
+        private readonly ITarget _target;
+        public PreventFlee(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked on flee attempt
+    }
+
+    public class PreventSwitch : IEffect
+    {
+        private readonly ITarget _target;
+        public PreventSwitch(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked on switch attempt
+    }
+
+    public class PreventItemTheft : IEffect
+    {
+        private readonly ITarget _target;
+        public PreventItemTheft(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked on item steal attempt
+    }
+
+    public class WeatherTransform : IEffect
+    {
+        private readonly ITarget _target;
+        public WeatherTransform(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked on weather change / turn start
+    }
+
+    public class Pickup : IEffect
+    {
+        private readonly ITarget _target;
+        public Pickup(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked after battle ends
+    }
+
+    public class GuaranteedFlee : IEffect
+    {
+        private readonly ITarget _target;
+        public GuaranteedFlee(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked on flee attempt
+    }
+
+    public class ModifySleepTurns : IEffect
+    {
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        public ModifySleepTurns(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
+        public void Apply(BattleState battle) { } // Checked in sleep turn countdown
+    }
+
+    public class Truant : IEffect
+    {
+        private readonly ITarget _target;
+        public Truant(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked at move selection
+    }
+
+    public class SlowStart : IEffect
+    {
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        private readonly int _turns;
+        public SlowStart(ITarget target, double multiplier, int turns = 5) { _target = target; _multiplier = multiplier; _turns = turns; }
+        public void Apply(BattleState battle) { } // Checked in stat calculation for first N turns
+    }
+
+    public class DoublePPUsage : IEffect
+    {
+        private readonly ITarget _target;
+        public DoublePPUsage(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked when opponent uses a move
+    }
+
+    public class IgnoreAbility : IEffect
+    {
+        private readonly ITarget _target;
+        public IgnoreAbility(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked before ability hooks fire
+    }
+
+    public class GenderRivalry : IEffect
+    {
+        private readonly ITarget _target;
+        public GenderRivalry(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in damage calculation
+    }
+
+    public class BlockMove : IEffect
+    {
+        private readonly ITarget _target;
+        public BlockMove(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked before specific move types fire
+    }
+
+    public class SuppressWeather : IEffect
+    {
+        private readonly ITarget _target;
+        public SuppressWeather(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in weather effect application
+    }
+
+    public class MultitypeChange : IEffect
+    {
+        private readonly ITarget _target;
+        public MultitypeChange(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked on entry / item change
+    }
+
+    public class MoveLastPriority : IEffect
+    {
+        private readonly ITarget _target;
+        public MoveLastPriority(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked in turn order resolution
+    }
+
+    public class TypeChange : IEffect
+    {
+        private readonly ITarget _target;
+        public TypeChange(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked after being hit
+    }
+
+    public class CopyAbility : IEffect
+    {
+        private readonly ITarget _target;
+        public CopyAbility(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { }
+    }
+
+    public class PassStatus : IEffect
+    {
+        private readonly ITarget _target;
+        public PassStatus(ITarget target) { _target = target; }
+        public void Apply(BattleState battle)
+        {
+            var status = battle.Attacker.PokemonStatusCondition();
+            _target.Resolve(battle).ApplyStatus(status);
+        }
+    }
+
+    public class DamageRedirect : IEffect
+    {
+        private readonly ITarget _target;
+        public DamageRedirect(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // Checked when drain move resolves
+    }
+
+    public class ModifyChance : IEffect
+    {
+        private readonly ITarget _target;
+        private readonly double _multiplier;
+        public ModifyChance(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
+        public void Apply(BattleState battle) { } // Checked when secondary chance rolls
+    }
+
+    public class InspectOpponent : IEffect
+    {
+        private readonly ITarget _target;
+        public InspectOpponent(ITarget target) { _target = target; }
+        public void Apply(BattleState battle) { } // UI reveal of opponent item/moves
+    }
 }
