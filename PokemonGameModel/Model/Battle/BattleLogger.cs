@@ -11,9 +11,23 @@
 // Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
+
+// Design: Aggregate Root for a single battle (holds both sides, weather, turn count).
+// Layer: Domain — processed battle state; no SQLite, no UI.
+// OOP: Encapsulation — all mutation through public methods; sides exposed as read-only.
+// Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
+// BattleSideState is kept here as it is tightly coupled to BattleDomain.
+
+
+// Design: Aggregate Root for a single battle (holds both sides, weather, turn count).
+// Layer: Domain — processed battle state; no SQLite, no UI.
+// OOP: Encapsulation — all mutation through public methods; sides exposed as read-only.
+// Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
+// BattleSideState is kept here as it is tightly coupled to BattleDomain.
+
 using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Domain.Battle
+namespace PokemonGame.Model.Model.Battle
 {
     public class BattleLogEntry
     {

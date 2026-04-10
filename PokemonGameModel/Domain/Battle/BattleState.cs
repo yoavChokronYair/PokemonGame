@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.Battle;
 
 namespace PokemonGame.Model.Domain.Battle
 {

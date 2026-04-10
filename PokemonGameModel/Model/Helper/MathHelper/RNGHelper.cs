@@ -3,8 +3,8 @@
 // Uses RandomHelper for all random number generation — no inline new Random() here.
 // Instance holds PID/TID/SID for shiny and gender checks.
 using PokemonGame.Enums;
-using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.Battle;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
