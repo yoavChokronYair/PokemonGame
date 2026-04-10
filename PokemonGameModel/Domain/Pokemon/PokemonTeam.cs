@@ -8,7 +8,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         private readonly PokemonState[] _slots;
         private int _activeIndex;
 
-        private PokemonTeam(IReadOnlyList<PokemonDomain> roster)
+        private PokemonTeam(IReadOnlyList<PokemonState> roster)
         {
             if (roster.Count != PokemonConstants.PartyCapacity)
             {
@@ -23,7 +23,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         /// <summary>
         /// Call once per battle side with whatever roster was built by the ViewModel.
         /// </summary>
-        public static PokemonTeam Create(IReadOnlyList<PokemonDomain> roster)
+        public static PokemonTeam Create(IReadOnlyList<PokemonState> roster)
             => new PokemonTeam(roster);
 
         // ── Active slot ───────────────────────────────────────────────────────

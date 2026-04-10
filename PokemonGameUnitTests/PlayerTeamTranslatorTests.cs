@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model;
 using Xunit.Abstractions;
 
 namespace PokemonGame.Tests

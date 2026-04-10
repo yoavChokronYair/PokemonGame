@@ -1,9 +1,7 @@
-﻿using PokemonGame.Model.Domain;
-using PokemonGame.Model.Domain.Battle;
+﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model;
 using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.GameData.PokemonData;
@@ -50,13 +48,6 @@ namespace PokemonGame.ViewModels.Translators
 
         private AbilityState BuildAbilityState(AbilityTree tree)
         {
-            var domain = new AbillityDomain
-            {
-                Name = tree.Name,
-                Description = tree.Description,
-                Used = false,
-            };
-
             ICondition<BattleState> condition = tree.Condition != null
              ? TranslateCondition(tree.Condition)
              : new Probability<BattleState>(1.0);   // always passes
@@ -64,8 +55,7 @@ namespace PokemonGame.ViewModels.Translators
             IEffect effect = tree.Effect != null
                 ? TranslateEffect(tree.Effect)
                 : new NoEffect();
-
-            return new AbilityState(domain, effect);
+            return new AbilityState(tree.Name, effect,tree.Description);
         }
 
         // ── Condition ────────────────────────────────────────────────────────

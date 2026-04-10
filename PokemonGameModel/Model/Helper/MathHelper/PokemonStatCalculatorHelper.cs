@@ -5,11 +5,11 @@
 using PokemonGame.Enums;
 using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
-using PokemonGame.Model.Model;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {

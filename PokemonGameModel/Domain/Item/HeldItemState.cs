@@ -1,7 +1,7 @@
 ﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Interface;
 
-namespace PokemonGame.Model.Model
+namespace PokemonGame.Model.Domain.Item
 {
     public class HeldItemState : IHeldItem
     {
