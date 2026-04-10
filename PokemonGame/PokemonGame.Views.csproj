@@ -169,6 +169,7 @@
     <Compile Include="Converters\TypeToColorConverter.cs" />
     <Compile Include="Converters\TypeToImageConverter.cs" />
     <Compile Include="Converters\WinnerTextConverter.cs" />
+    <Compile Include="Helpers\PasswordBoxHelper.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\Controls\DialogService .cs" />
     <Compile Include="Views\Controls\PasswordHelper.cs" />

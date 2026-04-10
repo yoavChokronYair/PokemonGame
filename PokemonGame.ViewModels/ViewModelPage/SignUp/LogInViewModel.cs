@@ -52,6 +52,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 OnPropertyChanged(nameof(StatusMessage));
             }
         }
+        private bool _isPasswordVisible = false;
+        public bool IsPasswordVisible
+        {
+            get => _isPasswordVisible;
+            set
+            {
+                _isPasswordVisible = value;
+                OnPropertyChanged(nameof(IsPasswordVisible));
+            }
+        }
+
+        public ICommand TogglePasswordVisibilityCommand { get; }
         public ICommand LoginCommand { get; }
         public ICommand SwitchToSignUpCommand { get; }
         public ICommand NavigateToGameModeChooserCommand { get; }
@@ -62,6 +74,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             _navigationStore = navigationStore;
             _handler = new LogInService();
             LoginCommand = new RelayCommand(Login);
+            TogglePasswordVisibilityCommand = new RelayCommand(() => IsPasswordVisible = !IsPasswordVisible);
             SwitchToSignUpCommand = new NavigateCommand(navigationStore, createViewModel);
             NavigateToGameModeChooserCommand =
             new NavigateCommand(navigationStore, createGameChooserViewModel);
