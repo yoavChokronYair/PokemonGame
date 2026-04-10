@@ -2,8 +2,8 @@
 // ICondition<T>: checks a boolean condition against an entity of type T.
 // ITarget: resolves to a PokemonDomain given the current battle state.
 
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
+using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Pokemon;
 
 namespace PokemonGame.Model.Interface
 {

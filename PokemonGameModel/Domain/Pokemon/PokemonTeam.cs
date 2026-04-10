@@ -1,5 +1,4 @@
 ﻿using PokemonGame.Core.Config;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -9,7 +8,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         private readonly PokemonState[] _slots;
         private int _activeIndex;
 
-        private PokemonTeam(IReadOnlyList<PokemonDomain> roster)
+        private PokemonTeam(IReadOnlyList<PokemonState> roster)
         {
             if (roster.Count != PokemonConstants.PartyCapacity)
             {
@@ -17,14 +16,14 @@ namespace PokemonGame.Model.Domain.Pokemon
                     $"A team must have exactly {PokemonConstants.PartyCapacity} Pokémon, got {roster.Count}.");
             }
 
-            _slots = roster.Select(d => new PokemonState(d)).ToArray();
+            _slots = roster.Select(d => new PokemonState()).ToArray();
             _activeIndex = 0;
         }
 
         /// <summary>
         /// Call once per battle side with whatever roster was built by the ViewModel.
         /// </summary>
-        public static PokemonTeam Create(IReadOnlyList<PokemonDomain> roster)
+        public static PokemonTeam Create(IReadOnlyList<PokemonState> roster)
             => new PokemonTeam(roster);
 
         // ── Active slot ───────────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 // Layer: Interface — defines the effect contract (applied to a BattleDomain).
 // Every battle action (damage, status, stat change, etc.) implements IEffect.
 
-using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Domain.Battle;
 
 namespace PokemonGame.Model.Interface
 {

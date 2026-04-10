@@ -4,7 +4,7 @@
 // Instance holds PID/TID/SID for shiny and gender checks.
 using PokemonGame.Enums;
 using PokemonGame.Model.Helper;
-using PokemonGame.Model.Model.Helper.BattleHelper;
+using PokemonGame.Model.Model.Battle;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {

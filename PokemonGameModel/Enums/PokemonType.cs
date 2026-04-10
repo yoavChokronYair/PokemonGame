@@ -13,7 +13,7 @@
         Ground,
         Flying,
         Psychic,
-        Bug,
+        Bug,    
         Rock,
         Ghost,
         Dragon,

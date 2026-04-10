@@ -1,9 +1,9 @@
-﻿using PokemonGame.Model.Domain.Move;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.DesignPatterns;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
+using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Handler;
 
@@ -26,28 +26,28 @@ namespace PokemonGame.ViewModels.Translators
         }
         // ── Public entry point ───────────────────────────────────────────────
 
-        public MoveDomain Translate(string moveName)
+        public MoveState Translate(string moveName)
         {
             var tree = _moveService.GetMove(moveName)
                 ?? throw new InvalidOperationException($"Move '{moveName}' not found.");
-
-            // CHANGE: Instead of demanding exactly 1, we find the "Root" attempt.
-            // In most DB schemas, the root attempt is the one that is NOT 
-            // referenced by a 'release_attempt_id' or 'child_attempt_id'.
-            // If your service already orders them, usually index 0 is the root.
 
             if (tree.Attempts.Count == 0)
             {
                 throw new InvalidOperationException($"Move '{moveName}' has no attempts.");
             }
 
-            // Pick the first attempt as the entry point. 
-            // Complex moves (Charge/Cascade) will recursively translate their children.
-            var rootAttempt = tree.Attempts[0];
+            // 1. Identify the root MoveAttempt
+            var rootAttemptData = tree.Attempts[0];
+
+            // 2. Translate the data-object 'MoveAttempt' into the logic-object 'IAttempt'
+            // I am assuming you have a method like TranslateAttempt in this class
+            IAttempt translatedAttempt = TranslateAttempt(rootAttemptData);
 
             var move = tree.Move;
 
-            return new MoveDomain(
+            // 3. Pass the translatedAttempt as the first argument
+            return new MoveState(
+                attempt: translatedAttempt,
                 name: move.Name,
                 element: ParseEnum<PokemonType>(move.Element),
                 category: ParseEnum<MoveCategory>(move.Category),

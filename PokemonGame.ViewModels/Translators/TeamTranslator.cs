@@ -1,11 +1,11 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Enums;
+using PokemonGame.Model.Config;
+using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model;
-using PokemonGame.Model.Model.Helper;
-using PokemonGame.Model.Model.Helper.MoveHelper;
 using PokemonGame.Services.Handler;
 
 namespace PokemonGame.ViewModels.Translators
@@ -52,14 +52,14 @@ namespace PokemonGame.ViewModels.Translators
             return PokemonTeam.Create(roster);
         }
 
-        public PokemonDomain TranslateToDomain(PokemonLoadResult result)
+        public PokemonState TranslateToDomain(PokemonLoadResult result)
         {
             var b = result.Battler;
             var g = result.General;
             var s = result.Stats;
 
             var nature = ParseEnum<NatureType>(b.Nature ?? "Serious");
-            var mods = NatureHelper.GetNatureModifiers(nature);
+            var mods = NatureConstants.GetNatureModifiers(nature);
 
             var modifierDict = new Dictionary<Stat, double>
             {
@@ -72,16 +72,15 @@ namespace PokemonGame.ViewModels.Translators
 
             int maxHp = PokemonStatCalculatorHelper.CalculateHP(s.HP, b.Iv_hp, b.Ev_hp, b.Level);
 
-            return new PokemonDomain
+            return new PokemonState
             {
                 Name = g.Name ?? "MissingNo",
-                PokedexNumber = g.PokedexID,
+                PokedexId = g.PokedexID,
                 PrimaryType = ParseEnum<PokemonType>(g.Type1 ?? "Normal"),
                 SecondaryType = g.Type2 != null ? ParseEnum<PokemonType>(g.Type2) : (PokemonType?)null,
                 Level = b.Level,
                 Nature = nature,
                 MaxHP = maxHp,
-                CurrentHP = maxHp,
 
                 BaseAttack = CalcStat(s.Attack, b.Iv_atk, b.Ev_atk, b.Level, modifierDict, Stat.Attack),
                 BaseDefense = CalcStat(s.Defense, b.Iv_def, b.Ev_def, b.Level, modifierDict, Stat.Defense),
@@ -114,9 +113,25 @@ namespace PokemonGame.ViewModels.Translators
 
         private IMove BuildMove(string moveName)
         {
-            var domain = _moveTranslator.Translate(moveName);
+            // 1. Get the raw data from the database/translator
+            var data = _moveTranslator.Translate(moveName);
+
+            // 2. Get the execution logic (IAttempt)
             var attempt = _moveTranslator.TranslateAttemptForMove(moveName);
-            return new MoveState(domain, attempt);
+
+            // 3. Map the data properties to the MoveState constructor
+            return new MoveState(
+                attempt,
+                data.Name,
+                data.Element,
+                data.Category,
+                data.PP,
+                data.Target,
+                MoveTag.Sound,
+                data.Priority,
+                data.CritStage,
+                data.Description
+            );
         }
 
         private static int CalcStat(int @base, int iv, int ev, int level,

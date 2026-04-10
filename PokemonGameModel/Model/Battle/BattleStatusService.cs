@@ -4,10 +4,10 @@
 // Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
 // BattleSideState is kept here as it is tightly coupled to BattleDomain.
 
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
-namespace PokemonGame.Model.Model.Helper.BattleHelper
+namespace PokemonGame.Model.Model.Battle
 {
     public class BattleStatusService
     {
@@ -29,7 +29,7 @@ namespace PokemonGame.Model.Model.Helper.BattleHelper
                     break;
                 case StatusCondition.Toxic:
                     pokemon.ApplyToxicByOne();
-                    pokemon.TakeDamage(pokemon.MaxHP * pokemon.getToxicCounter() / 16);
+                    pokemon.TakeDamage(pokemon.MaxHP * pokemon.ToxicCounter / 16);
                     _logger.Log($"{pokemon.Name} is hurt by bad poison!");
                     break;
             }

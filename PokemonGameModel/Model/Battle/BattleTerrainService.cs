@@ -1,6 +1,7 @@
-﻿using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Enums;
 
-namespace PokemonGame.Model.Model.Helper.BattleHelper
+namespace PokemonGame.Model.Model.Battle
 {
     public class BattleTerrainService
     {

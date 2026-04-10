@@ -3,13 +3,13 @@
 // CANONICAL stat calculator — PokemonDomain delegates to this class (no duplicate formulas elsewhere).
 // Uses NatureHelper.GetNatureModifiers for nature modifier lookups.
 using PokemonGame.Enums;
+using PokemonGame.Model.Config;
+using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
-using PokemonGame.Model.Model;
-using PokemonGame.Model.Model.Helper;
-using PokemonGame.Model.Model.Helper.BattleHelper;
-using PokemonGame.Model.Model.Helper.MoveHelper;
-using PokemonGame.Model.Model.Helper.PokemonHelper;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -30,7 +30,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             ValidateIVs(ivHP, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed);
             ValidateEVs(evHP, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed);
 
-            var natureModifiers = NatureHelper.GetNatureModifiers(nature);
+            var natureModifiers = NatureConstants.GetNatureModifiers(nature);
 
             this.HP = CalculateHP(baseHP, ivHP, evHP, level);
             this.Attack = CalculateStat(baseAttack, ivAttack, evAttack, level, natureModifiers.atk);
@@ -84,7 +84,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             var defender = Battle.Defender;
 
             double modifier = getStabBonus(attacker, move.Element) *
-                TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), Battle.Logger) *
+                TypeEffectivenessChartConst.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), Battle.Logger) *
                 RNGHelper.getCritModifier(Battle.Logger) *
                 RandomHelper.NextDouble(0.85, 1.0) *
                 GetHeldItemAndAbilityModifier(Battle, move, basePower);
@@ -93,8 +93,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
             double statRatio = move.Category switch
             {
-                MoveCategory.Physical => (double)attacker.Attack / defender.Defense,
-                MoveCategory.Special => (double)attacker.SpAttack / defender.SpDefense,
+                MoveCategory.Physical => (double)attacker.BaseAttack / defender.BaseDefense,
+                MoveCategory.Special => (double)attacker.BaseSpecialAttack / defender.BaseSpecialDefense,
                 _ => 1.0
             };
 
@@ -135,7 +135,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
                 // Expert Belt - 1.2x on super effective
                 else if (item.Name == "Expert Belt" &&
-                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), battle.Logger) > 1.0)
+                    TypeEffectivenessChartConst.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), battle.Logger) > 1.0)
                 {
                     modifier *= 1.2;
                 }
@@ -194,7 +194,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
                 // Tinted Lens - 2x not very effective moves
                 else if (ability.Name == "Tinted Lens" &&
-                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(),battle.Logger) < 1.0)
+                    TypeEffectivenessChartConst.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(),battle.Logger) < 1.0)
                 {
                     modifier *= 2.0;
                 }
@@ -223,7 +223,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                 // Filter / Solid Rock - 0.75x damage received when super effective (defender ability)
                 else if (defender.Ability is AbilityState defAbility &&
                     defAbility.Name is "Filter" or "Solid Rock" &&
-                    TypeEffectivenessChartHelper.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), battle.Logger) > 1.0)
+                    TypeEffectivenessChartConst.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), battle.Logger) > 1.0)
                 {
                     modifier *= 0.75;
                 }
@@ -231,7 +231,6 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
             return modifier;
         }
-
         private static PokemonType? GetTypeBoosterType(string itemName) => itemName switch
         {
             "Silk Scarf" => PokemonType.Normal,
