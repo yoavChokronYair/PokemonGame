@@ -3,6 +3,7 @@ namespace PokemonGame.Model.Interface
 {
     public enum AbilityTrigger
     {
+        None,
         Passive,
         TurnStart,
         OnHit,

@@ -33,8 +33,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public BattleViewModel(UserStore playerUserStore, UserStore botUserStore)
         {
             var translator = new TeamTranslator();
-            var playerTeam = translator.LoadTeam(playerUserStore.BattlePlayerID);
-            var botTeam = translator.LoadTeam(botUserStore.BattlePlayerID);
+            var playerTeam = translator.LoadTeamByID(playerUserStore.BattlePlayerID);
+            var botTeam = translator.LoadTeamByID(botUserStore.BattlePlayerID);
 
             _manager = new BattleManager(playerTeam, botTeam,BotLevel.Easy);
 
@@ -52,7 +52,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             var translator = new TeamTranslator();
             var service = new PokemonService();
 
-            var playerTeam = translator.LoadTeam(playerBattlePlayerId.BattlePlayerID);
+            var playerTeam = translator.LoadTeamByID(playerBattlePlayerId.BattlePlayerID);
 
             var randomResults = service.GenerateRandomTeam(count: 6, level: 50);
             var roster = randomResults

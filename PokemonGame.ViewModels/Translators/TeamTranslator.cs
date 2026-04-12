@@ -33,7 +33,7 @@ namespace PokemonGame.ViewModels.Translators
             _teamCreator = new TeamCreationManager();
         }
 
-        public PokemonTeam LoadTeam(int battlePlayerId)
+        public PokemonTeam LoadTeamByID(int battlePlayerId)
         {
             var results = _pokemonService.LoadTeamResults(battlePlayerId);
 
@@ -85,24 +85,12 @@ namespace PokemonGame.ViewModels.Translators
                 EvSpeed = b.Ev_speed,
 
                 Moves = result.MoveNames
-                               .Where(m => !string.IsNullOrEmpty(m))
-                               .Select(BuildMove)
-                               .ToList(),
+                        .Where(m => !string.IsNullOrEmpty(m))
+                        .Select(_moveTranslator.Translate) // Direct reference to the method
+                        .ToList(),
                 Ability = _abilityTranslator.TranslateById(b.AbilityID),
-                HeldItem = BuildHeldItem(b.ItemID),
+                HeldItem = _itemTranslator.TranslateById(b.ItemID.Value),
             };
-        }
-        // ── Translation helpers ──────────────────────────────────────────────
-        private IMove BuildMove(string moveName)
-        {
-            return _moveTranslator.Translate(moveName);
-        }
-        private HeldItemState? BuildHeldItem(int? itemId)
-        {
-            if (itemId == null || itemId <= 0)
-                return null;
-
-            return _itemTranslator.TranslateById(itemId.Value);
         }
     }
 }
