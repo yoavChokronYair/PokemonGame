@@ -3,7 +3,6 @@ using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
-    // AbilityState — pure core, no trigger logic, no used-guard
     public class AbilityState : IAbility
     {
         private readonly IEffect _effect;
