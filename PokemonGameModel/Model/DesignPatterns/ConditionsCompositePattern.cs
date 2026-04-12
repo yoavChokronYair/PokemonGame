@@ -64,7 +64,12 @@ namespace PokemonGame.Model.Model.DesignPatterns
         public Probability(double probability) { _probability = MathHelper.Clamp(probability, 0.0, 1.0); }
         public bool Check(BattleState battle) => RandomHelper.NextBool(_probability);
     }
-
+    public class ProbabilityPokemon : ICondition<PokemonState>
+    {
+        private readonly double _probability;
+        public ProbabilityPokemon(double probability) { _probability = MathHelper.Clamp(probability, 0.0, 1.0); }
+        public bool Check(PokemonState battle) => RandomHelper.NextBool(_probability);
+    }
     // ── Battle/Environment Conditions ─────────────────────────────────────────
 
     public class IsNewPokemon : ICondition<BattleState>
