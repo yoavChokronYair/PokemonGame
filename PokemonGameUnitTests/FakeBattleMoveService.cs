@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Model.Battle;
+using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Translators;
@@ -216,7 +217,6 @@ namespace PokemonGame.Tests
         public static PokemonTeam EnemyTeam() =>
             TeamTranslator().LoadTeam(battlePlayerId: 2);
 
-        public static BattleManager Battle() =>
-            new BattleManager(PlayerTeam(), EnemyTeam());
+       
     }
 }

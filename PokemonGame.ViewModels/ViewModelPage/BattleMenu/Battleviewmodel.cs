@@ -4,7 +4,6 @@ using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Battle;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
@@ -37,7 +36,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             var playerTeam = translator.LoadTeam(playerUserStore.BattlePlayerID);
             var botTeam = translator.LoadTeam(botUserStore.BattlePlayerID);
 
-            _manager = new BattleManager(playerTeam, botTeam);
+            _manager = new BattleManager(playerTeam, botTeam,BotLevel.Easy);
 
             Logger = new BattleLoggerViewModel();
             PlayerStatus = new PokemonBattleStatusViewModel();
@@ -61,7 +60,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 .ToList();
             var botTeam = PokemonTeam.Create(roster);
 
-            _manager = new BattleManager(playerTeam, botTeam);
+            _manager = new BattleManager(playerTeam, botTeam,BotLevel.Easy);
 
             Logger = new BattleLoggerViewModel();
             PlayerStatus = new PokemonBattleStatusViewModel();

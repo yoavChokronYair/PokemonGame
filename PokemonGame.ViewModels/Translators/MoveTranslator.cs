@@ -26,27 +26,19 @@ namespace PokemonGame.ViewModels.Translators
         }
         // ── Public entry point ───────────────────────────────────────────────
 
-        public MoveState Translate(string moveName)
+        public IMove Translate(string moveName)
         {
             var tree = _moveService.GetMove(moveName)
                 ?? throw new InvalidOperationException($"Move '{moveName}' not found.");
 
             if (tree.Attempts.Count == 0)
-            {
                 throw new InvalidOperationException($"Move '{moveName}' has no attempts.");
-            }
 
-            // 1. Identify the root MoveAttempt
             var rootAttemptData = tree.Attempts[0];
-
-            // 2. Translate the data-object 'MoveAttempt' into the logic-object 'IAttempt'
-            // I am assuming you have a method like TranslateAttempt in this class
             IAttempt translatedAttempt = TranslateAttempt(rootAttemptData);
-
             var move = tree.Move;
 
-            // 3. Pass the translatedAttempt as the first argument
-            return new MoveState(
+            var moveState = new MoveState(
                 attempt: translatedAttempt,
                 name: move.Name,
                 element: ParseEnum<PokemonType>(move.Element),
@@ -57,6 +49,9 @@ namespace PokemonGame.ViewModels.Translators
                 critStage: move.CritStage,
                 description: move.Description
             );
+
+            // ← wrap in decorators before returning
+            return ApplyDecorators(moveState, tree.Decorators);
         }
 
         // ── Attempt ──────────────────────────────────────────────────────────
@@ -184,7 +179,41 @@ namespace PokemonGame.ViewModels.Translators
             "LastDamageDealt" => new LastDamageDealt(ResolveTarget(n.Target)),
             _ => throw new NotSupportedException($"Unknown number type: '{n.Type}'")
         };
+        // In MoveTranslator — add after Translate()
 
+        public IMove ApplyDecorators(IMove move, IReadOnlyList<MoveDecorator> decorators)
+        {
+            foreach (var d in decorators)
+            {
+                move = d.Type switch
+                {
+                    "Precondition" => new WithPrecondition(
+                        TranslateCondition(d.Condition!),
+                        move,
+                        d.FailMessage),
+
+                    "Applicability" => new WithApplicability(
+                        TranslatePokemonCondition(d.PokemonCondition!),
+                        move,
+                        d.FailMessage),
+
+                    "Disable" => new WithDisable(
+                        move,
+                        d.LockTurns ?? 0),
+
+                    "TypeOverride" => new WithTypeOverride(
+                        move,
+                        ParseEnum<PokemonType>(d.OverrideType!)),
+
+                    "FollowUp" => new WithFollowUp(
+                        move,
+                        TranslateEffect(d.FollowUpEffect!)),
+
+                    _ =>  move
+                };
+            }
+            return move;
+        }
         // ── Condition ────────────────────────────────────────────────────────
 
         public ICondition<BattleState> TranslateCondition(MoveCondition c) => c.Type switch

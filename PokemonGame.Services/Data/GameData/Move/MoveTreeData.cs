@@ -135,6 +135,17 @@
         public MoveEffect? AfterRampage { get; set; }
     }
 
+    public class MoveDecorator
+    {
+        public string Type { get; set; } = "";          // "Precondition" | "Applicability" | "Disable" | "TypeOverride" | "FollowUp"
+        public MoveCondition? Condition { get; set; }   // for Precondition
+        public MoveCondition? PokemonCondition { get; set; } // for Applicability
+        public int? LockTurns { get; set; }             // for Disable
+        public string? OverrideType { get; set; }       // for TypeOverride (e.g. "Normal")
+        public MoveEffect? FollowUpEffect { get; set; } // for FollowUp
+        public string? FailMessage { get; set; }        // optional, for Precondition / Applicability
+    }
+
     // ── Full Move Tree ───────────────────────────────────────────────────────────
     public class MoveTree
     {
@@ -142,6 +153,8 @@
         public int Priority { get; set; }
         public int CritStage { get; set; }
         public string Description { get; set; } = string.Empty;
+        public string Type  { get; set; } = string.Empty;
+        public List<MoveDecorator> Decorators { get; set; } = new();
         public List<MoveAttempt> Attempts { get; set; } = new();
     }
 }
