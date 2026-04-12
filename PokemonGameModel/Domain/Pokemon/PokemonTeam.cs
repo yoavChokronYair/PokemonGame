@@ -16,7 +16,7 @@ namespace PokemonGame.Model.Domain.Pokemon
                     $"A team must have exactly {PokemonConstants.PartyCapacity} Pokémon, got {roster.Count}.");
             }
 
-            _slots = roster.Select(d => new PokemonState()).ToArray();
+            _slots = roster.ToArray();
             _activeIndex = 0;
         }
         public PokemonState GetPokemonAt(int index) => _slots[index];

@@ -96,7 +96,7 @@ namespace PokemonGame.ViewModels.Translators
             "Not" => new Not<BattleState>(TranslateCondition(c.Inner!)),
 
             // ── Adapters ─────────────────────────────────────────────────────
-            "UserCondition" => new UserCondition(TranslatePokemonCondition(c.Inner!)),
+            "UserCondition" => new UserCondition(TranslateCondition(c.Inner!)),
             "OpponentCondition" => new OpponentCondition(TranslatePokemonCondition(c.Inner!)),
 
             // ── Fallback ─────────────────────────────────────────────────────

@@ -76,6 +76,7 @@ namespace PokemonGame.Model.Model.Managers
                 Level = data.Level,
                 Nature = nature,
                 MaxHP = maxHp,
+                CurrentHP = maxHp,
 
                 BaseAttack = CalcStat(data.BaseAtk, data.IvAtk, data.EvAtk, data.Level, modifiers, Stat.Attack),
                 BaseDefense = CalcStat(data.BaseDef, data.IvDef, data.EvDef, data.Level, modifiers, Stat.Defense),

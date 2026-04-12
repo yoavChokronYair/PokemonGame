@@ -4,7 +4,6 @@ using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -42,7 +41,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int[] EVs { get; set; } = new int[PokemonConstants.IvsAndEvsNum];
 
         // ── HP / Faint ────────────────────────────────────────────────────────
-        public int CurrentHP { get; private set; }
+        public int CurrentHP { get; set; }
         public bool IsFainted => CurrentHP <= 0;
         public double GetHPFraction() => (double)CurrentHP / MaxHP;
 

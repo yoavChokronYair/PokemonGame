@@ -137,21 +137,44 @@ namespace PokemonGame.ViewModels.Translators
 
             return c.Type switch
             {
+                // --- Core Logic & Environment ---
                 "Probability" => new Probability(c.Probability ?? 0),
+                "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
+                "IsTerrainActive" => new IsTerrainActive(ParseEnum<TerrainType>(c.Terrain!)),
+                "IsAnyTerrainActive" => new IsAnyTerrainActive(),
+                "IsBattleOver" => new IsBattleOver(),
+                "IsNewPokemon" => new IsNewPokemon(),
+
+                // --- Move Context Conditions ---
+                "WasHitByContact" => new WasHitByContact(),
+                "WasHitByMoveType" => new WasHitByMoveType(ParseEnum<PokemonType>(c.PokemonType!)),
+                "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
+                "MoveIsCategory" => new MoveIsCategory(ParseEnum<MoveCategory>(c.MoveCategory!)),
+
+                // --- Attacker State Conditions (ICondition<BattleState>) ---
                 "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),
+                "HasAnyStatus" => new HasAnyStatus(),
                 "HasVolatile" => new HasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
                 "IsFainted" => new IsFainted(),
                 "IsFullHP" => new IsFullHP(),
                 "HPBelow" => new HPBelow(c.HpFraction ?? 0),
                 "HasType" => new HasType(ParseEnum<PokemonType>(c.PokemonType!)),
-                "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
+                "IsHoldingItem" => new IsHoldingItem(),
+                "TookDamageThisTurn" => new TookDamageThisTurn(),
+                "DidKnockoutOpponent" => new DidKnockoutOpponent(),
+                "HasBaseStatChanged" => new HasBaseStatChanged(),
+                "IsGrounded" => new IsGrounded(),
 
-                // Recursive cases now safe because of the 'if (c == null)' check above
-                "And" => new And<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
-                "Or" => new Or<BattleState>(TranslateCondition(c.Left!), TranslateCondition(c.Right!)),
-                "Not" => new Not<BattleState>(TranslateCondition(c.Inner!)),
+                // --- Combinators (Recursive) ---
+                "And" => new And<BattleState>(TranslateCondition(c.Left), TranslateCondition(c.Right)),
+                "Or" => new Or<BattleState>(TranslateCondition(c.Left), TranslateCondition(c.Right)),
+                "Not" => new Not<BattleState>(TranslateCondition(c.Inner)),
 
-                "UserCondition" => new UserCondition(TranslatePokemonCondition(c.Inner!)),
+                // --- Context Switching (Adapters) ---
+                // UserCondition wraps an ICondition<BattleState> (usually checking the Attacker)
+                "UserCondition" => new UserCondition(TranslateCondition(c.Inner)),
+
+                // OpponentCondition wraps an ICondition<PokemonState> to check the Defender
                 "OpponentCondition" => new OpponentCondition(TranslatePokemonCondition(c.Inner!)),
 
                 _ => throw new NotSupportedException($"Unknown battle condition type: '{c.Type}'")

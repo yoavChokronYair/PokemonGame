@@ -208,9 +208,9 @@ namespace PokemonGame.Model.Model.DesignPatterns
     // Adapter: wraps a PokemonDomain condition so it can be used as ICondition<BattleDomain>.
     public class UserCondition : ICondition<BattleState>
     {
-        private readonly ICondition<PokemonState> _inner;
-        public UserCondition(ICondition<PokemonState> inner) { _inner = inner; }
-        public bool Check(BattleState battle) => _inner.Check(battle.Attacker);
+        private readonly ICondition<BattleState> _inner;
+        public UserCondition(ICondition<BattleState> inner) { _inner = inner; }
+        public bool Check(BattleState battle) => _inner.Check(battle);
     }
     public class IsGrounded : ICondition<BattleState>
     {
