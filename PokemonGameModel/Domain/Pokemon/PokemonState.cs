@@ -4,6 +4,7 @@ using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -99,6 +100,11 @@ namespace PokemonGame.Model.Domain.Pokemon
         public void RegisterDamageDealt(int amount) => LastDamageDealt = amount;
         public void RegisterDamageTaken(int amount) => LastDamageTaken = amount;
 
+        public void UseHealItem()
+        {
+            //TODO: add logic here
+
+        }
         // ── Status ────────────────────────────────────────────────────────────
         public bool CanApplyStatus(StatusCondition newStatus)
         {

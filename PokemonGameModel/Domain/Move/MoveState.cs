@@ -65,6 +65,5 @@ namespace PokemonGame.Model.Domain.Move
             _attempt.Execute(battle);
         }
 
-        public void RestorePP(int amount) => PP = Math.Min(PP + amount, MaxPP);
     }
 }

@@ -2,8 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Battle;
+using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.Translators;
@@ -26,8 +28,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private int _logCursor = 0;
 
         // ── Phase helpers ─────────────────────────────────────────────────────
-        public bool IsBattleOver => _manager.IsBattleOver;
-        public bool IsAwaitingSwitch => _manager.Phase == BattlePhase.AwaitingPlayerSwitch;
         public string? WinnerName => _manager.Winner?.Active.Name;
 
         // ── Constructor (vs real player team) ─────────────────────────────────
@@ -74,24 +74,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         // ── Called by BattleMenuViewModel when player picks a move ────────────
         private void OnMoveChosen(int moveIndex)
         {
-            if (_manager.Phase != BattlePhase.AwaitingPlayerAction)
-            {
-                return;
-            }
-
-            _manager.RunTurn(moveIndex, botDecides: true);
+            _manager.RunTurn(moveIndex);
             SyncAll();
         }
 
         // ── Called by BattleMenuViewModel when player picks a switch slot ─────
         private void OnSwitchChosen(int slotIndex)
         {
-            if (_manager.Phase != BattlePhase.AwaitingPlayerSwitch)
-            {
-                return;
-            }
-
-            _manager.PlayerSwitch(slotIndex);
+            _manager.RunTurn(slotIndex,BattleAction.Switch);
             SyncAll();
         }
 
@@ -117,7 +107,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             BattleMenu.RefreshMoves(_manager.PlayerActive.Moves);
 
             // 3. Enqueue only NEW log entries since last sync
-            var allEntries = _manager.BattleLogEntries;
+            var allEntries = _manager.logger.Entries;
             if (allEntries.Count > _logCursor)
             {
                 var newEntries = allEntries.Skip(_logCursor).ToList();
@@ -131,9 +121,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                     Logger.FlushSetupMessages();
                 }
             }
-
-            OnPropertyChanged(nameof(IsBattleOver));
-            OnPropertyChanged(nameof(IsAwaitingSwitch));
             OnPropertyChanged(nameof(WinnerName));
         }
     }

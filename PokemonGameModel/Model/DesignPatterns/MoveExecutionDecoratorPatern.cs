@@ -103,7 +103,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
         public void Execute(BattleState battle)
         {
-            battle.ActiveTypeOverride =  _overrideType;
+            battle.ActiveTypeOverride = _overrideType;
             _move.Execute(battle);
             battle.ActiveTypeOverride = null;
         }

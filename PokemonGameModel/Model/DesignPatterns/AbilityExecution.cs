@@ -5,8 +5,8 @@ namespace PokemonGame.Model.Model.DesignPatterns
 {
     internal class OnHit : IAbility
     {
-        private readonly ICondition<BattleState> _condition;
         private readonly IAbility _ability;
+        private readonly ICondition<BattleState> _condition;
 
         public OnHit(ICondition<BattleState> condition, IAbility ability)
         {
