@@ -5,7 +5,7 @@ using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.DesignPatterns
 {
-    internal class WithPrecondition : IMove
+    public class WithPrecondition : IMove
     {
         private readonly ICondition<BattleState> _condition;
         private readonly IMove _move;
@@ -31,7 +31,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
     // Blocks execution if the user pokemon itself doesn't meet a condition.
     // e.g. can't move while paralyzed/frozen, can't use Fly if already airborne.
-    internal class WithApplicability : IMove
+    public class WithApplicability : IMove
     {
         private readonly ICondition<PokemonState> _condition;
         private readonly IMove _move;
@@ -56,7 +56,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     }
 
     // Disables a move after use for N turns — e.g. Disable, Encore lock.
-    internal class WithDisable : IMove
+    public class WithDisable : IMove
     {
         private readonly IMove _move;
         private readonly int _lockTurns;
@@ -90,7 +90,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     }
 
     // Overrides type effectiveness — e.g. Scrappy lets Normal hit Ghost.
-    internal class WithTypeOverride : IMove
+    public class WithTypeOverride : IMove
     {
         private readonly IMove _move;
         private readonly PokemonType _overrideType;
@@ -103,7 +103,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
         public void Execute(BattleState battle)
         {
-            battle.ActiveTypeOverride =  _overrideType;
+            battle.ActiveTypeOverride = _overrideType;
             _move.Execute(battle);
             battle.ActiveTypeOverride = null;
         }
@@ -111,7 +111,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
     // Executes a follow-up effect automatically after the main move.
     // e.g. Relic Song transforms Meloetta, U-turn forces a switch after damage.
-    internal class WithFollowUp : IMove
+    public class WithFollowUp : IMove
     {
         private readonly IMove _main;
         private readonly IEffect _followUp;

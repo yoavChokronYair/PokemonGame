@@ -3,10 +3,12 @@ using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.DesignPatterns
 {
-    internal class OnHit : IAbility
+    // Decorators
+    public class OnHit : IAbility
     {
-        private readonly ICondition<BattleState> _condition;
         private readonly IAbility _ability;
+        private readonly ICondition<BattleState> _condition;
+        public AbilityTrigger Trigger => AbilityTrigger.OnHit;
 
         public OnHit(ICondition<BattleState> condition, IAbility ability)
         {
@@ -14,65 +16,82 @@ namespace PokemonGame.Model.Model.DesignPatterns
             _ability = ability;
         }
 
-        public AbilityTrigger Trigger => throw new NotImplementedException();
+        public void Apply(BattleState battle)
+        {
+            if (_condition.Check(battle))
+            {
+                _ability.Apply(battle);
+                battle.Logger.Log($"Ability triggered: {_ability.GetType().Name}");
+            }
+        }
+    }
+
+    public class OnPassive : IAbility
+    {
+        private readonly IAbility _ability;
+        public AbilityTrigger Trigger => AbilityTrigger.Passive;
+
+        public OnPassive(IAbility ability) => _ability = ability;
+
+        public void Apply(BattleState battle)
+        {
+            _ability.Apply(battle);
+            battle.Logger.Log($"Ability triggered: {_ability.GetType().Name}");
+        }
+    }
+
+    public class OnTurnStart : IAbility
+    {
+        private readonly IAbility _ability;
+        private readonly ICondition<BattleState> _condition;
+        public AbilityTrigger Trigger => AbilityTrigger.TurnStart;
+
+        public OnTurnStart(IAbility ability, ICondition<BattleState> condition)
+        {
+            _ability = ability;
+            _condition = condition;
+        }
 
         public void Apply(BattleState battle)
         {
             if (_condition.Check(battle))
             {
                 _ability.Apply(battle);
-                battle.Logger.Log($"ability triggered: {_ability.GetType().Name}");
+                battle.Logger.LogTurnStart($"Ability triggered: {_ability.GetType().Name}");
             }
         }
     }
-    internal class OnPassive : IAbility
+
+    public class OnSwitchIn : IAbility
     {
         private readonly IAbility _ability;
+        public AbilityTrigger Trigger => AbilityTrigger.OnSwitchIn;
 
-        public OnPassive(IAbility ability)
-        {
-            _ability = ability;
-        }
-
-        public AbilityTrigger Trigger => throw new NotImplementedException();
-
-        public void Apply(BattleState battle)
-        {
-            _ability.Apply(battle);
-             battle.Logger.Log($"ability triggered: {_ability.GetType().Name}");
-        }
-    }
-    internal class OnTurnStart : IAbility
-    {
-        private readonly IAbility _ability;
-        private readonly ICondition<BattleState> _condition;
-        public AbilityTrigger Trigger { get; }
-        public OnTurnStart(IAbility ability,AbilityTrigger trigger, ICondition<BattleState> condition)
-        {
-            _ability = ability;
-            Trigger = trigger;
-            _condition = condition;
-        }
-        public void Apply(BattleState battle)
-        {
-            if(Trigger == AbilityTrigger.TurnStart && _condition.Check(battle))
-            {
-                _ability.Apply(battle);
-                battle.Logger.LogTurnStart($"ability triggered: {_ability.GetType().Name}");
-            }
-        }
-    }
-    internal class OnSwitchIn : IAbility
-    {
-        private readonly IAbility _ability;
         public OnSwitchIn(IAbility ability) => _ability = ability;
-
-        public AbilityTrigger Trigger => throw new NotImplementedException();
 
         public void Apply(BattleState battle)
         {
             _ability.Apply(battle);
             battle.Logger.Log($"{_ability.GetType().Name} activated on switch-in!");
         }
+    }
+
+    // Replaces the _used flag that was baked into AbilityState
+    public class OncePerSwitch : IAbility
+    {
+        private readonly IAbility _ability;
+        private bool _used;
+        public AbilityTrigger Trigger => _ability.Trigger;
+
+        public OncePerSwitch(IAbility ability) => _ability = ability;
+
+        public void Apply(BattleState battle)
+        {
+            if (_used) return;
+            _used = true;
+            _ability.Apply(battle);
+        }
+
+        public void Reset() => _used = false; // call when the pokemon switches out
     }
 }

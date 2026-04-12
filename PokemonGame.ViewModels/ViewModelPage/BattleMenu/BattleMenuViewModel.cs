@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Battle;
+using PokemonGame.Model.Model.Managers;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu

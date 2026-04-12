@@ -19,6 +19,8 @@ namespace PokemonGame.Model.Domain.Pokemon
             _slots = roster.Select(d => new PokemonState()).ToArray();
             _activeIndex = 0;
         }
+        public PokemonState GetPokemonAt(int index) => _slots[index];
+
 
         /// <summary>
         /// Call once per battle side with whatever roster was built by the ViewModel.

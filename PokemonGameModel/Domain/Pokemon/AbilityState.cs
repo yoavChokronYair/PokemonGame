@@ -6,11 +6,10 @@ namespace PokemonGame.Model.Domain.Pokemon
     public class AbilityState : IAbility
     {
         private readonly IEffect _effect;
-        private bool _used;
 
         public string Name { get; }
         public string Description { get; }
-        public AbilityTrigger Trigger => throw new NotImplementedException();
+        public AbilityTrigger Trigger => AbilityTrigger.None;
 
         public AbilityState(string name, IEffect effect, string description = "")
         {
@@ -21,11 +20,7 @@ namespace PokemonGame.Model.Domain.Pokemon
 
         public void Apply(BattleState battle)
         {
-            if (!_used)
-            {
-                _effect.Apply(battle);
-                _used = true;
-            }
+            _effect.Apply(battle);
         }
     }
 }

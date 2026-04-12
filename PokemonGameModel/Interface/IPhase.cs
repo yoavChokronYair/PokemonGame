@@ -15,7 +15,7 @@ namespace PokemonGame.Model.Interface
     {
         public void Run(BattleState state)
         {
-            state.Logger.Log("A battle has broken out!");
+            state.Logger.LogSetup("A battle has Started!");
             // Trigger switch-in effects for the starting two
             new SwitchIn(state.Attacker).Run(state);
             new SwitchIn(state.Defender).Run(state);
@@ -68,11 +68,11 @@ namespace PokemonGame.Model.Interface
     // ── 4. Move Execution ────────────────────────────────────────────
     public class MoveExecution : IPhase
     {
-        private readonly IMove _move;
+        private readonly IMove? _move;
         private readonly PokemonState _user;
         private readonly PokemonState _target;
 
-        public MoveExecution(IMove move, PokemonState user, PokemonState target)
+        public MoveExecution(IMove? move, PokemonState user, PokemonState target)
         {
             _move = move;
             _user = user;
@@ -81,14 +81,11 @@ namespace PokemonGame.Model.Interface
 
         public void Run(BattleState state)
         {
-            if (_user.IsFainted) return;
+            if (_user.IsFainted || _move == null) return;
 
             // Use the new method we just discussed
             state.UpdateActivePair(_user, _target);
-
-            state.RegisterMove(_move);
             _move.Execute(state);
-
             // ── 5. Getting Hit (The "OnHit" Phase) ──
             // After damage, check for Static, Flame Body, etc.
             new ResolveOnHitEffect(_user, _target).Run(state);
@@ -138,12 +135,12 @@ namespace PokemonGame.Model.Interface
     // ── 7. Resolve Turn ──────────────────────────────────────────────────
     public class ResolveTurn : IPhase
     {
-        private readonly IMove _playerMove;
-        private readonly IMove _botMove;
+        private readonly IMove? _playerMove;
+        private readonly IMove? _botMove;
         private readonly PokemonState _player;
         private readonly PokemonState _bot;
 
-        public ResolveTurn(IMove playerMove, IMove botMove, PokemonState player, PokemonState bot)
+        public ResolveTurn(IMove? playerMove, IMove? botMove, PokemonState player, PokemonState bot)
         {
             _playerMove = playerMove;
             _botMove = botMove;
