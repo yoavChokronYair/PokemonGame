@@ -3,8 +3,9 @@ using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.Battle;
 
-namespace PokemonGame.Model.Model.Battle
+namespace PokemonGame.Model.Model.Managers
 {
     /// <summary>
     /// Phase the UI is in — drives what input the player must supply next.
@@ -29,6 +30,7 @@ namespace PokemonGame.Model.Model.Battle
         private readonly PokemonTeam _playerTeam;
         private readonly PokemonTeam _botTeam;
         private readonly BattleState _state;
+        private readonly BattleBotManager _botManager = new();
 
         public BattlePhase Phase { get; private set; } = BattlePhase.AwaitingPlayerAction;
 
@@ -61,7 +63,7 @@ namespace PokemonGame.Model.Model.Battle
                 return false;
 
             _pendingPlayerMove = GetMoveOrFallback(PlayerActive, playerMoveIndex);
-            _pendingBotMove = botDecides ? PickBotMove(BotActive) : GetMoveOrFallback(BotActive, 0);
+            _pendingBotMove = botDecides ? _botManager.PickBotMove(BotActive) : GetMoveOrFallback(BotActive, 0);
 
             Phase = BattlePhase.ResolvingTurn;
 
@@ -127,6 +129,5 @@ namespace PokemonGame.Model.Model.Battle
 
             return pokemon.Moves[MathHelper.Clamp(index, 0, pokemon.Moves.Count - 1)];
         }
-        private static IMove PickBotMove(PokemonState bot) => bot.Moves[0];
     }
 }
