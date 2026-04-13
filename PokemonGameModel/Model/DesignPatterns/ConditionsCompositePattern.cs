@@ -115,19 +115,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
             return false;
         }
     }
-    //TODO:add actual good value
-    public class WasHitByCrit : ICondition<BattleState>
-    {
-        public bool Check(BattleState battle)
-        {
-            if (battle.LastUsedMove is MoveState lastMove)
-            {
-
-                return lastMove.CritStage == 1;
-            }
-            return false;
-        }
-    }
     public class WasHitByMoveType : ICondition<BattleState>
     {
         private readonly PokemonType _moveType;

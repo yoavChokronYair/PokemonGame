@@ -33,7 +33,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
             _condition = condition;
             _onPass = onPass;
             _onFail = onFail;
-
         }
 
         public void Apply(BattleState battle)
@@ -45,8 +44,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
             else
             {
                 _onFail?.Apply(battle);
-                
-
             }
         }
     }
@@ -464,19 +461,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
         public ModifyCritRatio(ITarget target, int stages) { _target = target; _stages = stages; }
         public void Apply(BattleState battle) => _target.Resolve(battle).RaiseCritStage(_stages);
     }
-    public class PowerUpMove : IEffect
-    {
-        private readonly double _moveMultiplier;
-
-        public PowerUpMove(double moveMultiplier)
-        {
-            _moveMultiplier = moveMultiplier;
-        }
-        public void Apply(BattleState battle)
-        {
-            PokemonStatCalculatorHelper.Multiplyer = _moveMultiplier;
-        }
-    }
 
     // ── Flinch on Attack ──────────────────────────────────────────────────────────
 
@@ -529,7 +513,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
         }
     }
     // ── Ability Passive Hooks ─────────────────────────────────────────────────────
-   
+
     public class Immune : IEffect
     {
         private readonly ITarget _target;
@@ -696,7 +680,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
         public IgnoreAbility(ITarget target) { _target = target; }
         public void Apply(BattleState battle) { } // Checked before ability hooks fire
     }
-    
+
     public class GenderRivalry : IEffect
     {
         private readonly ITarget _target;
