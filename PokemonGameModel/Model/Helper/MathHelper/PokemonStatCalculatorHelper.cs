@@ -93,8 +93,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
             double statRatio = move.Category switch
             {
-                MoveCategory.Physical => (double)attacker.BaseAttack / defender.BaseDefense,
-                MoveCategory.Special => (double)attacker.BaseSpecialAttack / defender.BaseSpecialDefense,
+                MoveCategory.Physical => (double)attacker.GetEffectiveStat(Stat.Attack) / defender.GetEffectiveStat(Stat.Defense),
+                MoveCategory.Special => (double)attacker.GetEffectiveStat(Stat.SpecialAttack) / defender.GetEffectiveStat(Stat.SpecialDefense),
                 _ => 1.0
             };
 
