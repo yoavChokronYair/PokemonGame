@@ -94,12 +94,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             PlayerStatus.Level = p.Level;
             PlayerStatus.CurrentHP = p.CurrentHP;
             PlayerStatus.MaxHP = p.MaxHP;
+            PlayerStatus.StatusCondition = p.Status.ToString();
 
             var e = _manager.BotActive;
             EnemyStatus.PokedexId = e.PokedexId;
             EnemyStatus.PokemonName = e.Name;
             EnemyStatus.Level = e.Level;
             EnemyStatus.CurrentHP = e.CurrentHP;
+            EnemyStatus.StatusCondition = e.Status.ToString();
             EnemyStatus.MaxHP = e.MaxHP;
 
             // 2. Refresh move buttons

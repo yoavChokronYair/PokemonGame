@@ -15,8 +15,8 @@
             Stretch="Fill" />
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="19.6" />
-                <ColumnDefinition Width="89.6" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="101.2" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -28,9 +28,9 @@
                 x:Name="HPBarFiller"
                 Grid.Row="2"
                 Grid.Column="2"
-                Width="134.4"
-                Height="8.275"
-                HorizontalAlignment="Left"
+                Width="135"
+                Height="8"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 Fill="{Binding HPColor}">
                 <Rectangle.RenderTransform>
@@ -41,6 +41,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
+                Height="19"
                 VerticalAlignment="Top">
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                     <TextBlock FontWeight="Bold" Text="{Binding PokemonName}" />
@@ -62,6 +63,12 @@
                         TextAlignment="Left" />
                 </StackPanel>
             </Grid>
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Text="{Binding StatusCondition}" />
         </Grid>
     </Grid>
 </UserControl>

@@ -81,6 +81,12 @@
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Text="{Binding StatusCondition}" />
         </Grid>
     </Grid>
 </UserControl>

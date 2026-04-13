@@ -11,6 +11,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private int _maxHp;
         private string _gender = "None";
         private int _pokedexId;
+        private string _statusCondition = "";
+    
         public int PokedexId
         {
             get => _pokedexId;
@@ -38,7 +40,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             get => _gender;
             set { if (SetProperty(ref _gender, value)) { OnPropertyChanged(nameof(GenderSymbol)); OnPropertyChanged(nameof(GenderColor)); } }
         }
-
+        public string StatusCondition
+        {
+            get => _statusCondition;
+            set { if (SetProperty(ref _statusCondition, value)) { OnPropertyChanged(nameof(StatusCondition)); } }
+        }
         public double HpPercentage => MaxHP > 0 ? (double)CurrentHP / MaxHP : 0;
         public string HPStatusText => $"{CurrentHP}/{MaxHP}";
 
