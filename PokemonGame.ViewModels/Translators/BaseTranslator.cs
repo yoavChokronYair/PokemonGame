@@ -160,7 +160,7 @@ namespace PokemonGame.ViewModels.Translators
                 "WasHitByMoveType" => new WasHitByMoveType(ParseEnum<PokemonType>(c.PokemonType!)),
                 "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
                 "ContactHit" => new MoveIsCategory(ParseEnum<MoveCategory>(c.VolatileStatus!)),
-                
+
                 // --- Attacker State Conditions (ICondition<BattleState>) ---
                 "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),
                 "HasAnyStatus" => new HasAnyStatus(),
@@ -174,6 +174,7 @@ namespace PokemonGame.ViewModels.Translators
                 "DidKnockoutOpponent" => new DidKnockoutOpponent(),
                 "HasBaseStatChanged" => new HasBaseStatChanged(),
                 "IsGrounded" => new IsGrounded(),
+                "HasBeenCrit" => new WasHitByCrit(),
 
 
                 // --- Combinators (Recursive) ---

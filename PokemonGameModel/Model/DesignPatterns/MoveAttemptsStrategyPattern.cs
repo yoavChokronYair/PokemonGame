@@ -8,6 +8,7 @@
 // IAttempt interface lives in Interface/Move/IAttempt.cs.
 
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.DesignPatterns
@@ -42,6 +43,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             else
             {
                 onMiss?.Apply(battle);
+                battle.Logger.Log($"but it failed");
             }
 
             after?.Apply(battle);

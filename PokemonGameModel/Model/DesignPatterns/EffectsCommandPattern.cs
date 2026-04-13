@@ -33,6 +33,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             _condition = condition;
             _onPass = onPass;
             _onFail = onFail;
+
         }
 
         public void Apply(BattleState battle)
@@ -44,6 +45,8 @@ namespace PokemonGame.Model.Model.DesignPatterns
             else
             {
                 _onFail?.Apply(battle);
+                
+
             }
         }
     }
