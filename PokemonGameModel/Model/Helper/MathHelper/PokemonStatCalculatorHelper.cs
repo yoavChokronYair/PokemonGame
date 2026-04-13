@@ -77,6 +77,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             int baseValue = ((2 * baseStat + iv + evContribution) * level) / 100 + 5;
             return (int)Math.Floor(baseValue * natureModifier);
         }
+        public static double Multiplyer = 1;
         public static int PokemonDamageFormulaCaculator(BattleState Battle, int basePower)
         {
             var move = (MoveState)Battle.LastUsedMove;
@@ -99,7 +100,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             };
 
             double baseDamage = (levelFactor * basePower * statRatio) + 2.0;
-            double finalDamage = baseDamage * modifier;
+            double finalDamage = baseDamage * modifier * Multiplyer;
+            Multiplyer = 1;
             return (int)Math.Floor(PokemonGame.Model.Helper.MathHelper.Clamp(finalDamage, 1, 32678));
         }
         public static double getStabBonus(PokemonState pokemon, PokemonType moveType)
