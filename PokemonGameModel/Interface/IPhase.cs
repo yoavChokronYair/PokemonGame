@@ -1,8 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Model.Enums;
-using PokemonGame.Model.Helper;
 using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Interface
@@ -83,12 +81,8 @@ namespace PokemonGame.Model.Interface
 
         public void Run(BattleState state)
         {
-            if (_user.IsFainted || _move == null || _user.Status == StatusCondition.Sleep || _user.Status == StatusCondition.Freeze) return;
-            if ((_user.Status == StatusCondition.Paralysis && RandomHelper.Next(0, 4) < 1))
-            {
-                state.Logger.Log($"{_user.Name} is paralyzed and can't move!");
-                return;
-            }
+            if (_user.IsFainted || _move == null) return;
+
             // Use the new method we just discussed
             state.UpdateActivePair(_user, _target);
             _move.Execute(state);
@@ -163,7 +157,6 @@ namespace PokemonGame.Model.Interface
 
             if (playerFirst)
             {
-               
                 new MoveExecution(_playerMove, _player, _bot).Run(state);
                 if (!_bot.IsFainted)
                     new MoveExecution(_botMove, _bot, _player).Run(state);
