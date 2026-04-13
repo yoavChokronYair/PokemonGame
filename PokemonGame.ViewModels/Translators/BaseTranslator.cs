@@ -159,7 +159,7 @@ namespace PokemonGame.ViewModels.Translators
                 "WasHitByContact" => new WasHitByContact(),
                 "WasHitByMoveType" => new WasHitByMoveType(ParseEnum<PokemonType>(c.PokemonType!)),
                 "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
-                "ContactHit" => new MoveIsCategory(ParseEnum<MoveCategory>(c.MoveCategory!)),
+                "ContactHit" => new MoveIsCategory(ParseEnum<MoveCategory>(c.VolatileStatus!)),
                 
                 // --- Attacker State Conditions (ICondition<BattleState>) ---
                 "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),
