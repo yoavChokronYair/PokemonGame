@@ -107,8 +107,16 @@ namespace PokemonGame.ViewModels.Translators
                 "DamageRedirect" => new DamageRedirect(ResolveTarget(e.Target)),
                 "ModifyChance" => new ModifyChance(ResolveTarget(e.Target), e.Multiplier ?? 1.0),
                 "InspectOpponent" => new InspectOpponent(ResolveTarget(e.Target)),
-                _ => throw new NotSupportedException($"Unknown effect type: '{e.Type}'")
+                _ => HandleUnknownEffect(e.Type)
             };
+        }
+        private IEffect HandleUnknownEffect(string? type)
+        {
+            // Log the error to your console so you know what's missing
+            Console.WriteLine($"[Warning] Unknown effect type encountered: '{type ?? "NULL"}'. Defaulting to NoEffect.");
+
+            // Return a safe fallback so the game keeps running
+            return new NoEffect();
         }
 
         // ── Number ───────────────────────────────────────────────────────────
@@ -150,6 +158,7 @@ namespace PokemonGame.ViewModels.Translators
                 "WasHitByMoveType" => new WasHitByMoveType(ParseEnum<PokemonType>(c.PokemonType!)),
                 "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
                 "MoveIsCategory" => new MoveIsCategory(ParseEnum<MoveCategory>(c.MoveCategory!)),
+                "ContactHit" => new MoveIsCategory(ParseEnum<MoveCategory>(c.MoveCategory!)),
 
                 // --- Attacker State Conditions (ICondition<BattleState>) ---
                 "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),

@@ -15,6 +15,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 {
     public class PokemonStatCalculatorHelper
     {
+        public static double Multiplyer = 1;
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
@@ -99,7 +100,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             };
 
             double baseDamage = (levelFactor * basePower * statRatio) + 2.0;
-            double finalDamage = baseDamage * modifier;
+            double finalDamage = baseDamage * modifier * Multiplyer;
+            Multiplyer = 1;
             return (int)Math.Floor(PokemonGame.Model.Helper.MathHelper.Clamp(finalDamage, 1, 32678));
         }
         public static double getStabBonus(PokemonState pokemon, PokemonType moveType)

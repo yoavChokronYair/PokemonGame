@@ -76,7 +76,18 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         public bool Check(BattleState battle) => battle.Attacker.turnsActive == 0;
     }
+    public class WasHitByCrit : ICondition<BattleState>
+    {
+        public bool Check(BattleState battle)
+        {
+            if (battle.LastUsedMove is MoveState lastMove)
+            {
 
+                return lastMove.CritStage == 1;
+            }
+            return false;
+        }
+    }
     public class IsWeatherActive : ICondition<BattleState>
     {
         private readonly Weather _weather;

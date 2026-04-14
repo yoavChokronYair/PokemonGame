@@ -145,7 +145,19 @@ namespace PokemonGame.Model.Model.DesignPatterns
             victim.RestoreHP(amount);
         }
     }
+    public class PowerUpMove : IEffect
+    {
+        private readonly double _moveMultiplier;
 
+        public PowerUpMove(double moveMultiplier)
+        {
+            _moveMultiplier = moveMultiplier;
+        }
+        public void Apply(BattleState battle)
+        {
+            PokemonStatCalculatorHelper.Multiplyer = _moveMultiplier;
+        }
+    }
     public class CrashDamage : IEffect
     {
         private readonly ITarget _target;

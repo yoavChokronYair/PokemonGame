@@ -12,8 +12,8 @@ namespace PokemonGame.Model.Model.Battle
                 return attackerPriority > defenderPriority;
             }
 
-            int attackerSpeed = attacker.GetEffectiveStat(Stat.Speed);
-            int defenderSpeed = defender.GetEffectiveStat(Stat.Speed);
+            int attackerSpeed = GetModifiedSpeed(attacker);
+            int defenderSpeed = GetModifiedSpeed(defender);
 
             if (attackerSpeed != defenderSpeed)
             {
@@ -21,6 +21,19 @@ namespace PokemonGame.Model.Model.Battle
             }
 
             return PokemonGame.Model.Helper.RandomHelper.NextBool();
+        }
+
+        private int GetModifiedSpeed(PokemonState pokemon)
+        {
+            double multiplier = 1.0;
+
+            // Standard Paralysis speed penalty (with your 25% chance logic preserved)
+            if (pokemon.PokemonStatusCondition() == StatusCondition.Paralysis)
+            {
+                multiplier = 0.75;
+            }
+
+            return (int)(pokemon.GetEffectiveStat(Stat.Speed) * multiplier);
         }
     }
 }

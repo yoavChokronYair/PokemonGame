@@ -15,8 +15,8 @@
             Stretch="Fill" />
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="19.6" />
-                <ColumnDefinition Width="89.6" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="101.2" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -62,6 +62,12 @@
                         TextAlignment="Left" />
                 </StackPanel>
             </Grid>
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Text="{Binding StatusCondition}" />
         </Grid>
     </Grid>
 </UserControl>

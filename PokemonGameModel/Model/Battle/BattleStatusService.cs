@@ -6,6 +6,7 @@
 
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Helper;
 
 namespace PokemonGame.Model.Model.Battle
 {
@@ -17,19 +18,40 @@ namespace PokemonGame.Model.Model.Battle
 
         public void ApplyEndOfTurnStatus(PokemonState pokemon)
         {
-            switch (pokemon.PokemonStatusCondition())
+            var status = pokemon.PokemonStatusCondition();
+
+            switch (status)
             {
+                case StatusCondition.Sleep:
+                    if (RandomHelper.Next(0, 3) == 0)
+                    {
+                        pokemon.ApplyStatus(StatusCondition.None);
+                        _logger.Log($"{pokemon.Name} woke up!");
+                    }
+                    break;
+
+                case StatusCondition.Freeze:
+                    if (RandomHelper.Next(0, 5) == 0)
+                    {
+                        pokemon.ApplyStatus(StatusCondition.None);
+                        _logger.Log($"{pokemon.Name} thawed out!");
+                    }
+                    break;
+
                 case StatusCondition.Burn:
                     pokemon.TakeDamage(pokemon.MaxHP / 8);
                     _logger.Log($"{pokemon.Name} is hurt by its burn!");
                     break;
+
                 case StatusCondition.Poison:
                     pokemon.TakeDamage(pokemon.MaxHP / 8);
                     _logger.Log($"{pokemon.Name} is hurt by poison!");
                     break;
+
                 case StatusCondition.Toxic:
                     pokemon.ApplyToxicByOne();
-                    pokemon.TakeDamage(pokemon.MaxHP * pokemon.ToxicCounter / 16);
+                    int damage = pokemon.MaxHP * pokemon.ToxicCounter / 16;
+                    pokemon.TakeDamage(damage);
                     _logger.Log($"{pokemon.Name} is hurt by bad poison!");
                     break;
             }
