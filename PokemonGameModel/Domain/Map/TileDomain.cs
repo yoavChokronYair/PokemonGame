@@ -5,7 +5,7 @@ namespace PokemonGame.Model.Domain.Map
     public class TileDomain
     {
         public int Tileid { get; set; }
-        public TileType tileType { get; set; }
+        public TileType TileType { get; set; }
 
     }
     public class BlockDomain
@@ -15,18 +15,18 @@ namespace PokemonGame.Model.Domain.Map
     public class MapDomain
     {
         public string Name { get; set; }
-        public List<BlockDomain> blocks {  get; set; }
-        public int width { get; set; }
-        public int height { get; set; }
-        public BlockDomain defultBlockID { get; set; }
-        public string song { get; set; }
+        public List<BlockDomain> Blocks {  get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public BlockDomain DefultBlockID { get; set; }
+        public string Song { get; set; }
 
-        public int[,] flyWrapLoc = new int[1,1];
-        public int[,] townMapLoc = new int[1,1];
-        public mapTilesType tilesType { get; set; }
-        public List<ConnectedMap> ConnectedMaps { get; set; } = new();
+        public int[,] FlyWrapLoc = new int[1,1];
+        public int[,] TownMapLoc = new int[1,1];
+        public mapTilesType TilesType { get; set; }
+        public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();
     }
-    public class ConnectedMap
+    public class ConnectedMapDomain
     {
         public MapDomain connectedMap { get; set;}
         public ConnectionDirection connectionDirection { get; set; }
@@ -42,21 +42,22 @@ namespace PokemonGame.Model.Domain.Map
             _activeMap = map;
             blockTiles = GetArrayFromMap(_activeMap);
         }
+
         private int[,] GetArrayFromMap(MapDomain map)
         {
             int blockSize = 4;
 
-            int rows = _activeMap.height * blockSize;
-            int cols = _activeMap.width * blockSize;
+            int rows = map.Height * blockSize;
+            int cols = map.Width * blockSize;
 
             int[,] tiles = new int[rows, cols];
 
-            for (int b = 0; b < _activeMap.blocks.Count; b++)
+            for (int b = 0; b < map.Blocks.Count; b++)
             {
-                var block = _activeMap.blocks[b];
+                var block = map.Blocks[b];
 
-                int blockRow = b / _activeMap.width;
-                int blockCol = b % _activeMap.width;
+                int blockRow = b / map.Width;
+                int blockCol = b % map.Width;
 
                 for (int t = 0; t < block.Tiles.Length; t++)
                 {
@@ -69,11 +70,12 @@ namespace PokemonGame.Model.Domain.Map
                     int globalRow = blockRow * blockSize + localRow;
                     int globalCol = blockCol * blockSize + localCol;
 
-                    tiles[globalRow, globalCol] = (int)tile.tileType;
+                    tiles[globalRow, globalCol] = (int)tile.Tileid;
                 }
             }
             return tiles;
         }
+
         public int[,] displayedArray((int Row, int Col) middleLoc)
         {
             int viewRows = 20;
@@ -171,7 +173,8 @@ namespace PokemonGame.Model.Domain.Map
 
             return displayArray;
         }
-        private ConnectedMap? GetConnection(ConnectionDirection direction)
+
+        private ConnectedMapDomain? GetConnection(ConnectionDirection direction)
         {
             return _activeMap.ConnectedMaps
                 .FirstOrDefault(c => c.connectionDirection == direction);
