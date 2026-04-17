@@ -25,9 +25,6 @@ namespace PokemonGame.Views.Pages.PokemonBattlePages
             InitializeComponent();
         }
 
-        private void EnemyBattleStatusControl_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
+       
     }
 }
