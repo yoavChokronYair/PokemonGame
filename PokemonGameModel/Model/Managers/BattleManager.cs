@@ -7,7 +7,7 @@ using PokemonGame.Model.Model.Battle;
 
 namespace PokemonGame.Model.Model.Managers
 {
-    //TODO:add a use item method,add code that handles bot switch and bot heal
+    //TODO:add a use item method
     public class BattleManager
     {
         private readonly PokemonTeam _playerTeam;

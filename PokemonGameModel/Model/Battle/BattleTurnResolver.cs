@@ -23,7 +23,7 @@ namespace PokemonGame.Model.Model.Battle
             return PokemonGame.Model.Helper.RandomHelper.NextBool();
         }
 
-        private int GetModifiedSpeed(PokemonState pokemon)
+        private static int GetModifiedSpeed(PokemonState pokemon)
         {
             double multiplier = 1.0;
 
