@@ -161,5 +161,25 @@ namespace PokemonGame.Model.Helper
 
             return null;
         }
+        public static T[,] To2DArrayExact<T>(List<T> list, int rows, int cols)
+        {
+            if (list == null)
+                throw new ArgumentNullException(nameof(list));
+
+            if (list.Count != rows * cols)
+                throw new ArgumentException("List size does not match array dimensions.");
+
+            T[,] result = new T[rows, cols];
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                int r = i / cols;
+                int c = i % cols;
+                result[r, c] = list[i];
+            }
+
+            return result;
+        }
+
     }
 }

@@ -9,16 +9,17 @@
 
 	<ItemGroup>
 	  <Compile Remove="Model\BattleSystem\**" />
-	  <Compile Remove="Model\Map\**" />
 	  <EmbeddedResource Remove="Model\BattleSystem\**" />
-	  <EmbeddedResource Remove="Model\Map\**" />
 	  <None Remove="Model\BattleSystem\**" />
-	  <None Remove="Model\Map\**" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.Data.OleDb" Version="10.0.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Model\Map\" />
 	</ItemGroup>
 
 </Project>
