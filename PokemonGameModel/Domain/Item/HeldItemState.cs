@@ -3,29 +3,45 @@ using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Domain.Item
 {
-    public class HeldItemState : IHeldItem
+    public enum ItemType
+    {
+        HeldItem,
+        Consumable,
+        KeyItem
+    }
+    public class itemsDomain
+    {
+        public string Name { get; set; }
+        public ItemType Type { get; set; }
+        public IEffect Effect { get; set; }
+        public string Description { get; set; }
+        public bool UsableInBattle { get; set; }
+        public bool UsableInField { get; set; }
+    }
+    public class KeyItemState :itemsDomain
     {
         private readonly ICondition<BattleState> _condition;
-        private readonly IEffect _effect;
+        public bool registrable;
 
-        public string Name { get; }
-        public string Description { get; }
-        public bool IsConsumable { get; }
+    }
+    public class HeldItemState : itemsDomain, IHeldItem
+    {
+        private readonly ICondition<BattleState> _condition;
+        public bool IsOneTimeUse { get; set; }
+        public BattleEventTrigger Trigger { get; set; }
 
         public HeldItemState(string name, ICondition<BattleState> condition, IEffect effect,
             bool isConsumable = false, string description = "")
         {
-            Name = name;
-            Description = description;
-            IsConsumable = isConsumable;
+            
+            IsOneTimeUse = isConsumable;
             _condition = condition;
-            _effect = effect;
         }
 
         public void Apply(BattleState battle)
         {
             if (_condition.Check(battle))
-                _effect.Apply(battle);
+                Effect.Apply(battle);
         }
     }
 }

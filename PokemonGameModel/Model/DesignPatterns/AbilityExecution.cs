@@ -8,7 +8,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         private readonly IAbility _ability;
         private readonly ICondition<BattleState> _condition;
-        public AbilityTrigger Trigger => AbilityTrigger.OnHit;
+        public BattleEventTrigger Trigger => BattleEventTrigger.OnHit;
 
         public OnHit(ICondition<BattleState> condition, IAbility ability)
         {
@@ -29,7 +29,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     public class OnPassive : IAbility
     {
         private readonly IAbility _ability;
-        public AbilityTrigger Trigger => AbilityTrigger.Passive;
+        public BattleEventTrigger Trigger => BattleEventTrigger.Passive;
 
         public OnPassive(IAbility ability) => _ability = ability;
 
@@ -44,7 +44,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         private readonly IAbility _ability;
         private readonly ICondition<BattleState> _condition;
-        public AbilityTrigger Trigger => AbilityTrigger.TurnStart;
+        public BattleEventTrigger Trigger => BattleEventTrigger.TurnStart;
 
         public OnTurnStart(IAbility ability, ICondition<BattleState> condition)
         {
@@ -65,7 +65,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     public class OnSwitchIn : IAbility
     {
         private readonly IAbility _ability;
-        public AbilityTrigger Trigger => AbilityTrigger.OnSwitchIn;
+        public BattleEventTrigger Trigger => BattleEventTrigger.OnSwitchIn;
 
         public OnSwitchIn(IAbility ability) => _ability = ability;
 
@@ -81,7 +81,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         private readonly IAbility _ability;
         private bool _used;
-        public AbilityTrigger Trigger => _ability.Trigger;
+        public BattleEventTrigger Trigger => _ability.Trigger;
 
         public OncePerSwitch(IAbility ability) => _ability = ability;
 

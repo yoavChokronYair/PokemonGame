@@ -1,7 +1,7 @@
 ﻿using PokemonGame.Model.Domain.Battle;
 namespace PokemonGame.Model.Interface
 {
-    public enum AbilityTrigger
+    public enum BattleEventTrigger
     {
         None,
         Passive,
@@ -12,7 +12,7 @@ namespace PokemonGame.Model.Interface
 
     public interface IAbility
     {
-        AbilityTrigger Trigger { get; } // Add this
+        BattleEventTrigger Trigger { get; } // Add this
         void Apply(BattleState battle);
     }
 }

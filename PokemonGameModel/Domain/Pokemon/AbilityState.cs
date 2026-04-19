@@ -9,7 +9,7 @@ namespace PokemonGame.Model.Domain.Pokemon
 
         public string Name { get; }
         public string Description { get; }
-        public AbilityTrigger Trigger => AbilityTrigger.None;
+        public BattleEventTrigger Trigger => BattleEventTrigger.None;
 
         public AbilityState(string name, IEffect effect, string description = "")
         {
