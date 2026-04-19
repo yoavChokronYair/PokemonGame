@@ -139,7 +139,13 @@ namespace PokemonGame.Model.Domain.Dialogue
     }
 
     // ── NPC ──────────────────────────────────────────────────────────────────
-
+    public enum NpcType
+    {
+        Trainer,
+        Shopkeeper,
+        QuestGiver,
+        Generic
+    }
     public class Npc
     {
         private readonly List<NpcDialogueState> _dialogueStates = new();
@@ -155,5 +161,89 @@ namespace PokemonGame.Model.Domain.Dialogue
         /// </summary>
         public DialogueSet? GetDialogue(TriggerType trigger, BattleState state) =>
             _dialogueStates.FirstOrDefault(d => d.IsMatch(trigger, state))?.DialogueSet;
+        public NpcType? Type;
+
+
+    }
+    public enum RewardType
+    {
+        Item,
+        Money,
+        Pokemon,
+        Experience
+    }
+    public class NpcReward: Npc
+    {
+        public TriggerType TriggerType { get; }         // reuses your existing enum
+        public RewardType RewardType { get; }
+        public int RewardValue { get; }                 // what item
+        public bool IsRepeatable { get; }
+        public ICondition<BattleState>? Condition { get; }
+
+        private bool _hasBeenClaimed;
+
+        public NpcReward(
+            TriggerType triggerType,
+            RewardType rewardType,
+            int rewardValue,
+            bool isRepeatable,
+            ICondition<BattleState>? condition = null)
+        {
+            TriggerType = triggerType;
+            RewardType = rewardType;
+            RewardValue = rewardValue;
+            IsRepeatable = isRepeatable;
+            Condition = condition;
+        }
+
+        /// <summary>
+        /// Whether this reward can be granted right now.
+        /// Accounts for repeatability and the optional condition.
+        /// </summary>
+        public bool IsAvailable(BattleState state) =>
+            (IsRepeatable || !_hasBeenClaimed) &&
+            (Condition is null || Condition.Check(state));
+
+        /// <summary>
+        /// Marks the reward as claimed. No-op if already claimed and non-repeatable.
+        /// </summary>
+        public void Claim()
+        {
+            if (!IsRepeatable && _hasBeenClaimed)
+                throw new InvalidOperationException(
+                    $"Reward is not repeatable and has already been claimed.");
+
+            _hasBeenClaimed = true;
+        }
+    }
+    public class ItemGiving: Npc
+    {
+        public int ItemId { get; } //ToDo change to item
+        public ICondition<BattleState>? Condition { get; }
+
+        private bool _hasBeenGiven;
+
+        public ItemGiving(
+            Npc npc,
+            int itemId,
+            ICondition<BattleState>? condition = null)
+        {
+            ItemId = itemId;
+            Condition = condition;
+        }
+
+        /// <summary>Items can only be given once (no repeatable flag in the schema).</summary>
+        public bool IsAvailable(BattleState state) =>
+            !_hasBeenGiven &&
+            (Condition is null || Condition.Check(state));
+
+        public void Give()
+        {
+            if (_hasBeenGiven)
+                throw new InvalidOperationException(
+                    $"Item {ItemId} from NPC {Type} has already been given.");
+
+            _hasBeenGiven = true;
+        }
     }
 }
