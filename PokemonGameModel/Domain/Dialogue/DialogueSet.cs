@@ -1,4 +1,7 @@
 ﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Domain.Dialogue
@@ -139,14 +142,8 @@ namespace PokemonGame.Model.Domain.Dialogue
     }
 
     // ── NPC ──────────────────────────────────────────────────────────────────
-    public enum NpcType
-    {
-        Trainer,
-        Shopkeeper,
-        QuestGiver,
-        Generic
-    }
-    public class Npc
+    
+    public class NpcDomain
     {
         private readonly List<NpcDialogueState> _dialogueStates = new();
 
@@ -165,14 +162,7 @@ namespace PokemonGame.Model.Domain.Dialogue
 
 
     }
-    public enum RewardType
-    {
-        Item,
-        Money,
-        Pokemon,
-        Experience
-    }
-    public class NpcReward: Npc
+    public class NpcRewardDomain
     {
         public TriggerType TriggerType { get; }         // reuses your existing enum
         public RewardType RewardType { get; }
@@ -182,7 +172,7 @@ namespace PokemonGame.Model.Domain.Dialogue
 
         private bool _hasBeenClaimed;
 
-        public NpcReward(
+        public NpcRewardDomain(
             TriggerType triggerType,
             RewardType rewardType,
             int rewardValue,
@@ -216,34 +206,36 @@ namespace PokemonGame.Model.Domain.Dialogue
             _hasBeenClaimed = true;
         }
     }
-    public class ItemGiving: Npc
+    public class ItemGivingDomain
     {
-        public int ItemId { get; } //ToDo change to item
+        private readonly itemsDomain _item;
         public ICondition<BattleState>? Condition { get; }
 
         private bool _hasBeenGiven;
 
-        public ItemGiving(
-            Npc npc,
-            int itemId,
-            ICondition<BattleState>? condition = null)
-        {
-            ItemId = itemId;
-            Condition = condition;
-        }
 
         /// <summary>Items can only be given once (no repeatable flag in the schema).</summary>
         public bool IsAvailable(BattleState state) =>
             !_hasBeenGiven &&
             (Condition is null || Condition.Check(state));
 
-        public void Give()
-        {
-            if (_hasBeenGiven)
-                throw new InvalidOperationException(
-                    $"Item {ItemId} from NPC {Type} has already been given.");
 
-            _hasBeenGiven = true;
-        }
     }
+    public class PokemontradingNpcState : NpcDomain
+    {
+        public PokemonState offered { get; set; }
+        public PokemonState requested { get; set; }
+    }
+    public class TrainerDomain
+    {
+        public string name;
+        public BotLevel AiType;
+        public int BaseMoney;
+    }
+    public class TrainerNpcState : NpcDomain
+    {
+        private readonly TrainerDomain _trainerInfo;
+        public PokemonTeam Team { get; set; }
+    }
+
 }
