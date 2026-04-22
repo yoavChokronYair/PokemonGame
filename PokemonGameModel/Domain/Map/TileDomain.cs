@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Map
 {
@@ -23,6 +22,7 @@ namespace PokemonGame.Model.Domain.Map
     public class TileDomain
     {
         public int Tileid { get; set; }
+        public CollisionType collisionType { get; set; }
         public TileType TileType { get; set; }
     }
     public class MapDomain
@@ -40,6 +40,7 @@ namespace PokemonGame.Model.Domain.Map
         public MapTilesType TilesType { get; set; }
         public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();//one per side 
     }
+   
     public class ConnectedMapDomain
     {
         public MapDomain ConnectedMap { get; set;}
@@ -59,7 +60,7 @@ namespace PokemonGame.Model.Domain.Map
         public int TileBottomRight { get; set; }
 
         // Collision/interaction is decided per-square, not per-tile
-        public TileType SquareType { get; set; }
+        public CollisionType SquareType { get; set; }
     }
     public class PlayerState
     {
@@ -72,7 +73,7 @@ namespace PokemonGame.Model.Domain.Map
         public bool Success { get; set; }
         public int Row { get; set; }
         public int Col { get; set; }
-        public TileType SquareType { get; set; }
+        public CollisionType SquareType { get; set; }
     }
     public class SquareMapState
     {
@@ -109,13 +110,47 @@ namespace PokemonGame.Model.Domain.Map
         // -----------------------------------------------------------------------
         // Movement / collision
         // -----------------------------------------------------------------------
-
-        public bool CanMoveTo(int squareRow, int squareCol)
+        public CollisionType GetCollision(int squareRow, int squareCol)
         {
             var square = GetSquare(squareRow, squareCol);
-            if (square == null) return false;
-            return square.SquareType == TileType.None
-                || square.SquareType == TileType.TallGrass;
+            if (square == null) return CollisionType.Unwalkable;
+
+            return square.SquareType; // or however your square stores it
+        }
+        public bool WalkableCheck(int squareRow, int squareCol) =>
+            GetCollision(squareRow, squareCol) == CollisionType.None;
+
+        public bool WildCheck(int squareRow, int squareCol) =>
+            GetCollision(squareRow, squareCol) == CollisionType.WildGrass;
+
+        public bool HmCheck(int squareRow, int squareCol) =>
+            GetCollision(squareRow, squareCol) == CollisionType.HM;
+
+        public bool JumpCheck(int squareRow, int squareCol, FacingDirection direction) =>
+            GetCollision(squareRow, squareCol) switch
+            {
+                CollisionType.JumpLeft => direction == FacingDirection.Left,
+                CollisionType.JumpRight => direction == FacingDirection.Right,
+                CollisionType.JumpDown => direction == FacingDirection.Down,
+                CollisionType.JumpUp => direction == FacingDirection.Up,
+                _ => false
+            };
+        public bool CanMoveTo(int squareRow, int squareCol, FacingDirection direction)
+        {
+            var collision = GetCollision(squareRow, squareCol);
+
+            return collision switch
+            {
+                CollisionType.None => true,
+                CollisionType.WildGrass => true,
+                CollisionType.HM => true, // handled separately / needs HM move
+                CollisionType.JumpLeft => direction == FacingDirection.Left,
+                CollisionType.JumpRight => direction == FacingDirection.Right,
+                CollisionType.JumpDown => direction == FacingDirection.Down,
+                CollisionType.JumpUp => direction == FacingDirection.Up,
+                CollisionType.Unwalkable => false,
+                _ => false
+            };
         }
 
         public MoveResult TryMove(int fromRow, int fromCol, FacingDirection direction)
@@ -129,7 +164,7 @@ namespace PokemonGame.Model.Domain.Map
                 _ => (fromRow, fromCol)
             };
 
-            if (!CanMoveTo(toRow, toCol))
+            if (!CanMoveTo(toRow, toCol,direction))
                 return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
 
             var landing = GetSquare(toRow, toCol);
@@ -185,14 +220,14 @@ namespace PokemonGame.Model.Domain.Map
 
         /// Decides the square's type from its 4 tile IDs.
         /// Blocked wins over everything; otherwise top-left tile decides.
-        private static TileType ResolveSquareType(int tl, int tr, int bl, int br)
+        private static CollisionType ResolveSquareType(int tl, int tr, int bl, int br)
         {
             // plug in your actual blocked/water/grass tile ID ranges here
             if (IsBlocked(tl) || IsBlocked(tr) || IsBlocked(bl) || IsBlocked(br))
-                return TileType.Blocked;
-            if (IsWater(tl)) return TileType.Water;
-            if (IsGrass(tl)) return TileType.TallGrass;
-            return TileType.None;
+                return CollisionType.Blocked;
+            if (IsWater(tl)) return CollisionType.HM;
+            if (IsGrass(tl)) return CollisionType.WildGrass;
+            return CollisionType.None;
         }
 
         // ── tile-type helpers — replace with your actual tile ID logic ──
@@ -403,4 +438,3 @@ namespace PokemonGame.Model.Domain.Map
         }
     }
 }
-
