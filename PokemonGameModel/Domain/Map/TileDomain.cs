@@ -46,14 +46,130 @@ namespace PokemonGame.Model.Domain.Map
         public ConnectionDirection ConnectionDirection { get; set; }
         public int Margin { get; set; }
     }
+    public class SquareDomain
+    {
+        // Position in square-space (each square = 2×2 tiles)
+        public int Row { get; set; }
+        public int Col { get; set; }
+
+        // The 4 tile IDs that make up this square (for lookup)
+        public int TileTopLeft { get; set; }
+        public int TileTopRight { get; set; }
+        public int TileBottomLeft { get; set; }
+        public int TileBottomRight { get; set; }
+
+        // Collision/interaction is decided per-square, not per-tile
+        public TileType SquareType { get; set; }
+    }
     public class PlayerState
     {
         public int LocationRow { get; set; }
         public int LocationCol { get; set; }
         public FacingDirection facingDirection { get; set; }
-
     }
+    public class SquareMapState
+    {
+        private SquareDomain[,] _squares;
+        private MapDomain _activeMap;
 
+        // Square-space dimensions
+        public int SquareRows => _squares.GetLength(0);
+        public int SquareCols => _squares.GetLength(1);
+
+        public SquareMapState(MapDomain map)
+        {
+            _activeMap = map;
+            _squares = BuildSquareGrid(map);
+        }
+        // -----------------------------------------------------------------------
+        // Square access
+        // -----------------------------------------------------------------------
+
+        public SquareDomain GetSquare(int row, int col)
+        {
+            if ((uint)row >= (uint)SquareRows || (uint)col >= (uint)SquareCols)
+                return null;
+            return _squares[row, col];
+        }
+
+        // Convert tile-space position → square-space
+        public (int row, int col) TileToSquare(int tileRow, int tileCol)
+            => (tileRow / 2, tileCol / 2);
+
+        // Convert square-space → top-left tile position
+        public (int tileRow, int tileCol) SquareToTile(int squareRow, int squareCol)
+            => (squareRow * 2, squareCol * 2);
+        // -----------------------------------------------------------------------
+        // Build
+        // -----------------------------------------------------------------------
+
+        private static SquareDomain[,] BuildSquareGrid(MapDomain map)
+        {
+            // tile grid is map.Height × map.Width
+            // square grid is half that in each dimension
+            int squareRows = map.Height / 2;
+            int squareCols = map.Width / 2;
+
+            var grid = new SquareDomain[squareRows, squareCols];
+            var tiles = BuildTileArray(map.BackgroundBlocks, map);
+
+            for (int sr = 0; sr < squareRows; sr++)
+            {
+                for (int sc = 0; sc < squareCols; sc++)
+                {
+                    int tileRow = sr * 2;
+                    int tileCol = sc * 2;
+
+                    int tl = tiles[tileRow, tileCol];
+                    int tr = tiles[tileRow, tileCol + 1];
+                    int bl = tiles[tileRow + 1, tileCol];
+                    int br = tiles[tileRow + 1, tileCol + 1];
+
+                    grid[sr, sc] = new SquareDomain
+                    {
+                        Row = sr,
+                        Col = sc,
+                        TileTopLeft = tl,
+                        TileTopRight = tr,
+                        TileBottomLeft = bl,
+                        TileBottomRight = br,
+                        SquareType = ResolveSquareType(tl, tr, bl, br),
+                    };
+                }
+            }
+
+            return grid;
+        }
+
+        /// Decides the square's type from its 4 tile IDs.
+        /// Blocked wins over everything; otherwise top-left tile decides.
+        private static TileType ResolveSquareType(int tl, int tr, int bl, int br)
+        {
+            // plug in your actual blocked/water/grass tile ID ranges here
+            if (IsBlocked(tl) || IsBlocked(tr) || IsBlocked(bl) || IsBlocked(br))
+                return TileType.Blocked;
+            if (IsWater(tl)) return TileType.Water;
+            if (IsGrass(tl)) return TileType.TallGrass;
+            return TileType.None;
+        }
+
+        // ── tile-type helpers — replace with your actual tile ID logic ──
+        private static bool IsBlocked(int id) => id == 0;
+        private static bool IsWater(int id) => id >= 50 && id <= 59;
+        private static bool IsGrass(int id) => id >= 40 && id <= 49;
+
+        private static int[,] BuildTileArray(List<TileDomain> blocks, MapDomain map)
+        {
+            var tiles = new int[map.Height, map.Width];
+            for (int b = 0; b < blocks.Count; b++)
+            {
+                var tile = blocks[b];
+                if (tile is null) continue;
+                tiles[b / map.Width, b % map.Width] = tile.Tileid;
+            }
+            return tiles;
+        }
+    }
     public class MapState
     {
         private MapDomain _activeMap;
