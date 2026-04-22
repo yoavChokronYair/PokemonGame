@@ -67,6 +67,13 @@ namespace PokemonGame.Model.Domain.Map
         public int LocationCol { get; set; }
         public FacingDirection facingDirection { get; set; }
     }
+    public class MoveResult
+    {
+        public bool Success { get; set; }
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public TileType SquareType { get; set; }
+    }
     public class SquareMapState
     {
         private SquareDomain[,] _squares;
@@ -99,6 +106,41 @@ namespace PokemonGame.Model.Domain.Map
         // Convert square-space → top-left tile position
         public (int tileRow, int tileCol) SquareToTile(int squareRow, int squareCol)
             => (squareRow * 2, squareCol * 2);
+        // -----------------------------------------------------------------------
+        // Movement / collision
+        // -----------------------------------------------------------------------
+
+        public bool CanMoveTo(int squareRow, int squareCol)
+        {
+            var square = GetSquare(squareRow, squareCol);
+            if (square == null) return false;
+            return square.SquareType == TileType.None
+                || square.SquareType == TileType.TallGrass;
+        }
+
+        public MoveResult TryMove(int fromRow, int fromCol, FacingDirection direction)
+        {
+            var (toRow, toCol) = direction switch
+            {
+                FacingDirection.Up => (fromRow - 1, fromCol),
+                FacingDirection.Down => (fromRow + 1, fromCol),
+                FacingDirection.Left => (fromRow, fromCol - 1),
+                FacingDirection.Right => (fromRow, fromCol + 1),
+                _ => (fromRow, fromCol)
+            };
+
+            if (!CanMoveTo(toRow, toCol))
+                return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
+
+            var landing = GetSquare(toRow, toCol);
+            return new MoveResult
+            {
+                Success = true,
+                Row = toRow,
+                Col = toCol,
+                SquareType = landing.SquareType,
+            };
+        }
         // -----------------------------------------------------------------------
         // Build
         // -----------------------------------------------------------------------
