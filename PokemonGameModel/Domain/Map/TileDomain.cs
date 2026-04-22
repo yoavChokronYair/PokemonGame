@@ -9,6 +9,17 @@ namespace PokemonGame.Model.Domain.Map
         public const int ViewRowSize = 10;
         public const int ViewColSize = 10;
     }
+    public static class PlayerSprites
+    {
+        // Each direction has 4 tiles: [topLeft, topRight, bottomLeft, bottomRight]
+        public static readonly Dictionary<FacingDirection, (int TL, int TR, int BL, int BR)> Tiles = new()
+        {
+            { FacingDirection.Down,  (TL: 10, TR: 11, BL: 12, BR: 13) },
+            { FacingDirection.Up,    (TL: 14, TR: 15, BL: 16, BR: 17) },
+            { FacingDirection.Left,  (TL: 18, TR: 19, BL: 20, BR: 21) },
+            { FacingDirection.Right, (TL: 22, TR: 23, BL: 24, BR: 25) },
+        };
+    }
     public class TileDomain
     {
         public int Tileid { get; set; }
@@ -68,11 +79,27 @@ namespace PokemonGame.Model.Domain.Map
         // Viewport
         // ---------------------------------------------------------------
 
-        public (int[,] background, int[,] foreground) BuildViewPort((int playerRow, int playerCol) playerPos)
+        public (int[,] background, int[,] foreground) BuildViewPort(PlayerState player)
         {
-            var bg = BuildLayerViewport(playerPos, isForeground: false);
-            var fg = BuildLayerViewport(playerPos, isForeground: true);
+            var bg = BuildLayerViewport((player.LocationRow, player.LocationCol), isForeground: false);
+            var fg = BuildLayerViewport((player.LocationRow, player.LocationCol), isForeground: true);
+            StampPlayer(fg, player.facingDirection);
             return (bg, fg);
+        }
+        private static void StampPlayer(int[,] fg, FacingDirection direction)
+        {
+            var sprite = PlayerSprites.Tiles[direction];
+
+            // The player always occupies the four center tiles of the viewport
+            int midRow = MapConstants.ViewRowSize / 2;
+            int midCol = MapConstants.ViewColSize / 2;
+
+            // TopLeft     TopRight
+            // BottomLeft  BottomRight
+            fg[midRow - 1, midCol - 1] = sprite.TL;
+            fg[midRow - 1, midCol] = sprite.TR;
+            fg[midRow, midCol - 1] = sprite.BL;
+            fg[midRow, midCol] = sprite.BR;
         }
 
         private int[,] BuildLayerViewport((int playerRow, int playerCol) playerPos, bool isForeground)
