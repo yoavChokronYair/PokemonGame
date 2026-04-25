@@ -45,7 +45,6 @@ namespace PokemonGame.Model.Model.Managers
                 _player.playerLoc.y
             );
 
-            // Calculate destination in square-space
             int toRow = squareRow, toCol = squareCol;
             switch (direction)
             {
@@ -55,12 +54,10 @@ namespace PokemonGame.Model.Model.Managers
                 case FacingDirection.Right: toCol++; break;
             }
 
-            // ── Out of bounds → connection check first ───────────────────
+            // ── Out of bounds → connection check ────────────────────────────────
             bool outOfBounds =
-                toRow < 0 ||
-                toRow >= _squareMapState.SquareRows ||
-                toCol < 0 ||
-                toCol >= _squareMapState.SquareCols;
+                toRow < 0 || toRow >= _squareMapState.SquareRows ||
+                toCol < 0 || toCol >= _squareMapState.SquareCols;
 
             if (outOfBounds)
             {
@@ -78,12 +75,10 @@ namespace PokemonGame.Model.Model.Managers
                         SquareType = CollisionType.None
                     };
                 }
-
-                // No connection — hard edge
                 return new MoveResult { Success = false, Row = squareRow, Col = squareCol };
             }
 
-            // ── Warp check ───────────────────────────────────────────────
+            // ── Warp check ───────────────────────────────────────────────────────
             var warp = TryGetWarp(toRow, toCol);
             if (warp != null)
             {
@@ -99,15 +94,54 @@ namespace PokemonGame.Model.Model.Managers
                 };
             }
 
-            // ── Normal collision + move ──────────────────────────────────
+            // ── Normal collision + move ──────────────────────────────────────────
             var result = _squareMapState.TryMove(squareRow, squareCol, direction);
 
             if (!result.Success)
                 return result;
 
-            // Commit position
-            var (tileRow, tileCol) = _squareMapState.SquareToTile(result.Row, result.Col);
-            _player.playerLoc = (tileRow, tileCol);
+            // ── Jump: commit first step then take a second step ──────────────────
+            if (_squareMapState.GetCollision(result.Row, result.Col) == CollisionType.JumpDown ||
+                _squareMapState.GetCollision(result.Row, result.Col) == CollisionType.JumpUp ||
+                _squareMapState.GetCollision(result.Row, result.Col) == CollisionType.JumpLeft ||
+                _squareMapState.GetCollision(result.Row, result.Col) == CollisionType.JumpRight)
+            {
+                // Land one extra square in the same direction
+                int landRow = result.Row, landCol = result.Col;
+                switch (direction)
+                {
+                    case FacingDirection.Up: landRow--; break;
+                    case FacingDirection.Down: landRow++; break;
+                    case FacingDirection.Left: landCol--; break;
+                    case FacingDirection.Right: landCol++; break;
+                }
+
+                // Commit the landing square if it is walkable
+                var landing = _squareMapState.GetSquare(landRow, landCol);
+                if (landing != null && _squareMapState.CanMoveTo(landRow, landCol, direction))
+                {
+                    var (tileRow, tileCol) = _squareMapState.SquareToTile(landRow, landCol);
+                    _player.playerLoc = (tileRow, tileCol);
+
+                    return new MoveResult
+                    {
+                        Success = true,
+                        Row = landRow,
+                        Col = landCol,
+                        SquareType = landing.SquareType,
+                        WildEncounterTriggered = _squareMapState.WildCheck(landRow, landCol)
+                    };
+                }
+
+                // Landing square is blocked — stop on the jump tile itself
+                var (tr, tc) = _squareMapState.SquareToTile(result.Row, result.Col);
+                _player.playerLoc = (tr, tc);
+                return result;
+            }
+
+            // ── Commit normal move ───────────────────────────────────────────────
+            var (ntileRow, ntileCol) = _squareMapState.SquareToTile(result.Row, result.Col);
+            _player.playerLoc = (ntileRow, ntileCol);
 
             return result;
         }

@@ -365,6 +365,10 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private const int TileWater = 50;
         private const int TileGrass = 40;
         private const int TileWarp = 60;   // new — IsWarp → id == 60
+        private const int TileJumpDown = 70;
+        private const int TileJumpUp = 71;
+        private const int TileJumpLeft = 72;
+        private const int TileJumpRight = 73;
 
         public static MapDomain CreatePlaceholderMap()
         {
@@ -416,23 +420,20 @@ namespace PokemonGame.ViewModels.ViewModelPage
             Fill(grid, TileWalkable);
             BorderWalls(grid, width, height, openNorthColStart: 13, openNorthColEnd: 17);
 
-            // Interior walls
-            for (int c = 1; c < 12; c++) grid[14, c] = TileBlocked;
-            for (int c = 18; c < width - 1; c++) grid[14, c] = TileBlocked;
-            for (int r = 6; r < 14; r++) grid[r, 20] = TileBlocked;
-            for (int r = 6; r < 14; r++) grid[r, 21] = TileBlocked;
+            // Grass patch to the south of spawn
+            FillRect(grid, 10, 2, 4, 6, TileGrass);
 
-            // Grass patches
-            FillRect(grid, 2, 2, 4, 6, TileGrass);
-            FillRect(grid, 2, 22, 4, 6, TileGrass);
-            FillRect(grid, 16, 2, 6, 4, TileGrass);
-            FillRect(grid, 22, 22, 6, 6, TileGrass);
-
-            // Water
+            // Water patch
             FillRect(grid, 16, 20, 6, 8, TileWater);
 
-            // Warp tile — just sits on the ground
-            grid[18, 14] = TileWarp; // square (9,7)
+            // Warp tile
+            grid[18, 14] = TileWarp;
+
+            // Jump down ledge — tile row 8, cols 2–10
+            for (int c = 2; c <= 10; c++) grid[8, c] = TileJumpDown;
+
+            // Jump right ledge — tile col 8, rows 2–6 (right next to spawn)
+            for (int r = 2; r <= 6; r++) grid[r, 8] = TileJumpLeft;
 
             return new MapDomain
             {

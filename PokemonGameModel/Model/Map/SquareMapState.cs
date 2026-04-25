@@ -212,16 +212,26 @@ namespace PokemonGame.Model.Model.Map
         /// Blocked wins over everything; otherwise top-left tile decides.
         /// 
         private static bool IsWarp(int id) => id == 60;
+        // in ResolveSquareType
+        private static bool IsJumpDown(int id) => id == 70;
+        private static bool IsJumpUp(int id) => id == 71;
+        private static bool IsJumpLeft(int id) => id == 72;
+        private static bool IsJumpRight(int id) => id == 73;
 
         private static CollisionType ResolveSquareType(int tl, int tr, int bl, int br)
         {
             if (IsBlocked(tl) || IsBlocked(tr) || IsBlocked(bl) || IsBlocked(br))
                 return CollisionType.Blocked;
-            if (IsWarp(tl)) return CollisionType.None;  // walkable — MapManager intercepts it as a warp
+            if (IsJumpDown(tl)) return CollisionType.JumpDown;
+            if (IsJumpUp(tl)) return CollisionType.JumpUp;
+            if (IsJumpLeft(tl)) return CollisionType.JumpLeft;
+            if (IsJumpRight(tl)) return CollisionType.JumpRight;
+            if (IsWarp(tl)) return CollisionType.None;
             if (IsWater(tl)) return CollisionType.HM;
             if (IsGrass(tl)) return CollisionType.WildGrass;
             return CollisionType.None;
         }
+       
 
         // ── tile-type helpers — replace with your actual tile ID logic ──
         private static bool IsBlocked(int id) => id == 0;
