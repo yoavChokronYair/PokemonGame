@@ -6,9 +6,11 @@ namespace PokemonGame.Model.Domain.Player
 {
     public class PlayerDomain
     {
+
         private static readonly Lazy<PlayerDomain> _instance =
                     new Lazy<PlayerDomain>(() => new PlayerDomain());
         public static PlayerDomain Instance => _instance.Value;
+        public int TrainerID { get; set; }
         public string Name { get; set; }
         public FacingDirection facingDirection { get; set; }
         public PokemonTeam Team { get; set; }

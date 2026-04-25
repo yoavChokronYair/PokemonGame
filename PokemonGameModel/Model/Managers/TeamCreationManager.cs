@@ -1,14 +1,14 @@
-﻿using PokemonGame.Core.Config;
-using PokemonGame.Core.Model.Helper.MathHelper;
-using PokemonGame.Enums;
-using PokemonGame.Model.Config;
-using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
+﻿    using PokemonGame.Core.Config;
+    using PokemonGame.Core.Model.Helper.MathHelper;
+    using PokemonGame.Enums;
+    using PokemonGame.Model.Config;
+    using PokemonGame.Model.Domain.Pokemon;
+    using PokemonGame.Model.Enums;
+    using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.Managers
 {
-   
+
     public class PokemonCreationData
     {
         public string Name { get; set; } = string.Empty;
@@ -107,17 +107,18 @@ namespace PokemonGame.Model.Model.Managers
             (double atk, double def, double spAtk, double spDef, double speed) mods)
         {
             return new Dictionary<Stat, double>
-            {
-                { Stat.Attack,         mods.atk   },
-                { Stat.Defense,        mods.def   },
-                { Stat.SpecialAttack,  mods.spAtk },
-                { Stat.SpecialDefense, mods.spDef },
-                { Stat.Speed,          mods.speed }
-            };
+                {
+                    { Stat.Attack,         mods.atk   },
+                    { Stat.Defense,        mods.def   },
+                    { Stat.SpecialAttack,  mods.spAtk },
+                    { Stat.SpecialDefense, mods.spDef },
+                    { Stat.Speed,          mods.speed }
+                };
         }
 
         private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum =>
             Enum.TryParse<TEnum>(value, true, out var result) ? result : default;
     }
+ 
 }
 

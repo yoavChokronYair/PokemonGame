@@ -1,4 +1,5 @@
-﻿using PokemonGame.Model.Enums;
+﻿using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Map
 {
@@ -18,6 +19,7 @@ namespace PokemonGame.Model.Domain.Map
         public MapTilesType TilesType { get; set; }
         public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();//one per side 
         public List<WrapDomain> Wraps { get; set; } = new(); // for fly/town map/etc
+        public List<EncounterDomain> Encounters { get; set; } = new();
     }
     public class WrapDomain
     {
@@ -30,5 +32,18 @@ namespace PokemonGame.Model.Domain.Map
         public MapDomain ConnectedMap { get; set; }
         public ConnectionDirection ConnectionDirection { get; set; }
         public int Margin { get; set; }
+    }
+    public class EncounterDomain
+    {
+        public PokemonState Pokemon { get; set; }
+        public int MinLevel { get; set; }
+        public int MaxLevel { get; set; }
+        public int CatchChance { get; set; }
+        public int Rate { get; set; }
+        public (Stat stat, int amount)? evYield { get; set; }
+        public int BaseExpYield { get; set; }
+        public int BaseFriendshipYield { get; set; }
+        public int CatchRate { get; set; }
+        public int femaleRatio { get; set; }
     }
 }

@@ -3,6 +3,8 @@
 // Uses RandomHelper for all random number generation — no inline new Random() here.
 // Instance holds PID/TID/SID for shiny and gender checks.
 using PokemonGame.Enums;
+using PokemonGame.Model.Domain.Map;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Model.Battle;
 
@@ -112,19 +114,23 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         // ----------------------------
         // Gender check
         // ----------------------------
-        public bool IsFemale(double femaleRatio)
+        public Gender IsFemale(double femaleRatio)
         {
-            // Genderless
+            // Handle Genderless cases (usually represented by -1.0)
             if (femaleRatio < 0)
             {
-                return false;
+                return Gender.Genderless;
             }
 
-            // PID determines gender
+            // Convert the 0.0-1.0 ratio to a 0-255 threshold
+            // Example: 0.125 (12.5% female) becomes 32
             int genderThreshold = (int)(femaleRatio * 256);
-            int pidLowByte = (int)(PID & 0xFF); // lowest 8 bits of PID
 
-            return pidLowByte < genderThreshold;
+            // Get the lowest 8 bits of the Personal ID (PID)
+            int pidLowByte = (int)(PID & 0xFF);
+
+            // If the PID byte is lower than the threshold, it's female
+            return (pidLowByte < genderThreshold) ? Gender.Female : Gender.Male;
         }
         // ----------------------------
         // Nature based on PID
@@ -138,9 +144,9 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
         // ----------------------------
         // Full Pokémon Identity Generator
         // ----------------------------
-        public static RNGHelper GenerateRandomPokemonIdentity()
+        public static RNGHelper GenerateRandomPokemonIdentity(int trainerID)
         {
-            ushort tid = GenerateRandomTID();
+            ushort tid = (ushort)trainerID;
             ushort sid = GenerateRandomSID();
             uint pid = GeneratePID();
             return new RNGHelper(pid, tid, sid);
@@ -157,6 +163,25 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             }
 
             return 1.0;
+        }
+        public static EncounterDomain? PickWildEncounter(IEnumerable<EncounterDomain> entries)
+        {
+            var list = entries as IList<EncounterDomain> ?? entries.ToList();
+
+            if (list.Count == 0) return null;
+
+            int totalWeight = list.Sum(e => e.Rate);
+            int roll = RandomHelper.Next(1, totalWeight + 1);
+
+            int cumulative = 0;
+            foreach (var entry in list)
+            {
+                cumulative += entry.Rate;
+                if (roll <= cumulative)
+                    return entry;
+            }
+
+            return list[1]; // fallback — should never reach here
         }
     }
 }
