@@ -22,5 +22,11 @@
         Fairy,
         None
     }
+    public enum  Gender
+    {
+        Male,
+        Female,
+        Genderless
+    }
 
 }

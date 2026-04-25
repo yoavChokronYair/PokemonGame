@@ -13,6 +13,8 @@
     xmlns:signinvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.SignUp;assembly=PokemonGame.ViewModels"
     xmlns:summeryview="clr-namespace:PokemonGame.Views.Pages.Summery"
     xmlns:summeryvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.Summery;assembly=PokemonGame.ViewModels"
+    xmlns:viewmodel="clr-namespace:PokemonGame.ViewModels.ViewModelPage;assembly=PokemonGame.ViewModels"
+    xmlns:viewpage="clr-namespace:PokemonGame.Views"
     Title="MainWindow"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -54,7 +56,9 @@
             <DataTemplate DataType="{x:Type battleviewmodel:BattleViewModel}">
                 <battleview:PokemonBattlePage />
             </DataTemplate>
-
+            <DataTemplate DataType="{x:Type viewmodel:MapViewModel}">
+                <viewpage:MapView />
+            </DataTemplate>
 
         </Grid.Resources>
 

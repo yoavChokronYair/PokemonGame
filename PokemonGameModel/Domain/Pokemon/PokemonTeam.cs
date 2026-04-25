@@ -1,4 +1,5 @@
 ﻿using PokemonGame.Core.Config;
+using PokemonGame.Model.Domain.Move;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -16,6 +17,7 @@ namespace PokemonGame.Model.Domain.Pokemon
                     $"A team must have exactly {PokemonConstants.PartyCapacity} Pokémon, got {roster.Count}.");
             }
 
+            _slots = roster.ToArray();
             _slots = roster.ToArray();
             _activeIndex = 0;
         }
@@ -112,6 +114,10 @@ namespace PokemonGame.Model.Domain.Pokemon
             var lines = _slots.Select((s, i) =>
                 $"  [{i}]{(i == _activeIndex ? "*" : " ")} {s}");
             return $"Team:\n{string.Join("\n", lines)}";
+        }
+        public bool AnyPokemonKnows(string moveName)
+        {
+            return _slots.Any(s => s.Moves.Any(m => ((MoveState)m).Name == moveName));
         }
     }
 }
