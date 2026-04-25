@@ -5,7 +5,7 @@ using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Model.Map
 {
-    //TODO: change the percent of wild encounter and add more factors to it
+    //TODO: change the percent of wild encounter and add more factors to it,and id handle it in a more appropriate place
     public class InspectResult
     {
         public InspectResultType Type { get; set; }
