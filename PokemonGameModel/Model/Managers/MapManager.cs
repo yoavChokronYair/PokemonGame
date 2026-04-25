@@ -21,7 +21,7 @@ namespace PokemonGame.Model.Model.Managers
             _player = player;
             LoadMap(player.CurrentMap);
         }
-        public HiddenItemsDomain? TryInspect()
+        public InspectResult TryInspect()
         {
             var (squareRow, squareCol) = _squareMapState.TileToSquare(
                 _player.playerLoc.x, _player.playerLoc.y);

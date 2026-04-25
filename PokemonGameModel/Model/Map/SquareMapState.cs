@@ -20,11 +20,6 @@ namespace PokemonGame.Model.Model.Map
         public int Col { get; set; }
         public CollisionType SquareType { get; set; }
         public bool WildEncounterTriggered { get; set; }  
-                                                          
-        public bool HmPromptRequired { get; set; }  
-        public HMMoves HmMove { get; set; }             
-        public int BlockedRow { get; set; }          
-        public int BlockedCol { get; set; }
     }
 
     public class SquareMapState

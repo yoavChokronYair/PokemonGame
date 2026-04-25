@@ -257,34 +257,33 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         public void Inspect()
         {
-            var item = _mapManager.TryInspect();
+            var result = _mapManager.TryInspect();
 
-            if (item == null)
+            InspectResult = result.Message;
+
+            switch (result.Type)
             {
-                InspectResult = string.Empty;
-                return;
+                case InspectResultType.Nothing:
+                case InspectResultType.NeedHm:
+                    // message already set, nothing else to do
+                    break;
+
+                case InspectResultType.ItemPickup:
+                    // redraw the tile as walkable
+                    UpdateTileCollision(result.TargetRow, result.TargetCol, CollisionType.None);
+                    break;
+
+                case InspectResultType.HmUsed:
+                    // tile was cleared in SquareMapState — sync the VM grid
+                    UpdateTileCollision(result.TargetRow, result.TargetCol, CollisionType.None);
+                    break;
             }
-
-            InspectResult = $"Found {item.Name}! {item.Description}";
-
-            // Update the tile's collision in the grid so it redraws as walkable
-            var (squareRow, squareCol) = GetFacedSquare();
-            if (squareRow < TileRows.Count && squareCol < TileRows[squareRow].Cells.Count)
-                TileRows[squareRow].Cells[squareCol].Collision = CollisionType.None;
         }
-        private (int row, int col) GetFacedSquare()
-        {
-            var (sr, sc) = _squareMapState.TileToSquare(
-                _player.playerLoc.x, _player.playerLoc.y);
 
-            return _player.FacingDirection switch
-            {
-                FacingDirection.Up => (sr - 1, sc),
-                FacingDirection.Down => (sr + 1, sc),
-                FacingDirection.Left => (sr, sc - 1),
-                FacingDirection.Right => (sr, sc + 1),
-                _ => (sr, sc)
-            };
+        private void UpdateTileCollision(int squareRow, int squareCol, CollisionType collision)
+        {
+            if (squareRow < TileRows.Count && squareCol < TileRows[squareRow].Cells.Count)
+                TileRows[squareRow].Cells[squareCol].Collision = collision;
         }
         // ── Movement — called by MoveCommand ────────────────────────────
         public void Move(FacingDirection direction)
