@@ -20,6 +20,7 @@ namespace PokemonGame.Model.Domain.Map
         public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();//one per side 
         public List<WrapDomain> Wraps { get; set; } = new(); // for fly/town map/etc
         public List<EncounterDomain> Encounters { get; set; } = new();
+        public List<HiddenItemsDomain> HiddenItems { get; set; } = new();
     }
     public class WrapDomain
     {
@@ -45,5 +46,18 @@ namespace PokemonGame.Model.Domain.Map
         public int BaseFriendshipYield { get; set; }
         public int CatchRate { get; set; }
         public int femaleRatio { get; set; }
+    }
+    public class HiddenItemsDomain
+    {
+        public string Name { get; set; }
+        public CollisionType CollisionType { get; set; } = CollisionType.Unwalkable;
+        public string Description { get; set; }
+        public (int x, int y) Location { get; set; }
+        public bool DefaultState { get; set; }
+        public bool IsPickedUp { get; set; } = false;
+
+        public bool IsVisible => DefaultState && !IsPickedUp;
+        public bool IsBlocking => IsVisible; // blocks movement only while still there
+
     }
 }

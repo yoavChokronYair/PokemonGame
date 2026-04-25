@@ -21,6 +21,13 @@ namespace PokemonGame.Model.Model.Managers
             _player = player;
             LoadMap(player.CurrentMap);
         }
+        public HiddenItemsDomain? TryInspect()
+        {
+            var (squareRow, squareCol) = _squareMapState.TileToSquare(
+                _player.playerLoc.x, _player.playerLoc.y);
+
+            return _squareMapState.TryInspect(squareRow, squareCol, _player.facingDirection);
+        }
 
         // ---------------------------------------------------------------
         // Map loading
@@ -77,6 +84,7 @@ namespace PokemonGame.Model.Model.Managers
                 }
                 return new MoveResult { Success = false, Row = squareRow, Col = squareCol };
             }
+
 
             // ── Warp check ───────────────────────────────────────────────────────
             var warp = TryGetWarp(toRow, toCol);

@@ -212,6 +212,8 @@
                     <KeyBinding Key="Down" Command="{Binding MoveDownCommand}" />
                     <KeyBinding Key="Left" Command="{Binding MoveLeftCommand}" />
                     <KeyBinding Key="Right" Command="{Binding MoveRightCommand}" />
+                    <KeyBinding Key="Z" Command="{Binding InspectCommand}" />
+                    <KeyBinding Key="Enter" Command="{Binding InspectCommand}" />
                 </ScrollViewer.InputBindings>
 
                 <ItemsControl ItemsSource="{Binding TileRows}">

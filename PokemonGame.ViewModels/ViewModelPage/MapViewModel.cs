@@ -45,7 +45,17 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         public override void Execute(object? parameter) => _vm.Move(_direction);
     }
+    public class InspectCommand : CommandBase
+    {
+        private readonly MapViewModel _vm;
 
+        public InspectCommand(MapViewModel vm)
+        {
+            _vm = vm;
+        }
+
+        public override void Execute(object? parameter) => _vm.Inspect();
+    }
     // -----------------------------------------------------------------------
     // Cell — one square on the grid
     // -----------------------------------------------------------------------
@@ -192,7 +202,12 @@ namespace PokemonGame.ViewModels.ViewModelPage
             get => _lastMoveResult;
             private set => SetProperty(ref _lastMoveResult, value);
         }
-
+        public string InspectResult
+        {
+            get => _inspectResult;
+            private set => SetProperty(ref _inspectResult, value);
+        }
+        private string _inspectResult = string.Empty;
         // ── Layer toggles ───────────────────────────────────────────────────
         public bool IsShowingBackground
         {
@@ -214,6 +229,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public MoveCommand MoveDownCommand { get; }
         public MoveCommand MoveLeftCommand { get; }
         public MoveCommand MoveRightCommand { get; }
+        public InspectCommand InspectCommand { get; }
+
+        // in constructor:
 
         // ── Constructor ─────────────────────────────────────────────────────
         public MapViewModel()
@@ -228,7 +246,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
             ShowForegroundCommand = new ShowLayerCommand(this, background: false);
-
+            InspectCommand = new InspectCommand(this);
             MoveUpCommand = new MoveCommand(this, FacingDirection.Up);
             MoveDownCommand = new MoveCommand(this, FacingDirection.Down);
             MoveLeftCommand = new MoveCommand(this, FacingDirection.Left);
@@ -237,6 +255,37 @@ namespace PokemonGame.ViewModels.ViewModelPage
             RebuildGrid();
         }
 
+        public void Inspect()
+        {
+            var item = _mapManager.TryInspect();
+
+            if (item == null)
+            {
+                InspectResult = string.Empty;
+                return;
+            }
+
+            InspectResult = $"Found {item.Name}! {item.Description}";
+
+            // Update the tile's collision in the grid so it redraws as walkable
+            var (squareRow, squareCol) = GetFacedSquare();
+            if (squareRow < TileRows.Count && squareCol < TileRows[squareRow].Cells.Count)
+                TileRows[squareRow].Cells[squareCol].Collision = CollisionType.None;
+        }
+        private (int row, int col) GetFacedSquare()
+        {
+            var (sr, sc) = _squareMapState.TileToSquare(
+                _player.playerLoc.x, _player.playerLoc.y);
+
+            return _player.facingDirection switch
+            {
+                FacingDirection.Up => (sr - 1, sc),
+                FacingDirection.Down => (sr + 1, sc),
+                FacingDirection.Left => (sr, sc - 1),
+                FacingDirection.Right => (sr, sc + 1),
+                _ => (sr, sc)
+            };
+        }
         // ── Movement — called by MoveCommand ────────────────────────────
         public void Move(FacingDirection direction)
         {
@@ -407,6 +456,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 TargetMap = palletTown,
                 SpawnLoc = (row: 9, col: 7), // one step south of the entrance
             });
+            palletTown.HiddenItems.Add(new HiddenItemsDomain
+            {
+                Name = "Potion",
+                Description = "A spray-type medicine for treating wounds.",
+                Location = (6, 6),   // tile-space — square (3,3), right near spawn
+                DefaultState = true,     // visible and blocking from the start
+            });
 
             return palletTown;
         }
@@ -433,7 +489,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
             for (int c = 2; c <= 10; c++) grid[8, c] = TileJumpDown;
 
             // Jump right ledge — tile col 8, rows 2–6 (right next to spawn)
-            for (int r = 2; r <= 6; r++) grid[r, 8] = TileJumpLeft;
 
             return new MapDomain
             {

@@ -58,10 +58,46 @@ namespace PokemonGame.Model.Model.Map
         // -----------------------------------------------------------------------
         public CollisionType GetCollision(int squareRow, int squareCol)
         {
-            var square = GetSquare(squareRow, squareCol);   
+            var square = GetSquare(squareRow, squareCol);
             if (square == null) return CollisionType.Unwalkable;
 
-            return square.SquareType; // or however your square stores it
+            // Hidden item on this square overrides tile collision
+            var item = GetHiddenItemAt(squareRow, squareCol);
+            if (item != null && item.IsBlocking)
+                return CollisionType.Unwalkable;
+
+            return square.SquareType;
+        }
+
+        // Returns the hidden item at a square if it exists and is still visible
+        public HiddenItemsDomain? GetHiddenItemAt(int squareRow, int squareCol)
+        {
+            return _activeMap.HiddenItems.FirstOrDefault(h =>
+            {
+                var (itemSquareRow, itemSquareCol) = TileToSquare(h.Location.x, h.Location.y);
+                return itemSquareRow == squareRow &&
+                       itemSquareCol == squareCol &&
+                       h.IsVisible;
+            });
+        }
+
+        // Called when player presses inspect — picks up item in the faced direction
+        public HiddenItemsDomain? TryInspect(int fromSquareRow, int fromSquareCol, FacingDirection facing)
+        {
+            var (targetRow, targetCol) = facing switch
+            {
+                FacingDirection.Up => (fromSquareRow - 1, fromSquareCol),
+                FacingDirection.Down => (fromSquareRow + 1, fromSquareCol),
+                FacingDirection.Left => (fromSquareRow, fromSquareCol - 1),
+                FacingDirection.Right => (fromSquareRow, fromSquareCol + 1),
+                _ => (fromSquareRow, fromSquareCol)
+            };
+
+            var item = GetHiddenItemAt(targetRow, targetCol);
+            if (item == null) return null;
+
+            item.IsPickedUp = true; // tile is now walkable
+            return item;            // caller shows the pickup message
         }
         public void ClearTile(int squareRow, int squareCol)
         {
