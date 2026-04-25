@@ -1,6 +1,4 @@
 ﻿using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Item;
-using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 
@@ -116,7 +114,4 @@ namespace PokemonGame.Model.Domain.Dialogue
         public bool IsMatch(TriggerType trigger, BattleState state) =>
             Trigger == trigger && (Condition is null || Condition.Check(state));
     }
-
- 
-
 }

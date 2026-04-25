@@ -19,6 +19,6 @@ namespace PokemonGame.Model.Enums
         NeedHm,
     }
     public enum MovementType { Stationery, Walking}
-    public enum VisionType { Normal, Dark, Flashlight }
+    public enum VisionType { Normal, circular}
 
 }

@@ -24,6 +24,7 @@ namespace PokemonGame.Model.Domain.Npc
             _dialogueStates.FirstOrDefault(d => d.IsMatch(trigger, state))?.DialogueSet;
         public NpcType? Type;
         public string? Name;
+        public int Id;
 
     }
     public class NpcRewardDomain
@@ -87,7 +88,7 @@ namespace PokemonGame.Model.Domain.Npc
     }
     public class TrainerDomain
     {
-        public BotLevel AiType;
+                public BotLevel AiType;
         public int BaseMoney;
     }
 }

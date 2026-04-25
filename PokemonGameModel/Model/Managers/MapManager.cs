@@ -15,6 +15,8 @@ namespace PokemonGame.Model.Model.Managers
         private readonly PlayerDomain _player;
 
         public MapDomain ActiveMap => _player.CurrentMap;
+        public SquareMapState SquareMap => _squareMapState;   // ← expose
+
 
         public MapManager(PlayerDomain player)
         {
@@ -157,8 +159,8 @@ namespace PokemonGame.Model.Model.Managers
         // ---------------------------------------------------------------
         // Viewport
         // ---------------------------------------------------------------
-        public (int[,] background, int[,] foreground) GetViewport()
-            => _mapState.BuildViewPort(_player);
+        public (int[,] background, int[,] foreground, int[,] vision) GetViewport()
+             => _mapState.BuildViewPort(_player, _squareMapState);
 
         // ---------------------------------------------------------------
         // Collision queries

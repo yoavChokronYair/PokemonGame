@@ -19,13 +19,17 @@ namespace PokemonGame.Model.Model.Map
         public int Row { get; set; }
         public int Col { get; set; }
         public CollisionType SquareType { get; set; }
-        public bool WildEncounterTriggered { get; set; }  
+        public bool WildEncounterTriggered { get; set; }
+        public int SpottedByNpcId { get; set; } 
+
     }
 
     public class SquareMapState
     {
         private SquareDomain[,] _squares;
         private MapDomain _activeMap;
+        private int[,] _visionLayer;
+
 
         // Square-space dimensions
         public int SquareRows => _squares.GetLength(0);
@@ -35,6 +39,103 @@ namespace PokemonGame.Model.Model.Map
         {
             _activeMap = map;
             _squares = BuildSquareGrid(map);
+            _visionLayer = new int[SquareRows, SquareCols];
+            RebuildVisionLayer();
+        }
+        // ── Vision layer ────────────────────────────────────────────────────────────
+
+        public int[,] VisionLayer => _visionLayer;
+
+        public void RebuildVisionLayer()
+        {
+            // Clear
+            Array.Clear(_visionLayer, 0, _visionLayer.Length);
+
+            foreach (var npc in _activeMap.Npc)
+            {
+                if (npc.visionRange <= 0) continue;
+
+                var (npcRow, npcCol) = TileToSquare(npc.Location.x, npc.Location.y);
+
+                switch (npc.VisionType)
+                {
+                    case VisionType.Normal:
+                        PaintConeVision(npc, npcRow, npcCol);
+                        break;
+                    case VisionType.circular:
+                        PaintCircularVision(npc, npcRow, npcCol);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Paints a straight-line cone in the NPC's facing direction,
+        /// stopping at the first unwalkable/blocked square (mirrors real Pokémon trainer sight).
+        /// </summary>
+        private void PaintConeVision(NpcObjectDomain npc, int npcRow, int npcCol)
+        {
+            var (dRow, dCol) = npc.direction switch
+            {
+                FacingDirection.Up => (-1, 0),
+                FacingDirection.Down => (1, 0),
+                FacingDirection.Left => (0, -1),
+                FacingDirection.Right => (0, 1),
+                _ => (0, 0)
+            };
+
+            if (dRow == 0 && dCol == 0) return;
+
+            for (int step = 1; step <= npc.visionRange; step++)
+            {
+                int r = npcRow + dRow * step;
+                int c = npcCol + dCol * step;
+
+                if ((uint)r >= (uint)SquareRows || (uint)c >= (uint)SquareCols) break;
+
+                var collision = GetCollision(r, c);
+
+                // Vision is blocked by solid tiles — paint then stop
+                if (collision == CollisionType.Unwalkable ||
+                    collision == CollisionType.Blocked ||
+                    collision == CollisionType.HM)
+                {
+                    break;   // wall blocks sight entirely
+                }
+
+                _visionLayer[r, c] = npc.NpcInfo.Id;   // ← NpcDomain needs an int Id field (see note)
+            }
+        }
+
+        /// <summary>
+        /// Paints a filled circle (Manhattan or Chebyshev — pick whichever feels right).
+        /// Uses Chebyshev distance so diagonals count equally.
+        /// </summary>
+        private void PaintCircularVision(NpcObjectDomain npc, int npcRow, int npcCol)
+        {
+            for (int dr = -npc.visionRange; dr <= npc.visionRange; dr++)
+            {
+                for (int dc = -npc.visionRange; dc <= npc.visionRange; dc++)
+                {
+                    // Chebyshev: max(|dr|,|dc|) ≤ range
+                    if (Math.Max(Math.Abs(dr), Math.Abs(dc)) > npc.visionRange) continue;
+
+                    int r = npcRow + dr;
+                    int c = npcCol + dc;
+
+                    if ((uint)r >= (uint)SquareRows || (uint)c >= (uint)SquareCols) continue;
+
+                    _visionLayer[r, c] = npc.NpcInfo.Id;
+                }
+            }
+        }
+
+        // ── Helper: check if a square is in an NPC's vision ─────────────────────────
+
+        public bool IsInNpcVision(int squareRow, int squareCol, out int npcId)
+        {
+            npcId = _visionLayer[squareRow, squareCol];
+            return npcId != 0;
         }
         // -----------------------------------------------------------------------
         // Square access
@@ -213,6 +314,8 @@ namespace PokemonGame.Model.Model.Map
 
             if (!CanMoveTo(toRow, toCol, direction))
                 return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
+
+            RebuildVisionLayer();   // ← rebuild every move
 
             var landing = GetSquare(toRow, toCol);
             return new MoveResult

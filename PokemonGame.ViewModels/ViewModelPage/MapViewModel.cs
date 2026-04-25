@@ -13,7 +13,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
     public class MapViewModel : ViewModelBase
     {
         private readonly MapManager _mapManager;
-        private SquareMapState _squareMapState;
         private readonly PlayerDomain _player;
 
         private bool _isShowingBackground = true;
@@ -21,6 +20,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private string _collisionAtCursor = string.Empty;
         private string _lastMoveResult = string.Empty;
         private TileCellViewModel? _currentPlayerCell;
+        private SquareMapState SquareMap => _mapManager.SquareMap;
 
         public ObservableCollection<TileRowViewModel> TileRows { get; } = new();
 
@@ -28,13 +28,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public string MapName => _mapManager.ActiveMap.Name;
         public int MapWidth => _mapManager.ActiveMap.Width;
         public int MapHeight => _mapManager.ActiveMap.Height;
-        public int SquareRows => _squareMapState.SquareRows;
-        public int SquareCols => _squareMapState.SquareCols;
+        public int SquareRows => SquareMap.SquareRows;
+        public int SquareCols => SquareMap.SquareCols;
 
         public int PlayerSquareRow
-            => _squareMapState.TileToSquare(_player.playerLoc.x, _player.playerLoc.y).row;
+            => SquareMap.TileToSquare(_player.playerLoc.x, _player.playerLoc.y).row;
         public int PlayerSquareCol
-            => _squareMapState.TileToSquare(_player.playerLoc.x, _player.playerLoc.y).col;
+            => SquareMap.TileToSquare(_player.playerLoc.x, _player.playerLoc.y).col;
 
         public string FacingText => _player.FacingDirection.ToString();
 
@@ -89,7 +89,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
             _player.CurrentMap ??= MapBootstrap.CreatePlaceholderMap();
             _player.playerLoc = _player.playerLoc == default ? (4, 4) : _player.playerLoc;
 
-            _squareMapState = new SquareMapState(_player.CurrentMap);
             _mapManager = new MapManager(_player);
 
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
@@ -106,23 +105,12 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public void Inspect()
         {
             var result = _mapManager.TryInspect();
-
             InspectResult = result.Message;
 
             switch (result.Type)
             {
-                case InspectResultType.Nothing:
-                case InspectResultType.NeedHm:
-                    // message already set, nothing else to do
-                    break;
-
                 case InspectResultType.ItemPickup:
-                    // redraw the tile as walkable
-                    UpdateTileCollision(result.TargetRow, result.TargetCol, CollisionType.None);
-                    break;
-
                 case InspectResultType.HmUsed:
-                    // tile was cleared in SquareMapState — sync the VM grid
                     UpdateTileCollision(result.TargetRow, result.TargetCol, CollisionType.None);
                     break;
             }
@@ -132,7 +120,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         {
             if (squareRow < TileRows.Count && squareCol < TileRows[squareRow].Cells.Count)
                 TileRows[squareRow].Cells[squareCol].Collision = collision;
-        }
+        } 
         // ── Movement — called by MoveCommand ────────────────────────────
         public void Move(FacingDirection direction)
         {
@@ -145,7 +133,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
                 if (_mapManager.ActiveMap != mapBefore)
                 {
-                    _squareMapState = new SquareMapState(_mapManager.ActiveMap);
                     RebuildGrid();
                 }
                 else
@@ -179,31 +166,48 @@ namespace PokemonGame.ViewModels.ViewModelPage
             TileRows.Clear();
             _currentPlayerCell = null;
 
-            var (bg, fg) = _mapManager.GetViewport();
+            // ← fix: destructure all three layers
+            var (bg, fg, vision) = _mapManager.GetViewport();
             var layer = _isShowingBackground ? bg : fg;
 
-            int rows = layer.GetLength(0);
-            int cols = layer.GetLength(1);
+            int viewRows = layer.GetLength(0);   // viewport dimensions
+            int viewCols = layer.GetLength(1);
 
-            var (playerSr, playerSc) = _squareMapState.TileToSquare(
+            var (playerSr, playerSc) = SquareMap.TileToSquare(
                 _player.playerLoc.x, _player.playerLoc.y);
 
-            for (int r = 0; r < _squareMapState.SquareRows; r++)
+            for (int r = 0; r < SquareMap.SquareRows; r++)
             {
                 var rowVm = new TileRowViewModel();
 
-                for (int c = 0; c < _squareMapState.SquareCols; c++)
+                for (int c = 0; c < SquareMap.SquareCols; c++)
                 {
-                    var square = _squareMapState.GetSquare(r, c);
-                    var (tr, tc) = _squareMapState.SquareToTile(r, c);
+                    var square = SquareMap.GetSquare(r, c);
+
+                    // ← fix: viewport is indexed by viewport position, not raw tile coords.
+                    // The viewport is centered on the player; offset accordingly.
+                    int halfViewRows = viewRows / 2;
+                    int halfViewCols = viewCols / 2;
+                    int vr = r - playerSr + halfViewRows;
+                    int vc = c - playerSc + halfViewCols;
+
+                    int tileId = (vr >= 0 && vr < viewRows && vc >= 0 && vc < viewCols)
+                        ? layer[vr, vc]
+                        : 0;
+
+                    // Vision layer is square-space (half resolution) — index directly
+                    int visionId = (r < vision.GetLength(0) && c < vision.GetLength(1))
+                        ? vision[r, c]
+                        : 0;
 
                     var cell = new TileCellViewModel
                     {
-                        TileId = (tr < rows && tc < cols) ? layer[tr, tc] : 0,
+                        TileId = tileId,
                         Row = r,
                         Col = c,
                         Collision = square?.SquareType ?? CollisionType.Unwalkable,
                         IsPlayerHere = (r == playerSr && c == playerSc),
+                        NpcVisionId = visionId,
                     };
 
                     if (cell.IsPlayerHere)
@@ -238,16 +242,20 @@ namespace PokemonGame.ViewModels.ViewModelPage
             if (_currentPlayerCell != null)
                 _currentPlayerCell.IsPlayerHere = false;
 
-            var (sr, sc) = _squareMapState.TileToSquare(
+            var (sr, sc) = SquareMap.TileToSquare(
                 _player.playerLoc.x, _player.playerLoc.y);
 
             if (sr < TileRows.Count && sc < TileRows[sr].Cells.Count)
             {
                 _currentPlayerCell = TileRows[sr].Cells[sc];
                 _currentPlayerCell.IsPlayerHere = true;
+
+                // Keep vision in sync on light refresh too
+                int visionId = SquareMap.VisionLayer[sr, sc];
+                _currentPlayerCell.NpcVisionId = visionId;
             }
 
-            CollisionAtCursor = _squareMapState.GetCollision(sr, sc).ToString();
+            CollisionAtCursor = SquareMap.GetCollision(sr, sc).ToString();
         }
     }
 

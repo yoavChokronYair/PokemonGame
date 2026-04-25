@@ -105,6 +105,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.Map
                 };
             }
         }
+        private int _npcVisionId;
+        public int NpcVisionId                              // 0 = unseen
+        {
+            get => _npcVisionId;
+            set => SetProperty(ref _npcVisionId, value);
+        }
+
+        public bool IsInNpcVision => _npcVisionId != 0;    // handy for the view
     }
 
     

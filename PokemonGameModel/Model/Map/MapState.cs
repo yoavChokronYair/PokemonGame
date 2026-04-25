@@ -30,23 +30,59 @@ namespace PokemonGame.Model.Model.Map
         // Viewport
         // ---------------------------------------------------------------
 
-        public (int[,] background, int[,] foreground) BuildViewPort(PlayerDomain player)
+        public (int[,] background, int[,] foreground, int[,] vision) BuildViewPort(
+            PlayerDomain player, SquareMapState squareMap)
         {
             var bg = BuildLayerViewport(player.playerLoc, isForeground: false);
             var fg = BuildLayerViewport(player.playerLoc, isForeground: true);
+            var vision = BuildVisionViewport(player.playerLoc, squareMap);
+
             StampPlayer(fg, player.FacingDirection);
-            return (bg, fg);
+            return (bg, fg, vision);
+        }
+
+        private int[,] BuildVisionViewport(
+            (int playerRow, int playerCol) playerPos, SquareMapState squareMap)
+        {
+            // Vision is in square-space; viewport is in tile-space.
+            // Each square = 2×2 tiles, so the vision viewport is half the tile viewport.
+            int visionRows = MapConstants.ViewRowSize / 2;
+            int visionCols = MapConstants.ViewColSize / 2;
+            var view = new int[visionRows, visionCols];
+
+            // Player tile position → square position
+            var (playerSquareRow, playerSquareCol) = squareMap.TileToSquare(
+                playerPos.playerRow, playerPos.playerCol);
+
+            int halfRows = visionRows / 2;
+            int halfCols = visionCols / 2;
+
+            for (int r = 0; r < visionRows; r++)
+            {
+                for (int c = 0; c < visionCols; c++)
+                {
+                    int srcRow = playerSquareRow - halfRows + r;
+                    int srcCol = playerSquareCol - halfCols + c;
+
+                    if ((uint)srcRow < (uint)squareMap.SquareRows &&
+                        (uint)srcCol < (uint)squareMap.SquareCols)
+                    {
+                        view[r, c] = squareMap.VisionLayer[srcRow, srcCol];
+                    }
+                }
+            }
+
+            return view;
         }
         private static void StampPlayer(int[,] fg, FacingDirection direction)
         {
-            var sprite = PlayerSprites.Tiles[direction];
+            // No sprite for None — skip stamping entirely
+            if (direction == FacingDirection.None) return;
+            if (!PlayerSprites.Tiles.TryGetValue(direction, out var sprite)) return;
 
-            // The player always occupies the four center tiles of the viewport
             int midRow = MapConstants.ViewRowSize / 2;
             int midCol = MapConstants.ViewColSize / 2;
 
-            // TopLeft     TopRight
-            // BottomLeft  BottomRight
             fg[midRow - 1, midCol - 1] = sprite.TL;
             fg[midRow - 1, midCol] = sprite.TR;
             fg[midRow, midCol - 1] = sprite.BL;
