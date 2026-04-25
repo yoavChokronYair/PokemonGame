@@ -32,8 +32,8 @@ namespace PokemonGame.Model.Model.Map
 
         public (int[,] background, int[,] foreground) BuildViewPort(PlayerDomain player)
         {
-            var bg = BuildLayerViewport((player.LocationRow, player.LocationCol), isForeground: false);
-            var fg = BuildLayerViewport((player.LocationRow, player.LocationCol), isForeground: true);
+            var bg = BuildLayerViewport(player.playerLoc, isForeground: false);
+            var fg = BuildLayerViewport(player.playerLoc, isForeground: true);
             StampPlayer(fg, player.facingDirection);
             return (bg, fg);
         }

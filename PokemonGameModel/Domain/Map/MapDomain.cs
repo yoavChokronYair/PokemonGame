@@ -13,7 +13,7 @@ namespace PokemonGame.Model.Domain.Map
         public TileDomain DefultBlockID { get; set; }
         public string Song { get; set; }
 
-        public int[,] FlyWrapLoc = new int[1, 1];
+        public int[,] FlyWrapLoc = new int[1, 1];   
         public int[,] TownMapLoc = new int[1, 1];
         public MapTilesType TilesType { get; set; }
         public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();//one per side 
@@ -22,8 +22,8 @@ namespace PokemonGame.Model.Domain.Map
     public class WrapDomain
     {
         public MapDomain TargetMap { get; set; }
-        public int WrapLoc { get; set; }
-        public int SpawnRow { get; set; }
+        public (int x,int y) WrapLoc { get; set; }
+        public (int row, int col) SpawnLoc { get; set; } 
     }
     public class ConnectedMapDomain
     {

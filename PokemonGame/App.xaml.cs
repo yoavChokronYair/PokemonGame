@@ -4,6 +4,7 @@ using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
+using PokemonGame.ViewModels.ViewModelPage;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
@@ -26,7 +27,7 @@ namespace PokemonGame
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _navigationStore.CurrentViewModel = CreateLogInViewModel();
+            _navigationStore.CurrentViewModel = CreateMapViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
@@ -152,7 +153,10 @@ namespace PokemonGame
         {
             return new BattleViewModel(_userStore);
         }
+        private MapViewModel CreateMapViewModel()
+        {
+            return new MapViewModel();
 
-
+        }
     }
 }
