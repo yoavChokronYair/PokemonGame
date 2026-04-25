@@ -34,7 +34,7 @@ namespace PokemonGame.Model.Model.Map
         {
             var bg = BuildLayerViewport(player.playerLoc, isForeground: false);
             var fg = BuildLayerViewport(player.playerLoc, isForeground: true);
-            StampPlayer(fg, player.facingDirection);
+            StampPlayer(fg, player.FacingDirection);
             return (bg, fg);
         }
         private static void StampPlayer(int[,] fg, FacingDirection direction)

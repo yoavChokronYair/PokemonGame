@@ -188,7 +188,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public int PlayerSquareCol
             => _squareMapState.TileToSquare(_player.playerLoc.x, _player.playerLoc.y).col;
 
-        public string FacingText => _player.facingDirection.ToString();
+        public string FacingText => _player.FacingDirection.ToString();
 
         // ── Status bar ──────────────────────────────────────────────────────
         public string CollisionAtCursor
@@ -277,7 +277,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             var (sr, sc) = _squareMapState.TileToSquare(
                 _player.playerLoc.x, _player.playerLoc.y);
 
-            return _player.facingDirection switch
+            return _player.FacingDirection switch
             {
                 FacingDirection.Up => (sr - 1, sc),
                 FacingDirection.Down => (sr + 1, sc),

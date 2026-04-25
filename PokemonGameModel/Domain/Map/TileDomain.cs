@@ -22,5 +22,7 @@ namespace PokemonGame.Model.Domain.Map
 
         // Collision/interaction is decided per-square, not per-tile
         public CollisionType SquareType { get; set; }
-    }      
+        public TileType TileType { get; set; }  // ← new
+
+    }
 }

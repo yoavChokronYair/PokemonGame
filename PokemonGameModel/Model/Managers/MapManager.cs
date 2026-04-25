@@ -26,7 +26,7 @@ namespace PokemonGame.Model.Model.Managers
             var (squareRow, squareCol) = _squareMapState.TileToSquare(
                 _player.playerLoc.x, _player.playerLoc.y);
 
-            return _squareMapState.TryInspect(squareRow, squareCol, _player.facingDirection);
+            return _squareMapState.TryInspect(squareRow, squareCol, _player.FacingDirection);
         }
 
         // ---------------------------------------------------------------
@@ -45,7 +45,7 @@ namespace PokemonGame.Model.Model.Managers
         // ---------------------------------------------------------------
         public MoveResult TryMove(FacingDirection direction)
         {
-            _player.facingDirection = direction;
+            _player.FacingDirection = direction;
 
             var (squareRow, squareCol) = _squareMapState.TileToSquare(
                 _player.playerLoc.x,
@@ -178,7 +178,7 @@ namespace PokemonGame.Model.Model.Managers
             // Now step the player onto the cleared tile
             var (tileRow, tileCol) = _squareMapState.SquareToTile(squareRow, squareCol);
             _player.playerLoc = (tileRow, tileCol);
-            _player.facingDirection = direction;
+            _player.FacingDirection = direction;
         }
 
 

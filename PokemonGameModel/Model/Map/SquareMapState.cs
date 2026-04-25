@@ -112,12 +112,27 @@ namespace PokemonGame.Model.Model.Map
                 return false;
             return RNGHelper.TryWildEncounter(10); // example 10% encounter rate; replace with your actual logic
         }
-           
 
-        public bool HmCheck(int squareRow, int squareCol, string moveName)
+
+        public bool HmCheck(int squareRow, int squareCol)
         {
             if (GetCollision(squareRow, squareCol) != CollisionType.HM) return false;
-            return PlayerDomain.Instance.Team.AnyPokemonKnows(moveName);
+
+            var square = GetSquare(squareRow, squareCol);
+            if (square == null) return false;
+
+            var required = RequiredHmForTile(square.TileType);
+            if (required == HMMoves.None) return false;
+
+            return PlayerDomain.Instance.Team.AnyPokemonKnows(required.ToString());
+        }
+
+        private HMMoves ResolveHmMove(int squareRow, int squareCol)
+        {
+            var square = GetSquare(squareRow, squareCol);
+            if (square == null) return HMMoves.None;
+
+            return RequiredHmForTile(square.TileType);
         }
         public bool JumpCheck(int squareRow, int squareCol, FacingDirection direction) =>
             GetCollision(squareRow, squareCol) switch
@@ -146,15 +161,6 @@ namespace PokemonGame.Model.Model.Map
                 _ => false
             };
         }
-        private HMMoves ResolveHmMove(int squareRow, int squareCol)
-        {
-            var square = GetSquare(squareRow, squareCol);
-            if (square == null) return HMMoves.None;
-
-            // Right now all HM tiles are water → Surf
-            // Later you can store a sub-type on SquareDomain to distinguish Cut trees etc.
-            return HMMoves.Surf;
-        }
 
         public MoveResult TryMove(int fromRow, int fromCol, FacingDirection direction)
         {
@@ -169,11 +175,10 @@ namespace PokemonGame.Model.Model.Map
             // ── HM tile: check if player can prompt ─────────────────────────────
             if (GetCollision(toRow, toCol) == CollisionType.HM)
             {
-                HMMoves hmMove = ResolveHmMove(toRow,toCol);
+                HMMoves hmMove = ResolveHmMove(toRow, toCol);
 
-                if (hmMove != HMMoves.None && HmCheck(toRow, toCol, hmMove.ToString()))
+                if (hmMove != HMMoves.None && HmCheck(toRow, toCol))
                 {
-                    // Has the move → prompt the player, don't move yet
                     return new MoveResult
                     {
                         Success = false,
@@ -186,7 +191,6 @@ namespace PokemonGame.Model.Model.Map
                     };
                 }
 
-                // Doesn't have the move → silent block
                 return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
             }
             if (!CanMoveTo(toRow, toCol, direction))
@@ -237,12 +241,21 @@ namespace PokemonGame.Model.Model.Map
                         TileBottomLeft = bl,
                         TileBottomRight = br,
                         SquareType = ResolveSquareType(tl, tr, bl, br),
+                        TileType = ResolveTileType(tl),   // ← new
                     };
                 }
             }
 
             return grid;
         }
+        private static HMMoves RequiredHmForTile(TileType tileType) => tileType switch
+        {
+            TileType.Water => HMMoves.Surf,
+            TileType.Branch => HMMoves.Cut,
+            TileType.Rock => HMMoves.RockSmash,
+            TileType.StrengthAble => HMMoves.Strength,
+            _ => HMMoves.None
+        };
 
         /// Decides the square's type from its 4 tile IDs.
         /// Blocked wins over everything; otherwise top-left tile decides.
@@ -267,7 +280,20 @@ namespace PokemonGame.Model.Model.Map
             if (IsGrass(tl)) return CollisionType.WildGrass;
             return CollisionType.None;
         }
-       
+        private static TileType ResolveTileType(int tl) => tl switch
+        {
+            _ when IsWater(tl) => TileType.Water,
+            _ when IsGrass(tl) => TileType.TallGrass,
+            _ when IsBranch(tl) => TileType.Branch,
+            _ when IsRock(tl) => TileType.Rock,
+            _ when IsStrength(tl) => TileType.StrengthAble,
+            _ => TileType.Normal
+        };
+
+        // Add tile ID ranges to match your tileset
+        private static bool IsBranch(int id) => id >= 80 && id <= 89;
+        private static bool IsRock(int id) => id >= 90 && id <= 99;
+        private static bool IsStrength(int id) => id >= 100 && id <= 109;
 
         // ── tile-type helpers — replace with your actual tile ID logic ──
         private static bool IsBlocked(int id) => id == 0;

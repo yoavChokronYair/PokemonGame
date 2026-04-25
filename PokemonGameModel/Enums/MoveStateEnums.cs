@@ -13,6 +13,7 @@ namespace PokemonGame.Model.Enums
         Strength,
         Flash,
         RockSmash,
+        waterfall,
     }
     public enum MoveCategory { Physical, Special, Status }
     public enum MoveTarget { Opponent, Self, Both, AllOpponents, AllAllies }

@@ -12,10 +12,11 @@ namespace PokemonGame.Model.Domain.Player
         public static PlayerDomain Instance => _instance.Value;
         public int TrainerID { get; set; }
         public string Name { get; set; }
-        public FacingDirection facingDirection { get; set; }
+        public FacingDirection FacingDirection { get; set; }
         public PokemonTeam Team { get; set; }
         public MapDomain LastMapVisited { get; set; }
         public MapDomain CurrentMap {  get; set; }
         public (int x,int y) playerLoc { get; set; }
+        public Dictionary<HiddenItemsDomain, bool> HiddenItemsState { get; set; } = new();
     }
 }
