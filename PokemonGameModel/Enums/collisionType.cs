@@ -11,5 +11,13 @@ namespace PokemonGame.Model.Enums
     public enum MapTilesType { Club = 0, Overworld = 1 }
     public enum ConnectionDirection { North, South, East, West }
     public enum FacingDirection { Up, Down, Left, Right }
+    public enum InspectResultType
+    {
+        Nothing,
+        ItemPickup,
+        HmUsed,
+        NeedHm,
+    }
+
 
 }

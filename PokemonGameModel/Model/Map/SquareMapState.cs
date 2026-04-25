@@ -1,12 +1,18 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
-using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Model.Map
 {
     //TODO: change the percent of wild encounter and add more factors to it
+    public class InspectResult
+    {
+        public InspectResultType Type { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public int TargetRow { get; set; }
+        public int TargetCol { get; set; }
+    }
     public class MoveResult
     {
         public bool Success { get; set; }
@@ -82,7 +88,7 @@ namespace PokemonGame.Model.Model.Map
         }
 
         // Called when player presses inspect — picks up item in the faced direction
-        public HiddenItemsDomain? TryInspect(int fromSquareRow, int fromSquareCol, FacingDirection facing)
+        public InspectResult TryInspect(int fromSquareRow, int fromSquareCol, FacingDirection facing)
         {
             var (targetRow, targetCol) = facing switch
             {
@@ -93,11 +99,48 @@ namespace PokemonGame.Model.Model.Map
                 _ => (fromSquareRow, fromSquareCol)
             };
 
+            // ── Hidden item ──────────────────────────────────────────────────────
             var item = GetHiddenItemAt(targetRow, targetCol);
-            if (item == null) return null;
+            if (item != null)
+            {
+                item.IsPickedUp = true;
+                return new InspectResult
+                {
+                    Type = InspectResultType.ItemPickup,
+                    Message = $"Found {item.Name}! {item.Description}",
+                    TargetRow = targetRow,
+                    TargetCol = targetCol,
+                };
+            }
 
-            item.IsPickedUp = true; // tile is now walkable
-            return item;            // caller shows the pickup message
+            // ── HM tile ──────────────────────────────────────────────────────────
+            var square = GetSquare(targetRow, targetCol);
+            if (square != null && square.SquareType == CollisionType.HM)
+            {
+                HMMoves required = ResolveHmMove(targetRow, targetCol);
+
+                if (required == HMMoves.None)
+                    return new InspectResult { Type = InspectResultType.Nothing };
+
+                if (!PlayerDomain.Instance.Team.AnyPokemonKnows(required.ToString()))
+                    return new InspectResult
+                    {
+                        Type = InspectResultType.NeedHm,
+                        Message = $"You need {required} to get past this.",
+                    };
+
+                // Has the move — clear the tile
+                ClearTile(targetRow, targetCol);
+                return new InspectResult
+                {
+                    Type = InspectResultType.HmUsed,
+                    Message = $"Used {required}!",
+                    TargetRow = targetRow,
+                    TargetCol = targetCol,
+                };
+            }
+
+            return new InspectResult { Type = InspectResultType.Nothing };
         }
         public void ClearTile(int squareRow, int squareCol)
         {
@@ -172,27 +215,7 @@ namespace PokemonGame.Model.Model.Map
                 FacingDirection.Right => (fromRow, fromCol + 1),
                 _ => (fromRow, fromCol)
             };
-            // ── HM tile: check if player can prompt ─────────────────────────────
-            if (GetCollision(toRow, toCol) == CollisionType.HM)
-            {
-                HMMoves hmMove = ResolveHmMove(toRow, toCol);
 
-                if (hmMove != HMMoves.None && HmCheck(toRow, toCol))
-                {
-                    return new MoveResult
-                    {
-                        Success = false,
-                        Row = fromRow,
-                        Col = fromCol,
-                        HmPromptRequired = true,
-                        HmMove = hmMove,
-                        BlockedRow = toRow,
-                        BlockedCol = toCol,
-                    };
-                }
-
-                return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
-            }
             if (!CanMoveTo(toRow, toCol, direction))
                 return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
 
