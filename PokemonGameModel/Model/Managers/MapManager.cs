@@ -129,12 +129,16 @@ namespace PokemonGame.Model.Model.Managers
             var (sr, sc) = CurrentSquare();
             return _squareMapState.WildCheck(sr, sc);
         }
-
-        public bool IsWaterTile()
+        public void ConfirmHmUse(int squareRow, int squareCol, FacingDirection direction)
         {
-            var (sr, sc) = CurrentSquare();
-            return _squareMapState.HmCheck(sr, sc);
+            _squareMapState.ClearTile(squareRow, squareCol);
+
+            // Now step the player onto the cleared tile
+            var (tileRow, tileCol) = _squareMapState.SquareToTile(squareRow, squareCol);
+            _player.playerLoc = (tileRow, tileCol);
+            _player.facingDirection = direction;
         }
+
 
         // ---------------------------------------------------------------
         // Warp helpers

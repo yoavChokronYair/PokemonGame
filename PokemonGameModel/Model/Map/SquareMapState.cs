@@ -1,14 +1,24 @@
-﻿using PokemonGame.Model.Domain.Map;
+﻿using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Model.Domain.Map;
+using PokemonGame.Model.Domain.Player;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Model.Map
 {
+    //TODO: change the percent of wild encounter and add more factors to it
     public class MoveResult
     {
         public bool Success { get; set; }
         public int Row { get; set; }
         public int Col { get; set; }
         public CollisionType SquareType { get; set; }
+        public bool WildEncounterTriggered { get; set; }  
+                                                          
+        public bool HmPromptRequired { get; set; }  
+        public HMMoves HmMove { get; set; }             
+        public int BlockedRow { get; set; }          
+        public int BlockedCol { get; set; }
     }
 
     public class SquareMapState
@@ -53,15 +63,26 @@ namespace PokemonGame.Model.Model.Map
 
             return square.SquareType; // or however your square stores it
         }
-        public bool WalkableCheck(int squareRow, int squareCol) =>
-            GetCollision(squareRow, squareCol) == CollisionType.None;
+        public void ClearTile(int squareRow, int squareCol)
+        {
+            var square = GetSquare(squareRow, squareCol);
+            if (square != null)
+                square.SquareType = CollisionType.None;
+        }   
+        public bool WildCheck(int squareRow, int squareCol)
+        {
+            var square = GetSquare(squareRow, squareCol);
+            if (square == null || square.SquareType != CollisionType.WildGrass)
+                return false;
+            return RNGHelper.TryWildEncounter(10); // example 10% encounter rate; replace with your actual logic
+        }
+           
 
-        public bool WildCheck(int squareRow, int squareCol) =>
-            GetCollision(squareRow, squareCol) == CollisionType.WildGrass;
-
-        public bool HmCheck(int squareRow, int squareCol) =>
-            GetCollision(squareRow, squareCol) == CollisionType.HM;
-
+        public bool HmCheck(int squareRow, int squareCol, string moveName)
+        {
+            if (GetCollision(squareRow, squareCol) != CollisionType.HM) return false;
+            return PlayerDomain.Instance.Team.AnyPokemonKnows(moveName);
+        }
         public bool JumpCheck(int squareRow, int squareCol, FacingDirection direction) =>
             GetCollision(squareRow, squareCol) switch
             {
@@ -79,14 +100,24 @@ namespace PokemonGame.Model.Model.Map
             {
                 CollisionType.None => true,
                 CollisionType.WildGrass => true,
-                CollisionType.HM => true, // handled separately / needs HM move
+                CollisionType.HM => false,   // always blocked — handled via prompt path
                 CollisionType.JumpLeft => direction == FacingDirection.Left,
                 CollisionType.JumpRight => direction == FacingDirection.Right,
                 CollisionType.JumpDown => direction == FacingDirection.Down,
                 CollisionType.JumpUp => direction == FacingDirection.Up,
                 CollisionType.Unwalkable => false,
+                CollisionType.Blocked => false,
                 _ => false
             };
+        }
+        private HMMoves ResolveHmMove(int squareRow, int squareCol)
+        {
+            var square = GetSquare(squareRow, squareCol);
+            if (square == null) return HMMoves.None;
+
+            // Right now all HM tiles are water → Surf
+            // Later you can store a sub-type on SquareDomain to distinguish Cut trees etc.
+            return HMMoves.Surf;
         }
 
         public MoveResult TryMove(int fromRow, int fromCol, FacingDirection direction)
@@ -99,7 +130,29 @@ namespace PokemonGame.Model.Model.Map
                 FacingDirection.Right => (fromRow, fromCol + 1),
                 _ => (fromRow, fromCol)
             };
+            // ── HM tile: check if player can prompt ─────────────────────────────
+            if (GetCollision(toRow, toCol) == CollisionType.HM)
+            {
+                HMMoves hmMove = ResolveHmMove(toRow,toCol);
 
+                if (hmMove != HMMoves.None && HmCheck(toRow, toCol, hmMove.ToString()))
+                {
+                    // Has the move → prompt the player, don't move yet
+                    return new MoveResult
+                    {
+                        Success = false,
+                        Row = fromRow,
+                        Col = fromCol,
+                        HmPromptRequired = true,
+                        HmMove = hmMove,
+                        BlockedRow = toRow,
+                        BlockedCol = toCol,
+                    };
+                }
+
+                // Doesn't have the move → silent block
+                return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
+            }
             if (!CanMoveTo(toRow, toCol, direction))
                 return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
 
@@ -110,6 +163,7 @@ namespace PokemonGame.Model.Model.Map
                 Row = toRow,
                 Col = toCol,
                 SquareType = landing.SquareType,
+                WildEncounterTriggered = WildCheck(toRow, toCol)
             };
         }
         // -----------------------------------------------------------------------

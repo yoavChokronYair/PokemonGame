@@ -1,10 +1,10 @@
-﻿    using PokemonGame.Core.Config;
-    using PokemonGame.Core.Model.Helper.MathHelper;
-    using PokemonGame.Enums;
-    using PokemonGame.Model.Config;
-    using PokemonGame.Model.Domain.Pokemon;
-    using PokemonGame.Model.Enums;
-    using PokemonGame.Model.Interface;
+﻿using PokemonGame.Core.Config;
+using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Enums;
+using PokemonGame.Model.Config;
+using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
+using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.Managers
 {

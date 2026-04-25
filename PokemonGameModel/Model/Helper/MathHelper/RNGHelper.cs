@@ -164,6 +164,10 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
             return 1.0;
         }
+        public static bool TryWildEncounter(int encounterRate)
+        {
+            return RandomHelper.Next(1, 101) <= encounterRate;
+        }
         public static EncounterDomain? PickWildEncounter(IEnumerable<EncounterDomain> entries)
         {
             var list = entries as IList<EncounterDomain> ?? entries.ToList();

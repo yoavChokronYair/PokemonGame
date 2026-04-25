@@ -256,6 +256,10 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 {
                     Refresh();
                 }
+                if(result.WildEncounterTriggered)
+                {
+                    LastMoveResult += " + Wild Encounter!";
+                }
             }
             else
             {

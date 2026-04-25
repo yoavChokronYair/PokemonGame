@@ -4,6 +4,16 @@
 
 namespace PokemonGame.Model.Enums
 {
+    public enum  HMMoves
+    {
+        None,
+        Cut,
+        Fly,
+        Surf,   
+        Strength,
+        Flash,
+        RockSmash,
+    }
     public enum MoveCategory { Physical, Special, Status }
     public enum MoveTarget { Opponent, Self, Both, AllOpponents, AllAllies }
     public enum MoveTag
