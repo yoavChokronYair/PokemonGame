@@ -210,11 +210,14 @@ namespace PokemonGame.Model.Model.Map
 
         /// Decides the square's type from its 4 tile IDs.
         /// Blocked wins over everything; otherwise top-left tile decides.
+        /// 
+        private static bool IsWarp(int id) => id == 60;
+
         private static CollisionType ResolveSquareType(int tl, int tr, int bl, int br)
         {
-            // plug in your actual blocked/water/grass tile ID ranges here
             if (IsBlocked(tl) || IsBlocked(tr) || IsBlocked(bl) || IsBlocked(br))
                 return CollisionType.Blocked;
+            if (IsWarp(tl)) return CollisionType.None;  // walkable — MapManager intercepts it as a warp
             if (IsWater(tl)) return CollisionType.HM;
             if (IsGrass(tl)) return CollisionType.WildGrass;
             return CollisionType.None;

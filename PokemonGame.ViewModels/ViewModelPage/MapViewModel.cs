@@ -360,27 +360,25 @@ namespace PokemonGame.ViewModels.ViewModelPage
     // -----------------------------------------------------------------------
     public static class MapBootstrap
     {
-        // Tile IDs — must match ResolveSquareType ranges in SquareMapState
         private const int TileWalkable = 1;
-        private const int TileBlocked = 0;   // IsBlocked → id == 0
-        private const int TileWater = 50;  // IsWater   → 50–59
-        private const int TileGrass = 40;  // IsGrass   → 40–49
+        private const int TileBlocked = 0;
+        private const int TileWater = 50;
+        private const int TileGrass = 40;
+        private const int TileWarp = 60;   // new — IsWarp → id == 60
 
         public static MapDomain CreatePlaceholderMap()
         {
-            // Build both maps first so we can cross-reference them
             var palletTown = BuildPalletTown();
             var route1 = BuildRoute1();
+            var palletHouse = BuildPalletHouse();
 
-            // Connect: Pallet Town north edge → Route 1
+            // ── Map connections (walking off edge) ───────────────────────────
             palletTown.ConnectedMaps.Add(new ConnectedMapDomain
             {
                 ConnectedMap = route1,
                 ConnectionDirection = ConnectionDirection.North,
                 Margin = 0,
             });
-
-            // Connect: Route 1 south edge → Pallet Town
             route1.ConnectedMaps.Add(new ConnectedMapDomain
             {
                 ConnectedMap = palletTown,
@@ -388,26 +386,39 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 Margin = 0,
             });
 
+            // ── Warps (stepping on a tile) ───────────────────────────────────
+
+            // Pallet Town → house: tile at square (8, 7), spawn at house square (1, 3)
+            palletTown.Wraps.Add(new WrapDomain
+            {
+                WrapLoc = (8, 7),           // square-space position on Pallet Town
+                TargetMap = palletHouse,
+                SpawnLoc = (row: 1, col: 3), // square-space spawn inside the house
+            });
+
+            // House → Pallet Town: tile at square (3, 3), spawn back outside the door
+            palletHouse.Wraps.Add(new WrapDomain
+            {
+                WrapLoc = (3, 3),
+                TargetMap = palletTown,
+                SpawnLoc = (row: 9, col: 7), // one step south of the entrance
+            });
+
             return palletTown;
         }
 
-        // ── Pallet Town — 30×30, open town feel ──────────────────────────────
+        // ── Pallet Town — 30×30 ───────────────────────────────────────────────
         private static MapDomain BuildPalletTown()
         {
-            const int width = 30;
-            const int height = 30;
+            const int width = 30, height = 30;
             var grid = new int[height, width];
 
             Fill(grid, TileWalkable);
-
-            // Border walls — leave top row open (cols 13–16) as the north exit
             BorderWalls(grid, width, height, openNorthColStart: 13, openNorthColEnd: 17);
 
-            // Interior wall with a gap to create two rooms
+            // Interior walls
             for (int c = 1; c < 12; c++) grid[14, c] = TileBlocked;
             for (int c = 18; c < width - 1; c++) grid[14, c] = TileBlocked;
-
-            // Vertical wall segment
             for (int r = 6; r < 14; r++) grid[r, 20] = TileBlocked;
             for (int r = 6; r < 14; r++) grid[r, 21] = TileBlocked;
 
@@ -419,6 +430,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
             // Water
             FillRect(grid, 16, 20, 6, 8, TileWater);
+
+            // Warp tile — just sits on the ground
+            grid[18, 14] = TileWarp; // square (9,7)
 
             return new MapDomain
             {
@@ -432,29 +446,61 @@ namespace PokemonGame.ViewModels.ViewModelPage
             };
         }
 
-        // ── Route 1 — 30×20, tall grass route heading north ─────────────────
-        private static MapDomain BuildRoute1()
+        // ── Pallet House — 10×8 interior ─────────────────────────────────────
+        private static MapDomain BuildPalletHouse()
         {
-            const int width = 30;
-            const int height = 20;
-            var grid = new int[height, width];
+            const int width = 10, height = 8;
+            var grid = new int[height, width];  
 
             Fill(grid, TileWalkable);
 
-            // Border walls — leave bottom row open (cols 13–16) matching Pallet Town exit
+            // Four walls, no exits cut in — the warp tile IS the exit
+            for (int c = 0; c < width; c++)
+            {
+                grid[0, c] = TileBlocked;
+                grid[height - 1, c] = TileBlocked;
+            }
+            for (int r = 0; r < height; r++)
+            {
+                grid[r, 0] = TileBlocked;
+                grid[r, width - 1] = TileBlocked;
+            }
+
+            // A small table/counter in the middle so it doesn't look empty
+            FillRect(grid, 2, 3, 2, 4, TileBlocked);
+
+            // Exit warp tile at the south wall centre = tile (6,6) → square (3,3)
+            grid[6, 6] = TileWarp;
+
+            return new MapDomain
+            {
+                Name = "Pallet House",
+                Width = width,
+                Height = height,
+                BackgroundBlocks = Flatten(grid, width, height),
+                Blocks = new List<TileDomain>(),
+                ConnectedMaps = new List<ConnectedMapDomain>(),
+                Wraps = new List<WrapDomain>(),
+            };
+        }
+
+        // ── Route 1 — 30×20 (unchanged) ──────────────────────────────────────
+        private static MapDomain BuildRoute1()
+        {
+            const int width = 30, height = 20;
+            var grid = new int[height, width];
+
+            Fill(grid, TileWalkable);
             BorderWalls(grid, width, height, openSouthColStart: 13, openSouthColEnd: 17);
 
-            // Dense grass on both sides of a central path (cols 12–17 stay walkable)
             FillRect(grid, 2, 1, 16, 12, TileGrass);
             FillRect(grid, 2, 18, 16, 11, TileGrass);
 
-            // Rocky blocked sections breaking up the grass
             FillRect(grid, 4, 4, 2, 4, TileBlocked);
             FillRect(grid, 10, 6, 2, 4, TileBlocked);
             FillRect(grid, 6, 20, 2, 4, TileBlocked);
             FillRect(grid, 12, 22, 2, 4, TileBlocked);
 
-            // Small pond
             FillRect(grid, 14, 2, 4, 6, TileWater);
 
             return new MapDomain
@@ -469,7 +515,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             };
         }
 
-        // ── Helpers ──────────────────────────────────────────────────────────
+        // ── Helpers (unchanged) ───────────────────────────────────────────────
         private static void Fill(int[,] grid, int id)
         {
             int rows = grid.GetLength(0), cols = grid.GetLength(1);
@@ -489,13 +535,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
             }
             for (int c = 0; c < width; c++)
             {
-                // Top wall — skip open passage
-                if (c < openNorthColStart || c >= openNorthColEnd)
-                    grid[0, c] = TileBlocked;
-
-                // Bottom wall — skip open passage
-                if (c < openSouthColStart || c >= openSouthColEnd)
-                    grid[height - 1, c] = TileBlocked;
+                if (c < openNorthColStart || c >= openNorthColEnd) grid[0, c] = TileBlocked;
+                if (c < openSouthColStart || c >= openSouthColEnd) grid[height - 1, c] = TileBlocked;
             }
         }
 
