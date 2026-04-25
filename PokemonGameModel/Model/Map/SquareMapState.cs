@@ -64,21 +64,21 @@ namespace PokemonGame.Model.Model.Map
 
             // Hidden item on this square overrides tile collision
             var item = GetHiddenItemAt(squareRow, squareCol);
-            if (item != null && item.IsBlocking)
+            if (item != null && item.CollisionType == CollisionType.Unwalkable)
                 return CollisionType.Unwalkable;
 
             return square.SquareType;
         }
 
         // Returns the hidden item at a square if it exists and is still visible
-        public HiddenItemsDomain? GetHiddenItemAt(int squareRow, int squareCol)
+        public NpcObjectDomain? GetHiddenItemAt(int squareRow, int squareCol)
         {
-            return _activeMap.HiddenItems.FirstOrDefault(h =>
+            return _activeMap.Npc.FirstOrDefault(h =>
             {
                 var (itemSquareRow, itemSquareCol) = TileToSquare(h.Location.x, h.Location.y);
                 return itemSquareRow == squareRow &&
-                       itemSquareCol == squareCol &&
-                       h.IsVisible;
+                       itemSquareCol == squareCol
+                       ;
             });
         }
 
@@ -98,11 +98,11 @@ namespace PokemonGame.Model.Model.Map
             var item = GetHiddenItemAt(targetRow, targetCol);
             if (item != null)
             {
-                item.IsPickedUp = true;
+                item.IsDisappearing = true;
                 return new InspectResult
                 {
                     Type = InspectResultType.ItemPickup,
-                    Message = $"Found {item.Name}! {item.Description}",
+                    Message = $"Found {item.NpcInfo.Name}!",
                     TargetRow = targetRow,
                     TargetCol = targetCol,
                 };

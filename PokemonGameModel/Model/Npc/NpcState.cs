@@ -1,7 +1,7 @@
-﻿using PokemonGame.Model.Domain.NPC;
+﻿using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Pokemon;
 
-namespace PokemonGame.Model.Model
+namespace PokemonGame.Model.Model.Npc
 { 
     public class PokemontradingNpcState : NpcDomain
     {

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using PokemonGame.Model.Domain.Battle;
+﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 
-namespace PokemonGame.Model.Domain.NPC
+namespace PokemonGame.Model.Domain.Npc
 {
     public class NpcDomain
     {
+
         private readonly List<NpcDialogueState> _dialogueStates = new();
 
         public IReadOnlyList<NpcDialogueState> DialogueStates => _dialogueStates;
@@ -25,7 +23,7 @@ namespace PokemonGame.Model.Domain.NPC
         public DialogueSet? GetDialogue(TriggerType trigger, BattleState state) =>
             _dialogueStates.FirstOrDefault(d => d.IsMatch(trigger, state))?.DialogueSet;
         public NpcType? Type;
-
+        public string? Name;
 
     }
     public class NpcRewardDomain
@@ -89,7 +87,6 @@ namespace PokemonGame.Model.Domain.NPC
     }
     public class TrainerDomain
     {
-        public string name;
         public BotLevel AiType;
         public int BaseMoney;
     }

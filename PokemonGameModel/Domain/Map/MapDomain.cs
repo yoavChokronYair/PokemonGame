@@ -1,4 +1,5 @@
-﻿using PokemonGame.Model.Domain.Pokemon;
+﻿using PokemonGame.Model.Domain.Npc;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Map
@@ -20,7 +21,7 @@ namespace PokemonGame.Model.Domain.Map
         public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();//one per side 
         public List<WrapDomain> Wraps { get; set; } = new(); // for fly/town map/etc
         public List<EncounterDomain> Encounters { get; set; } = new();
-        public List<HiddenItemsDomain> HiddenItems { get; set; } = new();
+        public List<NpcObjectDomain> Npc { get; set; } = new();
     }
     public class WrapDomain
     {
@@ -59,5 +60,17 @@ namespace PokemonGame.Model.Domain.Map
         public bool IsVisible => DefaultState && !IsPickedUp;
         public bool IsBlocking => IsVisible; // blocks movement only while still there
 
+    }
+    public class NpcObjectDomain
+    {
+        public NpcDomain NpcInfo { get; set; }
+        public (int x, int y) Location { get; set; }
+        public CollisionType CollisionType { get; set; } = CollisionType.Unwalkable;
+        public MovementType movementType { get; set; }
+        public FacingDirection direction { get; set; }
+        public bool DefaultState { get; set; }
+        public bool IsDisappearing { get; set; }
+        public int visionRange { get; set; } = 0; // for trainer npcs, how far they can see the player to trigger battle
+        public VisionType VisionType { get; set; }
     }
 }

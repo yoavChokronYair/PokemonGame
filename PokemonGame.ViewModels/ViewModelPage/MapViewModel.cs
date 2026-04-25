@@ -303,14 +303,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 TargetMap = palletTown,
                 SpawnLoc = (row: 9, col: 7), // one step south of the entrance
             });
-            palletTown.HiddenItems.Add(new HiddenItemsDomain
-            {
-                Name = "Potion",
-                Description = "A spray-type medicine for treating wounds.",
-                Location = (6, 6),   // tile-space — square (3,3), right near spawn
-                DefaultState = true,     // visible and blocking from the start
-            });
-
+            
             return palletTown;
         }
 

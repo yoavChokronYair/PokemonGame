@@ -10,7 +10,7 @@ namespace PokemonGame.Model.Enums
     public enum TileType { Normal,Water,Branch,TallGrass,Rock,StrengthAble}
     public enum MapTilesType { Club = 0, Overworld = 1 }
     public enum ConnectionDirection { North, South, East, West }
-    public enum FacingDirection { Up, Down, Left, Right }
+    public enum FacingDirection { None,Up, Down, Left, Right }
     public enum InspectResultType
     {
         Nothing,
@@ -18,6 +18,7 @@ namespace PokemonGame.Model.Enums
         HmUsed,
         NeedHm,
     }
-
+    public enum MovementType { Stationery, Walking}
+    public enum VisionType { Normal, Dark, Flashlight }
 
 }
