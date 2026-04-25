@@ -7,7 +7,7 @@ namespace PokemonGame.Model.Enums
         JumpDown = 6,
         JumpUp = 7
     }
-    public enum TileType { Normal,Water}
+    public enum TileType { Normal,Water,Branch,TallGrass,Rock,StrengthAble}
     public enum MapTilesType { Club = 0, Overworld = 1 }
     public enum ConnectionDirection { North, South, East, West }
     public enum FacingDirection { Up, Down, Left, Right }
