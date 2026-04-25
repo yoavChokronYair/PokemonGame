@@ -48,19 +48,7 @@ namespace PokemonGame.Model.Domain.Map
         public int CatchRate { get; set; }
         public int femaleRatio { get; set; }
     }
-    public class HiddenItemsDomain
-    {
-        public string Name { get; set; }
-        public CollisionType CollisionType { get; set; } = CollisionType.Unwalkable;
-        public string Description { get; set; }
-        public (int x, int y) Location { get; set; }
-        public bool DefaultState { get; set; }
-        public bool IsPickedUp { get; set; } = false;
-
-        public bool IsVisible => DefaultState && !IsPickedUp;
-        public bool IsBlocking => IsVisible; // blocks movement only while still there
-
-    }
+    
     public class NpcObjectDomain
     {
         public NpcDomain NpcInfo { get; set; }
