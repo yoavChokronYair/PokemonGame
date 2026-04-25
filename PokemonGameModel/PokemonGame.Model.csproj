@@ -9,11 +9,8 @@
 
 	<ItemGroup>
 	  <Compile Remove="Model\BattleSystem\**" />
-	  <Compile Remove="Model\Map\**" />
 	  <EmbeddedResource Remove="Model\BattleSystem\**" />
-	  <EmbeddedResource Remove="Model\Map\**" />
 	  <None Remove="Model\BattleSystem\**" />
-	  <None Remove="Model\Map\**" />
 	</ItemGroup>
 
 	<ItemGroup>
