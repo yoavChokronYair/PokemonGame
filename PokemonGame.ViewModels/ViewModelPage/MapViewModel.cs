@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Threading;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
@@ -15,6 +16,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
     {
         private readonly MapManager _mapManager;
         private readonly PlayerDomain _player;
+        private readonly DispatcherTimer _npcTimer;
 
         private bool _isShowingBackground = true;
         private bool _isShowingForeground;
@@ -99,6 +101,17 @@ namespace PokemonGame.ViewModels.ViewModelPage
             MoveDownCommand = new MoveCommand(this, FacingDirection.Down);
             MoveLeftCommand = new MoveCommand(this, FacingDirection.Left);
             MoveRightCommand = new MoveCommand(this, FacingDirection.Right);
+            // In constructor, after RebuildGrid():
+            _npcTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500) // adjust speed here
+            };
+            _npcTimer.Tick += (_, _) =>
+            {
+                _mapManager.TickNpcs();
+                RefreshNpcs();
+            };
+            _npcTimer.Start();
 
             RebuildGrid();
         }
@@ -130,7 +143,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
             if (result.Success)
             {
-                _mapManager.TickNpcs();   // ← NPCs move once per player step
 
                 LastMoveResult = $"Moved {direction}";
 
@@ -403,25 +415,29 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 new NpcObjectDomain
                 {
                     NpcInfo       = new NpcDomain { Id = 2, Name = "Old Man" },
-                    Location      = (6, 20),                // tile-space (square 3,10)
+                    Location      = (6, 20),
                     MovementType  = MovementType.Stationery,
                     direction     = FacingDirection.Right,
+                    DirectionA    = FacingDirection.Right,
+                    DirectionB    = FacingDirection.Down,
                     CollisionType = CollisionType.Unwalkable,
-                    visionRange   = 0,
+                    visionRange   = 2,
+                    StepsPerLeg = 5,
+                    VisionType    = VisionType.Normal,
                 },
             };
 
-                    return new MapDomain
-                    {
-                        Name = "Pallet Town",
-                        Width = width,
-                        Height = height,
-                        BackgroundBlocks = Flatten(grid, width, height),
-                        Blocks = new List<TileDomain>(),
-                        ConnectedMaps = new List<ConnectedMapDomain>(),
-                        Wraps = new List<WrapDomain>(),
-                        Npc = npcs,
-                    };
+            return new MapDomain
+            {
+                Name = "Pallet Town",
+                Width = width,
+                Height = height,
+                BackgroundBlocks = Flatten(grid, width, height),
+                Blocks = new List<TileDomain>(),
+                ConnectedMaps = new List<ConnectedMapDomain>(),
+                Wraps = new List<WrapDomain>(),
+                Npc = npcs,
+            };
         }
 
         // ── Pallet House — 10×8 interior ─────────────────────────────────────
