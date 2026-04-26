@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using PokemonGame.Model.Domain.Map;
+using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Managers;
@@ -120,7 +121,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         {
             if (squareRow < TileRows.Count && squareCol < TileRows[squareRow].Cells.Count)
                 TileRows[squareRow].Cells[squareCol].Collision = collision;
-        } 
+        }
         // ── Movement — called by MoveCommand ────────────────────────────
         public void Move(FacingDirection direction)
         {
@@ -129,6 +130,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
             if (result.Success)
             {
+                _mapManager.TickNpcs();   // ← NPCs move once per player step
+
                 LastMoveResult = $"Moved {direction}";
 
                 if (_mapManager.ActiveMap != mapBefore)
@@ -137,12 +140,15 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 }
                 else
                 {
+                    RefreshNpcs();
                     Refresh();
                 }
-                if(result.WildEncounterTriggered)
-                {
+
+                if (result.WildEncounterTriggered)
                     LastMoveResult += " + Wild Encounter!";
-                }
+
+                if (result.SpottedByNpcId != 0)
+                    LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
             }
             else
             {
@@ -151,6 +157,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
             }
         }
 
+
+        // ── Called after same-map move ───────────────────────────────────────
         // ── Called after same-map move ───────────────────────────────────────
         public void Refresh()
         {
@@ -160,17 +168,38 @@ namespace PokemonGame.ViewModels.ViewModelPage
             OnPropertyChanged(nameof(FacingText));
         }
 
+        // ── Called after TickNpcs ────────────────────────────────────────────
+        public void RefreshNpcs()
+        {
+            for (int r = 0; r < TileRows.Count; r++)
+            {
+                var row = TileRows[r];
+                for (int c = 0; c < row.Cells.Count; c++)
+                {
+                    var cell = row.Cells[c];
+                    cell.NpcId = NpcIdAt(r, c);
+                    cell.NpcVisionId = (r < SquareMap.VisionLayer.GetLength(0) &&
+                                        c < SquareMap.VisionLayer.GetLength(1))
+                                       ? SquareMap.VisionLayer[r, c]
+                                       : 0;
+                }
+            }
+        }
+
         // ── Full rebuild after warp/connection ───────────────────────────────
+        // ── Inside MapViewModel ──────────────────────────────────────────────────────
+        // Replace RebuildGrid and UpdatePlayerMarker with these versions.
+        // Everything else in MapViewModel stays the same.
+
         public void RebuildGrid()
         {
             TileRows.Clear();
             _currentPlayerCell = null;
 
-            // ← fix: destructure all three layers
             var (bg, fg, vision) = _mapManager.GetViewport();
             var layer = _isShowingBackground ? bg : fg;
 
-            int viewRows = layer.GetLength(0);   // viewport dimensions
+            int viewRows = layer.GetLength(0);
             int viewCols = layer.GetLength(1);
 
             var (playerSr, playerSc) = SquareMap.TileToSquare(
@@ -184,8 +213,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 {
                     var square = SquareMap.GetSquare(r, c);
 
-                    // ← fix: viewport is indexed by viewport position, not raw tile coords.
-                    // The viewport is centered on the player; offset accordingly.
+                    // Map-space → viewport-space offset
                     int halfViewRows = viewRows / 2;
                     int halfViewCols = viewCols / 2;
                     int vr = r - playerSr + halfViewRows;
@@ -195,10 +223,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
                         ? layer[vr, vc]
                         : 0;
 
-                    // Vision layer is square-space (half resolution) — index directly
+                    // Vision layer is square-space — index directly
                     int visionId = (r < vision.GetLength(0) && c < vision.GetLength(1))
                         ? vision[r, c]
                         : 0;
+
+                    // NPC presence — check if any NPC occupies this square
+                    int npcId = NpcIdAt(r, c);
 
                     var cell = new TileCellViewModel
                     {
@@ -206,8 +237,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
                         Row = r,
                         Col = c,
                         Collision = square?.SquareType ?? CollisionType.Unwalkable,
-                        IsPlayerHere = (r == playerSr && c == playerSc),
+                        IsPlayerHere = r == playerSr && c == playerSc,
                         NpcVisionId = visionId,
+                        NpcId = npcId,
                     };
 
                     if (cell.IsPlayerHere)
@@ -229,14 +261,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
             OnPropertyChanged(nameof(FacingText));
         }
 
-        // ── Internals ────────────────────────────────────────────────────────
-        internal void SwitchLayer(bool background)
-        {
-            IsShowingBackground = background;
-            IsShowingForeground = !background;
-            RebuildGrid();
-        }
-
         private void UpdatePlayerMarker()
         {
             if (_currentPlayerCell != null)
@@ -250,12 +274,31 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 _currentPlayerCell = TileRows[sr].Cells[sc];
                 _currentPlayerCell.IsPlayerHere = true;
 
-                // Keep vision in sync on light refresh too
-                int visionId = SquareMap.VisionLayer[sr, sc];
-                _currentPlayerCell.NpcVisionId = visionId;
+                // Sync vision and NPC presence on light refresh
+                _currentPlayerCell.NpcVisionId = SquareMap.VisionLayer[sr, sc];
+                _currentPlayerCell.NpcId = NpcIdAt(sr, sc);
             }
 
             CollisionAtCursor = SquareMap.GetCollision(sr, sc).ToString();
+        }
+
+        /// Returns the NPC Id if any NPC is standing on this square, else 0.
+        private int NpcIdAt(int squareRow, int squareCol)
+        {
+            var npc = _mapManager.ActiveMap.Npc.FirstOrDefault(n =>
+            {
+                var (r, c) = SquareMap.TileToSquare(n.Location.x, n.Location.y);
+                return r == squareRow && c == squareCol;
+            });
+            return npc?.NpcInfo.Id ?? 0;
+        }
+
+        // ── Internals ────────────────────────────────────────────────────────
+        internal void SwitchLayer(bool background)
+        {
+            IsShowingBackground = background;
+            IsShowingForeground = !background;
+            RebuildGrid();
         }
     }
 
@@ -336,18 +379,49 @@ namespace PokemonGame.ViewModels.ViewModelPage
             // Jump down ledge — tile row 8, cols 2–10
             for (int c = 2; c <= 10; c++) grid[8, c] = TileJumpDown;
 
-            // Jump right ledge — tile col 8, rows 2–6 (right next to spawn)
+            // ── NPCs ─────────────────────────────────────────────────────────────────
 
-            return new MapDomain
+            var npcs = new List<NpcObjectDomain>
             {
-                Name = "Pallet Town",
-                Width = width,
-                Height = height,
-                BackgroundBlocks = Flatten(grid, width, height),
-                Blocks = new List<TileDomain>(),
-                ConnectedMaps = new List<ConnectedMapDomain>(),
-                Wraps = new List<WrapDomain>(),
+                // Youngster Joey — patrols 4 squares up/down near the grass patch,
+                // facing the player with a 3-square sight line
+                new NpcObjectDomain
+                {
+                    NpcInfo       = new NpcDomain { Id = 1, Name = "Youngster Joey" },
+                    Location      = (12, 8),                // tile-space start (square 6,4)
+                    MovementType  = MovementType.Walking,
+                    direction     = FacingDirection.Up,
+                    DirectionA    = FacingDirection.Up,
+                    DirectionB    = FacingDirection.Down,
+                    StepsPerLeg   = 4,
+                    CollisionType = CollisionType.Unwalkable,
+                    visionRange   = 3,
+                    VisionType    = VisionType.Normal,
+                },
+
+                // Old Man — stationary, faces right, no vision
+                new NpcObjectDomain
+                {
+                    NpcInfo       = new NpcDomain { Id = 2, Name = "Old Man" },
+                    Location      = (6, 20),                // tile-space (square 3,10)
+                    MovementType  = MovementType.Stationery,
+                    direction     = FacingDirection.Right,
+                    CollisionType = CollisionType.Unwalkable,
+                    visionRange   = 0,
+                },
             };
+
+                    return new MapDomain
+                    {
+                        Name = "Pallet Town",
+                        Width = width,
+                        Height = height,
+                        BackgroundBlocks = Flatten(grid, width, height),
+                        Blocks = new List<TileDomain>(),
+                        ConnectedMaps = new List<ConnectedMapDomain>(),
+                        Wraps = new List<WrapDomain>(),
+                        Npc = npcs,
+                    };
         }
 
         // ── Pallet House — 10×8 interior ─────────────────────────────────────

@@ -48,17 +48,27 @@ namespace PokemonGame.Model.Domain.Map
         public int CatchRate { get; set; }
         public int femaleRatio { get; set; }
     }
-    
+
     public class NpcObjectDomain
     {
         public NpcDomain NpcInfo { get; set; }
         public (int x, int y) Location { get; set; }
         public CollisionType CollisionType { get; set; } = CollisionType.Unwalkable;
-        public MovementType movementType { get; set; }
-        public FacingDirection direction { get; set; }
+        public MovementType MovementType { get; set; }
+
+        // ── Facing ──────────────────────────────────────────────────────────────
+        public FacingDirection direction { get; set; }      // current facing (also used for vision)
+
+        // ── Walking ─────────────────────────────────────────────────────────────
+        public FacingDirection DirectionA { get; set; }     // first leg  e.g. Up
+        public FacingDirection DirectionB { get; set; }     // second leg e.g. Down
+        public int StepsPerLeg { get; set; }                // steps before flipping
+        public int StepsWalked { get; set; }                // internal counter — don't set manually
+
+        // ── Other ────────────────────────────────────────────────────────────────
         public bool DefaultState { get; set; }
         public bool IsDisappearing { get; set; }
-        public int visionRange { get; set; } = 0; // for trainer npcs, how far they can see the player to trigger battle
+        public int visionRange { get; set; } = 0;
         public VisionType VisionType { get; set; }
     }
 }

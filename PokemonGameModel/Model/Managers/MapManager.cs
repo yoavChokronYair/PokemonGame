@@ -30,6 +30,7 @@ namespace PokemonGame.Model.Model.Managers
 
             return _squareMapState.TryInspect(squareRow, squareCol, _player.FacingDirection);
         }
+        public void TickNpcs() => _squareMapState.TickNpcs();
 
         // ---------------------------------------------------------------
         // Map loading
