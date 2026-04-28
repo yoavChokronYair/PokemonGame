@@ -12,7 +12,8 @@ namespace PokemonGame.Model.Model.Map
         private MapDomain _map;
         private SquareMapState _squareMap;
         private Action<NpcObjectDomain>? _spottedHandler;
-
+        private readonly HashSet<int> _engagedNpcs = new();
+        private readonly HashSet<int> _alreadySpotted = new();
 
         public NpcState(MapDomain map, SquareMapState squareMap)
         {
@@ -24,8 +25,9 @@ namespace PokemonGame.Model.Model.Map
         {
             _map = map;
             _squareMap = squareMap;
+            _engagedNpcs.Clear();   // ← add
+            _alreadySpotted.Clear();
         }
-        private readonly HashSet<int> _alreadySpotted = new();
         public void SetSpottedHandler(Action<NpcObjectDomain> handler)
             => _spottedHandler = handler;
         // ---------------------------------------------------------------
@@ -35,7 +37,7 @@ namespace PokemonGame.Model.Model.Map
         {
             foreach (var npc in _map.Npc)
             {
-                if (_alreadySpotted.Contains(npc.NpcInfo.Id)) continue;  // ← add this line
+                if (_engagedNpcs.Contains(npc.NpcInfo.Id)) continue;  // ← change from _alreadySpotted
                 switch (npc.MovementType)
                 {
                     case MovementType.Walking:
@@ -58,6 +60,7 @@ namespace PokemonGame.Model.Model.Map
                 if (!_alreadySpotted.Contains(spottedById))
                 {
                     _alreadySpotted.Add(spottedById);
+                    _engagedNpcs.Add(spottedById);
                     var spotter = _map.Npc.FirstOrDefault(n => n.NpcInfo.Id == spottedById);
                     if (spotter != null)
                         _spottedHandler?.Invoke(spotter);

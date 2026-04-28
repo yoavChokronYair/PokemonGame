@@ -351,7 +351,7 @@ namespace PokemonGame.Model.Model.Map
             int steps = Math.Max(Math.Abs(dr), Math.Abs(dc));
             if (steps == 0) return true;
 
-            for (int i = 1; i < steps; i++)   // < steps: don't check the destination itself
+            for (int i = 1; i < steps; i++)   // < steps: don't check the destination itselfed
             {
                 int r = fromRow + (int)Math.Round((double)dr * i / steps);
                 int c = fromCol + (int)Math.Round((double)dc * i / steps);
