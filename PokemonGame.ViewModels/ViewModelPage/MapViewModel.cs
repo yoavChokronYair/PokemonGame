@@ -1,7 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
@@ -96,7 +94,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public PickChoiceCommand PickChoice2Command { get; }
         public PickChoiceCommand PickChoice3Command { get; }
 
-        // in constructor:
 
         // ── Constructor ─────────────────────────────────────────────────────
         public MapViewModel()
@@ -132,9 +129,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     RefreshNpcs();
                 });
             };
-
-
-
+            
             // Replace Dialogue open/close timer calls:
             Dialogue.DialogueOpened += () => ClockManager.Instance.Pause();
             Dialogue.DialogueClosed += () =>
@@ -382,9 +377,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
         }
     }
 
-    // -----------------------------------------------------------------------
-    // MapBootstrap — two connected maps: Pallet Town (south) ↔ Route 1 (north)
-    // -----------------------------------------------------------------------
     public static class MapBootstrap
     {
         private const int TileWalkable = 1;
