@@ -18,7 +18,6 @@ namespace PokemonGame.Model.Domain.Pokemon
             }
 
             _slots = roster.ToArray();
-            _slots = roster.ToArray();
             _activeIndex = 0;
         }
         public PokemonState GetPokemonAt(int index) => _slots[index];
@@ -118,6 +117,38 @@ namespace PokemonGame.Model.Domain.Pokemon
         public bool AnyPokemonKnows(string moveName)
         {
             return _slots.Any(s => s.Moves.Any(m => ((MoveState)m).Name == moveName));
+        }
+        public void HealAll()
+        {
+            foreach (var pokemon in _slots)
+            {
+                if (pokemon == null) continue;
+
+                pokemon.CurrentHP = pokemon.MaxHP;
+
+                // Clear status
+                pokemon.ClearStatus();
+
+                // Reset battle-only state (important!)
+                pokemon.ResetStatStages();
+                pokemon.VolatileStatuses.Clear();
+
+                // Reset temporary combat flags
+                pokemon.LastDamageDealt = 0;
+                pokemon.LastDamageTaken = 0;
+
+                // Reset multipliers (optional but recommended)
+                // You don’t have direct reset methods, so either:
+                // 1. add a ResetMultipliers() method
+                // OR
+                // 2. leave as-is if they only matter in battle context
+
+                // Reset turns active
+                pokemon.turnsActive = 0;
+
+                // TODO: restore PP when you implement it
+                // pokemon.RestoreAllPP();
+            }
         }
     }
 }

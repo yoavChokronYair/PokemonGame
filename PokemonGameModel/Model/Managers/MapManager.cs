@@ -13,7 +13,7 @@ namespace PokemonGame.Model.Model.Managers
         // ---------------------------------------------------------------
         private MapState _mapState;
         private SquareMapState _squareMapState;
-        private NpcState _npcState;
+        private MapNpc _npcState;
         private readonly PlayerDomain _player;
 
         public MapDomain ActiveMap => _player.CurrentMap;
@@ -40,7 +40,7 @@ namespace PokemonGame.Model.Model.Managers
             _squareMapState = new SquareMapState(map);
 
             if (_npcState == null)
-                _npcState = new NpcState(map, _squareMapState);
+                _npcState = new MapNpc(map, _squareMapState);
             else
                 _npcState.OnMapChanged(map, _squareMapState);
         }

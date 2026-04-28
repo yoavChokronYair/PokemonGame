@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using PokemonGame.Model.Domain.Map;
+﻿using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
+
 
 namespace PokemonGame.Model.Model.Map
 {
-    public class NpcState
+    public class MapNpc
     {
         private MapDomain _map;
         private SquareMapState _squareMap;
@@ -15,7 +12,7 @@ namespace PokemonGame.Model.Model.Map
         private readonly HashSet<int> _engagedNpcs = new();
         private readonly HashSet<int> _alreadySpotted = new();
 
-        public NpcState(MapDomain map, SquareMapState squareMap)
+        public MapNpc(MapDomain map, SquareMapState squareMap)
         {
             _map = map;
             _squareMap = squareMap;
@@ -66,10 +63,7 @@ namespace PokemonGame.Model.Model.Map
                         _spottedHandler?.Invoke(spotter);
                 }
             }
-            else
-            {
-                _alreadySpotted.Clear();
-            }
+            
         }
 
         // ---------------------------------------------------------------
