@@ -1,4 +1,5 @@
 ﻿using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 
@@ -27,14 +28,26 @@ namespace PokemonGame.Model.Domain.Dialogue
         public string ChoiceText { get; }
         public DialogueNode ToNode { get; }
 
+        // null = always passable (choice edge), non-null = evaluated by runner
+        public ICondition<PokemonTeam>? Condition { get; }
+
+        // Choice edge (no condition)
         public DialogueEdge(string choiceText, DialogueNode toNode)
         {
             ChoiceText = choiceText ?? throw new ArgumentNullException(nameof(choiceText));
             ToNode = toNode ?? throw new ArgumentNullException(nameof(toNode));
         }
+
+        // Condition edge
+        public DialogueEdge(string choiceText, DialogueNode toNode, ICondition<PokemonTeam> condition)
+            : this(choiceText, toNode)
+        {
+            Condition = condition;
+        }
+
+        public bool CanTraverse(PokemonTeam team) =>
+            Condition is null || Condition.Check(team);
     }
-
-
 
     // ── Graph nodes ──────────────────────────────────────────────────────────
 
@@ -62,9 +75,10 @@ namespace PokemonGame.Model.Domain.Dialogue
 
         public void AddEdge(DialogueEdge edge) =>
             _outgoingEdges.Add(edge ?? throw new ArgumentNullException(nameof(edge)));
-
+        public IEnumerable<DialogueEdge> GetValidEdges(PokemonTeam team) =>
+            _outgoingEdges.Where(e => e.CanTraverse(team));
         /// <summary>Edges whose condition passes for the given state.</summary>
-     
+
     }
 
     // ── Dialogue graph ───────────────────────────────────────────────────────

@@ -26,7 +26,7 @@ namespace PokemonGame.Model.Domain.Npc
         }
 
         public NpcType? Type;
-        public string? Name;
+        public string? Name;    
         public int Id;
     }
     public class ItemGivingDomain
@@ -50,7 +50,6 @@ namespace PokemonGame.Model.Domain.Npc
             }
             PlayerDomain.Instance.BagInventory[_item]++;
         }
-
     }
 
     public class TrainerDomain
@@ -58,5 +57,6 @@ namespace PokemonGame.Model.Domain.Npc
         public int id { get; set; }
         public BotLevel AiType;
         public int BaseMoney;
+        public TrainerClass TrainerClass;
     }
 }

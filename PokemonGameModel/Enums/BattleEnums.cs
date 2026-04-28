@@ -12,5 +12,26 @@ namespace PokemonGame.Model.Enums
     public enum Stat { Attack, Defense, SpecialAttack, SpecialDefense, Speed, Accuracy, Evasion }
     public enum StatusCondition { None, Paralysis, Burn, Poison, Toxic, Sleep, Freeze }
     public enum VolatileStatus { Confusion, Flinch, Infatuation, Curse, LeechSeed, SmackDown, Ingrain,None }
-    public enum BotLevel { Easy, Medium, Hard }
+    public enum BotLevel
+    {
+        Easy, Medium, Hard,
+        //game
+        Wild,
+        BasicTrainer,
+        AdvancedTrainer,
+        GymLeader,
+        EliteFour,
+        Champion
+    }
+    public enum TrainerClass
+    {
+        BugCatcher,
+        Lass,
+        Hiker,
+        GymLeader,
+        EliteFour,
+        Champion,
+        Rival
+    }
+
 }

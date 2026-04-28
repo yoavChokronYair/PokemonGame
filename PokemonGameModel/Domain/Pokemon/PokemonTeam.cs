@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Core.Config;
 using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -42,6 +43,56 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int GetAlivePokemonCount() => Alive.Count();
         public int getAllPokemonCount() => All.Count();
 
+        public bool ContainsPokemon(int pokedexId)
+        {
+            return _slots.Any(p => p.PokedexId == pokedexId);
+        }
+        public int GetPokemonIndex(int pokedexId)
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                if (_slots[i].PokedexId == pokedexId)
+                    return i;
+            }
+
+            return -1; // not found
+        }
+        //TODO:add proper evolution handling here, this is just a placeholder to get the flow working
+        public bool TradePokemon(PokemonState currentPokemon, PokemonState newPokemon)
+        {
+            if (currentPokemon == null || newPokemon == null)
+                return false;
+
+            int index = Array.IndexOf(_slots, currentPokemon);
+
+            if (index == -1)
+                return false;
+
+            _slots[index] = newPokemon;
+
+            FixActiveAfterTrade();
+            if(newPokemon.Evolution.TriggerType == EvoTriggerType.Trade)
+            {
+
+            }
+            return true;
+        }
+        private void FixActiveAfterTrade()
+        {
+            if (_slots[_activeIndex] != null && !_slots[_activeIndex].IsFainted)
+                return;
+
+            for (int i = 0; i < PokemonConstants.PartyCapacity; i++)
+            {
+                if (_slots[i] != null && !_slots[i].IsFainted)
+                {
+                    _activeIndex = i;
+                    return;
+                }
+            }
+
+            _activeIndex = 0;
+        }
 
         // ── Switching ─────────────────────────────────────────────────────────
 

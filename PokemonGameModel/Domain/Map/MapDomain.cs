@@ -15,8 +15,8 @@ namespace PokemonGame.Model.Domain.Map
         public TileDomain DefultBlockID { get; set; }
         public string Song { get; set; }
 
-        public int[,] FlyWrapLoc = new int[1, 1];   
-        public int[,] TownMapLoc = new int[1, 1];
+        public (int x, int y) FlyWrapLoc { get; set; }
+        public (int x, int y) TownMapLoc { get; set; }
         public MapTilesType TilesType { get; set; }
         public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();//one per side 
         public List<WrapDomain> Wraps { get; set; } = new(); // for fly/town map/etc

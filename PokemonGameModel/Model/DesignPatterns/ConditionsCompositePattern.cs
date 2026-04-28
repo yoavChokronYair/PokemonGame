@@ -275,8 +275,15 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         public bool Check(PokemonState pokemon) => pokemon.IsFainted;
     }
+
     // status
-    
+    // ── TeamState Implementations ────────────────────────────────────────────────
+    public class TeamHasPokemon : ICondition<PokemonTeam>
+    {
+        private readonly int _pokedexId;
+        public TeamHasPokemon(int pokedexId) { _pokedexId = pokedexId; }
+        public bool Check(PokemonTeam battle) => battle.ContainsPokemon(_pokedexId);
+    }
     // ── Target Implementations ────────────────────────────────────────────────
     // ITarget interface lives in Interface/Move/IConditionAndTarget.cs.
 

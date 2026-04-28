@@ -18,13 +18,21 @@ namespace PokemonGame.Model.Enums
     {
         Text,
         Choice,
-        Event
+        Condition,
+        Terminal//(Terminal → triggers OnDialogueFinishedTrue)
     }
 
-    public enum DialogueSetType          // was: dialogueSetType  (PascalCase)
+    public enum DialogueSetType         
     {
         MainStory,
         SideQuest,
-        NpcInteraction                   // was: NPCInteraction
+        NpcInteraction,           
+        Trade,
+        ItemGiver,
+        Shop,
+        Pokecenter,
+        Trainer,
+        GymLeader
+
     }
 }
