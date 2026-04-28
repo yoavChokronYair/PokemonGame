@@ -152,6 +152,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\BoolToCloseNextConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\CategoryToImageConverter.cs" />
     <Compile Include="Converters\IntEqualsConverter.cs" />
@@ -226,6 +227,9 @@
     </Compile>
     <Compile Include="Views\UserControls\BattleMenu\PokemonBattleStatusControl.xaml.cs">
       <DependentUpon>PokemonBattleStatusControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\DialogueBoxControl.xaml.cs">
+      <DependentUpon>DialogueBoxControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\EvIvEditorUserControl.xaml.cs">
       <DependentUpon>EvIvEditorUserControl.xaml</DependentUpon>
@@ -345,6 +349,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserControls\BattleMenu\PokemonBattleStatusControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\DialogueBoxControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

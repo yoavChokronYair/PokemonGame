@@ -1,14 +1,11 @@
-﻿using PokemonGame.Model.Domain.Battle;
-using PokemonGame.Model.Domain.Dialogue;
+﻿using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Domain.Npc
 {
     public class NpcDomain
     {
-
         private readonly List<NpcDialogueState> _dialogueStates = new();
 
         public IReadOnlyList<NpcDialogueState> DialogueStates => _dialogueStates;
@@ -16,24 +13,20 @@ namespace PokemonGame.Model.Domain.Npc
         public void AddDialogueState(NpcDialogueState state) =>
             _dialogueStates.Add(state ?? throw new ArgumentNullException(nameof(state)));
 
-        /// <summary>
-        /// Returns the first <see cref="DialogueSet"/> whose trigger and condition
-        /// match the current game state, or <c>null</c> if none apply.
-        /// </summary>
-        public DialogueSet? GetDialogue(TriggerType trigger, BattleState state) =>
-            _dialogueStates.FirstOrDefault(d => d.IsMatch(trigger, state))?.DialogueSet;
+        public DialogueSet? GetDialogue(TriggerType trigger) =>
+            _dialogueStates.FirstOrDefault(d => d.IsMatch(trigger))?.DialogueSet;
+
         public NpcType? Type;
         public string? Name;
         public int Id;
-
     }
+
     public class NpcRewardDomain
     {
-        public TriggerType TriggerType { get; }         // reuses your existing enum
+        public TriggerType TriggerType { get; }
         public RewardType RewardType { get; }
-        public int RewardValue { get; }                 // what item
+        public int RewardValue { get; }
         public bool IsRepeatable { get; }
-        public ICondition<BattleState>? Condition { get; }
 
         private bool _hasBeenClaimed;
 
@@ -41,54 +34,46 @@ namespace PokemonGame.Model.Domain.Npc
             TriggerType triggerType,
             RewardType rewardType,
             int rewardValue,
-            bool isRepeatable,
-            ICondition<BattleState>? condition = null)
+            bool isRepeatable)
         {
             TriggerType = triggerType;
             RewardType = rewardType;
             RewardValue = rewardValue;
             IsRepeatable = isRepeatable;
-            Condition = condition;
         }
 
-        /// <summary>
-        /// Whether this reward can be granted right now.
-        /// Accounts for repeatability and the optional condition.
-        /// </summary>
-        public bool IsAvailable(BattleState state) =>
-            (IsRepeatable || !_hasBeenClaimed) &&
-            (Condition is null || Condition.Check(state));
+        public bool IsAvailable() => IsRepeatable || !_hasBeenClaimed;
 
-        /// <summary>
-        /// Marks the reward as claimed. No-op if already claimed and non-repeatable.
-        /// </summary>
         public void Claim()
         {
             if (!IsRepeatable && _hasBeenClaimed)
                 throw new InvalidOperationException(
-                    $"Reward is not repeatable and has already been claimed.");
+                    "Reward is not repeatable and has already been claimed.");
 
             _hasBeenClaimed = true;
         }
     }
+
     public class ItemGivingDomain
     {
         private readonly itemsDomain _item;
-        public ICondition<BattleState>? Condition { get; }
-
         private bool _hasBeenGiven;
 
+        public bool IsAvailable() => !_hasBeenGiven;
 
-        /// <summary>Items can only be given once (no repeatable flag in the schema).</summary>
-        public bool IsAvailable(BattleState state) =>
-            !_hasBeenGiven &&
-            (Condition is null || Condition.Check(state));
+        public void Give()
+        {
+            if (_hasBeenGiven)
+                throw new InvalidOperationException(
+                    "Item has already been given.");
 
-
+            _hasBeenGiven = true;
+        }
     }
+
     public class TrainerDomain
     {
-                public BotLevel AiType;
+        public BotLevel AiType;
         public int BaseMoney;
     }
 }

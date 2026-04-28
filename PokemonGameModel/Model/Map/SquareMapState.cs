@@ -1,4 +1,6 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
@@ -11,6 +13,8 @@ namespace PokemonGame.Model.Model.Map
         public string Message { get; set; } = string.Empty;
         public int TargetRow { get; set; }
         public int TargetCol { get; set; }
+        public DialogueSet? DialogueSet { get; set; }
+        public string NpcName { get; set; } = string.Empty;  // ← add
     }
 
     public class MoveResult
@@ -188,20 +192,19 @@ namespace PokemonGame.Model.Model.Map
         {
             var (targetRow, targetCol) = StepInDirection(fromRow, fromCol, facing);
 
-            // ── Hidden item ─────────────────────────────────────────────────────
-            var item = GetPickupAt(targetRow, targetCol);
-            if (item != null)
+            // ── NPC dialogue ────────────────────────────────────────────────────
+            var npc = GetNpcAt(targetRow, targetCol);
+            if (npc != null)
             {
-                item.IsDisappearing = true;
-                return new InspectResult
-                {
-                    Type = InspectResultType.ItemPickup,
-                    Message = $"Found {item.NpcInfo.Name}!",
-                    TargetRow = targetRow,
-                    TargetCol = targetCol,
-                };
+                var set = npc.NpcInfo.GetDialogue(TriggerType.Inspect);
+                if (set != null)
+                    return new InspectResult
+                    {
+                        Type = InspectResultType.NpcDialogue,
+                        DialogueSet = set,
+                        NpcName = npc.NpcInfo.Name ?? string.Empty,
+                    };
             }
-
             // ── HM tile ─────────────────────────────────────────────────────────
             var square = GetSquare(targetRow, targetCol);
             if (square != null && square.SquareType == CollisionType.HM)
@@ -229,6 +232,16 @@ namespace PokemonGame.Model.Model.Map
             }
 
             return new InspectResult { Type = InspectResultType.Nothing };
+        }
+
+        // Add this helper alongside GetPickupAt:
+        public NpcObjectDomain? GetNpcAt(int squareRow, int squareCol)
+        {
+            return _activeMap.Npc.FirstOrDefault(npc =>
+            {
+                var (r, c) = TileToSquare(npc.Location.x, npc.Location.y);
+                return r == squareRow && c == squareCol;
+            });
         }
 
         public void ClearTile(int squareRow, int squareCol)

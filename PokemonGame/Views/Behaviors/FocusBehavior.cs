@@ -1,13 +1,12 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using PokemonGame.ViewModels.ViewModelPage;
 
 namespace PokemonGame.View.Behaviors
 {
-    /// <summary>
-    /// Attached property that calls Focus() on any UIElement when it is loaded.
-    /// Usage in XAML:  behaviors:FocusBehavior.FocusOnLoad="True"
-    /// </summary>
     public static class FocusBehavior
     {
+        // ── Focus on load ─────────────────────────────────────────────────
         public static readonly DependencyProperty FocusOnLoadProperty =
             DependencyProperty.RegisterAttached(
                 "FocusOnLoad",
@@ -24,11 +23,43 @@ namespace PokemonGame.View.Behaviors
         private static void OnFocusOnLoadChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is FrameworkElement element)) return;
-
             if ((bool)e.NewValue)
                 element.Loaded += (sender, args) => element.Focus();
             else
                 element.Loaded -= (sender, args) => element.Focus();
+        }
+
+        // ── Register focus target on MapViewModel ─────────────────────────
+        public static readonly DependencyProperty RegisterFocusTargetProperty =
+            DependencyProperty.RegisterAttached(
+                "RegisterFocusTarget",
+                typeof(bool),
+                typeof(FocusBehavior),
+                new PropertyMetadata(false, OnRegisterFocusTargetChanged));
+
+        public static bool GetRegisterFocusTarget(UIElement element) =>
+            (bool)element.GetValue(RegisterFocusTargetProperty);
+
+        public static void SetRegisterFocusTarget(UIElement element, bool value) =>
+            element.SetValue(RegisterFocusTargetProperty, value);
+
+        private static void OnRegisterFocusTargetChanged(DependencyObject d,
+            DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is FrameworkElement element)) return;
+            if (!(bool)e.NewValue) return;
+
+            element.DataContextChanged += (sender, args) =>
+            {
+                if (args.NewValue is MapViewModel vm)
+                    vm.RegisterFocusCallback(() => element.Focus());
+            };
+
+            element.Loaded += (sender, args) =>
+            {
+                if (element.DataContext is MapViewModel vm)
+                    vm.RegisterFocusCallback(() => element.Focus());
+            };
         }
     }
 }

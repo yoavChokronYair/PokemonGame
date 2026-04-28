@@ -10,6 +10,7 @@ namespace PokemonGame.Model.Domain.Dialogue
     {
         public string Text { get; }
 
+
         public DialogueLine(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
@@ -25,19 +26,15 @@ namespace PokemonGame.Model.Domain.Dialogue
     {
         public string ChoiceText { get; }
         public DialogueNode ToNode { get; }
-        public ICondition<BattleState>? Condition { get; }
 
-        public DialogueEdge(string choiceText, DialogueNode toNode,
-                            ICondition<BattleState>? condition = null)
+        public DialogueEdge(string choiceText, DialogueNode toNode)
         {
             ChoiceText = choiceText ?? throw new ArgumentNullException(nameof(choiceText));
             ToNode = toNode ?? throw new ArgumentNullException(nameof(toNode));
-            Condition = condition;
         }
-
-        public bool IsAvailable(BattleState state) =>
-            Condition is null || Condition.Check(state);
     }
+
+
 
     // ── Graph nodes ──────────────────────────────────────────────────────────
 
@@ -51,8 +48,7 @@ namespace PokemonGame.Model.Domain.Dialogue
 
         // Set by DialogueSet.AddNode — read-only from the outside.
         public DialogueSet? ParentSet { get; private set; }
-
-        public IReadOnlyList<DialogueEdge> OutgoingEdges => _outgoingEdges;
+        public IEnumerable<DialogueEdge> AvailableEdges() => _outgoingEdges;
 
         public DialogueNode(DialogueNodeType type, DialogueLine line, int sequenceIndex)
         {
@@ -68,8 +64,7 @@ namespace PokemonGame.Model.Domain.Dialogue
             _outgoingEdges.Add(edge ?? throw new ArgumentNullException(nameof(edge)));
 
         /// <summary>Edges whose condition passes for the given state.</summary>
-        public IEnumerable<DialogueEdge> AvailableEdges(BattleState state) =>
-            _outgoingEdges.Where(e => e.IsAvailable(state));
+     
     }
 
     // ── Dialogue graph ───────────────────────────────────────────────────────
@@ -99,19 +94,15 @@ namespace PokemonGame.Model.Domain.Dialogue
 
     public class NpcDialogueState
     {
-        public TriggerType Trigger { get; }            // was: Type (ambiguous)
-        public ICondition<BattleState>? Condition { get; }
+        public TriggerType Trigger { get; }
         public DialogueSet DialogueSet { get; }
 
-        public NpcDialogueState(TriggerType trigger, DialogueSet dialogueSet,
-                                ICondition<BattleState>? condition = null)
+        public NpcDialogueState(TriggerType trigger, DialogueSet dialogueSet)
         {
             Trigger = trigger;
             DialogueSet = dialogueSet ?? throw new ArgumentNullException(nameof(dialogueSet));
-            Condition = condition;
         }
 
-        public bool IsMatch(TriggerType trigger, BattleState state) =>
-            Trigger == trigger && (Condition is null || Condition.Check(state));
+        public bool IsMatch(TriggerType trigger) => Trigger == trigger;
     }
 }

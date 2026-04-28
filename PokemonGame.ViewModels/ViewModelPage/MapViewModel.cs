@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Threading;
+using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
@@ -7,6 +8,7 @@ using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Model.Model.Map;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.ViewModels.ViewModelPage.Dialogue;
 using PokemonGame.ViewModels.ViewModelPage.Map;
 using PokemonGame.ViewModels.ViewModelPage.Map.Command;
 
@@ -18,11 +20,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private readonly PlayerDomain _player;
         private readonly DispatcherTimer _npcTimer;
 
+
         private bool _isShowingBackground = true;
         private bool _isShowingForeground;
         private string _collisionAtCursor = string.Empty;
         private string _lastMoveResult = string.Empty;
         private TileCellViewModel? _currentPlayerCell;
+        public DialogueViewModel Dialogue { get; } = new();
         private SquareMapState SquareMap => _mapManager.SquareMap;
 
         public ObservableCollection<TileRowViewModel> TileRows { get; } = new();
@@ -73,6 +77,11 @@ namespace PokemonGame.ViewModels.ViewModelPage
         }
 
         // ── Commands ────────────────────────────────────────────────────────
+        private Action? _focusCallback;
+
+        // Called by the behavior to register itself
+        public void RegisterFocusCallback(Action focus) => _focusCallback = focus;
+
         public ShowLayerCommand ShowBackgroundCommand { get; }
         public ShowLayerCommand ShowForegroundCommand { get; }
 
@@ -81,6 +90,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public MoveCommand MoveLeftCommand { get; }
         public MoveCommand MoveRightCommand { get; }
         public InspectCommand InspectCommand { get; }
+        public PickChoiceCommand PickChoice1Command { get; }
+        public PickChoiceCommand PickChoice2Command { get; }
+        public PickChoiceCommand PickChoice3Command { get; }
 
         // in constructor:
 
@@ -101,6 +113,11 @@ namespace PokemonGame.ViewModels.ViewModelPage
             MoveDownCommand = new MoveCommand(this, FacingDirection.Down);
             MoveLeftCommand = new MoveCommand(this, FacingDirection.Left);
             MoveRightCommand = new MoveCommand(this, FacingDirection.Right);
+            PickChoice1Command = new PickChoiceCommand(this, 0);
+            PickChoice2Command = new PickChoiceCommand(this, 1);
+            PickChoice3Command = new PickChoiceCommand(this, 2);
+            Dialogue.FocusRequested += () => _focusCallback?.Invoke();
+
             // In constructor, after RebuildGrid():
             _npcTimer = new DispatcherTimer
             {
@@ -118,6 +135,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         public void Inspect()
         {
+            // If dialogue is open the confirm key advances it instead of inspecting
+            if (Dialogue.IsOpen)
+            {
+                Dialogue.Advance();
+                return;
+            }
+
             var result = _mapManager.TryInspect();
             InspectResult = result.Message;
 
@@ -126,6 +150,11 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 case InspectResultType.ItemPickup:
                 case InspectResultType.HmUsed:
                     UpdateTileCollision(result.TargetRow, result.TargetCol, CollisionType.None);
+                    break;
+
+                case InspectResultType.NpcDialogue:
+                    if (result.DialogueSet != null)
+                        Dialogue.Open(result.DialogueSet, result.NpcName);
                     break;
             }
         }
@@ -168,9 +197,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 OnPropertyChanged(nameof(FacingText));
             }
         }
-
-
-        // ── Called after same-map move ───────────────────────────────────────
         // ── Called after same-map move ───────────────────────────────────────
         public void Refresh()
         {
@@ -323,7 +349,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private const int TileBlocked = 0;
         private const int TileWater = 50;
         private const int TileGrass = 40;
-        private const int TileWarp = 60;   // new — IsWarp → id == 60
+        private const int TileWarp = 60;
         private const int TileJumpDown = 70;
         private const int TileJumpUp = 71;
         private const int TileJumpLeft = 72;
@@ -335,7 +361,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
             var route1 = BuildRoute1();
             var palletHouse = BuildPalletHouse();
 
-            // ── Map connections (walking off edge) ───────────────────────────
             palletTown.ConnectedMaps.Add(new ConnectedMapDomain
             {
                 ConnectedMap = route1,
@@ -349,28 +374,23 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 Margin = 0,
             });
 
-            // ── Warps (stepping on a tile) ───────────────────────────────────
-
-            // Pallet Town → house: tile at square (8, 7), spawn at house square (1, 3)
             palletTown.Wraps.Add(new WrapDomain
             {
-                WrapLoc = (8, 7),           // square-space position on Pallet Town
+                WrapLoc = (8, 7),
                 TargetMap = palletHouse,
-                SpawnLoc = (row: 1, col: 3), // square-space spawn inside the house
+                SpawnLoc = (row: 1, col: 3),
             });
-
-            // House → Pallet Town: tile at square (3, 3), spawn back outside the door
             palletHouse.Wraps.Add(new WrapDomain
             {
                 WrapLoc = (3, 3),
                 TargetMap = palletTown,
-                SpawnLoc = (row: 9, col: 7), // one step south of the entrance
+                SpawnLoc = (row: 9, col: 7),
             });
-            
+
             return palletTown;
         }
 
-        // ── Pallet Town — 30×30 ───────────────────────────────────────────────
+        // ── Pallet Town ───────────────────────────────────────────────────────
         private static MapDomain BuildPalletTown()
         {
             const int width = 30, height = 30;
@@ -378,54 +398,40 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
             Fill(grid, TileWalkable);
             BorderWalls(grid, width, height, openNorthColStart: 13, openNorthColEnd: 17);
-
-            // Grass patch to the south of spawn
             FillRect(grid, 10, 2, 4, 6, TileGrass);
-
-            // Water patch
             FillRect(grid, 16, 20, 6, 8, TileWater);
-
-            // Warp tile
             grid[18, 14] = TileWarp;
-
-            // Jump down ledge — tile row 8, cols 2–10
             for (int c = 2; c <= 10; c++) grid[8, c] = TileJumpDown;
 
-            // ── NPCs ─────────────────────────────────────────────────────────────────
-
             var npcs = new List<NpcObjectDomain>
+        {
+            new NpcObjectDomain
             {
-                // Youngster Joey — patrols 4 squares up/down near the grass patch,
-                // facing the player with a 3-square sight line
-                new NpcObjectDomain
-                {
-                    NpcInfo       = new NpcDomain { Id = 1, Name = "Youngster Joey" },
-                    Location      = (12, 8),                // tile-space start (square 6,4)
-                    MovementType  = MovementType.Walking,
-                    direction     = FacingDirection.Up,
-                    DirectionA    = FacingDirection.Up,
-                    DirectionB    = FacingDirection.Down,
-                    StepsPerLeg   = 4,
-                    CollisionType = CollisionType.Unwalkable,
-                    visionRange   = 3,
-                    VisionType    = VisionType.Normal,
-                },
-
-                // Old Man — stationary, faces right, no vision
-                new NpcObjectDomain
-                {
-                    NpcInfo       = new NpcDomain { Id = 2, Name = "Old Man" },
-                    Location      = (6, 20),
-                    MovementType  = MovementType.Stationery,
-                    direction     = FacingDirection.Right,
-                    DirectionA    = FacingDirection.Right,
-                    DirectionB    = FacingDirection.Down,
-                    CollisionType = CollisionType.Unwalkable,
-                    visionRange   = 2,
-                    StepsPerLeg = 5,
-                    VisionType    = VisionType.Normal,
-                },
-            };
+                NpcInfo       = BuildYoungsterJoey(),
+                Location      = (12, 8),
+                MovementType  = MovementType.Walking,
+                direction     = FacingDirection.Up,
+                DirectionA    = FacingDirection.Up,
+                DirectionB    = FacingDirection.Down,
+                StepsPerLeg   = 4,
+                CollisionType = CollisionType.Unwalkable,
+                visionRange   = 3,
+                VisionType    = VisionType.Normal,
+            },
+            new NpcObjectDomain
+            {
+                NpcInfo       = BuildOldMan(),
+                Location      = (6, 20),
+                MovementType  = MovementType.Stationery,
+                direction     = FacingDirection.Right,
+                DirectionA    = FacingDirection.Right,
+                DirectionB    = FacingDirection.Down,
+                CollisionType = CollisionType.Unwalkable,
+                visionRange   = 2,
+                StepsPerLeg   = 5,
+                VisionType    = VisionType.Normal,
+            },
+        };
 
             return new MapDomain
             {
@@ -440,30 +446,78 @@ namespace PokemonGame.ViewModels.ViewModelPage
             };
         }
 
-        // ── Pallet House — 10×8 interior ─────────────────────────────────────
+        // ── NPC factories ─────────────────────────────────────────────────────
+
+        private static NpcDomain BuildYoungsterJoey()
+        {
+            // Single line — no choices
+            var line = new DialogueNode(
+                DialogueNodeType.Text,
+                new DialogueLine("Yo! My Rattata is in the top percentage of all Rattata!"),
+                0);
+
+            var set = new DialogueSet(DialogueSetType.NpcInteraction);
+            set.AddNode(line);
+            // No edges → terminal node, dialogue closes on advance
+
+            var npc = new NpcDomain { Id = 1, Name = "Youngster Joey" };
+            npc.AddDialogueState(new NpcDialogueState(TriggerType.Inspect, set));
+            return npc;
+        }
+
+        private static NpcDomain BuildOldMan()
+        {
+            // Node 0 — auto-advance
+            var lineA = new DialogueNode(
+                DialogueNodeType.Text,
+                new DialogueLine("Back in my day, we walked uphill both ways..."),
+                0);
+
+            // Node 1 — branching choice
+            var lineB = new DialogueNode(
+                DialogueNodeType.Choice,
+                new DialogueLine("Are you in a hurry, young one?"),
+                1);
+
+            // Node 2 — "Yes" branch, terminal
+            var lineYes = new DialogueNode(
+                DialogueNodeType.Text,
+                new DialogueLine("Then be on your way!"),
+                2);
+
+            // Node 3 — "No" branch, terminal
+            var lineNo = new DialogueNode(
+                DialogueNodeType.Text,
+                new DialogueLine("Good. Sit a while."),
+                3);
+
+            // Wire edges
+            lineA.AddEdge(new DialogueEdge(string.Empty, lineB));   // empty label = auto-advance
+            lineB.AddEdge(new DialogueEdge("Yes!", lineYes));
+            lineB.AddEdge(new DialogueEdge("No.", lineNo));
+            // lineYes / lineNo have no edges → terminal, closes on advance
+
+            var set = new DialogueSet(DialogueSetType.NpcInteraction);
+            set.AddNode(lineA);
+            set.AddNode(lineB);
+            set.AddNode(lineYes);
+            set.AddNode(lineNo);
+
+            var npc = new NpcDomain { Id = 2, Name = "Old Man" };
+            npc.AddDialogueState(new NpcDialogueState(TriggerType.Inspect, set));
+            return npc;
+        }
+
+        // ── Pallet House ──────────────────────────────────────────────────────
         private static MapDomain BuildPalletHouse()
         {
             const int width = 10, height = 8;
-            var grid = new int[height, width];  
+            var grid = new int[height, width];
 
             Fill(grid, TileWalkable);
-
-            // Four walls, no exits cut in — the warp tile IS the exit
-            for (int c = 0; c < width; c++)
-            {
-                grid[0, c] = TileBlocked;
-                grid[height - 1, c] = TileBlocked;
-            }
-            for (int r = 0; r < height; r++)
-            {
-                grid[r, 0] = TileBlocked;
-                grid[r, width - 1] = TileBlocked;
-            }
-
-            // A small table/counter in the middle so it doesn't look empty
+            for (int c = 0; c < width; c++) { grid[0, c] = TileBlocked; grid[height - 1, c] = TileBlocked; }
+            for (int r = 0; r < height; r++) { grid[r, 0] = TileBlocked; grid[r, width - 1] = TileBlocked; }
             FillRect(grid, 2, 3, 2, 4, TileBlocked);
-
-            // Exit warp tile at the south wall centre = tile (6,6) → square (3,3)
             grid[6, 6] = TileWarp;
 
             return new MapDomain
@@ -478,7 +532,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             };
         }
 
-        // ── Route 1 — 30×20 (unchanged) ──────────────────────────────────────
+        // ── Route 1 ───────────────────────────────────────────────────────────
         private static MapDomain BuildRoute1()
         {
             const int width = 30, height = 20;
@@ -486,15 +540,12 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
             Fill(grid, TileWalkable);
             BorderWalls(grid, width, height, openSouthColStart: 13, openSouthColEnd: 17);
-
             FillRect(grid, 2, 1, 16, 12, TileGrass);
             FillRect(grid, 2, 18, 16, 11, TileGrass);
-
             FillRect(grid, 4, 4, 2, 4, TileBlocked);
             FillRect(grid, 10, 6, 2, 4, TileBlocked);
             FillRect(grid, 6, 20, 2, 4, TileBlocked);
             FillRect(grid, 12, 22, 2, 4, TileBlocked);
-
             FillRect(grid, 14, 2, 4, 6, TileWater);
 
             return new MapDomain
@@ -509,7 +560,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             };
         }
 
-        // ── Helpers (unchanged) ───────────────────────────────────────────────
+        // ── Helpers ───────────────────────────────────────────────────────────
         private static void Fill(int[,] grid, int id)
         {
             int rows = grid.GetLength(0), cols = grid.GetLength(1);

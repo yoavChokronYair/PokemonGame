@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uc="clr-namespace:PokemonGame.Views.UserControls"
     Title="MapView"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -189,15 +190,12 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!--
-                Key bindings live here on the ScrollViewer so arrow keys
-                are intercepted before ScrollViewer scrolling kicks in.
-                FocusBehavior.FocusOnLoad gives it keyboard focus automatically.
-            -->
+            <!--  Map ScrollViewer  -->
             <ScrollViewer
                 Grid.Column="0"
                 Padding="20"
                 behaviors:FocusBehavior.FocusOnLoad="True"
+                behaviors:FocusBehavior.RegisterFocusTarget="True"
                 Background="#0A0A0A"
                 Focusable="True"
                 HorizontalScrollBarVisibility="Auto"
@@ -214,6 +212,14 @@
                     <KeyBinding Key="Right" Command="{Binding MoveRightCommand}" />
                     <KeyBinding Key="Z" Command="{Binding InspectCommand}" />
                     <KeyBinding Key="Enter" Command="{Binding InspectCommand}" />
+
+                    <!--  Dialogue choices  -->
+                    <KeyBinding Key="D1" Command="{Binding PickChoice1Command}" />
+                    <KeyBinding Key="D2" Command="{Binding PickChoice2Command}" />
+                    <KeyBinding Key="D3" Command="{Binding PickChoice3Command}" />
+                    <KeyBinding Key="NumPad1" Command="{Binding PickChoice1Command}" />
+                    <KeyBinding Key="NumPad2" Command="{Binding PickChoice2Command}" />
+                    <KeyBinding Key="NumPad3" Command="{Binding PickChoice3Command}" />
                 </ScrollViewer.InputBindings>
 
                 <ItemsControl ItemsSource="{Binding TileRows}">
@@ -264,6 +270,13 @@
                 </ItemsControl>
             </ScrollViewer>
 
+            <!--  Dialogue overlay — floats above the map at the bottom  -->
+            <uc:DialogueBoxControl
+                Grid.Column="0"
+                Margin="20,0,20,12"
+                VerticalAlignment="Bottom"
+                Panel.ZIndex="10" />
+
             <!--  D-Pad + legend  -->
             <Border
                 Grid.Column="1"
@@ -282,7 +295,6 @@
                         Foreground="#444"
                         Text="MOVE" />
 
-                    <!--  D-pad  -->
                     <Grid Margin="0,0,0,12" HorizontalAlignment="Center">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -340,7 +352,6 @@
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
 
-                    <!--  Legend  -->
                     <TextBlock
                         Margin="0,0,0,8"
                         HorizontalAlignment="Center"
@@ -421,7 +432,6 @@
                                 Text="player" />
                         </StackPanel>
                     </StackPanel>
-
                 </StackPanel>
             </Border>
         </Grid>

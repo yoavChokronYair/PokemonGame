@@ -14,6 +14,7 @@ namespace PokemonGame.Model.Enums
     public enum InspectResultType
     {
         Nothing,
+        NpcDialogue,
         ItemPickup,
         HmUsed,
         NeedHm,
