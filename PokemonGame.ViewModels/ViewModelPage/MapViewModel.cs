@@ -121,14 +121,17 @@ namespace PokemonGame.ViewModels.ViewModelPage
             // In constructor, after RebuildGrid():
             _npcTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(500) // adjust speed here
+                Interval = TimeSpan.FromMilliseconds(500)
             };
-            _npcTimer.Tick += (_, _) =>
+            _npcTimer.Tick += (sender, args) =>
             {
                 _mapManager.TickNpcs();
                 RefreshNpcs();
             };
             _npcTimer.Start();
+
+            Dialogue.DialogueOpened += () => _npcTimer.Stop();
+            Dialogue.DialogueClosed += () => _npcTimer.Start();
 
             RebuildGrid();
         }
@@ -167,6 +170,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         // ── Movement — called by MoveCommand ────────────────────────────
         public void Move(FacingDirection direction)
         {
+            if (Dialogue.IsOpen) return; 
             var mapBefore = _mapManager.ActiveMap;
             var result = _mapManager.TryMove(direction);
 

@@ -19,6 +19,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.Dialogue
         private bool _hasChoices;
         private List<DialogueChoiceViewModel> _choices = new();
         public event Action? FocusRequested;
+        public event Action? DialogueOpened;
+        public event Action? DialogueClosed;
 
 
         // ---------------------------------------------------------------
@@ -83,6 +85,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.Dialogue
             _npcName = npcName;
             IsOpen = true;
             ShowNode(set.StartNode);
+            DialogueOpened?.Invoke();
         }
 
         // ---------------------------------------------------------------
@@ -136,6 +139,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.Dialogue
             Choices = new();
             OnPropertyChanged(nameof(IsLastLine));
             FocusRequested?.Invoke();
+            DialogueClosed?.Invoke();
         }
 
         // ---------------------------------------------------------------
