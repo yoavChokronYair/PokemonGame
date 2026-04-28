@@ -5,6 +5,7 @@ using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Model.Model.Map;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -105,6 +106,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             _player.playerLoc = _player.playerLoc == default ? (4, 4) : _player.playerLoc;
 
             _mapManager = new MapManager(_player);
+            _mapManager.SetSpottedHandler(OnPlayerSpotted);
 
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
             ShowForegroundCommand = new ShowLayerCommand(this, background: false);
@@ -134,6 +136,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             Dialogue.DialogueClosed += () => _npcTimer.Start();
 
             RebuildGrid();
+
         }
 
         public void Inspect()
@@ -342,6 +345,14 @@ namespace PokemonGame.ViewModels.ViewModelPage
             IsShowingForeground = !background;
             RebuildGrid();
         }
+
+        private void OnPlayerSpotted(NpcObjectDomain npc)
+        {
+            if (Dialogue.IsOpen) return;
+            var set = npc.NpcInfo.GetDialogue(TriggerType.Spotted);
+            if (set == null) return;
+            Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -454,18 +465,25 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         private static NpcDomain BuildYoungsterJoey()
         {
-            // Single line — no choices
-            var line = new DialogueNode(
+            // Inspect dialogue
+            var inspectLine = new DialogueNode(
                 DialogueNodeType.Text,
                 new DialogueLine("Yo! My Rattata is in the top percentage of all Rattata!"),
                 0);
+            var inspectSet = new DialogueSet(DialogueSetType.NpcInteraction);
+            inspectSet.AddNode(inspectLine);
 
-            var set = new DialogueSet(DialogueSetType.NpcInteraction);
-            set.AddNode(line);
-            // No edges → terminal node, dialogue closes on advance
+            // Spotted dialogue
+            var spottedLine = new DialogueNode(
+                DialogueNodeType.Text,
+                new DialogueLine("Hey! I saw you! You can't run from a trainer battle!"),
+                0);
+            var spottedSet = new DialogueSet(DialogueSetType.NpcInteraction);
+            spottedSet.AddNode(spottedLine);
 
             var npc = new NpcDomain { Id = 1, Name = "Youngster Joey" };
-            npc.AddDialogueState(new NpcDialogueState(TriggerType.Inspect, set));
+            npc.AddDialogueState(new NpcDialogueState(TriggerType.Inspect, inspectSet));
+            npc.AddDialogueState(new NpcDialogueState(TriggerType.Spotted, spottedSet));
             return npc;
         }
 

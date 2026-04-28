@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.Map
 {
@@ -10,6 +11,8 @@ namespace PokemonGame.Model.Model.Map
     {
         private MapDomain _map;
         private SquareMapState _squareMap;
+        private Action<NpcObjectDomain>? _spottedHandler;
+
 
         public NpcState(MapDomain map, SquareMapState squareMap)
         {
@@ -22,7 +25,9 @@ namespace PokemonGame.Model.Model.Map
             _map = map;
             _squareMap = squareMap;
         }
-
+        private readonly HashSet<int> _alreadySpotted = new();
+        public void SetSpottedHandler(Action<NpcObjectDomain> handler)
+            => _spottedHandler = handler;
         // ---------------------------------------------------------------
         // Main tick — called once per timer interval
         // ---------------------------------------------------------------
@@ -30,6 +35,7 @@ namespace PokemonGame.Model.Model.Map
         {
             foreach (var npc in _map.Npc)
             {
+                if (_alreadySpotted.Contains(npc.NpcInfo.Id)) continue;  // ← add this line
                 switch (npc.MovementType)
                 {
                     case MovementType.Walking:
@@ -46,6 +52,21 @@ namespace PokemonGame.Model.Model.Map
             }
 
             _squareMap.RebuildVisionLayer();
+
+            if (_squareMap.IsInNpcVision(playerRow, playerCol, out int spottedById))
+            {
+                if (!_alreadySpotted.Contains(spottedById))
+                {
+                    _alreadySpotted.Add(spottedById);
+                    var spotter = _map.Npc.FirstOrDefault(n => n.NpcInfo.Id == spottedById);
+                    if (spotter != null)
+                        _spottedHandler?.Invoke(spotter);
+                }
+            }
+            else
+            {
+                _alreadySpotted.Clear();
+            }
         }
 
         // ---------------------------------------------------------------

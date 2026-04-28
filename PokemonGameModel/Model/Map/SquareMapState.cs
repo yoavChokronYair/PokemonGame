@@ -84,7 +84,7 @@ namespace PokemonGame.Model.Model.Map
         // -----------------------------------------------------------------------
 
         public CollisionType GetCollision(int squareRow, int squareCol)
-        {
+        {   
             var square = GetSquare(squareRow, squareCol);
             if (square == null) return CollisionType.Unwalkable;
 
@@ -317,12 +317,12 @@ namespace PokemonGame.Model.Model.Map
                 if ((uint)r >= (uint)SquareRows || (uint)c >= (uint)SquareCols) break;
 
                 var collision = GetCollision(r, c);
-                if (collision is CollisionType.Unwalkable
-                              or CollisionType.Blocked
-                              or CollisionType.HM)
-                    break;  // solid geometry blocks sight
 
+                // Paint this tile first, then check if it blocks further sight
                 _visionLayer[r, c] = npc.NpcInfo.Id;
+
+                if (collision != CollisionType.None && collision != CollisionType.WildGrass)
+                    break;  // solid tile — paint it but don't see through it
             }
         }
 
@@ -338,8 +338,29 @@ namespace PokemonGame.Model.Model.Map
                     int c = npcCol + dc;
 
                     if ((uint)r >= (uint)SquareRows || (uint)c >= (uint)SquareCols) continue;
-                    _visionLayer[r, c] = npc.NpcInfo.Id;
+
+                    if (HasLineOfSight(npcRow, npcCol, r, c))
+                        _visionLayer[r, c] = npc.NpcInfo.Id;
                 }
+        }
+
+        private bool HasLineOfSight(int fromRow, int fromCol, int toRow, int toCol)
+        {
+            int dr = toRow - fromRow;
+            int dc = toCol - fromCol;
+            int steps = Math.Max(Math.Abs(dr), Math.Abs(dc));
+            if (steps == 0) return true;
+
+            for (int i = 1; i < steps; i++)   // < steps: don't check the destination itself
+            {
+                int r = fromRow + (int)Math.Round((double)dr * i / steps);
+                int c = fromCol + (int)Math.Round((double)dc * i / steps);
+                
+                var collision = GetCollision(r, c);
+                if (collision != CollisionType.None && collision != CollisionType.WildGrass)
+                    return false;
+            }
+            return true;
         }
 
         // -----------------------------------------------------------------------

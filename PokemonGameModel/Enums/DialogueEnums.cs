@@ -10,7 +10,8 @@ namespace PokemonGame.Model.Enums
         OnTalk,
         OnDefeat,
         OnVictory,
-        Inspect
+        Inspect,
+        Spotted
     }
 
     public enum DialogueNodeType
