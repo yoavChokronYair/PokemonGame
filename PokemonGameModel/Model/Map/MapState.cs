@@ -7,10 +7,15 @@ namespace PokemonGame.Model.Model.Map
 {
     public class MapState
     {
+        // ── Fields ───────────────────────────────────────────────────────────
+
         private MapDomain _activeMap;
         private int[,] _backgroundTiles;
         private int[,] _foregroundTiles;
+
         private readonly Dictionary<MapDomain, (int[,] bg, int[,] fg)> _mapCache = new();
+
+        // ── Construction ─────────────────────────────────────────────────────
 
         public MapState(MapDomain startMap)
         {
@@ -26,9 +31,7 @@ namespace PokemonGame.Model.Model.Map
             PreloadNeighbors(newMap);
         }
 
-        // ---------------------------------------------------------------
-        // Viewport
-        // ---------------------------------------------------------------
+        // ── Viewport ─────────────────────────────────────────────────────────
 
         public (int[,] background, int[,] foreground, int[,] vision) BuildViewPort(
             PlayerDomain player, SquareMapState squareMap)
@@ -37,46 +40,53 @@ namespace PokemonGame.Model.Model.Map
             var fg = BuildLayerViewport(player.playerLoc, isForeground: true);
             var vision = BuildVisionViewport(player.playerLoc, squareMap);
 
-            StampPlayer(fg, player.FacingDirection);
+            StampNpcs(fg, player.playerLoc);    // ← NPCs first (under player)
+            StampPlayer(fg, player.FacingDirection); // ← player always on top
+
             return (bg, fg, vision);
         }
 
-        private int[,] BuildVisionViewport(
-            (int playerRow, int playerCol) playerPos, SquareMapState squareMap)
+        // ── Private — viewport building ───────────────────────────────────────
+
+        private int[,] BuildLayerViewport((int playerRow, int playerCol) pos, bool isForeground)
         {
-            // Vision is in square-space; viewport is in tile-space.
-            // Each square = 2×2 tiles, so the vision viewport is half the tile viewport.
-            int visionRows = MapConstants.ViewRowSize / 2;
-            int visionCols = MapConstants.ViewColSize / 2;
-            var view = new int[visionRows, visionCols];
+            int halfRows = MapConstants.ViewRowSize / 2;
+            int halfCols = MapConstants.ViewColSize / 2;
+            var view = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
 
-            // Player tile position → square position
-            var (playerSquareRow, playerSquareCol) = squareMap.TileToSquare(
-                playerPos.playerRow, playerPos.playerCol);
+            for (int r = 0; r < MapConstants.ViewRowSize; r++)
+                for (int c = 0; c < MapConstants.ViewColSize; c++)
+                    view[r, c] = SampleTile(pos.playerRow - halfRows + r,
+                                            pos.playerCol - halfCols + c,
+                                            isForeground);
+            return view;
+        }
 
-            int halfRows = visionRows / 2;
-            int halfCols = visionCols / 2;
+        private int[,] BuildVisionViewport((int playerRow, int playerCol) pos, SquareMapState squareMap)
+        {
+            int vRows = MapConstants.ViewRowSize / 2;
+            int vCols = MapConstants.ViewColSize / 2;
+            var view = new int[vRows, vCols];
+            var (psr, psc) = squareMap.TileToSquare(pos.playerRow, pos.playerCol);
+            int halfRows = vRows / 2;
+            int halfCols = vCols / 2;
 
-            for (int r = 0; r < visionRows; r++)
-            {
-                for (int c = 0; c < visionCols; c++)
+            for (int r = 0; r < vRows; r++)
+                for (int c = 0; c < vCols; c++)
                 {
-                    int srcRow = playerSquareRow - halfRows + r;
-                    int srcCol = playerSquareCol - halfCols + c;
+                    int srcRow = psr - halfRows + r;
+                    int srcCol = psc - halfCols + c;
 
                     if ((uint)srcRow < (uint)squareMap.SquareRows &&
                         (uint)srcCol < (uint)squareMap.SquareCols)
-                    {
                         view[r, c] = squareMap.VisionLayer[srcRow, srcCol];
-                    }
                 }
-            }
 
             return view;
         }
+
         private static void StampPlayer(int[,] fg, FacingDirection direction)
         {
-            // No sprite for None — skip stamping entirely
             if (direction == FacingDirection.None) return;
             if (!PlayerSprites.Tiles.TryGetValue(direction, out var sprite)) return;
 
@@ -88,117 +98,89 @@ namespace PokemonGame.Model.Model.Map
             fg[midRow, midCol - 1] = sprite.BL;
             fg[midRow, midCol] = sprite.BR;
         }
-
-        private int[,] BuildLayerViewport((int playerRow, int playerCol) playerPos, bool isForeground)
+        private void StampNpcs(int[,] fg, (int playerRow, int playerCol) pos)
         {
             int halfRows = MapConstants.ViewRowSize / 2;
             int halfCols = MapConstants.ViewColSize / 2;
-            var view = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
 
-            for (int r = 0; r < MapConstants.ViewRowSize; r++)
+            foreach (var npc in _activeMap.Npc)
             {
-                for (int c = 0; c < MapConstants.ViewColSize; c++)
-                {
-                    int srcRow = playerPos.playerRow - halfRows + r;
-                    int srcCol = playerPos.playerCol - halfCols + c;
+                if (npc.Sprite == null) continue;
 
-                    view[r, c] = SampleTile(srcRow, srcCol, isForeground);
-                }
+                var sprite = npc.Sprite.GetSprite(npc.direction);
+                if (sprite == null) continue;
+
+                int r = npc.Location.x - pos.playerRow + halfRows - 1;
+                int c = npc.Location.y - pos.playerCol + halfCols - 1;
+
+                if (r < 0 || r + 1 >= fg.GetLength(0) ||
+                    c < 0 || c + 1 >= fg.GetLength(1)) continue;
+
+                fg[r, c] = sprite.Value.TL;
+                fg[r, c + 1] = sprite.Value.TR;
+                fg[r + 1, c] = sprite.Value.BL;
+                fg[r + 1, c + 1] = sprite.Value.BR;
             }
-
-            return view;
         }
 
-        // ---------------------------------------------------------------
-        // Neighbor-aware tile sampling
-        // ---------------------------------------------------------------
+        // ── Private — neighbor-aware tile sampling ────────────────────────────
 
         private int SampleTile(int row, int col, bool isForeground)
         {
             int mapRows = _backgroundTiles.GetLength(0);
             int mapCols = _backgroundTiles.GetLength(1);
 
-            // Inside active map
             if ((uint)row < (uint)mapRows && (uint)col < (uint)mapCols)
                 return GetActiveLayer(isForeground)[row, col];
 
-            // Outside — try neighbor maps
             var neighbor = FindNeighbor(row, col, mapRows, mapCols);
             if (neighbor == null) return 0;
 
-            var (neighborMap, neighborRow, neighborCol) = neighbor.Value;
+            var (neighborMap, nRow, nCol) = neighbor.Value;
             var (nbg, nfg) = GetCachedTiles(neighborMap);
             var layer = isForeground ? nfg : nbg;
 
-            if ((uint)neighborRow < (uint)layer.GetLength(0) &&
-                (uint)neighborCol < (uint)layer.GetLength(1))
-                return layer[neighborRow, neighborCol];
-
-            return 0;
+            return (uint)nRow < (uint)layer.GetLength(0) &&
+                   (uint)nCol < (uint)layer.GetLength(1)
+                ? layer[nRow, nCol]
+                : 0;
         }
 
         private (MapDomain map, int row, int col)? FindNeighbor(int row, int col, int mapRows, int mapCols)
         {
-            // North neighbor — row is above the active map
             if (row < 0)
             {
-                var connection = GetNeighbor(ConnectionDirection.North);
-                if (connection == null) return null;
-
-                var (nbg, _) = GetCachedTiles(connection.ConnectedMap);
-                int neighborRows = nbg.GetLength(0);
-
-                // Flip: row -1 maps to the last row of the north map, etc.
-                int neighborRow = neighborRows + row;
-                int neighborCol = col + connection.Margin;
-                return (connection.ConnectedMap, neighborRow, neighborCol);
+                var conn = GetNeighbor(ConnectionDirection.North);
+                if (conn == null) return null;
+                int nRows = GetCachedTiles(conn.ConnectedMap).bg.GetLength(0);
+                return (conn.ConnectedMap, nRows + row, col + conn.Margin);
             }
-
-            // South neighbor — row is below the active map
             if (row >= mapRows)
             {
-                var connection = GetNeighbor(ConnectionDirection.South);
-                if (connection == null) return null;
-
-                int neighborRow = row - mapRows;
-                int neighborCol = col + connection.Margin;
-                return (connection.ConnectedMap, neighborRow, neighborCol);
+                var conn = GetNeighbor(ConnectionDirection.South);
+                if (conn == null) return null;
+                return (conn.ConnectedMap, row - mapRows, col + conn.Margin);
             }
-
-            // West neighbor — col is left of the active map
             if (col < 0)
             {
-                var connection = GetNeighbor(ConnectionDirection.West);
-                if (connection == null) return null;
-
-                var (nbg, _) = GetCachedTiles(connection.ConnectedMap);
-                int neighborCols = nbg.GetLength(1);
-
-                int neighborRow = row + connection.Margin;
-                int neighborCol = neighborCols + col;
-                return (connection.ConnectedMap, neighborRow, neighborCol);
+                var conn = GetNeighbor(ConnectionDirection.West);
+                if (conn == null) return null;
+                int nCols = GetCachedTiles(conn.ConnectedMap).bg.GetLength(1);
+                return (conn.ConnectedMap, row + conn.Margin, nCols + col);
             }
-
-            // East neighbor — col is right of the active map
             if (col >= mapCols)
             {
-                var connection = GetNeighbor(ConnectionDirection.East);
-                if (connection == null) return null;
-
-                int neighborRow = row + connection.Margin;
-                int neighborCol = col - mapCols;
-                return (connection.ConnectedMap, neighborRow, neighborCol);
+                var conn = GetNeighbor(ConnectionDirection.East);
+                if (conn == null) return null;
+                return (conn.ConnectedMap, row + conn.Margin, col - mapCols);
             }
-
             return null;
         }
 
         private ConnectedMapDomain? GetNeighbor(ConnectionDirection direction)
             => _activeMap.ConnectedMaps.FirstOrDefault(c => c.ConnectionDirection == direction);
 
-        // ---------------------------------------------------------------
-        // Cache helpers
-        // ---------------------------------------------------------------
+        // ── Private — cache helpers ───────────────────────────────────────────
 
         private int[,] GetActiveLayer(bool isForeground)
             => isForeground ? _foregroundTiles : _backgroundTiles;
@@ -214,20 +196,15 @@ namespace PokemonGame.Model.Model.Map
         private void PreloadNeighbors(MapDomain map)
         {
             foreach (var connection in map.ConnectedMaps)
-                GetCachedTiles(connection.ConnectedMap); // builds + caches if not already present
+                GetCachedTiles(connection.ConnectedMap);
         }
 
         private static int[,] BuildTileArray(List<TileDomain> blocks, MapDomain map)
         {
             var tiles = new int[map.Height, map.Width];
-
             for (int b = 0; b < blocks.Count; b++)
-            {
-                var tile = blocks[b];
-                if (tile is null) continue;
-                tiles[b / map.Width, b % map.Width] = tile.Tileid;
-            }
-
+                if (blocks[b] is { } tile)
+                    tiles[b / map.Width, b % map.Width] = tile.Tileid;
             return tiles;
         }
     }

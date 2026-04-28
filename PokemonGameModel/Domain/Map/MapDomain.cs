@@ -52,6 +52,7 @@ namespace PokemonGame.Model.Domain.Map
     public class NpcObjectDomain
     {
         public NpcDomain NpcInfo { get; set; }
+        public NpcSpriteDomain? Sprite { get; set; }  // ← add
         public (int x, int y) Location { get; set; }
         public CollisionType CollisionType { get; set; } = CollisionType.Unwalkable;
         public MovementType MovementType { get; set; }

@@ -5,6 +5,13 @@ using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Npc
 {
+    public class NpcSpriteDomain
+    {
+        public Dictionary<FacingDirection, (int TL, int TR, int BL, int BR)> Tiles { get; set; } = new();
+
+        public (int TL, int TR, int BL, int BR)? GetSprite(FacingDirection direction)
+            => Tiles.TryGetValue(direction, out var sprite) ? sprite : null;
+    }
     public class NpcDomain
     {
         private readonly List<NpcDialogueState> _dialogueStates = new();

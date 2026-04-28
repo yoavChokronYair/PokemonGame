@@ -1,5 +1,4 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
-using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
@@ -7,6 +6,8 @@ using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Model.Map
 {
+    // ── Result types ─────────────────────────────────────────────────────────
+
     public class InspectResult
     {
         public InspectResultType Type { get; set; }
@@ -14,7 +15,7 @@ namespace PokemonGame.Model.Model.Map
         public int TargetRow { get; set; }
         public int TargetCol { get; set; }
         public DialogueSet? DialogueSet { get; set; }
-        public string NpcName { get; set; } = string.Empty;  // ← add
+        public string NpcName { get; set; } = string.Empty;
     }
 
     public class MoveResult
@@ -24,111 +25,66 @@ namespace PokemonGame.Model.Model.Map
         public int Col { get; set; }
         public CollisionType SquareType { get; set; }
         public bool WildEncounterTriggered { get; set; }
-        public int SpottedByNpcId { get; set; }   // 0 = nobody sees the player
+        public int SpottedByNpcId { get; set; }
     }
+
+    // ── SquareMapState ───────────────────────────────────────────────────────
 
     public class SquareMapState
     {
-        // -----------------------------------------------------------------------
-        // Fields
-        // -----------------------------------------------------------------------
+        // ── Fields ───────────────────────────────────────────────────────────
 
-        private readonly MapDomain _activeMap;
+        private readonly MapDomain _map;
         private readonly SquareDomain[,] _squares;
         private readonly int[,] _visionLayer;
 
-        // -----------------------------------------------------------------------
-        // Construction
-        // -----------------------------------------------------------------------
+        // ── Construction ─────────────────────────────────────────────────────
 
         public SquareMapState(MapDomain map)
         {
-            _activeMap = map;
+            _map = map;
             _squares = BuildSquareGrid(map);
             _visionLayer = new int[SquareRows, SquareCols];
             RebuildVisionLayer();
         }
 
-        // -----------------------------------------------------------------------
-        // Public dimensions
-        // -----------------------------------------------------------------------
+        // ── Dimensions ───────────────────────────────────────────────────────
 
         public int SquareRows => _squares.GetLength(0);
         public int SquareCols => _squares.GetLength(1);
 
-        // -----------------------------------------------------------------------
-        // Coordinate helpers
-        // -----------------------------------------------------------------------
-            
-        /// Tile-space → square-space (each square = 2×2 tiles).
+        // ── Coordinate conversion ─────────────────────────────────────────────
+
         public (int row, int col) TileToSquare(int tileRow, int tileCol)
             => (tileRow / 2, tileCol / 2);
 
-        /// Square-space → top-left tile position.
         public (int tileRow, int tileCol) SquareToTile(int squareRow, int squareCol)
             => (squareRow * 2, squareCol * 2);
 
-        // -----------------------------------------------------------------------
-        // Square access
-        // -----------------------------------------------------------------------
+        // ── Square access ────────────────────────────────────────────────────
 
         public SquareDomain? GetSquare(int row, int col)
+            => InBounds(row, col) ? _squares[row, col] : null;
+
+        // ── Collision ────────────────────────────────────────────────────────
+
+        public CollisionType GetCollision(int row, int col)
         {
-            if ((uint)row >= (uint)SquareRows || (uint)col >= (uint)SquareCols)
-                return null;
-            return _squares[row, col];
-        }
-
-        // -----------------------------------------------------------------------
-        // Collision
-        // -----------------------------------------------------------------------
-
-        public CollisionType GetCollision(int squareRow, int squareCol)
-        {   
-            var square = GetSquare(squareRow, squareCol);
+            var square = GetSquare(row, col);
             if (square == null) return CollisionType.Unwalkable;
-
-            // Stationary unwalkable NPCs (items, signs) block their tile.
-            // Walking NPCs are checked separately in IsSquareFreeForNpc.
-            if (HasStationaryBlockerAt(squareRow, squareCol))
-                return CollisionType.Unwalkable;
-
+            if (HasStationaryBlockerAt(row, col)) return CollisionType.Unwalkable;
             return square.SquareType;
         }
 
-        public bool CanMoveTo(int squareRow, int squareCol, FacingDirection direction)
+        public bool CanMoveTo(int row, int col, FacingDirection direction)
         {
-            // Block if any unwalkable NPC is standing here
-            if (HasStationaryBlockerAt(squareRow, squareCol) || HasWalkingNpcAt(squareRow, squareCol))
+            if (HasStationaryBlockerAt(row, col) || HasWalkingNpcAt(row, col))
                 return false;
 
-            return GetCollision(squareRow, squareCol) switch
+            return GetCollision(row, col) switch
             {
-                CollisionType.None      => true,
+                CollisionType.None => true,
                 CollisionType.WildGrass => true,
-                CollisionType.JumpLeft  => direction == FacingDirection.Left,
-                CollisionType.JumpRight => direction == FacingDirection.Right,
-                CollisionType.JumpDown  => direction == FacingDirection.Down,
-                CollisionType.JumpUp    => direction == FacingDirection.Up,
-                _                       => false,
-            };
-        }
-
-        private bool HasWalkingNpcAt(int squareRow, int squareCol)
-        {
-            return _activeMap.Npc.Any(npc =>
-            {
-                if (npc.MovementType  != MovementType.Walking)    return false;
-                if (npc.CollisionType != CollisionType.Unwalkable) return false;
-                var (r, c) = TileToSquare(npc.Location.x, npc.Location.y);
-                return r == squareRow && c == squareCol;
-            });
-        }
-
-        public bool JumpCheck(int squareRow, int squareCol, FacingDirection direction)
-        {
-            return GetCollision(squareRow, squareCol) switch
-            {
                 CollisionType.JumpLeft => direction == FacingDirection.Left,
                 CollisionType.JumpRight => direction == FacingDirection.Right,
                 CollisionType.JumpDown => direction == FacingDirection.Down,
@@ -137,62 +93,57 @@ namespace PokemonGame.Model.Model.Map
             };
         }
 
-        public bool HmCheck(int squareRow, int squareCol)
+        public bool WildCheck(int row, int col)
         {
-            if (GetCollision(squareRow, squareCol) != CollisionType.HM) return false;
+            var square = GetSquare(row, col);
+            return square?.SquareType == CollisionType.WildGrass
+                && RNGHelper.TryWildEncounter(10);
+        }
 
-            var square = GetSquare(squareRow, squareCol);
-            if (square == null) return false;
-
-            var required = HmForTileType(square.TileType);
+        public bool HmCheck(int row, int col)
+        {
+            if (GetCollision(row, col) != CollisionType.HM) return false;
+            var required = HmForTileType(GetSquare(row, col)?.TileType ?? TileType.Normal);
             return required != HMMoves.None
                 && PlayerDomain.Instance.Team.AnyPokemonKnows(required.ToString());
         }
 
-        public bool WildCheck(int squareRow, int squareCol)
+        public void ClearTile(int row, int col)
         {
-            var square = GetSquare(squareRow, squareCol);
-            if (square == null || square.SquareType != CollisionType.WildGrass) return false;
-            return RNGHelper.TryWildEncounter(10);
+            var square = GetSquare(row, col);
+            if (square != null) square.SquareType = CollisionType.None;
         }
 
-        // -----------------------------------------------------------------------
-        // Player movement
-        // -----------------------------------------------------------------------
+        // ── Movement ─────────────────────────────────────────────────────────
 
         public MoveResult TryMove(int fromRow, int fromCol, FacingDirection direction)
         {
-            var (toRow, toCol) = StepInDirection(fromRow, fromCol, direction);
+            var (toRow, toCol) = Step(fromRow, fromCol, direction);
 
             if (!CanMoveTo(toRow, toCol, direction))
                 return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
 
-            // Vision is rebuilt by TickNpcs each frame; rebuild here too so
-            // SpottedByNpcId is always valid even when called outside a tick.
             RebuildVisionLayer();
             IsInNpcVision(toRow, toCol, out int spottedBy);
 
-            var landing = GetSquare(toRow, toCol)!;
             return new MoveResult
             {
                 Success = true,
                 Row = toRow,
                 Col = toCol,
-                SquareType = landing.SquareType,
+                SquareType = GetSquare(toRow, toCol)!.SquareType,
                 WildEncounterTriggered = WildCheck(toRow, toCol),
                 SpottedByNpcId = spottedBy,
             };
         }
 
-        // -----------------------------------------------------------------------
-        // Inspect (items + HM tiles)
-        // -----------------------------------------------------------------------
+        // ── Inspect ──────────────────────────────────────────────────────────
 
         public InspectResult TryInspect(int fromRow, int fromCol, FacingDirection facing)
         {
-            var (targetRow, targetCol) = StepInDirection(fromRow, fromCol, facing);
+            var (targetRow, targetCol) = Step(fromRow, fromCol, facing);
 
-            // ── NPC dialogue ────────────────────────────────────────────────────
+            // NPC dialogue
             var npc = GetNpcAt(targetRow, targetCol);
             if (npc != null)
             {
@@ -205,9 +156,10 @@ namespace PokemonGame.Model.Model.Map
                         NpcName = npc.NpcInfo.Name ?? string.Empty,
                     };
             }
-            // ── HM tile ─────────────────────────────────────────────────────────
+
+            // HM tile
             var square = GetSquare(targetRow, targetCol);
-            if (square != null && square.SquareType == CollisionType.HM)
+            if (square?.SquareType == CollisionType.HM)
             {
                 var required = HmForTileType(square.TileType);
 
@@ -234,47 +186,18 @@ namespace PokemonGame.Model.Model.Map
             return new InspectResult { Type = InspectResultType.Nothing };
         }
 
-        // Add this helper alongside GetPickupAt:
+        // ── NPC queries ──────────────────────────────────────────────────────
+
         public NpcObjectDomain? GetNpcAt(int squareRow, int squareCol)
-        {
-            return _activeMap.Npc.FirstOrDefault(npc =>
-            {
-                var (r, c) = TileToSquare(npc.Location.x, npc.Location.y);
-                return r == squareRow && c == squareCol;
-            });
-        }
+            => _map.Npc.FirstOrDefault(n => NpcSquare(n) == (squareRow, squareCol));
 
-        public void ClearTile(int squareRow, int squareCol)
-        {
-            var square = GetSquare(squareRow, squareCol);
-            if (square != null) square.SquareType = CollisionType.None;
-        }
-
-        // -----------------------------------------------------------------------
-        // NPC queries
-        // -----------------------------------------------------------------------
-
-        /// Pickup item at a square (for inspect — separate from collision concern).
-        public NpcObjectDomain? GetPickupAt(int squareRow, int squareCol)
-        {
-            return _activeMap.Npc.FirstOrDefault(npc =>
-            {
-                var (r, c) = TileToSquare(npc.Location.x, npc.Location.y);
-                return r == squareRow && c == squareCol;
-            });
-        }
-
-        // -----------------------------------------------------------------------
-        // Vision layer
-        // -----------------------------------------------------------------------
+        // ── Vision ───────────────────────────────────────────────────────────
 
         public int[,] VisionLayer => _visionLayer;
 
-        public bool IsInNpcVision(int squareRow, int squareCol, out int npcId)
+        public bool IsInNpcVision(int row, int col, out int npcId)
         {
-            npcId = ((uint)squareRow < (uint)SquareRows && (uint)squareCol < (uint)SquareCols)
-                ? _visionLayer[squareRow, squareCol]
-                : 0;
+            npcId = InBounds(row, col) ? _visionLayer[row, col] : 0;
             return npcId != 0;
         }
 
@@ -282,31 +205,24 @@ namespace PokemonGame.Model.Model.Map
         {
             Array.Clear(_visionLayer, 0, _visionLayer.Length);
 
-            foreach (var npc in _activeMap.Npc)
+            foreach (var npc in _map.Npc)
             {
                 if (npc.visionRange <= 0) continue;
-                var (npcRow, npcCol) = TileToSquare(npc.Location.x, npc.Location.y);
+                var (r, c) = NpcSquare(npc);
 
                 switch (npc.VisionType)
                 {
-                    case VisionType.Normal:
-                        PaintLineVision(npc, npcRow, npcCol);
-                        break;
-                    case VisionType.circular:
-                        PaintCircularVision(npc, npcRow, npcCol);
-                        break;
+                    case VisionType.Normal: PaintLineVision(npc, r, c); break;
+                    case VisionType.circular: PaintCircularVision(npc, r, c); break;
                 }
             }
         }
 
-        // -----------------------------------------------------------------------
-        // Private — vision painting
-        // -----------------------------------------------------------------------
+        // ── Private — vision ─────────────────────────────────────────────────
 
-        /// Single-tile-wide ray in the NPC's facing direction; stops at solid tiles.
         private void PaintLineVision(NpcObjectDomain npc, int npcRow, int npcCol)
         {
-            var (dRow, dCol) = DirectionDelta(npc.direction);
+            var (dRow, dCol) = Delta(npc.direction);
             if (dRow == 0 && dCol == 0) return;
 
             for (int step = 1; step <= npc.visionRange; step++)
@@ -314,19 +230,15 @@ namespace PokemonGame.Model.Model.Map
                 int r = npcRow + dRow * step;
                 int c = npcCol + dCol * step;
 
-                if ((uint)r >= (uint)SquareRows || (uint)c >= (uint)SquareCols) break;
+                if (!InBounds(r, c)) break;
 
-                var collision = GetCollision(r, c);
-
-                // Paint this tile first, then check if it blocks further sight
                 _visionLayer[r, c] = npc.NpcInfo.Id;
 
-                if (collision != CollisionType.None && collision != CollisionType.WildGrass)
-                    break;  // solid tile — paint it but don't see through it
+                var col = GetCollision(r, c);
+                if (col != CollisionType.None && col != CollisionType.WildGrass) break;
             }
         }
 
-        /// Chebyshev (square) radius — swap Math.Max for Manhattan if you prefer a diamond.
         private void PaintCircularVision(NpcObjectDomain npc, int npcRow, int npcCol)
         {
             for (int dr = -npc.visionRange; dr <= npc.visionRange; dr++)
@@ -337,9 +249,7 @@ namespace PokemonGame.Model.Model.Map
                     int r = npcRow + dr;
                     int c = npcCol + dc;
 
-                    if ((uint)r >= (uint)SquareRows || (uint)c >= (uint)SquareCols) continue;
-
-                    if (HasLineOfSight(npcRow, npcCol, r, c))
+                    if (InBounds(r, c) && HasLineOfSight(npcRow, npcCol, r, c))
                         _visionLayer[r, c] = npc.NpcInfo.Id;
                 }
         }
@@ -351,93 +261,55 @@ namespace PokemonGame.Model.Model.Map
             int steps = Math.Max(Math.Abs(dr), Math.Abs(dc));
             if (steps == 0) return true;
 
-            for (int i = 1; i < steps; i++)   // < steps: don't check the destination itselfed
+            for (int i = 1; i < steps; i++)
             {
                 int r = fromRow + (int)Math.Round((double)dr * i / steps);
                 int c = fromCol + (int)Math.Round((double)dc * i / steps);
-                
-                var collision = GetCollision(r, c);
-                if (collision != CollisionType.None && collision != CollisionType.WildGrass)
-                    return false;
+                var col = GetCollision(r, c);
+                if (col != CollisionType.None && col != CollisionType.WildGrass) return false;
             }
             return true;
         }
 
-        // -----------------------------------------------------------------------
-        // Private — collision helpers
-        // -----------------------------------------------------------------------
+        // ── Private — NPC collision helpers ──────────────────────────────────
 
-        private bool HasStationaryBlockerAt(int squareRow, int squareCol)
-        {
-            return _activeMap.Npc.Any(npc =>
-            {
-                if (npc.MovementType == MovementType.Walking) return false;
-                if (npc.CollisionType != CollisionType.Unwalkable) return false;
-                var (r, c) = TileToSquare(npc.Location.x, npc.Location.y);
-                return r == squareRow && c == squareCol;
-            });
-        }
+        private bool HasStationaryBlockerAt(int row, int col)
+            => _map.Npc.Any(n =>
+                n.MovementType != MovementType.Walking &&
+                n.CollisionType == CollisionType.Unwalkable &&
+                NpcSquare(n) == (row, col));
 
-        // -----------------------------------------------------------------------
-        // Private — static helpers
-        // -----------------------------------------------------------------------
+        private bool HasWalkingNpcAt(int row, int col)
+            => _map.Npc.Any(n =>
+                n.MovementType == MovementType.Walking &&
+                n.CollisionType == CollisionType.Unwalkable &&
+                NpcSquare(n) == (row, col));
 
-        private static (int row, int col) StepInDirection(int row, int col, FacingDirection dir)
-        {
-            var (dr, dc) = DirectionDelta(dir);
-            return (row + dr, col + dc);
-        }
-
-        private static (int dRow, int dCol) DirectionDelta(FacingDirection dir) => dir switch
-        {
-            FacingDirection.Up => (-1, 0),
-            FacingDirection.Down => (1, 0),
-            FacingDirection.Left => (0, -1),
-            FacingDirection.Right => (0, 1),
-            _ => (0, 0),
-        };
-
-        private static HMMoves HmForTileType(TileType tileType) => tileType switch
-        {
-            TileType.Water => HMMoves.Surf,
-            TileType.Branch => HMMoves.Cut,
-            TileType.Rock => HMMoves.RockSmash,
-            TileType.StrengthAble => HMMoves.Strength,
-            _ => HMMoves.None,
-        };
-
-        // -----------------------------------------------------------------------
-        // Private — grid construction
-        // -----------------------------------------------------------------------
+        // ── Private — grid construction ───────────────────────────────────────
 
         private static SquareDomain[,] BuildSquareGrid(MapDomain map)
         {
-            int squareRows = map.Height / 2;
-            int squareCols = map.Width / 2;
-
-            var grid = new SquareDomain[squareRows, squareCols];
+            int rows = map.Height / 2;
+            int cols = map.Width / 2;
+            var grid = new SquareDomain[rows, cols];
             var tiles = BuildTileArray(map.BackgroundBlocks, map);
 
-            for (int sr = 0; sr < squareRows; sr++)
-                for (int sc = 0; sc < squareCols; sc++)
+            for (int sr = 0; sr < rows; sr++)
+                for (int sc = 0; sc < cols; sc++)
                 {
-                    int tileRow = sr * 2;
-                    int tileCol = sc * 2;
-
-                    int tl = tiles[tileRow, tileCol];
-                    int tr = tiles[tileRow, tileCol + 1];
-                    int bl = tiles[tileRow + 1, tileCol];
-                    int br = tiles[tileRow + 1, tileCol + 1];
+                    int tr = sr * 2, tc = sc * 2;
+                    int tl = tiles[tr, tc], t = tiles[tr, tc + 1];
+                    int bl = tiles[tr + 1, tc], br = tiles[tr + 1, tc + 1];
 
                     grid[sr, sc] = new SquareDomain
                     {
                         Row = sr,
                         Col = sc,
                         TileTopLeft = tl,
-                        TileTopRight = tr,
+                        TileTopRight = t,
                         TileBottomLeft = bl,
                         TileBottomRight = br,
-                        SquareType = ResolveSquareType(tl, tr, bl, br),
+                        SquareType = ResolveSquareType(tl, t, bl, br),
                         TileType = ResolveTileType(tl),
                     };
                 }
@@ -450,21 +322,17 @@ namespace PokemonGame.Model.Model.Map
             var tiles = new int[map.Height, map.Width];
             for (int b = 0; b < blocks.Count; b++)
             {
-                var tile = blocks[b];
-                if (tile is null) continue;
-                tiles[b / map.Width, b % map.Width] = tile.Tileid;
+                if (blocks[b] is { } tile)
+                    tiles[b / map.Width, b % map.Width] = tile.Tileid;
             }
             return tiles;
         }
 
-        // -----------------------------------------------------------------------
-        // Private — tile classification
-        // -----------------------------------------------------------------------
+        // ── Private — tile classification ─────────────────────────────────────
 
         private static CollisionType ResolveSquareType(int tl, int tr, int bl, int br)
         {
-            if (IsBlocked(tl) || IsBlocked(tr) || IsBlocked(bl) || IsBlocked(br))
-                return CollisionType.Blocked;
+            if (IsBlocked(tl) || IsBlocked(tr) || IsBlocked(bl) || IsBlocked(br)) return CollisionType.Blocked;
             if (IsJumpDown(tl)) return CollisionType.JumpDown;
             if (IsJumpUp(tl)) return CollisionType.JumpUp;
             if (IsJumpLeft(tl)) return CollisionType.JumpLeft;
@@ -491,10 +359,42 @@ namespace PokemonGame.Model.Model.Map
         private static bool IsJumpUp(int id) => id == 71;
         private static bool IsJumpLeft(int id) => id == 72;
         private static bool IsJumpRight(int id) => id == 73;
-        private static bool IsWater(int id) => id >= 50 && id <= 59;
-        private static bool IsGrass(int id) => id >= 40 && id <= 49;
-        private static bool IsBranch(int id) => id >= 80 && id <= 89;
-        private static bool IsRock(int id) => id >= 90 && id <= 99;
-        private static bool IsStrength(int id) => id >= 100 && id <= 109;
+        private static bool IsWater(int id) => id is >= 50 and <= 59;
+        private static bool IsGrass(int id) => id is >= 40 and <= 49;
+        private static bool IsBranch(int id) => id is >= 80 and <= 89;
+        private static bool IsRock(int id) => id is >= 90 and <= 99;
+        private static bool IsStrength(int id) => id is >= 100 and <= 109;
+
+        private static HMMoves HmForTileType(TileType type) => type switch
+        {
+            TileType.Water => HMMoves.Surf,
+            TileType.Branch => HMMoves.Cut,
+            TileType.Rock => HMMoves.RockSmash,
+            TileType.StrengthAble => HMMoves.Strength,
+            _ => HMMoves.None,
+        };
+
+        // ── Private — shared helpers ──────────────────────────────────────────
+
+        private (int row, int col) NpcSquare(NpcObjectDomain npc)
+            => TileToSquare(npc.Location.x, npc.Location.y);
+
+        private bool InBounds(int row, int col)
+            => (uint)row < (uint)SquareRows && (uint)col < (uint)SquareCols;
+
+        private static (int row, int col) Step(int row, int col, FacingDirection dir)
+        {
+            var (dr, dc) = Delta(dir);
+            return (row + dr, col + dc);
+        }
+
+        private static (int dRow, int dCol) Delta(FacingDirection dir) => dir switch
+        {
+            FacingDirection.Up => (-1, 0),
+            FacingDirection.Down => (1, 0),
+            FacingDirection.Left => (0, -1),
+            FacingDirection.Right => (0, 1),
+            _ => (0, 0),
+        };
     }
 }
