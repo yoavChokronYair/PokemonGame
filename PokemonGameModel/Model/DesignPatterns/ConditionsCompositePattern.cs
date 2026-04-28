@@ -5,9 +5,11 @@
 // ICondition<T> and ITarget interfaces live in Interface/Move/IConditionAndTarget.cs.
 // NOTE: Probability uses RandomHelper — no inline new Random() anywhere in this file.
 
+using PokemonGame.Core.Config;
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
@@ -277,12 +279,108 @@ namespace PokemonGame.Model.Model.DesignPatterns
     }
 
     // status
-    // ── TeamState Implementations ────────────────────────────────────────────────
-    public class TeamHasPokemon : ICondition<PokemonTeam>
+    // ── Team conditions ───────────────────────────────────────────────────────────
+
+    public class TeamHasPokemon : ICondition<PlayerDomain>
     {
         private readonly int _pokedexId;
         public TeamHasPokemon(int pokedexId) { _pokedexId = pokedexId; }
-        public bool Check(PokemonTeam battle) => battle.ContainsPokemon(_pokedexId);
+        public bool Check(PlayerDomain player) => player.Team.ContainsPokemon(_pokedexId);
+    }
+
+    public class TeamHasSpace : ICondition<PlayerDomain>
+    {
+        public bool Check(PlayerDomain player) => player.Team.getAllPokemonCount() < PokemonConstants.PartyCapacity;
+    }
+
+    // ── Inventory conditions ──────────────────────────────────────────────────────
+
+    public class HasItem : ICondition<PlayerDomain>
+    {
+        private readonly itemsDomain _item;
+        public HasItem(itemsDomain item) { _item = item; }
+        public bool Check(PlayerDomain player) => player.BagInventory.ContainsKey(_item);
+    }
+
+    public class HasEnoughMoney : ICondition<PlayerDomain>
+    {
+        private readonly int _amount;
+        public HasEnoughMoney(int amount) { _amount = amount; }
+        public bool Check(PlayerDomain player) => player.Money >= _amount;
+    }
+
+    // ── Progress conditions ───────────────────────────────────────────────────────
+
+    public class HasBadge : ICondition<PlayerDomain>
+    {
+        private readonly int _badgeId;
+        public HasBadge(int badgeId) { _badgeId = badgeId; }
+        public bool Check(PlayerDomain player) => player.HasBadge(_badgeId);
+    }
+
+    public class HasStoryFlag : ICondition<PlayerDomain>
+    {
+        private readonly int _flagId;
+        public HasStoryFlag(int flagId) { _flagId = flagId; }
+        public bool Check(PlayerDomain player) => player.HasStoryFlag(_flagId);
+    }
+
+    public class TrainerDefeated : ICondition<PlayerDomain>
+    {
+        private readonly int _trainerId;
+        public TrainerDefeated(int trainerId) { _trainerId = trainerId; }
+        public bool Check(PlayerDomain player) => player.HasDefeatedTrainer(_trainerId);
+    }
+
+    public class NotDefeatedCondition : ICondition<PlayerDomain>
+    {
+        private readonly int _trainerId;
+        public NotDefeatedCondition(int trainerId) { _trainerId = trainerId; }
+        public bool Check(PlayerDomain player) => !player.HasDefeatedTrainer(_trainerId);
+    }
+
+    public class ItemAlreadyTaken : ICondition<PlayerDomain>
+    {
+        private readonly int _npcId;
+        public ItemAlreadyTaken(int npcId) { _npcId = npcId; }
+        public bool Check(PlayerDomain player) => player.HasTakenItem(_npcId);
+    }
+
+    public class ItemNotYetTaken : ICondition<PlayerDomain>
+    {
+        private readonly int _npcId;
+        public ItemNotYetTaken(int npcId) { _npcId = npcId; }
+        public bool Check(PlayerDomain player) => !player.HasTakenItem(_npcId);
+    }
+
+    public class PokemonAlreadyTraded : ICondition<PlayerDomain>
+    {
+        private readonly int _pokedexId;
+        public PokemonAlreadyTraded(int pokedexId) { _pokedexId = pokedexId; }
+        public bool Check(PlayerDomain player) => player.HasTradedPokemon(_pokedexId);
+    }
+
+    // ── Composite conditions ──────────────────────────────────────────────────────
+
+    public class AndCondition : ICondition<PlayerDomain>
+    {
+        private readonly ICondition<PlayerDomain>[] _conditions;
+        public AndCondition(params ICondition<PlayerDomain>[] conditions) { _conditions = conditions; }
+        public bool Check(PlayerDomain player) => _conditions.All(c => c.Check(player));
+    }
+
+    public class OrCondition : ICondition<PlayerDomain>
+    {
+        private readonly ICondition<PlayerDomain>[] _conditions;
+        public OrCondition(params ICondition<PlayerDomain>[] conditions) { _conditions = conditions; }
+        public bool Check(PlayerDomain player) => _conditions.Any(c => c.Check(player));
+    }
+
+    public class NotCondition : ICondition<PlayerDomain>
+    {
+        private readonly ICondition<PlayerDomain> _condition;
+        public NotCondition(ICondition<PlayerDomain> condition) { _condition = condition; }
+        public bool Check(PlayerDomain player) => !_condition.Check(player);
     }
     // ── Target Implementations ────────────────────────────────────────────────
     // ITarget interface lives in Interface/Move/IConditionAndTarget.cs.
