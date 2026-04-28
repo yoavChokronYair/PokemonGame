@@ -196,7 +196,7 @@ namespace PokemonGame.Model.Model.Map
             var npc = GetNpcAt(targetRow, targetCol);
             if (npc != null)
             {
-                var set = npc.NpcInfo.GetDialogue(TriggerType.Inspect);
+                var set = npc.NpcInfo.GetDialogue(TriggerType.Interact);
                 if (set != null)
                     return new InspectResult
                     {

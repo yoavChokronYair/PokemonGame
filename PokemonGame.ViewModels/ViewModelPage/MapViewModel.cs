@@ -5,8 +5,6 @@ using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Managers;
 using PokemonGame.Model.Model.Map;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.Dialogue;
@@ -29,6 +27,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private TileCellViewModel? _currentPlayerCell;
         public DialogueViewModel Dialogue { get; } = new();
         private SquareMapState SquareMap => _mapManager.SquareMap;
+        private NpcObjectDomain? _activeNpc; // track which NPC is in dialogue
 
         public ObservableCollection<TileRowViewModel> TileRows { get; } = new();
 
@@ -106,7 +105,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
             _player.playerLoc = _player.playerLoc == default ? (4, 4) : _player.playerLoc;
 
             _mapManager = new MapManager(_player);
-            _mapManager.SetSpottedHandler(OnPlayerSpotted);
+            _mapManager.TrainerSpotted += OnPlayerSpotted;
+            _mapManager.NpcInteracted += OnNpcInteracted;
 
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
             ShowForegroundCommand = new ShowLayerCommand(this, background: false);
@@ -133,7 +133,17 @@ namespace PokemonGame.ViewModels.ViewModelPage
             _npcTimer.Start();
 
             Dialogue.DialogueOpened += () => _npcTimer.Stop();
-            Dialogue.DialogueClosed += () => _npcTimer.Start();
+            Dialogue.DialogueClosed += () =>
+            {
+                _npcTimer.Start();
+
+                if (_activeNpc != null)
+                {
+                    _mapManager.OnNpcDialogueFinished(_activeNpc);
+                    _activeNpc = null;
+                    RefreshNpcs(); // remove disappearing NPC from grid
+                }
+            };
 
             RebuildGrid();
 
@@ -141,13 +151,17 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         public void Inspect()
         {
-            // If dialogue is open the confirm key advances it instead of inspecting
             if (Dialogue.IsOpen)
             {
                 Dialogue.Advance();
                 return;
             }
 
+            // Try NPC interaction first
+            _mapManager.TryInteractWithNpc();
+            if (Dialogue.IsOpen) return; // NpcInteracted opened dialogue — done
+
+            // Otherwise fall through to tile inspect
             var result = _mapManager.TryInspect();
             InspectResult = result.Message;
 
@@ -353,6 +367,14 @@ namespace PokemonGame.ViewModels.ViewModelPage
             if (set == null) return;
             Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
         }
+        private void OnNpcInteracted(NpcObjectDomain npc)
+        {
+            if (Dialogue.IsOpen) return;
+            var set = npc.NpcInfo.GetDialogue(TriggerType.Interact);
+            if (set == null) return;
+            _activeNpc = npc;
+            Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -482,7 +504,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             spottedSet.AddNode(spottedLine);
 
             var npc = new NpcDomain { Id = 1, Name = "Youngster Joey" };
-            npc.AddDialogueState(new NpcDialogueState(TriggerType.Inspect, inspectSet));
+            npc.AddDialogueState(new NpcDialogueState(TriggerType.Interact, inspectSet));
             npc.AddDialogueState(new NpcDialogueState(TriggerType.Spotted, spottedSet));
             return npc;
         }
@@ -526,7 +548,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             set.AddNode(lineNo);
 
             var npc = new NpcDomain { Id = 2, Name = "Old Man" };
-            npc.AddDialogueState(new NpcDialogueState(TriggerType.Inspect, set));
+            npc.AddDialogueState(new NpcDialogueState(TriggerType.Interact, set));
             return npc;
         }
 

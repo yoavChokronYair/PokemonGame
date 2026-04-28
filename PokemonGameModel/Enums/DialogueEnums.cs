@@ -6,11 +6,7 @@ namespace PokemonGame.Model.Enums
 {
     public enum TriggerType
     {
-        OnApproach,
-        OnTalk,
-        OnDefeat,
-        OnVictory,
-        Inspect,
+        Interact,
         Spotted
     }
 
