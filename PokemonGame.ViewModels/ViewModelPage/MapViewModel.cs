@@ -1,10 +1,13 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model.Managers;
 using PokemonGame.Model.Model.Map;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.Dialogue;
@@ -17,7 +20,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
     {
         private readonly MapManager _mapManager;
         private readonly PlayerDomain _player;
-        private readonly DispatcherTimer _npcTimer;
 
 
         private bool _isShowingBackground = true;
@@ -121,29 +123,32 @@ namespace PokemonGame.ViewModels.ViewModelPage
             Dialogue.FocusRequested += () => _focusCallback?.Invoke();
 
             // In constructor, after RebuildGrid():
-            _npcTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(500)
-            };
-            _npcTimer.Tick += (sender, args) =>
-            {
-                _mapManager.TickNpcs();
-                RefreshNpcs();
-            };
-            _npcTimer.Start();
 
-            Dialogue.DialogueOpened += () => _npcTimer.Stop();
+            ClockManager.Instance.NpcTick += (_, _) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _mapManager.TickNpcs();
+                    RefreshNpcs();
+                });
+            };
+
+
+
+            // Replace Dialogue open/close timer calls:
+            Dialogue.DialogueOpened += () => ClockManager.Instance.Pause();
             Dialogue.DialogueClosed += () =>
             {
-                _npcTimer.Start();
-
+                ClockManager.Instance.Resume();
                 if (_activeNpc != null)
                 {
                     _mapManager.OnNpcDialogueFinished(_activeNpc);
                     _activeNpc = null;
-                    RefreshNpcs(); // remove disappearing NPC from grid
+                    RefreshNpcs();
                 }
             };
+
+            ClockManager.Instance.Start();
 
             RebuildGrid();
 

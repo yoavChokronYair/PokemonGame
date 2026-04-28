@@ -1,0 +1,82 @@
+﻿using System.Timers;
+using PokemonGame.Model.Config;
+
+namespace PokemonGame.Model.Model.Managers
+{
+    public sealed class ClockManager: IDisposable
+    {
+        public static ClockManager Instance { get; } = new ClockManager();
+
+        // ── Events ────────────────────────────────────────────────────────────
+        /// Fired every NpcTickInterval. Subscribers: MapManager NPC logic.
+        public event EventHandler? NpcTick;
+
+        /// Fired every AutoSaveInterval. Subscriber: save system.
+        public event EventHandler? AutoSave;
+
+        /// Fired every NpcTickInterval with updated play time.
+        public event EventHandler<TimeSpan>? TimePlayedUpdated;
+
+        // ── State ─────────────────────────────────────────────────────────────
+        public TimeSpan TimePlayed { get; private set; }
+        public bool IsRunning { get; private set; }
+
+        // ── Internals ─────────────────────────────────────────────────────────
+        private readonly System.Timers.Timer _timer;
+        private DateTime _lastAutoSave;
+        private bool _disposed;
+
+        // ── Construction ──────────────────────────────────────────────────────
+        private ClockManager() // private constructor prevents external instantiation
+        {
+            _timer = new System.Timers.Timer(TimingConfig.NpcTickInterval.TotalMilliseconds)
+            {
+                AutoReset = true
+            };
+            _timer.Elapsed += OnElapsed;
+        }
+
+        // ── Control ───────────────────────────────────────────────────────────
+        public void Start()
+        {
+            if (IsRunning) return;
+            _lastAutoSave = DateTime.UtcNow;
+            IsRunning = true;
+            _timer.Start();
+        }
+
+        public void Stop()
+        {
+            IsRunning = false;
+            _timer.Stop();
+        }
+
+        /// Pause (e.g. dialogue open) — time stops accumulating.
+        public void Pause() => Stop();
+        public void Resume() => Start();
+
+        // ── Tick ──────────────────────────────────────────────────────────────
+        private void OnElapsed(object? sender, ElapsedEventArgs e)
+        {
+            TimePlayed += TimingConfig.NpcTickInterval;
+            TimePlayedUpdated?.Invoke(this, TimePlayed);
+
+            NpcTick?.Invoke(this, EventArgs.Empty);
+
+            if (DateTime.UtcNow - _lastAutoSave >= TimingConfig.AutoSaveInterval)
+            {
+                _lastAutoSave = DateTime.UtcNow;
+                AutoSave?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        // ── IDisposable ───────────────────────────────────────────────────────
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            _timer.Dispose();
+        }
+    }
+}
+
