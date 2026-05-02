@@ -64,7 +64,8 @@ namespace PokemonGame.Services.Handler
         }
 
         // ── Team helpers ──────────────────────────────────────────────────────
-
+        public void DeleteTeamsByPlayer(int battlePlayerId) =>
+    _teams.DeleteTeamsByPlayer(battlePlayerId);
         public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
             _teams.GetTeamByBattlePlayer(battlePlayerId);
 

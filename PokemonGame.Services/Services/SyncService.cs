@@ -70,7 +70,7 @@ namespace PokemonGame.Services.Handler
             var syncTeams = teams.Select(t => new
             {
                 teamName = t.TeamName,
-                battlePlayerId = t.Battle_player_id ?? 0,
+                battlePlayerId = t.BattlePlayerId ?? 0,
                 members = teamService.GetTeamMembers(t.Id)
             }).ToList();
 

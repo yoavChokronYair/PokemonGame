@@ -5,7 +5,11 @@ using PokemonGame.Services.Factory;
 var builder = WebApplication.CreateBuilder(args);
 
 string dbPath = Path.Combine(AppContext.BaseDirectory, "resources", "ServerDB.db");
-
+using var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}");
+conn.Open();
+using var cmd = conn.CreateCommand();
+cmd.CommandText = "PRAGMA foreign_keys = ON;";
+cmd.ExecuteNonQuery();
 // One factory for the server, registered as singleton
 builder.Services.AddSingleton(new ServiceFactory(dbPath));
 

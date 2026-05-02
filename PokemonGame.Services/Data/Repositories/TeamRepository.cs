@@ -13,10 +13,10 @@ namespace PokemonGame.Services.Data.Repositories
 
         // Removed user_id from the SELECT statement
         private const string TeamSelect =
-            @"SELECT id AS Id, 
-                     team_name AS TeamName, 
-                     battle_player_id AS Battle_player_id 
-              FROM teams";
+                @"SELECT id AS Id, 
+                         team_name AS TeamName, 
+                         battle_player_id AS BattlePlayerId
+                  FROM teams";
 
         // This is now your primary way to get teams
         public List<TeamData> GetTeamsByBattlePlayer(int battlePlayerId) =>
@@ -51,8 +51,45 @@ namespace PokemonGame.Services.Data.Repositories
             _db.Execute("UPDATE teams SET team_name = @name WHERE id = @tid",
                 new { name = newName, tid = teamId });
 
-        public void DeleteTeam(int teamId) =>
-            _db.Execute("DELETE FROM teams WHERE id = @tid", new { tid = teamId });
-        
+        public void DeleteTeam(int teamId)
+        {
+            // Get all pokemon IDs for this team
+            var pokemonIds = _db.Query<int>(
+                "SELECT pokemonID FROM team_members WHERE team_id = @tid",
+                new { tid = teamId }).ToList();
+
+            // Delete each battler_pokemon instance
+            foreach (var pid in pokemonIds)
+                _db.Execute("DELETE FROM battler_pokemon WHERE pokemonID = @pid",
+                    new { pid = pid });
+
+            // Delete team members
+            _db.Execute("DELETE FROM team_members WHERE team_id = @tid",
+                new { tid = teamId });
+
+            // Delete the team
+            _db.Execute("DELETE FROM teams WHERE id = @tid",
+                new { tid = teamId });
+        }
+        public void DeleteTeamsByPlayer(int battlePlayerId)
+        {
+            // Get pokemon IDs first
+            var pokemonIds = _db.Query<int>(
+                @"SELECT tm.pokemonID FROM team_members tm
+          INNER JOIN teams t ON t.id = tm.team_id
+          WHERE t.battle_player_id = @bpid",
+                new { bpid = battlePlayerId }).ToList();
+
+            foreach (var pid in pokemonIds)
+                _db.Execute("DELETE FROM battler_pokemon WHERE pokemonID = @pid", new { pid });
+
+            _db.Execute(
+                @"DELETE FROM team_members WHERE team_id IN 
+          (SELECT id FROM teams WHERE battle_player_id = @bpid)",
+                new { bpid = battlePlayerId });
+
+            _db.Execute("DELETE FROM teams WHERE battle_player_id = @bpid",
+                new { bpid = battlePlayerId });
+        }
     }
 }

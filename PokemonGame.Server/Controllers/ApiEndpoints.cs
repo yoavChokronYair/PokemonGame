@@ -30,18 +30,27 @@ namespace PokemonGame.Server.Controllers
                               new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (payload == null) return Results.BadRequest();
 
-            // Group by player so we wipe+replace per player
             var byPlayer = payload.Teams.GroupBy(t => t.BattlePlayerId);
             foreach (var group in byPlayer)
             {
-                // Delete all existing teams for this player on the server
                 var existing = teamService.GetTeamsByBattlePlayer(group.Key);
-                foreach (var old in existing)
-                    teamService.DeleteTeam(old.Id);
 
-                // Re-insert fresh from client
+                foreach (var t in existing)
+                    Console.WriteLine($"[Sync] Team — Id={t.Id}, Name={t.TeamName}, PlayerId={t.BattlePlayerId}");
+
+                Console.WriteLine($"[Sync] Player {group.Key} — existing teams: {existing.Count}, incoming teams: {group.Count()}");
+
+                // Delete all teams for this player in one shot — no Id mapping needed
+                teamService.DeleteTeamsByPlayer(group.Key);
+
+                var afterDelete = teamService.GetTeamsByBattlePlayer(group.Key);
+                Console.WriteLine($"[Sync] After delete — remaining: {afterDelete.Count}");
+
                 foreach (var team in group)
+                {
+                    Console.WriteLine($"[Sync] Saving team '{team.TeamName}' for player {team.BattlePlayerId} with {team.Members?.Count ?? 0} members");
                     teamService.SaveTeam(team.TeamName, team.BattlePlayerId, team.Members ?? new());
+                }
             }
 
             return Results.Ok();
