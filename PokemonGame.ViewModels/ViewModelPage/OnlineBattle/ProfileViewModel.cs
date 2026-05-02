@@ -58,15 +58,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private void LoadDummyFavouriteTeam()
         {
-            FavouriteTeam.LoadSlots(new[]
-            {
-                new TeamSlotDisplayEntry { PokedexId = 6,   Name = "Charizard", Type1 = "Fire",     Type2 = "Flying", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 25,  Name = "Pikachu",   Type1 = "Electric", Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 149, Name = "Dragonite", Type1 = "Dragon",   Type2 = "Flying", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 131, Name = "Lapras",    Type1 = "Water",    Type2 = "Ice",    IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 143, Name = "Snorlax",   Type1 = "Normal",   Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 94,  Name = "Gengar",    Type1 = "Ghost",    Type2 = "Poison", IsEmpty = false },
-            });
+            
         }
 
         private void LoadProfile(string username)

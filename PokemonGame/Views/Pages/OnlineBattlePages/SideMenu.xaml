@@ -84,12 +84,12 @@
 
                 <!--  Dynamic Page Title  -->
                 <TextBlock
-                    Margin="10,0,0,0"
+                    Margin="5,0,0,0"
                     VerticalAlignment="Center"
-                    FontSize="20"
                     FontWeight="Bold"
                     Foreground="White"
                     Text="{Binding CurrentPageTitle}"
+                    TextWrapping="Wrap"
                     Visibility="{Binding TextVisibility}" />
 
             </StackPanel>

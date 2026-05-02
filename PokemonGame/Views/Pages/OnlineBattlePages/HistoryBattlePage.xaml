@@ -17,16 +17,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <!--  TITLE  -->
-        <TextBlock
-            Grid.Row="0"
-            Margin="0,20,0,10"
-            HorizontalAlignment="Center"
-            FontSize="26"
-            FontWeight="Bold"
-            Text="Battle History" />
-
         <!--  Empty state  -->
         <TextBlock
             Grid.Row="1"

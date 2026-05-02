@@ -1,4 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelUserControl;
@@ -7,6 +11,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
     public class BattleHistoryEntry : ViewModelBase
     {
+        public int BattleID { get; set; }
+        public string BattleDate { get; set; } = string.Empty;
         public string PlayerName { get; set; } = string.Empty;
         public string OpponentName { get; set; } = string.Empty;
         public bool IsPlayerWinner { get; set; }
@@ -16,66 +22,60 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
     public class HistoryBattleViewModel : ViewModelBase
     {
+        private readonly BattleHistoryService _historyService;
+        private readonly UserStore _userStore;
+
         public ObservableCollection<BattleHistoryEntry> Battles { get; } = new();
         public bool HasNoBattles => Battles.Count == 0;
 
         public HistoryBattleViewModel(UserStore player)
         {
-            LoadDummyBattles();
+            _userStore = player;
+            _historyService = new BattleHistoryService();
+
+            LoadRealBattles();
         }
 
-        private void LoadDummyBattles()
+        private void LoadRealBattles()
         {
-            var entry1 = new BattleHistoryEntry
-            {
-                PlayerName = "yoav",
-                OpponentName = "Ash",
-                IsPlayerWinner = true,
-            };
-            entry1.PlayerTeam.LoadSlots(new[]
-            {
-                new TeamSlotDisplayEntry { PokedexId = 6,   Name = "Charizard",  Type1 = "Fire",   Type2 = "Flying", IsEmpty = false,HeldItemName = "Charizardite-Y" },
-                new TeamSlotDisplayEntry { PokedexId = 9,   Name = "Blastoise",  Type1 = "Water",  Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 3,   Name = "Venusaur",   Type1 = "Grass",  Type2 = "Poison", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 25,  Name = "Pikachu",    Type1 = "Electric", Type2 = null,   IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 131, Name = "Lapras",     Type1 = "Water",  Type2 = "Ice",    IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 143, Name = "Snorlax",    Type1 = "Normal", Type2 = null,     IsEmpty = false },
-            });
-            entry1.OpponentTeam.LoadSlots(new[]
-            {
-                new TeamSlotDisplayEntry { PokedexId = 149, Name = "Dragonite",  Type1 = "Dragon", Type2 = "Flying", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 130, Name = "Gyarados",   Type1 = "Water",  Type2 = "Flying", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 59,  Name = "Arcanine",   Type1 = "Fire",   Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 65,  Name = "Alakazam",   Type1 = "Psychic", Type2 = null,    IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 68,  Name = "Machamp",    Type1 = "Fighting", Type2 = null,   IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 94,  Name = "Gengar",     Type1 = "Ghost",  Type2 = "Poison", IsEmpty = false },
-            });
+            Battles.Clear();
 
-            var entry2 = new BattleHistoryEntry
-            {
-                PlayerName = "yoav",
-                OpponentName = "Misty",
-                IsPlayerWinner = false,
-            };
-            entry2.PlayerTeam.LoadSlots(new[]
-            {
-                new TeamSlotDisplayEntry { PokedexId = 6,   Name = "Charizard",  Type1 = "Fire",   Type2 = "Flying", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 112, Name = "Rhydon",     Type1 = "Ground", Type2 = "Rock",   IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 76,  Name = "Golem",      Type1 = "Rock",   Type2 = "Ground", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 38,  Name = "Ninetales",  Type1 = "Fire",   Type2 = null,     IsEmpty = false },
-            });
-            entry2.OpponentTeam.LoadSlots(new[]
-            {
-                new TeamSlotDisplayEntry { PokedexId = 121, Name = "Starmie",    Type1 = "Water",  Type2 = "Psychic", IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 117, Name = "Seadra",     Type1 = "Water",  Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 54,  Name = "Psyduck",    Type1 = "Water",  Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 90,  Name = "Shellder",   Type1 = "Water",  Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 98,  Name = "Krabby",     Type1 = "Water",  Type2 = null,     IsEmpty = false },
-                new TeamSlotDisplayEntry { PokedexId = 116, Name = "Horsea",     Type1 = "Water",  Type2 = null,     IsEmpty = false },
-            });
+            // 1. Get the structured data from the service
+            var historyData = _historyService.GetBattleHistoryDisplay(_userStore.BattlePlayerID, _userStore.Username);
 
-            Battles.Add(entry1);
-            Battles.Add(entry2);
+            foreach (var record in historyData)
+            {
+                var entry = new BattleHistoryEntry
+                {
+                    BattleID = record.BattleID,
+                    BattleDate = record.BattleDate,
+                    PlayerName = record.PlayerName,
+                    OpponentName = record.OpponentName,
+                    IsPlayerWinner = record.IsPlayerWinner
+                };
+
+                // 2. Map Player Pokemon objects to TeamSlotDisplayEntries
+                var playerSlots = record.PlayerPokemon.Select(p => new TeamSlotDisplayEntry
+                {
+                    PokedexId = p.PokedexId,
+                    HeldItemName = p.ItemName,
+                    IsEmpty = false
+                });
+
+                // 3. Map Opponent Pokemon objects to TeamSlotDisplayEntries
+                var opponentSlots = record.OpponentPokemon.Select(p => new TeamSlotDisplayEntry
+                {
+                    PokedexId = p.PokedexId,
+                    HeldItemName = p.ItemName,
+                    IsEmpty = false
+                });
+
+                // 4. Load them into the Team ViewModels (which handles the padding to 6 slots)
+                entry.PlayerTeam.LoadSlots(playerSlots);
+                entry.OpponentTeam.LoadSlots(opponentSlots);
+
+                Battles.Add(entry);
+            }
 
             OnPropertyChanged(nameof(HasNoBattles));
         }

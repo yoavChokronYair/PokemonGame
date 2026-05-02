@@ -3,7 +3,6 @@
     public class BattleRecordData
     {
         public int BattleID { get; set; }
-        public int? WinnerBattlePlayerID { get; set; }
-        public string? BattleDate { get; set; }
+        public string BattleDate { get; set; }
     }
 }

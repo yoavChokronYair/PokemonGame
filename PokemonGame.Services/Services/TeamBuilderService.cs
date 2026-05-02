@@ -48,9 +48,6 @@ namespace PokemonGame.Services.Handler
         public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
             _teams.GetTeamByBattlePlayer(battlePlayerId);
 
-        public List<TeamData> GetUserTeams(int userId) =>
-            _teams.GetUserTeams(userId);
-
         public List<TeamData> GetTeamsByBattlePlayer(int battlePlayerId) =>
             _teams.GetTeamsByBattlePlayer(battlePlayerId);
 
@@ -182,9 +179,9 @@ namespace PokemonGame.Services.Handler
             return result;
         }
 
-        public TeamData SaveTeam(string teamName, int userId, int battlePlayerId, List<BattlerPokemon> slots)
+        public TeamData SaveTeam(string teamName, int battlePlayerId, List<BattlerPokemon> slots)
         {
-            var team = _teams.CreateTeam(teamName, userId, battlePlayerId);
+            var team = _teams.CreateTeam(teamName, battlePlayerId);
             for (int i = 0; i < slots.Count && i < 6; i++)
             {
                 var pokemonId = _battlerPokemon.CreatePokemonInstance(slots[i]);
@@ -404,16 +401,6 @@ namespace PokemonGame.Services.Handler
             }
 
             return _moveDisplayCache;
-        }
-
-        private Dictionary<int, string> GetMoveNameCache()
-        {
-            if (_moveNameCache == null)
-            {
-                _moveNameCache = _moves.GetAll().ToDictionary(m => m.Id, m => m.Name);
-            }
-
-            return _moveNameCache;
         }
     }
 

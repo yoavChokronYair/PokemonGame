@@ -39,6 +39,10 @@ namespace PokemonGame.Services.Data.Repositories
 
             _db.Execute(query, new { id = battlePlayerID });
         }
+        public BattlePlayerData? LoadOnlinePlayerByID(int battlePlayerID) =>
+            _db.QuerySingle<BattlePlayerData>(
+                "SELECT * FROM BattlePlayer WHERE BattlePlayerID = @id",
+                new { id = battlePlayerID });
 
         public List<BattlePlayerData> GetAllOnlinePlayers(UserData user) =>
             GetAllCached(
