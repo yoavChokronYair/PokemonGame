@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Map;
 
 namespace PokemonGame.Model.Model.Managers

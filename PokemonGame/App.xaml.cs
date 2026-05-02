@@ -22,12 +22,13 @@ namespace PokemonGame
         {
             _navigationStore = new NavigationStore();
             _userStore = new UserStore();
+            _userStore.BattleSesion = new BattleSesion();
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _navigationStore.CurrentViewModel = CreateMapViewModel();
+            _navigationStore.CurrentViewModel = CreateLogInViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
@@ -114,7 +115,7 @@ namespace PokemonGame
         private OnlineBattleMenuViewModel GetOnlineBattleMenuViewModel()
         {
             if (_battleMenuViewModel == null)
-                _battleMenuViewModel = new OnlineBattleMenuViewModel(_userStore, _navigationStore, CreateBattleViewModel);
+                _battleMenuViewModel = new OnlineBattleMenuViewModel(_userStore, _navigationStore, CreateBattleConnectorViewModel);
             return _battleMenuViewModel;
         }
 
@@ -152,6 +153,14 @@ namespace PokemonGame
         private BattleViewModel CreateBattleViewModel()
         {
             return new BattleViewModel(_userStore);
+        }
+        private BattleConnectorViewModel CreateBattleConnectorViewModel()
+        {
+            return new BattleConnectorViewModel(
+                _userStore,
+                _navigationStore,
+                CreateBattleViewModel
+            );
         }
         private MapViewModel CreateMapViewModel()
         {

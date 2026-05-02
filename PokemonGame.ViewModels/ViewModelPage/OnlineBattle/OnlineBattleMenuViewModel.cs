@@ -1,5 +1,8 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Generic;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
+using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
@@ -10,7 +13,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     {
         private readonly UserStore _userStore;
         private readonly NavigationStore _rootNavigationStore;
-        private readonly Func<BattleViewModel> _createBattleViewModel;
+        private readonly Func<BattleConnectorViewModel> _createBattleViewModel;
+        private readonly TeamBuilderService _teamBuilderService; // inject this
 
         private bool _isOnline = true;
         public bool IsOnline
@@ -30,24 +34,60 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public bool IsRandom
         {
             get => _isRandom;
-            set { SetProperty(ref _isRandom, value); OnPropertyChanged(nameof(SelectionSummary)); }
+            set
+            {
+                SetProperty(ref _isRandom, value);
+                OnPropertyChanged(nameof(SelectionSummary));
+                OnPropertyChanged(nameof(ShowTeamSelector));
+            }
         }
 
         private bool _isSetTeam;
         public bool IsSetTeam
         {
             get => _isSetTeam;
-            set { SetProperty(ref _isSetTeam, value); OnPropertyChanged(nameof(SelectionSummary)); }
+            set
+            {
+                SetProperty(ref _isSetTeam, value);
+                OnPropertyChanged(nameof(SelectionSummary));
+                OnPropertyChanged(nameof(ShowTeamSelector));
+                if (value) RefreshSavedTeams();
+            }
         }
 
         private bool _isNoLegendaries;
         public bool IsNoLegendaries
         {
             get => _isNoLegendaries;
-            set { SetProperty(ref _isNoLegendaries, value); OnPropertyChanged(nameof(SelectionSummary)); }
+            set
+            {
+                SetProperty(ref _isNoLegendaries, value);
+                OnPropertyChanged(nameof(SelectionSummary));
+                OnPropertyChanged(nameof(ShowTeamSelector));
+            }
         }
 
-        // ✅ Computed every time any radio changes
+        // Only show team picker when "Set Team" is selected
+        public bool ShowTeamSelector => IsSetTeam;
+
+        private List<TeamData> _savedTeams = new();
+        public List<TeamData> SavedTeams
+        {
+            get => _savedTeams;
+            set => SetProperty(ref _savedTeams, value);
+        }
+
+        private TeamData _selectedTeam;
+        public TeamData SelectedTeam
+        {
+            get => _selectedTeam;
+            set
+            {
+                SetProperty(ref _selectedTeam, value);
+                OnPropertyChanged(nameof(SelectionSummary));
+            }
+        }
+
         public string SelectionSummary
         {
             get
@@ -55,27 +95,40 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 string mode = IsOnline ? "Online" : "Offline";
                 string format = Is1v1 ? "1v1" : "2v2";
                 string gameMode = IsRandom ? "Random" : IsSetTeam ? "Set Team" : "No Legendaries";
-                return $"{mode}  •  {format}  •  {gameMode}";
+                string team = IsSetTeam && SelectedTeam != null ? $"  •  {SelectedTeam.TeamName}" : "";
+                return $"{mode}  •  {format}  •  {gameMode}{team}";
             }
         }
 
         public ICommand PlayCommand { get; }
 
         public OnlineBattleMenuViewModel(
-        UserStore userStore,
-        NavigationStore rootNavigationStore,
-        Func<BattleViewModel> createBattleViewModel)
+            UserStore userStore,
+            NavigationStore rootNavigationStore,
+            Func<BattleConnectorViewModel> createBattleConnectorViewModel) // add this param
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
-            _createBattleViewModel = createBattleViewModel;
-
+            _createBattleViewModel = createBattleConnectorViewModel;
+            _teamBuilderService = new TeamBuilderService();
+            RefreshSavedTeams();
             PlayCommand = new RelayCommand(() =>
             {
-                // This triggers the factory in App.xaml.cs 
-                // which will check the current "IsRandom" state
+                userStore.BattleSesion.IsOnlineMode = IsOnline;
+                userStore.BattleSesion.IsOneVOne = Is1v1;
+                userStore.BattleSesion.BattleMode = IsRandom ? BattleMode.halfTeam
+                                                     : IsSetTeam ? BattleMode.fullTeam
+                                                     : BattleMode.TwoThirdsTeam;
+                userStore.BattleSesion.SelectedTeamId = SelectedTeam?.Id;
                 _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+
             });
+        }
+
+        private void RefreshSavedTeams()
+        {
+            SavedTeams = _teamBuilderService.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
+            SelectedTeam = SavedTeams.FirstOrDefault();
         }
     }
 }

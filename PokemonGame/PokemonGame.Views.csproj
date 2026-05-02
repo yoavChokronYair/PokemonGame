@@ -170,12 +170,16 @@
     <Compile Include="Converters\TypeToColorConverter.cs" />
     <Compile Include="Converters\TypeToImageConverter.cs" />
     <Compile Include="Converters\WinnerTextConverter.cs" />
+    <Compile Include="Converters\ZeroToVisibilityConverter.cs" />
     <Compile Include="Views\Behaviors\FocusBehavior.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\Controls\DialogService .cs" />
     <Compile Include="Views\Controls\PasswordHelper.cs" />
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\OnlineBattlePages\BattleConnectorPage.xaml.cs">
+      <DependentUpon>BattleConnectorPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\OnlineBattlePages\BattleMenuPage.xaml.cs">
       <DependentUpon>BattleMenuPage.xaml</DependentUpon>
@@ -281,6 +285,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="Views\MapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\OnlineBattlePages\BattleConnectorPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

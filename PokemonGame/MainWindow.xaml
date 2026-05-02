@@ -53,6 +53,9 @@
             <DataTemplate DataType="{x:Type summeryvm:MoveSummaryViewModel}">
                 <summeryview:MoveSummaryPage />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type onlinevm:BattleConnectorViewModel}">
+                <onlineview:BattleConnectorPage />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type battleviewmodel:BattleViewModel}">
                 <battleview:PokemonBattlePage />
             </DataTemplate>

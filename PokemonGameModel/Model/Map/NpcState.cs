@@ -25,7 +25,7 @@ namespace PokemonGame.Model.Model.Map
         {
             _map = map;
             _squareMap = squareMap;
-            _engagedNpcs.Clear();   // ← add
+            _engagedNpcs.Clear();
             _alreadySpotted.Clear();
         }
         public void SetSpottedHandler(Action<NpcObjectDomain> handler)
