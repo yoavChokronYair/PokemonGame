@@ -17,7 +17,7 @@ namespace PokemonGame.Converters
             try
             {
                 // Ensure your images are in /Assets/Items/ and Build Action is set to "Resource"
-                string uriPath = $"pack://application:,,,/Assets/Items/{imageName}.png";
+                string uriPath = $"pack://application:,,,/Assets/Images/Items/{imageName}.png";
                 return new BitmapImage(new Uri(uriPath));
             }
             catch

@@ -34,7 +34,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             };
             entry1.PlayerTeam.LoadSlots(new[]
             {
-                new TeamSlotDisplayEntry { PokedexId = 6,   Name = "Charizard",  Type1 = "Fire",   Type2 = "Flying", IsEmpty = false },
+                new TeamSlotDisplayEntry { PokedexId = 6,   Name = "Charizard",  Type1 = "Fire",   Type2 = "Flying", IsEmpty = false,HeldItemName = "Charizardite-Y" },
                 new TeamSlotDisplayEntry { PokedexId = 9,   Name = "Blastoise",  Type1 = "Water",  Type2 = null,     IsEmpty = false },
                 new TeamSlotDisplayEntry { PokedexId = 3,   Name = "Venusaur",   Type1 = "Grass",  Type2 = "Poison", IsEmpty = false },
                 new TeamSlotDisplayEntry { PokedexId = 25,  Name = "Pikachu",    Type1 = "Electric", Type2 = null,   IsEmpty = false },

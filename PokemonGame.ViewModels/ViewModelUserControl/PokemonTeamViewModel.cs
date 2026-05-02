@@ -27,7 +27,6 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
             {
                 Slots.Add(e);
             }
-
             // Pad remaining with empty
             while (Slots.Count < 6)
             {
@@ -38,17 +37,11 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
     public class TeamSlotDisplayEntry : ViewModelBase
     {
         private int _pokedexId;
-        private string _name;
-        private string _type1;
-        private string _type2;
         private bool _isEmpty;
         private string _heldItemName;
 
         public string HeldItemName { get => _heldItemName; set => SetProperty(ref _heldItemName, value); }
         public int PokedexId { get => _pokedexId; set => SetProperty(ref _pokedexId, value); }
-        public string Name { get => _name; set => SetProperty(ref _name, value); }
-        public string Type1 { get => _type1; set => SetProperty(ref _type1, value); }
-        public string Type2 { get => _type2; set => SetProperty(ref _type2, value); }
         public bool IsEmpty { get => _isEmpty; set => SetProperty(ref _isEmpty, value); }
 
         public static TeamSlotDisplayEntry Empty() => new() { IsEmpty = true };
