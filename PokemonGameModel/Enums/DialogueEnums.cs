@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace PokemonGame.Model.Enums
 {
     public enum TriggerType
     {
-        OnApproach,
-        OnTalk,
-        OnDefeat,
-        OnVictory,
-        Inspect,
+        Interact,
         Spotted
     }
 
@@ -18,13 +11,21 @@ namespace PokemonGame.Model.Enums
     {
         Text,
         Choice,
-        Event
+        Condition,
+        Terminal//(Terminal → triggers OnDialogueFinishedTrue)
     }
 
-    public enum DialogueSetType          // was: dialogueSetType  (PascalCase)
+    public enum DialogueSetType         
     {
         MainStory,
         SideQuest,
-        NpcInteraction                   // was: NPCInteraction
+        NpcInteraction,           
+        Trade,
+        ItemGiver,
+        Shop,
+        Pokecenter,
+        Trainer,
+        GymLeader
+
     }
 }

@@ -1,9 +1,17 @@
 ﻿using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Npc
 {
+    public class NpcSpriteDomain
+    {
+        public Dictionary<FacingDirection, (int TL, int TR, int BL, int BR)> Tiles { get; set; } = new();
+
+        public (int TL, int TR, int BL, int BR)? GetSprite(FacingDirection direction)
+            => Tiles.TryGetValue(direction, out var sprite) ? sprite : null;
+    }
     public class NpcDomain
     {
         private readonly List<NpcDialogueState> _dialogueStates = new();
@@ -15,48 +23,23 @@ namespace PokemonGame.Model.Domain.Npc
 
         public DialogueSet? GetDialogue(TriggerType trigger) =>
             _dialogueStates.FirstOrDefault(d => d.IsMatch(trigger))?.DialogueSet;
+        public virtual void OnDialogueFinishedTrue()
+        {
+
+        }
+        public virtual void OnDialogueFinishedFalse()
+        {
+
+        }
 
         public NpcType? Type;
-        public string? Name;
+        public string? Name;    
         public int Id;
     }
-
-    public class NpcRewardDomain
-    {
-        public TriggerType TriggerType { get; }
-        public RewardType RewardType { get; }
-        public int RewardValue { get; }
-        public bool IsRepeatable { get; }
-
-        private bool _hasBeenClaimed;
-
-        public NpcRewardDomain(
-            TriggerType triggerType,
-            RewardType rewardType,
-            int rewardValue,
-            bool isRepeatable)
-        {
-            TriggerType = triggerType;
-            RewardType = rewardType;
-            RewardValue = rewardValue;
-            IsRepeatable = isRepeatable;
-        }
-
-        public bool IsAvailable() => IsRepeatable || !_hasBeenClaimed;
-
-        public void Claim()
-        {
-            if (!IsRepeatable && _hasBeenClaimed)
-                throw new InvalidOperationException(
-                    "Reward is not repeatable and has already been claimed.");
-
-            _hasBeenClaimed = true;
-        }
-    }
-
     public class ItemGivingDomain
     {
         private readonly itemsDomain _item;
+        public int id;
         private bool _hasBeenGiven;
 
         public bool IsAvailable() => !_hasBeenGiven;
@@ -68,12 +51,19 @@ namespace PokemonGame.Model.Domain.Npc
                     "Item has already been given.");
 
             _hasBeenGiven = true;
+            if(!PlayerDomain.Instance.BagInventory.TryGetValue(_item, out int currentCount))
+            {
+                PlayerDomain.Instance.BagInventory[_item] = 0;
+            }
+            PlayerDomain.Instance.BagInventory[_item]++;
         }
     }
 
     public class TrainerDomain
     {
+        public int id { get; set; }
         public BotLevel AiType;
         public int BaseMoney;
+        public TrainerClass TrainerClass;
     }
 }

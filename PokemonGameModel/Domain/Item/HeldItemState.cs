@@ -17,6 +17,7 @@ namespace PokemonGame.Model.Domain.Item
         public string Description { get; set; }
         public bool UsableInBattle { get; set; }
         public bool UsableInField { get; set; }
+        public int Price { get; set; } = 0;
     }
     public class KeyItemState :itemsDomain
     {

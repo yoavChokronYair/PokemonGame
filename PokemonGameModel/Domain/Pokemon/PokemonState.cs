@@ -28,6 +28,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public Gender gender { get; set; }
         public bool IsShiny { get; set; }
         public NatureType Nature { get; set; }
+        public EvolutionDomain? Evolution { get; set; }
 
         // ── Base Stats ────────────────────────────────────────────────────────
         public BaseStats Base { get; set; } = new();
@@ -87,7 +88,6 @@ namespace PokemonGame.Model.Domain.Pokemon
         public double LastDamageDealt { get; internal set; }
         public double LastDamageTaken { get; internal set; }
         public int turnsActive;
-       
 
 
         public PokemonState() { }
@@ -274,5 +274,6 @@ namespace PokemonGame.Model.Domain.Pokemon
         }
 
         public override string ToString() => $"{Name} (Lv.{Level}) {CurrentHP}/{MaxHP} HP [{Status}]";
+       
     }
 }

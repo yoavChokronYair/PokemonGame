@@ -28,5 +28,15 @@
         Female,
         Genderless
     }
+    public enum EvoTriggerType
+    {
+        LevelUp,
+        UseItem,
+        Trade,
+        Friendship,
+        TimeOfDay,
+        Location,
+        MoveLearned
+    }
 
 }
