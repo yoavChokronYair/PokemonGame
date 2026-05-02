@@ -46,6 +46,14 @@ namespace PokemonGame.Services.Data.Repositories
                     ev_def = @Ev_def, ev_spAtk = @Ev_spAtk, ev_spDef = @Ev_spDef, ev_speed = @Ev_speed
                 WHERE pokemonID = @PokemonID", p);
         }
+        public (int PokedexID, int? ItemID) GetPokemonIdentity(int instanceID)
+        {
+            var data = _db.QuerySingle<BattlerPokemon>(
+                "SELECT pokedexID, itemID FROM battler_pokemon WHERE pokemonID = @pid",
+                new { pid = instanceID });
+
+            return (data.PokedexID, data.ItemID);
+        }   
 
         // Delete a Pokemon (e.g., releasing it)
         public void DeletePokemonInstance(int pokemonID) =>

@@ -89,7 +89,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                     }
 
                     var team = _service.SaveTeam(TeamName, _userStore.BattlePlayerID,
-                                                 _userStore.BattlePlayerID, battlerPokemons);
+                                                 battlerPokemons);
                     if (team != null)
                     {
                         SelectedTeam = team;

@@ -3,6 +3,7 @@
     public class BattlerPokemon
     {
         // Identity
+        public string Name { get; set; }
         public int PokemonID { get; set; }
         public int PokedexID { get; set; }
         public int AbilityID { get; set; }

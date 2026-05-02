@@ -47,11 +47,11 @@
             <DataTemplate DataType="{x:Type onlinevm:HistoryBattleViewModel}">
                 <onlineview:HistoryBattlePage />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type onlinevm:OnlineFriendsViewModel}">
-                <onlineview:OnlineFriendsPage />
-            </DataTemplate>
             <DataTemplate DataType="{x:Type summeryvm:MoveSummaryViewModel}">
                 <summeryview:MoveSummaryPage />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type onlinevm:BattleConnectorViewModel}">
+                <onlineview:BattleConnectorPage />
             </DataTemplate>
             <DataTemplate DataType="{x:Type battleviewmodel:BattleViewModel}">
                 <battleview:PokemonBattlePage />

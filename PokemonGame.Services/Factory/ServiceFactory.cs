@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.Repositories;
+using PokemonGame.Services.Data.Repositories.PokemonGame.Services.Data.Repositories;
 
 namespace PokemonGame.Services.Factory
 {
@@ -12,15 +13,12 @@ namespace PokemonGame.Services.Factory
         internal UserRepository UserRepository { get; }
         internal OnlinePlayerRepository OnlinePlayerRepository { get; }
 
-        // Social
-        internal FriendRepository FriendRepository { get; }
-
         // Teams & Battling
         internal TeamRepository TeamRepository { get; }
         internal TeamMemberRepository TeamMemberRepository { get; }
         internal BattleRepository BattleRepository { get; }
         internal ParticipantRepository ParticipantRepository { get; }
-
+        
         // Pokemon & Moves
         internal PokemonRepository PokemonRepository { get; }
         internal BattlerPokemonRepository BattlerPokemonRepository { get; }
@@ -51,7 +49,6 @@ namespace PokemonGame.Services.Factory
 
             UserRepository = new UserRepository(db);
             OnlinePlayerRepository = new OnlinePlayerRepository(db);
-            FriendRepository = new FriendRepository(db);
 
             TeamRepository = new TeamRepository(db);
             TeamMemberRepository = new TeamMemberRepository(db);

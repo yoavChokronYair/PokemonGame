@@ -5,7 +5,7 @@
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:uc="clr-namespace:PokemonGame.Views.UserControls"
+    xmlns:uc="clr-namespace:PokemonGame.Views.UserControls.OnlineBattleUserControls"
     Background="White"
     mc:Ignorable="d">
 
@@ -52,16 +52,6 @@
                         Margin="0,2,0,10"
                         FontSize="13"
                         Text="{Binding UserName}" />
-
-                    <TextBlock
-                        FontSize="11"
-                        Foreground="#888"
-                        Text="Player ID" />
-                    <TextBlock
-                        Margin="0,2,0,0"
-                        FontSize="12"
-                        Opacity="0.6"
-                        Text="{Binding PlayerId}" />
                 </StackPanel>
             </controls:BoardBackground>
 
@@ -72,11 +62,11 @@
                 BorderThickness="0">
                 <StackPanel Margin="16">
                     <TextBlock
-                        Margin="0,0,0,12"
+                        Margin="0,0,0,16"
                         FontWeight="Bold"
-                        Text="STATS" />
+                        Text="BATTLE RANKINGS" />
 
-                    <!--  Row 1: Wins / Losses  -->
+                    <!--  ROW 1: CURRENT ELO SUMMARY  -->
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -85,118 +75,84 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock
                                 FontSize="10"
+                                Foreground="#888"
+                                Text=" ELO 1v1" />
+                            <TextBlock
+                                FontSize="24"
+                                FontWeight="Bold"
+                                Foreground="#2196F3"
+                                Text="{Binding CurrentElo1v1}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="#888"
+                                Text="ELO 2v2" />
+                            <TextBlock
+                                FontSize="24"
+                                FontWeight="Bold"
+                                Foreground="#9C27B0"
+                                Text="{Binding CurrentElo2v2}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Margin="0,8,0,12" Background="#EEEEEE" />
+
+                    <!--  ROW 2 & 3: 1v1 DETAILS  -->
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        FontSize="12"
+                        FontWeight="Bold"
+                        Foreground="#444"
+                        Text="SINGLES (1v1)" />
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock
+                                FontSize="9"
                                 Foreground="#888"
                                 Text="WINS" />
                             <TextBlock
-                                FontSize="28"
-                                FontWeight="Bold"
-                                Foreground="#4CAF50"
-                                Text="{Binding Wins}" />
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Text="{Binding Wins1v1}" />
                         </StackPanel>
                         <StackPanel Grid.Column="1">
                             <TextBlock
-                                FontSize="10"
+                                FontSize="9"
                                 Foreground="#888"
-                                Text="LOSSES" />
-                            <TextBlock
-                                FontSize="28"
-                                FontWeight="Bold"
-                                Foreground="#E53935"
-                                Text="{Binding Losses}" />
-                        </StackPanel>
-                    </Grid>
-
-                    <!--  Divider  -->
-                    <Separator Margin="0,0,0,12" Background="#EEEEEE" />
-
-                    <!--  Row 2: Win Rate / Total Battles / Draws  -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock
-                                FontSize="10"
-                                Foreground="#888"
-                                Text="WIN RATE" />
+                                Text="PEAK ELO" />
                             <TextBlock
                                 FontSize="16"
                                 FontWeight="SemiBold"
-                                Text="{Binding WinRate}" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <TextBlock
-                                FontSize="10"
-                                Foreground="#888"
-                                Text="BATTLES" />
-                            <TextBlock
-                                FontSize="16"
-                                FontWeight="SemiBold"
-                                Text="{Binding TotalBattles}" />
+                                Text="{Binding PeakElo1v1}" />
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock
-                                FontSize="10"
+                                FontSize="9"
                                 Foreground="#888"
-                                Text="DRAWS" />
+                                Text="STREAK" />
                             <TextBlock
                                 FontSize="16"
                                 FontWeight="SemiBold"
-                                Text="{Binding Draws}" />
+                                Foreground="#4CAF50"
+                                Text="{Binding CurrentStreak1v1}" />
                         </StackPanel>
                     </Grid>
 
-                    <!--  Divider  -->
-                    <Separator Margin="0,0,0,12" Background="#EEEEEE" />
+                    <Separator Margin="0,8,0,12" Background="#EEEEEE" />
 
-                    <!--  Row 3: Streaks  -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock
-                                FontSize="10"
-                                Foreground="#888"
-                                Text="CURRENT STREAK" />
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    FontSize="16"
-                                    FontWeight="SemiBold"
-                                    Text="{Binding CurrentWinStreak}" />
-                                <TextBlock
-                                    Margin="4,4,0,0"
-                                    FontSize="10"
-                                    Foreground="#888"
-                                    Text="🔥" />
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <TextBlock
-                                FontSize="10"
-                                Foreground="#888"
-                                Text="BEST STREAK" />
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    FontSize="16"
-                                    FontWeight="SemiBold"
-                                    Text="{Binding BestWinStreak}" />
-                                <TextBlock
-                                    Margin="4,4,0,0"
-                                    FontSize="10"
-                                    Foreground="#888"
-                                    Text="🏆" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Grid>
-
-                    <!--  Divider  -->
-                    <Separator Margin="0,0,0,12" Background="#EEEEEE" />
-
-                    <!--  Row 4: Battle Detail  -->
+                    <!--  ROW 4 & 5: 2v2 DETAILS  -->
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        FontSize="12"
+                        FontWeight="Bold"
+                        Foreground="#444"
+                        Text="DOUBLES (2v2)" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -205,33 +161,34 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock
-                                FontSize="10"
+                                FontSize="9"
                                 Foreground="#888"
-                                Text="KOs" />
+                                Text="WINS" />
                             <TextBlock
                                 FontSize="16"
                                 FontWeight="SemiBold"
-                                Text="{Binding PokemonKnockedOut}" />
+                                Text="{Binding Wins2v2}" />
                         </StackPanel>
                         <StackPanel Grid.Column="1">
                             <TextBlock
-                                FontSize="10"
+                                FontSize="9"
                                 Foreground="#888"
-                                Text="FAINTED" />
+                                Text="PEAK ELO" />
                             <TextBlock
                                 FontSize="16"
                                 FontWeight="SemiBold"
-                                Text="{Binding PokemonFainted}" />
+                                Text="{Binding PeakElo2v2}" />
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock
-                                FontSize="10"
+                                FontSize="9"
                                 Foreground="#888"
-                                Text="CRITS" />
+                                Text="STREAK" />
                             <TextBlock
                                 FontSize="16"
                                 FontWeight="SemiBold"
-                                Text="{Binding CriticalHits}" />
+                                Foreground="#4CAF50"
+                                Text="{Binding CurrentStreak2v2}" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -257,55 +214,24 @@
                 Margin="0,0,0,16"
                 BackgroundType="{x:Static controls:BackgroundType.White}"
                 BorderThickness="0">
-                <StackPanel Margin="18">
-                    <TextBlock
-                        Margin="0,0,0,12"
-                        FontWeight="Bold"
-                        Text="SETTINGS" />
+                <StackPanel>
+                    <!--  Text Speed Setting  -->
+                    <uc:SettingRowControl
+                        Header="TEXT SPEED"
+                        Options="{Binding TextSpeedOptions}"
+                        SelectedOption="{Binding SelectedTextSpeed}" />
 
-                    <!--  Display  -->
-                    <TextBlock
-                        Margin="0,0,0,8"
-                        FontSize="10"
-                        Foreground="#888"
-                        Text="DISPLAY" />
-                    <CheckBox
-                        Margin="0,0,0,6"
-                        Content="Dark mode"
-                        IsChecked="{Binding IsDarkMode}" />
-                    <CheckBox
-                        Margin="0,0,0,6"
-                        Content="Show online status"
-                        IsChecked="{Binding ShowOnlineStatus}" />
+                    <!--  Battle Scene Setting  -->
+                    <uc:SettingRowControl
+                        Header="BATTLE SCENE"
+                        Options="{Binding BattleSceneOptions}"
+                        SelectedOption="{Binding SelectedBattleScene}" />
 
-                    <Separator Margin="0,8,0,8" Background="#EEEEEE" />
-
-                    <!--  Battle  -->
-                    <TextBlock
-                        Margin="0,0,0,8"
-                        FontSize="10"
-                        Foreground="#888"
-                        Text="BATTLE" />
-                    <CheckBox
-                        Margin="0,0,0,6"
-                        Content="Allow battle requests"
-                        IsChecked="{Binding AllowBattleRequests}" />
-                    <CheckBox
-                        Margin="0,0,0,6"
-                        Content="Animations"
-                        IsChecked="{Binding AnimationsEnabled}" />
-                    <CheckBox
-                        Margin="0,0,0,6"
-                        Content="Auto confirm moves"
-                        IsChecked="{Binding AutoConfirmMoves}" />
-                    <CheckBox
-                        Margin="0,0,0,6"
-                        Content="Show damage numbers"
-                        IsChecked="{Binding ShowDamageNumbers}" />
-                    <CheckBox
-                        Margin="0,0,0,0"
-                        Content="Show type effectiveness"
-                        IsChecked="{Binding ShowTypeEffectiveness}" />
+                    <!--  Sound Setting  -->
+                    <uc:SettingRowControl
+                        Header="SOUND"
+                        Options="{Binding SoundOptions}"
+                        SelectedOption="{Binding SelectedSoundMode}" />
                 </StackPanel>
             </controls:BoardBackground>
 
