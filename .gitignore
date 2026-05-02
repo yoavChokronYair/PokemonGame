@@ -9,7 +9,12 @@
 *.user
 *.userosscache
 *.sln.docstates
+.env
 
+# SQLite Databases (Preventing your real player data from being public)
+*.db
+*.db-shm
+*.db-wal
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
