@@ -99,21 +99,21 @@
                         Text="GAME MODE" />
                     <RadioButton
                         Margin="0,0,0,6"
-                        Content="🎲  Random"
+                        Content="3 members"
                         FontSize="12"
                         GroupName="GameMode"
                         IsChecked="{Binding IsRandom}"
                         Style="{StaticResource ToggleRadioStyle}" />
                     <RadioButton
                         Margin="0,0,0,6"
-                        Content="📋  Set Team"
+                        Content="6 members"
                         FontSize="12"
                         GroupName="GameMode"
                         IsChecked="{Binding IsSetTeam}"
                         Style="{StaticResource ToggleRadioStyle}" />
                     <RadioButton
                         Margin="0"
-                        Content="🚫  No Legends"
+                        Content="4 members"
                         Cursor="Hand"
                         FontSize="12"
                         GroupName="GameMode"

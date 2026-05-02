@@ -47,9 +47,6 @@
             <DataTemplate DataType="{x:Type onlinevm:HistoryBattleViewModel}">
                 <onlineview:HistoryBattlePage />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type onlinevm:OnlineFriendsViewModel}">
-                <onlineview:OnlineFriendsPage />
-            </DataTemplate>
             <DataTemplate DataType="{x:Type summeryvm:MoveSummaryViewModel}">
                 <summeryview:MoveSummaryPage />
             </DataTemplate>

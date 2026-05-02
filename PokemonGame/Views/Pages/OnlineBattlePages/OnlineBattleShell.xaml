@@ -17,10 +17,6 @@
             <local:TeamBuilderPage />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type onlinevm:OnlineFriendsViewModel}">
-            <local:OnlineFriendsPage />
-        </DataTemplate>
-
         <DataTemplate DataType="{x:Type onlinevm:ProfileViewModel}">
             <local:ProfilePage />
         </DataTemplate>

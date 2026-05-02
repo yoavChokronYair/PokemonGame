@@ -41,7 +41,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             NavigationStore rootNavigationStore,
             Func<OnlineBattleMenuViewModel> createHome,
             Func<HistoryBattleViewModel> createHistory,
-            Func<OnlineFriendsViewModel> createFriends,
             Func<TeamBuilderViewModel> createTeam,
             Func<ProfileViewModel> createProfile,
             Func<ViewModelBase>? exit = null)
@@ -53,8 +52,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             HomeCommand = new NavigateCommand(_contentNavigationStore, createHome);
 
             HistoryCommand = new NavigateCommand(_contentNavigationStore, createHistory);
-
-            FriendsCommand = new NavigateCommand(_contentNavigationStore, createFriends);
 
             TeamCommand = new NavigateCommand(_contentNavigationStore, createTeam);
 

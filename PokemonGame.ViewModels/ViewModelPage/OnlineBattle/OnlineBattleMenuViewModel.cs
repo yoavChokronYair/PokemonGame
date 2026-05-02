@@ -94,8 +94,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             {
                 string mode = IsOnline ? "Online" : "Offline";
                 string format = Is1v1 ? "1v1" : "2v2";
-                string gameMode = IsRandom ? "Random" : IsSetTeam ? "Set Team" : "No Legendaries";
-                string team = IsSetTeam && SelectedTeam != null ? $"  •  {SelectedTeam.TeamName}" : "";
+                string gameMode = IsRandom ? "3 members" : IsSetTeam ? "6 members" : "4 members";
+                string team = SelectedTeam != null ? $"  •  {SelectedTeam.TeamName}" : "";
                 return $"{mode}  •  {format}  •  {gameMode}{team}";
             }
         }

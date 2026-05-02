@@ -76,7 +76,6 @@ namespace PokemonGame
         // cached content VMs
         private ViewModels.ViewModelPage.OnlineBattle.OnlineBattleMenuViewModel _battleMenuViewModel;
         private HistoryBattleViewModel _historyBattleViewModel;
-        private OnlineFriendsViewModel _onlineFriendsViewModel;
         private TeamBuilderViewModel _teamBuilderViewModel;
         private ProfileViewModel _profileViewModel;
 
@@ -103,7 +102,6 @@ namespace PokemonGame
                 _navigationStore,
                 GetOnlineBattleMenuViewModel,
                 GetHistoryViewModel,
-                GetFriendsViewModel,
                 GetTeamSelectPageViewModel,
                 GetProfileViewModel,
                 CreateGameModeChooserViewModel
@@ -124,13 +122,6 @@ namespace PokemonGame
             if (_historyBattleViewModel == null)
                 _historyBattleViewModel = new HistoryBattleViewModel(_userStore);
             return _historyBattleViewModel;
-        }
-
-        private OnlineFriendsViewModel GetFriendsViewModel()
-        {
-            if (_onlineFriendsViewModel == null)
-                _onlineFriendsViewModel = new OnlineFriendsViewModel(_userStore, new DialogService());
-            return _onlineFriendsViewModel;
         }
 
         private TeamBuilderViewModel GetTeamSelectPageViewModel()

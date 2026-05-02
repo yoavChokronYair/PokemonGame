@@ -62,21 +62,6 @@
                 </StackPanel>
             </Button>
 
-            <!--  Friends  -->
-            <Button Command="{Binding FriendsCommand}" Style="{StaticResource MenuButtonStyle}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        FontSize="16"
-                        Text="👥" />
-                    <TextBlock
-                        Margin="8,0,0,0"
-                        VerticalAlignment="Center"
-                        Text="Friends"
-                        Visibility="{Binding TextVisibility}" />
-                </StackPanel>
-            </Button>
-
             <!--  Team  -->
             <Button Command="{Binding TeamCommand}" Style="{StaticResource MenuButtonStyle}">
                 <StackPanel Orientation="Horizontal">
