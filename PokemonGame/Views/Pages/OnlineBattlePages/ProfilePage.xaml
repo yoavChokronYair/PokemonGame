@@ -200,12 +200,35 @@
                 BackgroundType="{x:Static controls:BackgroundType.White}"
                 BorderThickness="0">
                 <StackPanel Margin="16">
+
+                    <!--  1. Title  -->
                     <TextBlock
                         Margin="0,0,0,12"
+                        FontSize="16"
                         FontWeight="Bold"
                         Text="FAVOURITE TEAM" />
 
-                    <uc:PokemonTeamUserControl Height="180" DataContext="{Binding FavouriteTeam}" />
+                    <!--  2. Combo Box (Under Title)  -->
+                    <ComboBox
+                        Margin="0,0,0,16"
+                        HorizontalAlignment="Stretch"
+                        DisplayMemberPath="TeamName"
+                        ItemsSource="{Binding UserTeams}"
+                        SelectedItem="{Binding SelectedTeam}" />
+
+                    <!--  3. Team Display (Under Combo Box)  -->
+                    <uc:PokemonTeamUserControl
+                        Height="180"
+                        Margin="0,0,0,16"
+                        DataContext="{Binding FavouriteTeam}" />
+
+                    <!--  4. Save Changes Button (Under Team)  -->
+                    <Button
+                        Padding="12,6"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding SetFavouriteTeamCommand}"
+                        Content="SAVE CHANGES" />
+
                 </StackPanel>
             </controls:BoardBackground>
 

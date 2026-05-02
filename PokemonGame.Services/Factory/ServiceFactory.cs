@@ -18,7 +18,9 @@ namespace PokemonGame.Services.Factory
         internal TeamMemberRepository TeamMemberRepository { get; }
         internal BattleRepository BattleRepository { get; }
         internal ParticipantRepository ParticipantRepository { get; }
-        
+        internal BattlePlayerStatsRepository BattlePlayerStatsRepository { get; }
+        internal BattlePlayerSettingsRepository BattlePlayerSettingsRepository { get; }
+
         // Pokemon & Moves
         internal PokemonRepository PokemonRepository { get; }
         internal BattlerPokemonRepository BattlerPokemonRepository { get; }
@@ -54,10 +56,14 @@ namespace PokemonGame.Services.Factory
             TeamMemberRepository = new TeamMemberRepository(db);
             BattleRepository = new BattleRepository(db);
             ParticipantRepository = new ParticipantRepository(db);
+            BattlePlayerSettingsRepository = new BattlePlayerSettingsRepository(db);
+            BattlePlayerStatsRepository = new BattlePlayerStatsRepository(db);
 
             PokemonRepository = new PokemonRepository(db);
             BattlerPokemonRepository = new BattlerPokemonRepository(db);
             PokemonStatsRepository = new PokemonStatsRepository(db);
+
+
 
             MoveRepository = new MoveRepository(db);
             AttemptRepository = new AttemptRepository(db);

@@ -29,14 +29,6 @@ namespace PokemonGame.Services.Data.Repositories
                 _db.QuerySingle<BattlePlayerData>("SELECT * FROM BattlePlayer WHERE BattlePlayerID = last_insert_rowid();"));
         }
 
-        // Updated: This should now target your new stats logic (Elo/Streaks)
-        // For now, I've removed the Wins/Losses increment logic
-        public void UpdatePlayerStats(int battlePlayerID, bool won)
-        {
-            // You will likely move this logic to a BattleSettingsRepository 
-            // to update CurrentElo1v1, CurrentStreak1v1, etc.
-        }
-
         public BattlePlayerData? LoadOnlinePlayerByID(int battlePlayerID) =>
             _db.QuerySingle<BattlePlayerData>(
                 "SELECT * FROM BattlePlayer WHERE BattlePlayerID = @id",

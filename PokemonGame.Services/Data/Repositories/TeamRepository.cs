@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
+using PokemonGame.Services.Data.GameData.Pokemon;
 
 namespace PokemonGame.Services.Data.Repositories
 {
@@ -52,5 +53,6 @@ namespace PokemonGame.Services.Data.Repositories
 
         public void DeleteTeam(int teamId) =>
             _db.Execute("DELETE FROM teams WHERE id = @tid", new { tid = teamId });
+        
     }
 }
