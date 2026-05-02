@@ -30,8 +30,19 @@ namespace PokemonGame.Server.Controllers
                               new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (payload == null) return Results.BadRequest();
 
-            foreach (var team in payload.Teams)
-                teamService.SaveTeam(team.TeamName, team.BattlePlayerId, team.Members ?? new());
+            // Group by player so we wipe+replace per player
+            var byPlayer = payload.Teams.GroupBy(t => t.BattlePlayerId);
+            foreach (var group in byPlayer)
+            {
+                // Delete all existing teams for this player on the server
+                var existing = teamService.GetTeamsByBattlePlayer(group.Key);
+                foreach (var old in existing)
+                    teamService.DeleteTeam(old.Id);
+
+                // Re-insert fresh from client
+                foreach (var team in group)
+                    teamService.SaveTeam(team.TeamName, team.BattlePlayerId, team.Members ?? new());
+            }
 
             return Results.Ok();
         }
