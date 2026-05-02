@@ -20,7 +20,6 @@
             Foreground="#D3812F"
             Text="{Binding Header, ElementName=Root}" />
 
-        <!--  THE TWO STYLES  -->
         <Grid Grid.Column="1">
             <!--  STYLE A: The Horizontal List (Default)  -->
             <ListBox
@@ -29,6 +28,15 @@
                 BorderThickness="0"
                 ItemsSource="{Binding Options, ElementName=Root}"
                 SelectedItem="{Binding SelectedOption, ElementName=Root}">
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding UseSelectorMode, ElementName=Root}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Style>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -41,7 +49,8 @@
                             Margin="10,0"
                             FontWeight="Bold"
                             Foreground="#777"
-                            Text="{Binding Name}" />
+                            Text="{Binding Name}"
+                            TextTrimming="CharacterEllipsis" />
                         <DataTemplate.Triggers>
                             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
                                 <Setter TargetName="Txt" Property="Foreground" Value="#E53935" />
@@ -52,49 +61,60 @@
             </ListBox>
 
             <!--  STYLE B: The Selector (Arrows + Single Text)  -->
-            <StackPanel
-                x:Name="SelectorMode"
-                Orientation="Horizontal"
-                Visibility="Collapsed">
+            <StackPanel x:Name="SelectorMode" Orientation="Horizontal">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding UseSelectorMode, ElementName=Root}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
                 <Button
                     Width="30"
-                    Background="#EEE"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
                     BorderThickness="1"
                     Click="OnPrevClick"
-                    Content="&lt;" />
+                    Content="&lt;"
+                    Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
 
-                <TextBlock
-                    Width="100"
-                    VerticalAlignment="Center"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Foreground="#E53935"
-                    Text="{Binding SelectedOption.Name, ElementName=Root}"
-                    TextAlignment="Center" />
+                <Viewbox
+                    Width="90"
+                    Height="25"
+                    Stretch="Uniform">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontWeight="Bold"
+                        Foreground="#E53935"
+                        Text="{Binding SelectedOption.Name, ElementName=Root}"
+                        TextAlignment="Center" />
+                </Viewbox>
 
                 <Button
                     Width="30"
-                    Background="#EEE"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
                     BorderThickness="1"
                     Click="OnNextClick"
-                    Content="&gt;" />
+                    Content="&gt;"
+                    Cursor="Hand"
+                    Foreground="Black">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>
-
-    <UserControl.Triggers>
-        <!--  Toggle Visibility based on UseSelectorMode  -->
-    </UserControl.Triggers>
-
-    <!--  Using Style Triggers to switch views  -->
-    <UserControl.Style>
-        <Style TargetType="UserControl">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding UseSelectorMode, ElementName=Root}" Value="True">
-                    <Setter TargetName="StandardList" Property="Visibility" Value="Collapsed" />
-                    <Setter TargetName="SelectorMode" Property="Visibility" Value="Visible" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Style>
 </UserControl>

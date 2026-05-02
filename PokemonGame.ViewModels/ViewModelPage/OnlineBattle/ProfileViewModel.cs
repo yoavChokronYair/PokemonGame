@@ -56,6 +56,22 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             get => _selectedBattleScene;
             set { if (SetProperty(ref _selectedBattleScene, value)) SaveSetting("BattleScene", value?.Id ?? 0); }
         }
+        public ObservableCollection<SettingOption> BackgroundOptions { get; } = new();
+
+        // Selected properties for the new settings
+        private SettingOption _selectedBackground;
+        public SettingOption SelectedBackground
+        {
+            get => _selectedBackground;
+            set { if (SetProperty(ref _selectedBackground, value)) SaveSetting("Background", value?.Id ?? 0); }
+        }
+
+        private SettingOption _showTypeEffectiveness;
+        public SettingOption ShowTypeEffectiveness
+        {
+            get => _showTypeEffectiveness;
+            set { if (SetProperty(ref _showTypeEffectiveness, value)) SaveSetting("TypeEffectiveness", value?.Id ?? 0); }
+        }
 
         public ProfileViewModel(UserStore userStore)
         {
@@ -80,6 +96,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             BattleSceneOptions.Clear();
             BattleSceneOptions.Add(new SettingOption { Id = 1, Name = "ON" });
             BattleSceneOptions.Add(new SettingOption { Id = 0, Name = "OFF" });
+            BackgroundOptions.Clear();
+            BackgroundOptions.Add(new SettingOption { Id = 1, Name = "DEFAULT" });
+            BackgroundOptions.Add(new SettingOption { Id = 2, Name = "DARK" });
+            BackgroundOptions.Add(new SettingOption { Id = 3, Name = "CLASSIC" });
+
+            // Set Initial Selection for new items
+            SelectedBackground = BackgroundOptions[0];
+            ShowTypeEffectiveness = BattleSceneOptions.FirstOrDefault(o => o.Id == 1); // Default ON
         }
 
         private void LoadProfileData()

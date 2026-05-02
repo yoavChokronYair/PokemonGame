@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Model.Config
+﻿namespace PokemonGame.Model.Config
 {
     public static class TimingConfig
     {

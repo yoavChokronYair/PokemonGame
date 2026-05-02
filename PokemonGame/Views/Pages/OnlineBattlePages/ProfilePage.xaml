@@ -214,24 +214,34 @@
                 Margin="0,0,0,16"
                 BackgroundType="{x:Static controls:BackgroundType.White}"
                 BorderThickness="0">
-                <StackPanel>
-                    <!--  Text Speed Setting  -->
-                    <uc:SettingRowControl
-                        Header="TEXT SPEED"
-                        Options="{Binding TextSpeedOptions}"
-                        SelectedOption="{Binding SelectedTextSpeed}" />
+                <StackPanel Margin="10">
 
-                    <!--  Battle Scene Setting  -->
+                    <!--  ANIMATION: Simple On/Off List  -->
                     <uc:SettingRowControl
-                        Header="BATTLE SCENE"
+                        Header="ANIMATION"
                         Options="{Binding BattleSceneOptions}"
                         SelectedOption="{Binding SelectedBattleScene}" />
 
-                    <!--  Sound Setting  -->
+                    <!-- TEXT SPEED: Selector Style with < > arrows -->
                     <uc:SettingRowControl
-                        Header="SOUND"
-                        Options="{Binding SoundOptions}"
-                        SelectedOption="{Binding SelectedSoundMode}" />
+                        Header="TEXT SPEED"
+                        Options="{Binding TextSpeedOptions}"
+                        SelectedOption="{Binding SelectedTextSpeed}"
+                        UseSelectorMode="True" />
+
+                    <!--  BACKGROUND: Selector Style (useful if you have many themes)  -->
+                    <uc:SettingRowControl
+                        Header="BACKGROUND"
+                        Options="{Binding BackgroundOptions}"
+                        SelectedOption="{Binding SelectedBackground}"
+                        UseSelectorMode="True" />
+
+                    <!--  SHOW EFFECTIVE: Simple On/Off List  -->
+                    <uc:SettingRowControl
+                        Header="SHOW EFFECTIVE"
+                        Options="{Binding BattleSceneOptions}"
+                        SelectedOption="{Binding ShowTypeEffectiveness}" />
+
                 </StackPanel>
             </controls:BoardBackground>
 
