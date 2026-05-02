@@ -245,6 +245,9 @@
     <Compile Include="Views\UserControls\MoveSlotControl.xaml.cs">
       <DependentUpon>MoveSlotControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UserControls\OnlineBattleUserControls\SettingRowControl.xaml.cs">
+      <DependentUpon>SettingRowControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UserControls\PokemonEditorUserControl.xaml.cs">
       <DependentUpon>PokemonEditorUserControl.xaml</DependentUpon>
     </Compile>
@@ -371,6 +374,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserControls\MoveSlotControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\OnlineBattleUserControls\SettingRowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

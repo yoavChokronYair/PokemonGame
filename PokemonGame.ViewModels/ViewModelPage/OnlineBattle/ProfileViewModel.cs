@@ -1,4 +1,6 @@
-﻿using PokemonGame.Services.Handler;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
+using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelUserControl;
@@ -8,74 +10,118 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     public class ProfileViewModel : ViewModelBase
     {
         private readonly ProfileService _handler;
+        private readonly UserStore _userStore;
 
-        private string _userName;
+        // ── Identity ──────────────────────────────────────────────
+        private string _userName = string.Empty;
         public string UserName { get => _userName; set => SetProperty(ref _userName, value); }
 
-        private string _displayName;
+        private string _displayName = string.Empty;
         public string DisplayName { get => _displayName; set => SetProperty(ref _displayName, value); }
 
-        private string _playerId;
-        public string PlayerId { get => _playerId; set => SetProperty(ref _playerId, value); }
+        // ── Stats (Matching your 5-row sketch) ────────────────────
+        private int _currentElo1v1, _currentElo2v2;
+        public int CurrentElo1v1 { get => _currentElo1v1; set => SetProperty(ref _currentElo1v1, value); }
+        public int CurrentElo2v2 { get => _currentElo2v2; set => SetProperty(ref _currentElo2v2, value); }
 
-        // ── Stats ─────────────────────────────────────────────────
-        private int _wins, _losses, _draws, _currentWinStreak, _bestWinStreak;
-        private int _pokemonKnockedOut, _pokemonFainted, _criticalHits;
+        private int _wins1v1, _peakElo1v1, _bestStreak1v1, _currentStreak1v1;
+        public int Wins1v1 { get => _wins1v1; set => SetProperty(ref _wins1v1, value); }
+        public int PeakElo1v1 { get => _peakElo1v1; set => SetProperty(ref _peakElo1v1, value); }
+        public int BestStreak1v1 { get => _bestStreak1v1; set => SetProperty(ref _bestStreak1v1, value); }
+        public int CurrentStreak1v1 { get => _currentStreak1v1; set => SetProperty(ref _currentStreak1v1, value); }
 
-        public int Wins { get => _wins; set { SetProperty(ref _wins, value); OnPropertyChanged(nameof(WinRate)); OnPropertyChanged(nameof(TotalBattles)); } }
-        public int Losses { get => _losses; set { SetProperty(ref _losses, value); OnPropertyChanged(nameof(WinRate)); OnPropertyChanged(nameof(TotalBattles)); } }
-        public int Draws { get => _draws; set => SetProperty(ref _draws, value); }
-        public int CurrentWinStreak { get => _currentWinStreak; set => SetProperty(ref _currentWinStreak, value); }
-        public int BestWinStreak { get => _bestWinStreak; set => SetProperty(ref _bestWinStreak, value); }
-        public int PokemonKnockedOut { get => _pokemonKnockedOut; set => SetProperty(ref _pokemonKnockedOut, value); }
-        public int PokemonFainted { get => _pokemonFainted; set => SetProperty(ref _pokemonFainted, value); }
-        public int CriticalHits { get => _criticalHits; set => SetProperty(ref _criticalHits, value); }
-        public int TotalBattles => Wins + Losses;
-        public string WinRate => TotalBattles == 0 ? "—" : $"{(Wins * 100.0 / TotalBattles):0.#}%";
+        private int _wins2v2, _peakElo2v2, _bestStreak2v2, _currentStreak2v2;
+        public int Wins2v2 { get => _wins2v2; set => SetProperty(ref _wins2v2, value); }
+        public int PeakElo2v2 { get => _peakElo2v2; set => SetProperty(ref _peakElo2v2, value); }
+        public int BestStreak2v2 { get => _bestStreak2v2; set => SetProperty(ref _bestStreak2v2, value); }
+        public int CurrentStreak2v2 { get => _currentStreak2v2; set => SetProperty(ref _currentStreak2v2, value); }
 
         // ── Favourite Team ────────────────────────────────────────
         public PokemonTeamViewModel FavouriteTeam { get; } = new();
 
         // ── Settings ──────────────────────────────────────────────
-        private bool _isDarkMode, _showOnlineStatus, _allowBattleRequests;
-        private bool _animationsEnabled = true, _showDamageNumbers = true, _showTypeEffectiveness = true;
-        private bool _autoConfirmMoves;
+        public ObservableCollection<SettingOption> TextSpeedOptions { get; } = new();
+        public ObservableCollection<SettingOption> BattleSceneOptions { get; } = new();
 
-        public bool IsDarkMode { get => _isDarkMode; set => SetProperty(ref _isDarkMode, value); }
-        public bool ShowOnlineStatus { get => _showOnlineStatus; set => SetProperty(ref _showOnlineStatus, value); }
-        public bool AllowBattleRequests { get => _allowBattleRequests; set => SetProperty(ref _allowBattleRequests, value); }
-        public bool AnimationsEnabled { get => _animationsEnabled; set => SetProperty(ref _animationsEnabled, value); }
-        public bool AutoConfirmMoves { get => _autoConfirmMoves; set => SetProperty(ref _autoConfirmMoves, value); }
-        public bool ShowDamageNumbers { get => _showDamageNumbers; set => SetProperty(ref _showDamageNumbers, value); }
-        public bool ShowTypeEffectiveness { get => _showTypeEffectiveness; set => SetProperty(ref _showTypeEffectiveness, value); }
+        private SettingOption _selectedTextSpeed;
+        public SettingOption SelectedTextSpeed
+        {
+            get => _selectedTextSpeed;
+            set { if (SetProperty(ref _selectedTextSpeed, value)) SaveSetting("TextSpeed", value?.Id ?? 0); }
+        }
+
+        private SettingOption _selectedBattleScene;
+        public SettingOption SelectedBattleScene
+        {
+            get => _selectedBattleScene;
+            set { if (SetProperty(ref _selectedBattleScene, value)) SaveSetting("BattleScene", value?.Id ?? 0); }
+        }
 
         public ProfileViewModel(UserStore userStore)
         {
+            _userStore = userStore;
             _handler = new ProfileService();
-            LoadProfile(userStore.Username);
-            LoadDummyFavouriteTeam();
+
+            // 1. Initialize Options FIRST so the UI has items to show
+            InitializeSettingsOptions();
+
+            // 2. Load the actual data
+            LoadProfileData();
+            LoadFavouriteTeam();
         }
 
-        private void LoadDummyFavouriteTeam()
+        private void InitializeSettingsOptions()
         {
-            
+            TextSpeedOptions.Clear();
+            TextSpeedOptions.Add(new SettingOption { Id = 1, Name = "SLOW" });
+            TextSpeedOptions.Add(new SettingOption { Id = 2, Name = "MID" });
+            TextSpeedOptions.Add(new SettingOption { Id = 3, Name = "FAST" });
+
+            BattleSceneOptions.Clear();
+            BattleSceneOptions.Add(new SettingOption { Id = 1, Name = "ON" });
+            BattleSceneOptions.Add(new SettingOption { Id = 0, Name = "OFF" });
         }
 
-        private void LoadProfile(string username)
+        private void LoadProfileData()
         {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return;
-            }
+            UserName = _userStore.Username;
+            DisplayName = _userStore.Username;
 
-            var user = _handler.GetUser(username);
-            if (user == null)
-            {
-                return;
-            }
+            // FAKE DATA for testing - Replace these with your Service/DB calls
+            CurrentElo1v1 = 1500;
+            PeakElo1v1 = 1620;
+            Wins1v1 = 42;
+            BestStreak1v1 = 12;
+            CurrentStreak1v1 = 5;
 
-            UserName = user.UserName;
-            DisplayName = user.UserName;
+            CurrentElo2v2 = 1100;
+            Wins2v2 = 5;
+            PeakElo2v2 = 1150;
+
+            // Match selections to saved state
+            SelectedTextSpeed = TextSpeedOptions.FirstOrDefault(o => o.Id == 2); // Default to MID
+            SelectedBattleScene = BattleSceneOptions.FirstOrDefault(o => o.Id == 1); // Default to ON
         }
+
+        private void LoadFavouriteTeam()
+        {
+            // Populate the team so it's not empty
+            FavouriteTeam.LoadSlots(new[]
+            {
+                new TeamSlotDisplayEntry { PokedexId = 6, IsEmpty = false },
+                new TeamSlotDisplayEntry { PokedexId = 25, IsEmpty = false }
+            });
+        }
+
+        private void SaveSetting(string key, int value)
+        {
+            // Logic to update your database settings table
+        }
+    }
+
+    public class SettingOption
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
