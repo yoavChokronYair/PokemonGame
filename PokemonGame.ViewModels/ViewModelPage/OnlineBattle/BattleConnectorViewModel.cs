@@ -78,7 +78,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public BattleConnectorViewModel(
             UserStore userStore,
             NavigationStore rootNavigationStore,
-            Func<BattleViewModel> createBattleViewModel)
+            Func<BattleViewModel> createBattleViewModel,
+            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel)
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
@@ -113,11 +114,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 }
             }
 
-            // Rival placeholder slots
-            for (int i = 0; i < 6; i++)
+            // Generate rival team preview
+            var service = new PokemonService();
+            var rivalResults = service.GenerateRandomTeam(count: RequiredCount, level: 50);
+
+            // Save rival IDs to session for BattleViewModel to use
+            session.RivalPokemonIds = rivalResults.Select(r => r.Battler.PokedexID).ToList();
+
+            // Populate rival slots with real pokemon
+            foreach (var r in rivalResults)
+                RivalSlots.Add(new ConnectorSlotEntry(r.Battler.PokedexID, r.Battler.Name));
+
+            // Pad to 6 slots with empty placeholders for UI symmetry
+            for (int i = RivalSlots.Count; i < 6; i++)
                 RivalSlots.Add(new ConnectorSlotEntry());
 
-            // ← THIS was missing — clicking did nothing without it
             ToggleCommand = new RelayCommand<ConnectorSlotEntry>(slot =>
             {
                 if (slot == null) return;
@@ -135,7 +146,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 else if (SelectedCount < RequiredCount)
                 {
                     slot.IsSelected = true;
-                    slot.PickOrder = SelectedCount; // already incremented by IsSelected change
+                    slot.PickOrder = SelectedCount; // SelectedCount already updated
                 }
             });
 
@@ -143,6 +154,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             {
                 session.SelectedPokemonIds = TeamSlots
                     .Where(s => s.IsSelected)
+                    .OrderBy(s => s.PickOrder)
                     .Select(s => s.PokedexId)
                     .ToList();
                 session.BotDifficulty = BotDifficulty;
@@ -160,19 +172,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
             BackCommand = new RelayCommand(() =>
             {
-                // TODO: navigate back
+                _rootNavigationStore.CurrentViewModel = createOnlineBattleShellViewModel();
             });
         }
     }
 
     public class ConnectorSlotEntry : ViewModelBase
     {
-        private int? _pickOrder;
-        public int? PickOrder
-        {
-            get => _pickOrder;
-            set => SetProperty(ref _pickOrder, value);
-        }
         public int PokedexId { get; }
         public string Name { get; }
         public string SpriteUrl { get; }
@@ -184,6 +190,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             set => SetProperty(ref _isSelected, value);
         }
 
+        private int? _pickOrder;
+        public int? PickOrder
+        {
+            get => _pickOrder;
+            set => SetProperty(ref _pickOrder, value);
+        }
+
+        // From DB BattlerPokemon
         public ConnectorSlotEntry(BattlerPokemon pokemon)
         {
             PokedexId = pokemon.PokedexID;
@@ -191,7 +205,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemon.PokedexID}.png";
         }
 
-        // Placeholder for rival unknown slots
+        // From generated rival (id + name known)
+        public ConnectorSlotEntry(int pokedexId, string name)
+        {
+            PokedexId = pokedexId;
+            Name = name;
+            SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokedexId}.png";
+        }
+
+        // Empty placeholder slot
         public ConnectorSlotEntry()
         {
             PokedexId = 0;

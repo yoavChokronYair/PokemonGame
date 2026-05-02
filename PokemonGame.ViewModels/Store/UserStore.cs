@@ -31,5 +31,6 @@ namespace PokemonGame.ViewModels.Store
         public int? SelectedTeamId { get; set; }
         public List<int> SelectedPokemonIds { get; set; } = new();
         public BotDifficulty BotDifficulty { get; set; } = BotDifficulty.Medium;
+        public List<int> RivalPokemonIds { get; set; } = new();
     }
 }

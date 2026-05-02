@@ -159,7 +159,8 @@ namespace PokemonGame
             return new BattleConnectorViewModel(
                 _userStore,
                 _navigationStore,
-                CreateBattleViewModel
+                CreateBattleViewModel,
+                CreateOnlineBattleShellViewModel
             );
         }
         private MapViewModel CreateMapViewModel()

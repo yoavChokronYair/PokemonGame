@@ -47,20 +47,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         // ── Constructor (vs random bot team) ──────────────────────────────────
-        public BattleViewModel(UserStore playerBattlePlayerId)
+        public BattleViewModel(UserStore playerUserStore)
         {
-            var translator = new TeamTranslator();
-            var service = new PokemonService();
+            var session = playerUserStore.BattleSesion;
 
-            var playerTeam = translator.LoadTeamByID(playerBattlePlayerId.BattlePlayerID);
+            var playerTeam = BuildPlayerTeam(playerUserStore, session);
+            var botTeam = BuildBotTeam(session);
+            var botLevel = ResolveBotLevel(session.BotDifficulty);
 
-            var randomResults = service.GenerateRandomTeam(count: 6, level: 50);
-            var roster = randomResults
-                .Select(r => translator.TranslateToDomain(r))
-                .ToList();
-            var botTeam = PokemonTeam.Create(roster);
-
-            _manager = new BattleManager(playerTeam, botTeam,BotLevel.Easy);
+            _manager = new BattleManager(playerTeam, botTeam, botLevel);
 
             Logger = new BattleLoggerViewModel();
             PlayerStatus = new PokemonBattleStatusViewModel();
@@ -69,7 +64,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             SyncAll(flushSetup: true);
         }
-
         // ── Called by BattleMenuViewModel when player picks a move ────────────
         private void OnMoveChosen(int moveIndex)
         {
@@ -124,6 +118,67 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
             OnPropertyChanged(nameof(WinnerName));
         }
+        private PokemonTeam BuildPlayerTeam(UserStore playerUserStore, BattleSesion session)
+        {
+            var translator = new TeamTranslator();
+            var fullTeam = translator.LoadTeamByID(playerUserStore.BattlePlayerID);
+
+            List<PokemonState> roster;
+
+            if (session.BattleMode == BattleMode.fullTeam || session.SelectedPokemonIds.Count == 0)
+            {
+                roster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
+                    .Select(i => fullTeam.GetPokemonAt(i))
+                    .ToList();
+            }
+            else
+            {
+                roster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
+                    .Select(i => fullTeam.GetPokemonAt(i))
+                    .Where(p => session.SelectedPokemonIds.Contains(p.PokedexId))
+                    .ToList();
+            }
+
+            PadToSix(roster, () => fullTeam.GetPokemonAt(0));
+            return PokemonTeam.Create(roster);
+        }
+
+        private PokemonTeam BuildBotTeam(BattleSesion session)
+        {
+            var translator = new TeamTranslator();
+            var service = new PokemonService();
+
+            int teamSize = session.BattleMode switch
+            {
+                BattleMode.halfTeam => 3,
+                BattleMode.TwoThirdsTeam => 4,
+                BattleMode.fullTeam => 6,
+                _ => 6
+            };
+
+            var results = service.GenerateRandomTeam(count: teamSize, level: 50);
+            var roster = results
+                .Select(r => translator.TranslateToDomain(r))
+                .ToList();
+
+            PadToSix(roster, () => roster[0]);
+            return PokemonTeam.Create(roster);
+        }
+
+        private static void PadToSix(List<PokemonState> roster, Func<PokemonState> filler)
+        {
+            while (roster.Count < 6)
+                roster.Add(filler());
+        }
+
+        private static BotLevel ResolveBotLevel(BotDifficulty difficulty) =>
+            difficulty switch
+            {
+                BotDifficulty.Easy => BotLevel.Easy,
+                BotDifficulty.Medium => BotLevel.Medium,
+                BotDifficulty.Hard => BotLevel.Hard,
+                _ => BotLevel.Easy
+            };
     }
 
 
