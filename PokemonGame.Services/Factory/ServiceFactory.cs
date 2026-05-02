@@ -94,5 +94,22 @@ namespace PokemonGame.Services.Factory
                                      BattlerPokemonRepository, PokemonRepository, ItemRepository,
                                      OnlinePlayerRepository);
 
+    
+        public PokemonService CreatePokemonService() =>
+            new PokemonService(
+                BattlerPokemonRepository,
+                PokemonRepository,
+                TeamRepository,
+                TeamMemberRepository,
+                MoveLearnsetRepository,
+                PokemonStatsRepository,
+                MoveRepository);
+
+        public AbilityService CreateAbilityService() =>
+            new AbilityService(AbilityRepository, ConditionRepository, EffectRepository, NumberRepository);
+
+        public ItemService CreateItemService() =>
+            new ItemService(ItemRepository, ConditionRepository, EffectRepository, NumberRepository);
+
     }
 }

@@ -39,6 +39,23 @@ namespace PokemonGame.Services.Handler
             _pokemonStatsRepository = ServiceFactory.Instance.PokemonStatsRepository;
             _moveRepository = ServiceFactory.Instance.MoveRepository;
         }
+        internal PokemonService(
+            BattlerPokemonRepository battlerRepo,
+            PokemonRepository pokemonRepo,
+            TeamRepository teamRepo,
+            TeamMemberRepository memberRepo,
+            MoveLearnsetRepository moveLearnsetRepository,
+            PokemonStatsRepository pokemonStatsRepository,
+            MoveRepository moveRepository)
+        {
+            _battlerRepo = battlerRepo;
+            _pokemonRepo = pokemonRepo;
+            _teamRepo = teamRepo;
+            _memberRepo = memberRepo;
+            _moveLearnsetRepository = moveLearnsetRepository;
+            _pokemonStatsRepository = pokemonStatsRepository;
+            _moveRepository = moveRepository;
+        }
 
         public List<PokemonLoadResult> LoadTeamResults(int battlePlayerId)
         {

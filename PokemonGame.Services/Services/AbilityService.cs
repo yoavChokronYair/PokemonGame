@@ -26,6 +26,14 @@ namespace PokemonGame.Services.Handler
             _effectRepository = ServiceFactory.Instance.EffectRepository;
             _numberRepository = ServiceFactory.Instance.NumberRepository;
         }
+        internal AbilityService(AbilityRepository repo, ConditionRepository conditions,
+                      EffectRepository effects, NumberRepository numbers)
+        {
+            _repo = repo;
+            _conditionRepository = conditions;
+            _effectRepository = effects;
+            _numberRepository = numbers;
+        }
 
         // ── Public entry points ──────────────────────────────────────────────────
 

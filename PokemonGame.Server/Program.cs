@@ -1,4 +1,5 @@
-﻿using PokemonGame.Server.Controllers;
+﻿using PokemonGame.Server.BattleRoom;
+using PokemonGame.Server.Controllers;
 using PokemonGame.Server.Network;
 using PokemonGame.Services.Factory;
 
@@ -11,7 +12,9 @@ using var cmd = conn.CreateCommand();
 cmd.CommandText = "PRAGMA foreign_keys = ON;";
 cmd.ExecuteNonQuery();
 // One factory for the server, registered as singleton
-builder.Services.AddSingleton(new ServiceFactory(dbPath));
+var factory = new ServiceFactory(dbPath);
+TeamBuilder.Initialize(factory);
+builder.Services.AddSingleton(factory);
 
 // Services are scoped and created from the factory
 builder.Services.AddScoped(sp => sp.GetRequiredService<ServiceFactory>().CreateSignUpService());
