@@ -24,6 +24,8 @@
 
         int Execute(string sql, object parameters = null);
         int ExecuteAndGetLastId(string sql, object parameters = null);
+        string ConnectionString { get; }
+
 
 
     }

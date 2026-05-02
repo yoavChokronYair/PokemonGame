@@ -1,4 +1,8 @@
-﻿using System.Windows.Input;
+﻿// PokemonGame.ViewModels/ViewModelPage/SignUp/GameModeChooserViewModel.cs
+// CHANGE: OnOnlineModeAsync now creates SyncService and OnlineBattleService on UserStore
+// before navigating to the online shell. Everything else is identical.
+
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
@@ -10,6 +14,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 {
     public class GameModeChooserViewModel : ViewModelBase
     {
+        // ── Config — set these to match your hosted server ────────────────────
+        // REST base URL (HTTP port 5000)
+        private const string ServerHttpUrl = "http://localhost:5000";
+        private const string TcpHost = "localhost";
+        private const int TcpPort = 5001;
+        // ─────────────────────────────────────────────────────────────────────
+
         private readonly GameModeChooserService _handler;
         private readonly LogInService _loginService;
         private readonly UserStore? _userStore;
@@ -36,7 +47,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand CreateAccountCommand { get; }
         public ICommand NavigateToSideMenuCommand { get; }
 
-        public GameModeChooserViewModel(UserStore? user, NavigationStore navigationStore, IDialogService dialogService,
+        public GameModeChooserViewModel(
+            UserStore? user,
+            NavigationStore navigationStore,
+            IDialogService dialogService,
             Func<OnlineBattleShellViewModel> createSideMenuViewModel)
         {
             _dialogService = dialogService;
@@ -50,7 +64,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             OnlineModeCommand = new AsyncRelayCommand(OnOnlineModeAsync);
             QuickLoginCommand = new AsyncRelayCommand(OnQuickLoginAsync);
             CreateAccountCommand = new AsyncRelayCommand(OnCreateAccountAsync);
-            NavigateToSideMenuCommand = new NavigateCommand(_navigationStore, createSideMenuViewModel);
+            NavigateToSideMenuCommand = new NavigateCommand(navigationStore, createSideMenuViewModel);
         }
 
         private void OnStoryMode()
@@ -86,16 +100,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                     "Create Account",
                     "No account selected. Do you want to create a new account?");
 
-                if (!createNew)
-                {
-                    return;
-                }
+                if (!createNew) return;
 
                 selectedUser = await _dialogService.ShowInputAsync("Create Account", "Enter a username:");
-                if (string.IsNullOrWhiteSpace(selectedUser))
-                {
-                    return;
-                }
+                if (string.IsNullOrWhiteSpace(selectedUser)) return;
 
                 bool created = _handler.AddOnlineModePlayer(selectedUser, currentUser);
                 if (!created)
@@ -109,43 +117,62 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
             if (_handler.OnlinePlayerLogIn(selectedUser, currentUser))
             {
-                var onlinePlayer = _handler.GetOnlinePlayer(selectedUser, _loginService.GetUser(this.Username));
+                var onlinePlayer = _handler.GetOnlinePlayer(selectedUser, _loginService.GetUser(Username));
+                if (onlinePlayer == null)
+                {
+                    await _dialogService.ShowErrorAsync("Error", "Account verified, but profile data could not be retrieved.");
+                    return;
+                }
 
-                if (onlinePlayer != null)
+                if (_userStore != null)
                 {
                     _userStore.BattlePlayerID = onlinePlayer.BattlePlayerID;
-                    await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{selectedUser}'!");
-                    NavigateToSideMenuCommand.Execute(null);
+
+                    // ── NEW: wire online services so BattleConnectorViewModel can use them ──
+                    string localDbConnection = PokemonGame.Services.Factory.ServiceFactory.Instance
+                                                   .GetConnectionString();
+                    _userStore.SyncService = new SyncService(ServerHttpUrl, localDbConnection);
+                    _userStore.OnlineBattleService = new OnlineBattleService();
+
+                    // Pre-connect the TCP client so it is ready when the player clicks "Find Match"
+                    try
+                    {
+                        await _userStore.OnlineBattleService
+                                        .ConnectAsync(TcpHost, TcpPort)
+                                        .ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _dialogService.ShowErrorAsync(
+                            "Connection Error",
+                            $"Could not reach the battle server: {ex.Message}");
+                        _userStore.OnlineBattleService.Dispose();
+                        _userStore.OnlineBattleService = null;
+                        return;
+                    }
+
+                    // Flush any queued sync operations from previous sessions
+                    _ = _userStore.SyncService.RetryPendingAsync();
                 }
-                else
-                {
-                    // Handle the edge case where login was valid but the record failed to fetch
-                    await _dialogService.ShowErrorAsync("Error", "Account verified, but profile data could not be retrieved.");
-                }
+
+                await _dialogService.ShowSuccessAsync("Success", $"Logged in as '{selectedUser}'!");
+                NavigateToSideMenuCommand.Execute(null);
             }
         }
 
         private async Task OnQuickLoginAsync()
         {
             var currentUser = _loginService.GetUser(Username);
-            if (currentUser == null)
-            {
-                return;
-            }
+            if (currentUser == null) return;
 
             var users = _handler.GetAllOnlinePlayers(currentUser)
                                 .Select(u => u.Name)
                                 .ToList();
 
             string? selectedUser = await _dialogService.ShowSelectionAsync(
-                "Select Account",
-                "Choose your username:",
-                users);
+                "Select Account", "Choose your username:", users);
 
-            if (string.IsNullOrWhiteSpace(selectedUser))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(selectedUser)) return;
 
             await OnOnlineModeAsync();
         }
@@ -153,16 +180,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private async Task OnCreateAccountAsync()
         {
             string? newUser = await _dialogService.ShowInputAsync("Create Account", "Choose a username:");
-            if (string.IsNullOrWhiteSpace(newUser))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(newUser)) return;
 
             var currentUser = _loginService.GetUser(Username);
-            if (currentUser == null)
-            {
-                return;
-            }
+            if (currentUser == null) return;
 
             if (_handler.AddOnlineModePlayer(newUser, currentUser))
             {

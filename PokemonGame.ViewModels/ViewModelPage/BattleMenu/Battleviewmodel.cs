@@ -118,7 +118,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
             OnPropertyChanged(nameof(WinnerName));
         }
-        private PokemonTeam BuildPlayerTeam(UserStore playerUserStore, BattleSesion session)
+        private PokemonTeam BuildPlayerTeam(UserStore playerUserStore, BattleSession session)
         {
             var translator = new TeamTranslator();
             var fullTeam = translator.LoadTeamByID(playerUserStore.BattlePlayerID);
@@ -143,7 +143,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             return PokemonTeam.Create(roster);
         }
 
-        private PokemonTeam BuildBotTeam(BattleSesion session)
+        private PokemonTeam BuildBotTeam(BattleSession session)
         {
             var translator = new TeamTranslator();
             var service = new PokemonService();

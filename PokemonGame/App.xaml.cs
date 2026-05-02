@@ -6,6 +6,7 @@ using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
 using PokemonGame.ViewModels.ViewModelPage;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
+using PokemonGame.ViewModels.ViewModelPage.Online;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
 using PokemonGame.ViewModels.ViewModelPage.Summery;
@@ -22,7 +23,7 @@ namespace PokemonGame
         {
             _navigationStore = new NavigationStore();
             _userStore = new UserStore();
-            _userStore.BattleSesion = new BattleSesion();
+            _userStore.BattleSesion = new BattleSession();
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -151,13 +152,18 @@ namespace PokemonGame
                 _userStore,
                 _navigationStore,
                 CreateBattleViewModel,
-                CreateOnlineBattleShellViewModel
+                CreateOnlineBattleShellViewModel,
+                CreateOnlineBattleViewModel  // ADD
             );
         }
         private MapViewModel CreateMapViewModel()
         {
             return new MapViewModel();
 
+        }
+        private OnlineServerBattleViewModel CreateOnlineBattleViewModel()
+        {
+            return new OnlineServerBattleViewModel(_userStore);
         }
     }
 }

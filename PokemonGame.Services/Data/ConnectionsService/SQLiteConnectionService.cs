@@ -13,13 +13,18 @@ namespace PokemonGame.Services.Data.ConnectionsService
     public class SQLiteConnectionService : BaseDbConnectionService
     {
         private readonly string _connectionString;
+        public override string ConnectionString { get; }
+
 
         /// <summary>
         /// Initialises a new instance targeting a SQLite database file.
         /// </summary>
         /// <param name="dbPath">Full path to the .db file.</param>
         public SQLiteConnectionService(string dbPath)
-            => _connectionString = $"Data Source={dbPath}";
+        {
+            _connectionString = $"Data Source={dbPath}";
+            ConnectionString = _connectionString;
+        }
 
         /// <inheritdoc/>
         public override T QuerySingle<T>(string sql, object parameters = null)

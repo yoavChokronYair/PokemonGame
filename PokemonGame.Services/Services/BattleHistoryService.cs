@@ -27,6 +27,19 @@ namespace PokemonGame.Services.Handler
             _itemRepo = f.ItemRepository;
             _playerRepo = f.OnlinePlayerRepository;
         }
+        internal BattleHistoryService(
+            BattleRepository battleRepo, ParticipantRepository participantRepo,
+            TeamMemberRepository teamMemberRepo, BattlerPokemonRepository battlerPokemonRepo,
+            PokemonRepository pokedexRepo, ItemRepository itemRepo, OnlinePlayerRepository playerRepo)
+        {
+            _battleRepo = battleRepo;
+            _participantRepo = participantRepo;
+            _teamMemberRepo = teamMemberRepo;
+            _battlerPokemonRepo = battlerPokemonRepo;
+            _pokedexRepo = pokedexRepo;
+            _itemRepo = itemRepo;
+            _playerRepo = playerRepo;
+        }
 
         public List<BattleTreeData> GetBattleHistoryDisplay(int battlePlayerID, string username)
         {
@@ -89,6 +102,14 @@ namespace PokemonGame.Services.Handler
                 });
             }
             return results;
+        }
+        public int SaveBattleRecord()
+        {
+            return _battleRepo.CreateBattle();
+        }
+        public void SaveParticipant(BattleParticipantData participant)
+        {
+            _participantRepo.SaveParticipant(participant);
         }
     }
 }

@@ -13,6 +13,11 @@ namespace PokemonGame.Services.Handler
         {
             _provider = ServiceFactory.Instance.UserRepository;
         }
+        internal SignUpService(UserRepository provider)
+        {
+            _provider = provider;
+        }
+
 
         public bool UserNameExists(string userName)
         {

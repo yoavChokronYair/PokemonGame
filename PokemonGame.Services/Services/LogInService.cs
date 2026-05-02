@@ -14,6 +14,10 @@ namespace PokemonGame.Services.Handler
         {
             _users = ServiceFactory.Instance.UserRepository;
         }
+        internal LogInService(UserRepository users)
+        {
+            _users = users;
+        }
 
         public bool Login(string username, string password)
         {

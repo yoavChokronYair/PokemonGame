@@ -8,6 +8,8 @@
     xmlns:local="clr-namespace:PokemonGame"
     xmlns:local2="clr-namespace:PokemonGame.Views.Pages.SignIn"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:online="clr-namespace:PokemonGame.ViewModels.ViewModelPage.Online;assembly=PokemonGame.ViewModels"
+    xmlns:onlinePages="clr-namespace:PokemonGame.Views.Pages.OnlineBattlePages"
     xmlns:onlineview="clr-namespace:PokemonGame.Views.Pages.OnlineBattlePages"
     xmlns:onlinevm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.OnlineBattle;assembly=PokemonGame.ViewModels"
     xmlns:signinvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.SignUp;assembly=PokemonGame.ViewModels"
@@ -31,7 +33,9 @@
             <DataTemplate DataType="{x:Type signinvm:SignUpViewModel}">
                 <local2:SignUp />
             </DataTemplate>
-
+            <DataTemplate DataType="{x:Type online:OnlineServerBattleViewModel}">
+                <onlinePages:OnlineBattlePage />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type signinvm:GameModeChooserViewModel}">
                 <local2:GameModeChooser />
             </DataTemplate>
@@ -56,6 +60,7 @@
             <DataTemplate DataType="{x:Type battleviewmodel:BattleViewModel}">
                 <battleview:PokemonBattlePage />
             </DataTemplate>
+
             <DataTemplate DataType="{x:Type viewmodel:MapViewModel}">
                 <viewpage:MapView />
             </DataTemplate>

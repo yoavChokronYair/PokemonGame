@@ -1,11 +1,14 @@
 ﻿using System.Collections.ObjectModel;
+using System.Net.Sockets;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Enums;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Network.Packets;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
+using PokemonGame.ViewModels.ViewModelPage.Online;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
@@ -74,13 +77,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public RelayCommand<ConnectorSlotEntry> ToggleCommand { get; }
         public RelayCommand ConfirmCommand { get; }
         public RelayCommand BackCommand { get; }
+        private readonly Func<OnlineServerBattleViewModel> _createOnlineBattleViewModel;
 
         public BattleConnectorViewModel(
             UserStore userStore,
             NavigationStore rootNavigationStore,
             Func<BattleViewModel> createBattleViewModel,
-            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel)
+            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel,
+            Func<OnlineServerBattleViewModel> createOnlineBattleViewModel)  // ADD
         {
+            _createOnlineBattleViewModel = createOnlineBattleViewModel;
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
             _teamBuilderService = new TeamBuilderService();
@@ -152,20 +158,53 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
             ConfirmCommand = new RelayCommand(() =>
             {
-                session.SelectedPokemonIds = TeamSlots
+                // 1. Sync the session data from the UI state
+                var selectedIds = TeamSlots
                     .Where(s => s.IsSelected)
                     .OrderBy(s => s.PickOrder)
                     .Select(s => s.PokedexId)
                     .ToList();
-                session.BotDifficulty = BotDifficulty;
 
-                if (session.IsOnlineMode)
+                _userStore.BattleSesion.SelectedPokemonIds = selectedIds;
+                _userStore.BattleSesion.BotDifficulty = BotDifficulty;
+
+                if (_userStore.BattleSesion.IsOnlineMode)
                 {
                     IsSearching = true;
-                    // TODO: trigger matchmaking
+
+                    // 2. Build the packet using UserStore data
+                    var packet = new FindMatchPacket
+                    {
+                        PlayerId = _userStore.BattlePlayerID,
+                        PlayerName = _userStore.Username,
+                        BattleMode = _userStore.BattleSesion.BattleMode.ToString(),
+                        IsOneVOne = _userStore.BattleSesion.IsOneVOne,
+                        TeamId = _userStore.BattleSesion.SelectedTeamId ?? 0,
+                        // Mapping the list of IDs to the expected DTO list
+                        Team = selectedIds.Select(id => new BattlePokemonDto { PokedexId = id }).ToList()
+                    };
+
+                    // 3. Setup the Navigation Callback
+                    // Use a local variable to prevent multiple subscriptions/memory leaks
+                    Action<object> matchHandler = null!;
+                    matchHandler = _ =>
+                    {
+                        _userStore.OnlineBattleService!.OnMatchFound -= matchHandler;
+
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            _rootNavigationStore.CurrentViewModel = _createOnlineBattleViewModel();
+                        });
+                    };
+
+                    _userStore.OnlineBattleService!.OnMatchFound += matchHandler;
+
+                    // 4. Fire the async request
+                    _ = _userStore.OnlineBattleService!.FindMatchAsync(packet);
                 }
                 else
                 {
+                    // Offline flow
                     _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
                 }
             }, () => CanConfirm);

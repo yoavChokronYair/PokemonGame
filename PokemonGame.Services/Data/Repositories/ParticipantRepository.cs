@@ -31,6 +31,19 @@ namespace PokemonGame.Services.Data.Repositories
                 _db.Query<BattleParticipantData>(
                     "SELECT * FROM BattleParticipants WHERE BattleID = @bid",
                     new { bid = battleID }).ToList();
+            public void SaveParticipant(BattleParticipantData participant)
+            {
+                _db.Execute(@"
+                    INSERT INTO BattleParticipants (BattleID, BattlePlayerID, TeamID, IsWinner)
+                    VALUES (@BattleID, @BattlePlayerID, @TeamID, @IsWinner)",
+                    new
+                    {
+                        participant.BattleID,
+                        participant.BattlePlayerID,
+                        participant.TeamID,
+                        participant.IsWinner
+                    });
+            }
         }
     }
 }

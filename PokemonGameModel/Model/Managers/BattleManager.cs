@@ -1,4 +1,8 @@
-﻿using PokemonGame.Model.Domain.Battle;
+﻿// PokemonGameModel/Model/Managers/BattleManager.cs
+// CHANGE: Added two public properties PlayerTeam and BotTeam (lines marked NEW).
+// Everything else is identical to your existing file.
+
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
@@ -7,34 +11,41 @@ using PokemonGame.Model.Model.Battle;
 
 namespace PokemonGame.Model.Model.Managers
 {
-    //TODO:add a use item method
     public class BattleManager
     {
         private readonly PokemonTeam _playerTeam;
         private readonly PokemonTeam _botTeam;
         private readonly BattleState _state;
         private readonly BattleBotManager _botManager;
+
         public PokemonState PlayerActive => _playerTeam.Active;
         public PokemonState BotActive => _botTeam.Active;
+
+        // ── NEW: lets BattleRoom call GetSwitchableIndices() on each team ────
+        public PokemonTeam PlayerTeam => _playerTeam;
+        public PokemonTeam BotTeam => _botTeam;
+
         public PokemonTeam? Winner { get; private set; }
         public BattleLogger logger;
         public PokemonTeam? Loser { get; private set; }
 
-        public BattleManager(PokemonTeam playerTeam, PokemonTeam botTeam,BotLevel botLevel)
+        public BattleManager(PokemonTeam playerTeam, PokemonTeam botTeam, BotLevel botLevel)
         {
             _playerTeam = playerTeam;
             _botTeam = botTeam;
             _state = new BattleState(playerTeam.Active, botTeam.Active);
-            _botManager = new BattleBotManager(botLevel,_botTeam);
+            _botManager = new BattleBotManager(botLevel, _botTeam);
             logger = _state.Logger;
             StartBattle();
         }
+
         private void StartBattle()
         {
             new StartBattle().Run(_state);
             _state.Logger.LogSetup($"Enemy sent out {_botTeam.Active.Name}!");
             _state.Logger.LogSetup($"Go! {_playerTeam.Active.Name}!");
         }
+
         private void EndBattle(PokemonTeam winner, PokemonTeam loser)
         {
             Winner = winner;
@@ -42,26 +53,22 @@ namespace PokemonGame.Model.Model.Managers
             _state.Logger.LogBattleEnd("The battle is over.");
             _state.Logger.LogBattleEnd($"{Winner?.Active.Name} wins with {Winner?.GetAlivePokemonCount()} Pokémon left!");
         }
-        
-        public bool RunTurn(int playerIndex,BattleAction playerAction = BattleAction.Move)
+
+        public bool RunTurn(int playerIndex, BattleAction playerAction = BattleAction.Move)
         {
             BotAction botAction = _botManager.PickAction();
             IMove? pendingPlayerMove = null;
             IMove? pendingBotMove = botAction.Type == BotAction.ActionType.Attack
-                            ? botAction.Move
-                            : null; 
+                                         ? botAction.Move
+                                         : null;
+
             if (playerAction == BattleAction.Switch)
-            {
                 return PlayerSwitch(playerIndex);
-            }
-            if(playerAction == BattleAction.Item)
-            {
+
+            if (playerAction == BattleAction.Item)
                 return playerUseItem(playerIndex);
-            }
-            else
-            {
-                pendingPlayerMove = PlayerActive.Moves[MathHelper.Clamp(playerIndex, 0, PlayerActive.Moves.Count - 1)];
-            }
+
+            pendingPlayerMove = PlayerActive.Moves[MathHelper.Clamp(playerIndex, 0, PlayerActive.Moves.Count - 1)];
 
             if (botAction.Type == BotAction.ActionType.Switch)
             {
@@ -91,22 +98,21 @@ namespace PokemonGame.Model.Model.Managers
 
             _state.UpdateActivePair(PlayerActive, BotActive);
             new SwitchIn(PlayerActive).Run(_state);
-
             return true;
         }
+
         public bool playerUseItem(int itemIndex)
         {
-            // Item logic not implemented yet, return false to indicate failure
             _state.Logger.LogSetup("Item usage not implemented yet.");
             return false;
         }
-        // ── Post-turn routing only — no battle logic ──────────────────────────────
+
         private void HandlePostTurnFaints()
         {
-            if (_playerTeam.IsDefeated) 
+            if (_playerTeam.IsDefeated)
             {
                 EndBattle(_botTeam, _playerTeam);
-                return; 
+                return;
             }
             if (_botTeam.IsDefeated)
             {
@@ -120,13 +126,12 @@ namespace PokemonGame.Model.Model.Managers
                 new SwitchIn(BotActive).Run(_state);
                 _state.UpdateActivePair(PlayerActive, BotActive);
             }
-
             if (PlayerActive.IsFainted)
             {
                 _playerTeam.SwitchToNextAvailable();
                 new SwitchIn(PlayerActive).Run(_state);
                 _state.UpdateActivePair(PlayerActive, BotActive);
             }
-        } 
+        }
     }
 }

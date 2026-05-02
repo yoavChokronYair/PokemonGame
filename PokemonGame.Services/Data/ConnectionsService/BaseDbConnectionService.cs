@@ -16,6 +16,7 @@ namespace PokemonGame.Services.Data.ConnectionsService
     /// </remarks>
     public abstract class BaseDbConnectionService : IDbConnectionService
     {
+        public abstract string ConnectionString { get; }
         public abstract int ExecuteAndGetLastId(string sql, object parameters = null);
 
         /// <inheritdoc/>

@@ -24,7 +24,27 @@ namespace PokemonGame.Services.Handler
 
         private Dictionary<int, string>? _moveNameCache;
         private Dictionary<int, MoveDisplayEntry>? _moveDisplayCache;
-
+        internal TeamBuilderService(
+            PokemonRepository pokemon, AbilityRepository abilities, ItemRepository items,
+            MoveLearnsetRepository learnsets, MoveRepository moves, AttemptRepository attempts,
+            EffectRepository effects, NumberRepository numbers, SequenceStepRepository sequenceSteps,
+            PokemonStatsRepository stats, TeamRepository teams, TeamMemberRepository teamMembers,
+            BattlerPokemonRepository battlerPokemon)
+        {
+            _pokemon = pokemon;
+            _abilities = abilities;
+            _items = items;
+            _learnsets = learnsets;
+            _moves = moves;
+            _attempts = attempts;
+            _effects = effects;
+            _numbers = numbers;
+            _sequenceSteps = sequenceSteps;
+            _stats = stats;
+            _teams = teams;
+            _teamMembers = teamMembers;
+            _battlerPokemon = battlerPokemon;
+        }
         public TeamBuilderService()
         {
             var f = ServiceFactory.Instance;
