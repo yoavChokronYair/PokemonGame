@@ -27,18 +27,5 @@ namespace PokemonGame.Views.Pages.SignIn
             InitializeComponent();
         }
 
-        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void Image_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
-        {
-            
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-        }
     }
 }
