@@ -58,36 +58,30 @@
                     FontWeight="Medium"
                     Foreground="DarkGray"
                     Text="Password" />
-                <TextBox
+                <controls:BindablePasswordBox
                     Height="28"
                     Margin="0,5,0,0"
-                    VerticalContentAlignment="Center"
                     Background="Transparent"
                     BorderBrush="DarkGray"
                     BorderThickness="0,0,0,2"
-                    CaretBrush="LightGray"
                     FontSize="13"
-                    FontWeight="Medium"
                     Foreground="Black"
-                    Text="{Binding Password}" />
+                    Password="{Binding Password}" />
                 <TextBlock
                     Margin="0,15,0,0"
                     FontSize="9"
                     FontWeight="Medium"
                     Foreground="DarkGray"
                     Text="Confirm Password" />
-                <TextBox
+                <controls:BindablePasswordBox
                     Height="28"
                     Margin="0,5,0,0"
-                    VerticalContentAlignment="Center"
                     Background="Transparent"
                     BorderBrush="DarkGray"
                     BorderThickness="0,0,0,2"
-                    CaretBrush="LightGray"
                     FontSize="13"
-                    FontWeight="Medium"
                     Foreground="Black"
-                    Text="{Binding ConfirmPassword}" />
+                    Password="{Binding ConfirmPassword}" />
 
                 <!--  Status message  -->
                 <TextBlock

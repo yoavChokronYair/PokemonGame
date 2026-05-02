@@ -174,7 +174,7 @@
     <Compile Include="Views\Behaviors\FocusBehavior.cs" />
     <Compile Include="Views\Controls\BoardBackground.cs" />
     <Compile Include="Views\Controls\DialogService .cs" />
-    <Compile Include="Views\Controls\PasswordHelper.cs" />
+    <Compile Include="Views\Controls\BindablePasswordBox.cs" />
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
     </Compile>

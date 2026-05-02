@@ -15,10 +15,6 @@ namespace PokemonGame.Views.Pages.SignIn
         {
             InitializeComponent();            
         }
-        private void PasswordInput_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is LogInViewModel vm)
-                vm.Password = PasswordInput.Password;
-        }
+       
     }
 }
