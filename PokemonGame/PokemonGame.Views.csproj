@@ -158,6 +158,7 @@
     <Compile Include="Converters\IntEqualsConverter.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
+    <Compile Include="Converters\NameToImageConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter .cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\OnlineStatusConverter.cs" />
@@ -253,7 +254,7 @@
     <Compile Include="Views\UserControls\PokemonTableUserControl.xaml.cs">
       <DependentUpon>PokemonTableUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UserControls\PokemonTeamUserControl.xaml.cs">
+    <Compile Include="Views\UserControls\OnlineBattleUserControls\PokemonTeamUserControl.xaml.cs">
       <DependentUpon>PokemonTeamUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\TeamBuilderUserControl.xaml.cs">
@@ -385,7 +386,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UserControls\PokemonTeamUserControl.xaml">
+    <Page Include="Views\UserControls\OnlineBattleUserControls\PokemonTeamUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

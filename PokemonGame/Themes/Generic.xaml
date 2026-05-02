@@ -4,6 +4,7 @@
     xmlns:local="clr-namespace:PokemonGame.Views.Controls;assembly=PokemonGame">
 
     <Style TargetType="{x:Type local:BoardBackground}">
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:BoardBackground}">

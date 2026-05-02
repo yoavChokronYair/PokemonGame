@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PokemonGame.Views.UserControls
+namespace PokemonGame.Views.UserControls.OnlineBattleUserControls
 {
     /// <summary>
     /// Interaction logic for PokemonTeamUserControl.xaml

@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="PokemonGame.Views.UserControls.PokemonTeamUserControl"
+    x:Class="PokemonGame.Views.UserControls.OnlineBattleUserControls.PokemonTeamUserControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:conv="clr-namespace:PokemonGame.Converters"
@@ -13,6 +13,7 @@
         <conv:PokemonIdToImageConverter x:Key="PokemonToImage" />
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <conv:ThirdOfHeightConverter x:Key="ThirdOfHeightConverter" />
+        <conv:NameToImageConverter x:Key="NameToImage" />
 
     </UserControl.Resources>
 
@@ -32,9 +33,8 @@
                     BorderBrush="#DDDDDD"
                     BorderThickness="1"
                     CornerRadius="6">
-
-                    <!--  EMPTY SLOT  -->
                     <Grid>
+                        <!--  EMPTY SLOT PLACEHOLDER  -->
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -43,35 +43,52 @@
                             Text="—"
                             Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}" />
 
-                        <!--  FILLED SLOT  -->
-                        <StackPanel
-                            Margin="6"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Visible" />
+                        <!--  FILLED SLOT CONTENT  -->
+                        <Grid Margin="2">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsEmpty}" Value="True">
                                             <Setter Property="Visibility" Value="Collapsed" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </StackPanel.Style>
+                            </Grid.Style>
 
-                            <!--  Sprite — sizes to whatever the control is  -->
+                            <!--  1. Main Pokemon Image: Scales to fit the entire border  -->
                             <Image
-                                Height="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=ActualHeight, Converter={StaticResource ThirdOfHeightConverter}}"
-                                Margin="10"
+                                Margin="4"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding PokedexId, Converter={StaticResource PokemonToImage}, Mode=OneWay}"
+                                Source="{Binding PokedexId, Converter={StaticResource PokemonToImage}}"
                                 Stretch="Uniform" />
 
-
-                        </StackPanel>
+                            <!--  2. Held Item Image: Fixed small size in the bottom-right  -->
+                            <Image
+                                Width="24"
+                                Height="24"
+                                Margin="0,0,4,4"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                Source="{Binding HeldItemName, Converter={StaticResource NameToImage}}"
+                                Stretch="Uniform">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <!--  Hide the icon if no item name is provided  -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HeldItemName}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding HeldItemName}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </Grid>
                     </Grid>
                 </Border>
             </DataTemplate>

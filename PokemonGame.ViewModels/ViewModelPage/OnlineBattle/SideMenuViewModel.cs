@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -22,10 +23,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             }
         }
 
-        // Collapsed = only icon width, expanded = full width
-        public int MenuWidth => IsMenuOpen ? 200 : 50;
+        // --- NEW PROPERTY FOR DYNAMIC TITLE ---
+        private string _currentPageTitle = "HOME";
+        public string CurrentPageTitle
+        {
+            get => _currentPageTitle;
+            set
+            {
+                _currentPageTitle = value;
+                OnPropertyChanged(nameof(CurrentPageTitle));
+            }
+        }
 
-        // Hide button labels when collapsed
+        public int MenuWidth => IsMenuOpen ? 200 : 50;
         public string TextVisibility => IsMenuOpen ? "Visible" : "Collapsed";
 
         public ICommand ToggleMenuCommand { get; }
@@ -47,19 +57,35 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             _contentNavigationStore = contentNavigationStore;
             _rootNavigationStore = rootNavigationStore;
+
             ToggleMenuCommand = new RelayCommand(() => IsMenuOpen = !IsMenuOpen);
 
-            HomeCommand = new NavigateCommand(_contentNavigationStore, createHome);
+            // Execute the navigation AND update the title
+            HomeCommand = new RelayCommand(() => {
+                new NavigateCommand(_contentNavigationStore, createHome).Execute(null);
+                CurrentPageTitle = "HOME";
+            });
 
-            HistoryCommand = new NavigateCommand(_contentNavigationStore, createHistory);
+            HistoryCommand = new RelayCommand(() => {
+                new NavigateCommand(_contentNavigationStore, createHistory).Execute(null);
+                CurrentPageTitle = "HISTORY";
+            });
 
-            TeamCommand = new NavigateCommand(_contentNavigationStore, createTeam);
+            TeamCommand = new RelayCommand(() => {
+                new NavigateCommand(_contentNavigationStore, createTeam).Execute(null);
+                CurrentPageTitle = "TEAM";
+            });
 
-            ProfileCommand = new NavigateCommand(_contentNavigationStore, createProfile);
+            ProfileCommand = new RelayCommand(() => {
+                new NavigateCommand(_contentNavigationStore, createProfile).Execute(null);
+                CurrentPageTitle = "PROFILE";
+            });
 
             if (exit != null)
             {
-                ExitCommand = new NavigateCommand(_rootNavigationStore, exit);
+                ExitCommand = new RelayCommand(() => {
+                    new NavigateCommand(_rootNavigationStore, exit).Execute(null);
+                });
             }
         }
     }

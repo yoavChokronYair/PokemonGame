@@ -15,19 +15,9 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
-
     </Page.Resources>
 
     <StackPanel Margin="24" VerticalAlignment="Center">
-
-        <!--  TITLE  -->
-        <TextBlock
-            Margin="0,0,0,20"
-            HorizontalAlignment="Center"
-            FontSize="26"
-            FontWeight="Bold"
-            Text="Battle Menu" />
-
         <!--  3 CARDS HORIZONTAL  -->
         <UniformGrid
             Margin="0,0,0,16"
