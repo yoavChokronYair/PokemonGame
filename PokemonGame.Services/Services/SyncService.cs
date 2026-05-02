@@ -62,7 +62,20 @@ namespace PokemonGame.Services.Handler
                 _queue.Enqueue($"/teams/{teamId}:DELETE", string.Empty);
             }
         }
+        public async Task PushFullSyncAsync(int battlePlayerId)
+        {
+            var teamService = PokemonGame.Services.Factory.ServiceFactory.Instance.CreateTeamBuilderService();
 
+            var teams = teamService.GetTeamsByBattlePlayer(battlePlayerId);
+            var syncTeams = teams.Select(t => new
+            {
+                teamName = t.TeamName,
+                battlePlayerId = t.Battle_player_id ?? 0,
+                members = teamService.GetTeamMembers(t.Id)
+            }).ToList();
+
+            await PostAsync("/sync/full", new { teams = syncTeams }).ConfigureAwait(false);
+        }
         public async Task<int> PushBattleResultAsync()
         {
             try

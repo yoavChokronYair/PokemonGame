@@ -152,7 +152,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                     }
 
                     // Flush any queued sync operations from previous sessions
-                    _ = _userStore.SyncService.RetryPendingAsync();
+                    _ = _userStore.SyncService.PushFullSyncAsync(_userStore.BattlePlayerID);
+
                 }
 
                 await _dialogService.ShowSuccessAsync("Success", $"Logged in as '{selectedUser}'!");
