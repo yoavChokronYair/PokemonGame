@@ -4,7 +4,7 @@ using PokemonGame.Services.Factory;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string dbPath = Path.Combine(AppContext.BaseDirectory, "resources", "DB", "ServerDB.db");
+string dbPath = Path.Combine(AppContext.BaseDirectory, "resources", "ServerDB.db");
 
 // One factory for the server, registered as singleton
 builder.Services.AddSingleton(new ServiceFactory(dbPath));

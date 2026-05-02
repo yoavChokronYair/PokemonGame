@@ -19,9 +19,30 @@ namespace PokemonGame.Server.Controllers
             app.MapDelete("/teams/{id}", DeleteTeamAsync);
             app.MapPost("/battle/result", SaveBattleResultAsync);
             app.MapPost("/battle/participant", SaveParticipantAsync);
+            app.MapPost("/sync/full", FullSyncAsync);
 
         }
+        private static async Task<IResult> FullSyncAsync(HttpRequest req, TeamBuilderService teamService)
+        {
+            using var reader = new StreamReader(req.Body);
+            string json = await reader.ReadToEndAsync();
+            var payload = JsonSerializer.Deserialize<FullSyncPayload>(json,
+                              new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (payload == null) return Results.BadRequest();
 
+            foreach (var team in payload.Teams)
+                teamService.SaveTeam(team.TeamName, team.BattlePlayerId, team.Members ?? new());
+
+            return Results.Ok();
+        }
+
+        private record FullSyncPayload(List<SyncTeamEntry> Teams);
+
+        private record SyncTeamEntry(
+            string TeamName,
+            int BattlePlayerId,
+            List<BattlerPokemon>? Members);
+        private record SyncUserEntry(string Username, string HashedPassword);
         // ── /auth/signup ──────────────────────────────────────────────────────
 
         private static async Task<IResult> SignUpAsync(HttpRequest req,

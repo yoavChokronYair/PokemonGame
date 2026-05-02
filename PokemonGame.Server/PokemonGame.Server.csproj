@@ -19,7 +19,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="resources\" />
+		<Content Include="resources\ServerDB.db">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
-
 </Project>
