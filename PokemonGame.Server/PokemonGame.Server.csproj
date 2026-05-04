@@ -17,10 +17,4 @@
 	  <ProjectReference Include="..\PokemonGame.Services\PokemonGame.Services.csproj" />
 	  <ProjectReference Include="..\PokemonGameModel\PokemonGame.Model.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<Content Include="resources\ServerDB.db">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
 </Project>
