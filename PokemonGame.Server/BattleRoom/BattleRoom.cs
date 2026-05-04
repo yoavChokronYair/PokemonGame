@@ -48,9 +48,7 @@ namespace PokemonGame.Server.BattleRoom
 
         public async Task RunAsync()
         {
-            Console.WriteLine($"[ROOM {RoomId}] Started — {_playerA.PlayerName} vs {_playerB.PlayerName}");
             await SendMatchFoundAsync().ConfigureAwait(false);
-            Console.WriteLine($"[ROOM {RoomId}] MatchFound sent to both players");
 
             using var ctsA = new CancellationTokenSource();
             using var ctsB = new CancellationTokenSource();
@@ -60,27 +58,24 @@ namespace PokemonGame.Server.BattleRoom
 
             while (!_battleOver)
             {
-                Console.WriteLine($"[ROOM {RoomId}] Waiting for both players to submit actions...");
                 await _turnReady.WaitAsync().ConfigureAwait(false);
                 if (_battleOver) break;
 
-                Console.WriteLine($"[ROOM {RoomId}] Both actions received — resolving turn (A={_actionA} switch={_isSwitch_A}, B={_actionB} switch={_isSwitch_B})");
                 await ResolveTurnAsync().ConfigureAwait(false);
 
                 _actionA = _actionB = -1;
                 _isSwitch_A = _isSwitch_B = false;
             }
 
-            Console.WriteLine($"[ROOM {RoomId}] Battle over — cancelling listeners");
             ctsA.Cancel();
             ctsB.Cancel();
             await Task.WhenAll(listenA, listenB).ConfigureAwait(false);
-            Console.WriteLine($"[ROOM {RoomId}] Listeners stopped. Room closed.");
         }
+
+        // ── Listen ────────────────────────────────────────────────────────────
 
         private async Task ListenAsync(ConnectedPlayer player, bool isPlayerA, CancellationToken ct)
         {
-            Console.WriteLine($"[ROOM {RoomId}] Listener started for {player.PlayerName} (isPlayerA={isPlayerA})");
             try
             {
                 while (!ct.IsCancellationRequested && !_battleOver)
@@ -88,12 +83,9 @@ namespace PokemonGame.Server.BattleRoom
                     string? raw = await PacketHelper.ReadRawPacketAsync(player.Stream).ConfigureAwait(false);
                     if (raw == null)
                     {
-                        Console.WriteLine($"[ROOM {RoomId}] {player.PlayerName} disconnected (null packet)");
                         await HandleForfeitAsync(player).ConfigureAwait(false);
                         return;
                     }
-
-                    Console.WriteLine($"[ROOM {RoomId}] Packet from {player.PlayerName}: {raw}");
 
                     using var doc = JsonDocument.Parse(raw);
                     string type = doc.RootElement.GetProperty("type").GetString() ?? "";
@@ -102,43 +94,34 @@ namespace PokemonGame.Server.BattleRoom
                     {
                         case "MoveAction":
                             var ma = JsonSerializer.Deserialize<MoveActionPacket>(raw)!;
-                            Console.WriteLine($"[ROOM {RoomId}] {player.PlayerName} chose move index {ma.MoveIndex}");
                             SetAction(isPlayerA, ma.MoveIndex, isSwitch: false);
                             break;
 
                         case "SwitchAction":
                             var sa = JsonSerializer.Deserialize<SwitchActionPacket>(raw)!;
-                            Console.WriteLine($"[ROOM {RoomId}] {player.PlayerName} switched to slot {sa.SlotIndex}");
                             SetAction(isPlayerA, sa.SlotIndex, isSwitch: true);
                             break;
 
                         case "Forfeit":
-                            Console.WriteLine($"[ROOM {RoomId}] {player.PlayerName} forfeited");
                             await HandleForfeitAsync(player).ConfigureAwait(false);
                             return;
-
-                        default:
-                            Console.WriteLine($"[ROOM {RoomId}] Unknown packet type '{type}' from {player.PlayerName}");
-                            break;
                     }
                 }
             }
-            catch (Exception) when (ct.IsCancellationRequested || _battleOver)
-            {
-                Console.WriteLine($"[ROOM {RoomId}] Listener for {player.PlayerName} cancelled cleanly");
-            }
+            catch (Exception) when (ct.IsCancellationRequested || _battleOver) { }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ROOM {RoomId}] Listener ERROR for {player.PlayerName}: {ex}");
+                Console.WriteLine($"[BattleRoom {RoomId}] Listen error ({player.PlayerName}): {ex.Message}");
                 await HandleForfeitAsync(player).ConfigureAwait(false);
             }
         }
 
+        // ── Turn resolution ───────────────────────────────────────────────────
+
         private async Task ResolveTurnAsync()
         {
-            Console.WriteLine($"[ROOM {RoomId}] Resolving turn — PlayerHP={_battleManager.PlayerActive.CurrentHP} BotHP={_battleManager.BotActive.CurrentHP}");
-
             _logCountBeforeTurn = _battleManager.logger.Entries.Count;
+
             BattleAction playerAction = _isSwitch_A ? BattleAction.Switch : BattleAction.Move;
             _battleManager.RunTurn(_actionA, playerAction);
 
@@ -147,31 +130,53 @@ namespace PokemonGame.Server.BattleRoom
                 .Select(e => e.Message)
                 .ToList();
 
-            Console.WriteLine($"[ROOM {RoomId}] Turn log ({newLogLines.Count} lines):");
-            foreach (var line in newLogLines)
-                Console.WriteLine($"[ROOM {RoomId}]   > {line}");
-
             bool playerFainted = _battleManager.PlayerActive.IsFainted;
             bool enemyFainted = _battleManager.BotActive.IsFainted;
-            Console.WriteLine($"[ROOM {RoomId}] After turn — PlayerHP={_battleManager.PlayerActive.CurrentHP} playerFainted={playerFainted} | BotHP={_battleManager.BotActive.CurrentHP} enemyFainted={enemyFainted}");
 
-            // ... rest of method unchanged, add at the end:
+            var turnResultToA = new TurnResultPacket
+            {
+                RoomId = RoomId,
+                PlayerHp = _battleManager.PlayerActive.CurrentHP,
+                EnemyHp = _battleManager.BotActive.CurrentHP,
+                LogLines = newLogLines,
+                PlayerFainted = playerFainted,
+                EnemyFainted = enemyFainted,
+                PlayerStatusCondition = _battleManager.PlayerActive.Status.ToString(),
+                EnemyStatusCondition = _battleManager.BotActive.Status.ToString(),
+                PlayerPokedexId = _battleManager.PlayerActive.PokedexId,
+                EnemyPokedexId = _battleManager.BotActive.PokedexId,
+            };
+            var turnResultToB = new TurnResultPacket
+            {
+                RoomId = RoomId,
+                PlayerHp = _battleManager.BotActive.CurrentHP,
+                EnemyHp = _battleManager.PlayerActive.CurrentHP,
+                LogLines = newLogLines,
+                PlayerFainted = enemyFainted,
+                EnemyFainted = playerFainted,
+                PlayerStatusCondition = _battleManager.BotActive.Status.ToString(),
+                EnemyStatusCondition = _battleManager.PlayerActive.Status.ToString(),
+                PlayerPokedexId = _battleManager.BotActive.PokedexId,
+                EnemyPokedexId = _battleManager.PlayerActive.PokedexId,
+            };
+            await Task.WhenAll(
+                PacketHelper.WritePacketAsync(_playerA.Stream, turnResultToA),
+                PacketHelper.WritePacketAsync(_playerB.Stream, turnResultToB)
+            ).ConfigureAwait(false);
+
+          
             if (_battleManager.Winner != null)
-                Console.WriteLine($"[ROOM {RoomId}] Winner detected: {ResolveWinnerName()}");
+            {
+                await SendBattleEndAsync(ResolveWinnerName()).ConfigureAwait(false);
+                _battleOver = true;
+                return;
+            }
 
             if (playerFainted)
-            {
-                Console.WriteLine($"[ROOM {RoomId}] Sending ForcedSwitch to {_playerA.PlayerName}");
                 await SendForcedSwitchAsync(_playerA, isPlayerSide: true).ConfigureAwait(false);
-            }
             if (enemyFainted)
-            {
-                Console.WriteLine($"[ROOM {RoomId}] Sending ForcedSwitch to {_playerB.PlayerName}");
                 await SendForcedSwitchAsync(_playerB, isPlayerSide: false).ConfigureAwait(false);
-            }
         }
-
-       
 
         // ── Helpers ───────────────────────────────────────────────────────────
 
@@ -180,7 +185,14 @@ namespace PokemonGame.Server.BattleRoom
                 ? _playerB.PlayerName
                 : _playerA.PlayerName;
 
-       
+        private void SetAction(bool isPlayerA, int value, bool isSwitch)
+        {
+            if (isPlayerA) { _actionA = value; _isSwitch_A = isSwitch; }
+            else { _actionB = value; _isSwitch_B = isSwitch; }
+
+            if (_actionA >= 0 && _actionB >= 0)
+                _turnReady.Release();
+        }
 
         private async Task SendMatchFoundAsync()
         {
@@ -220,19 +232,6 @@ namespace PokemonGame.Server.BattleRoom
                 PacketHelper.WritePacketAsync(_playerA.Stream, toA),
                 PacketHelper.WritePacketAsync(_playerB.Stream, toB)
             ).ConfigureAwait(false);
-        }
-        private void SetAction(bool isPlayerA, int value, bool isSwitch)
-        {
-            if (isPlayerA) { _actionA = value; _isSwitch_A = isSwitch; }
-            else { _actionB = value; _isSwitch_B = isSwitch; }
-
-            Console.WriteLine($"[ROOM {RoomId}] Action set — A={_actionA} B={_actionB} (need both >=0 to proceed)");
-
-            if (_actionA >= 0 && _actionB >= 0)
-            {
-                Console.WriteLine($"[ROOM {RoomId}] Both actions ready — releasing turn semaphore");
-                _turnReady.Release();
-            }
         }
 
         private async Task SendForcedSwitchAsync(ConnectedPlayer player, bool isPlayerSide)

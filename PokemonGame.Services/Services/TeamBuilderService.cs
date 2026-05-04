@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.Pokemon;
-using PokemonGame.Services.Data.GameData.PokemonData;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
@@ -78,11 +77,6 @@ namespace PokemonGame.Services.Handler
 
         public void DeleteTeam(int teamId) =>
             _teams.DeleteTeam(teamId);
-        public List<MoveDisplayEntry> GetAllMoves() =>
-    GetMoveDisplayCache().Values.OrderBy(m => m.Name).ToList();
-
-        public List<AbilityData> GetAllAbilities() =>
-            _abilities.GetAllAbilities();
 
         // ── Pokémon list for the picker ───────────────────────────────────────
 

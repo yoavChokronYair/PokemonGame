@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
-using PokemonGame.Services.Services;
 
 namespace PokemonGame.Services.Handler
 {
@@ -44,12 +43,12 @@ namespace PokemonGame.Services.Handler
 
         // ── Public entry point ───────────────────────────────────────────────────
 
-        public ServiceResult<MoveTree> GetMove(string name)
+        public MoveTree? GetMove(string name)
         {
             var move = _moves.LoadByName(name);
             if (move == null)
             {
-                return ServiceError.NotFound("Move", name);
+                return null;
             }
 
             _visitedEffects.Clear();

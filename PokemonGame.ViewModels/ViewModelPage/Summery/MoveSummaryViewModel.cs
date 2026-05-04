@@ -35,8 +35,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.Summery
                 {
                     KnownMoves.Add(new MoveSlotViewModel
                     {
-                        Tree = tree.Value,
-                        CurrentPp = tree.Value.Move.PP
+                        Tree = tree,
+                        CurrentPp = tree.Move.PP
                     });
                 }
             }

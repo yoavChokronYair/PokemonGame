@@ -3,26 +3,12 @@
 using System.Text.Json;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.Pokemon;
-using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 
 namespace PokemonGame.Server.Controllers
 {
-
     public static class ApiEndpoints
     {
-        private record PlayerSyncPayload(
-            int BattlePlayerId,
-            List<SyncTeamEntry> Teams);
-        private record StaticSyncPayload(string Version);
-
-        private class StaticDataBundle
-        {
-            public string Version { get; set; } = string.Empty;
-            public List<object> Moves { get; set; } = new();
-            public List<object> Abilities { get; set; } = new();
-            public List<object> Items { get; set; } = new();
-        }
         // ── Registration helper ───────────────────────────────────────────────
 
         public static void Map(WebApplication app)
@@ -34,94 +20,8 @@ namespace PokemonGame.Server.Controllers
             app.MapPost("/battle/result", SaveBattleResultAsync);
             app.MapPost("/battle/participant", SaveParticipantAsync);
             app.MapPost("/sync/full", FullSyncAsync);
-            app.MapPost("/sync/player", SyncPlayerAsync);
-            app.MapPost("/sync/static", SyncStaticAsync);
-            app.MapGet("/sync/static/version", GetStaticVersionAsync);
 
         }
-        private static async Task<IResult> SyncStaticAsync(HttpRequest req, ServiceFactory factory)
-        {
-            using var reader = new StreamReader(req.Body);
-            string json = await reader.ReadToEndAsync();
-
-            var payload = JsonSerializer.Deserialize<StaticSyncPayload>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (payload == null) return Results.BadRequest();
-
-            string serverVersion = GetStaticDataVersion(factory);
-            if (payload.Version == serverVersion)
-            {
-                Console.WriteLine($"[StaticSync] Client already up to date (version {serverVersion})");
-                string upToDateJson = JsonSerializer.Serialize(
-                    new { upToDate = true, version = serverVersion },
-                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                return Results.Text(upToDateJson, "application/json");
-            }
-
-            Console.WriteLine($"[StaticSync] Client {payload.Version} != server {serverVersion}. Sending data.");
-
-            var teamService = factory.CreateTeamBuilderService();
-
-            var staticData = new
-            {
-                version = serverVersion,
-                moves = teamService.GetAllMoves(),
-                abilities = teamService.GetAllAbilities(),
-                items = teamService.GetHeldItems(),
-            };
-
-            string responseJson = JsonSerializer.Serialize(staticData,
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-
-            return Results.Text(responseJson, "application/json");
-        }
-
-        private static IResult GetStaticVersionAsync(ServiceFactory factory)
-        {
-            string version = GetStaticDataVersion(factory);
-            string responseJson = JsonSerializer.Serialize(
-                new { version },
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-
-            return Results.Text(responseJson, "application/json");
-        }
-
-        private static string GetStaticDataVersion(ServiceFactory factory)
-        {
-            var teamService = factory.CreateTeamBuilderService();
-            int moveCount = teamService.GetAllMoves().Count;
-            int abilityCount = teamService.GetAllAbilities().Count;
-            int itemCount = teamService.GetHeldItems().Count;
-            return $"{moveCount}-{abilityCount}-{itemCount}";
-        }
-
-        private static async Task<IResult> SyncPlayerAsync(
-            HttpRequest req, TeamBuilderService teamService)
-        {
-            using var reader = new StreamReader(req.Body);
-            string json = await reader.ReadToEndAsync();
-            var payload = JsonSerializer.Deserialize<PlayerSyncPayload>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (payload == null) return Results.BadRequest();
-
-            Console.WriteLine($"[Sync] Player {payload.BattlePlayerId} — {payload.Teams.Count} teams");
-
-            // Wipe and replace all teams for this player
-            teamService.DeleteTeamsByPlayer(payload.BattlePlayerId);
-
-            var afterDelete = teamService.GetTeamsByBattlePlayer(payload.BattlePlayerId);
-            Console.WriteLine($"[Sync] After delete — remaining: {afterDelete.Count}");
-
-            foreach (var team in payload.Teams)
-            {
-                Console.WriteLine($"[Sync] Saving '{team.TeamName}' with {team.Members.Count} members");
-                teamService.SaveTeam(team.TeamName, team.BattlePlayerId, team.Members);
-            }
-
-            return Results.Ok();
-        }
-
         private static async Task<IResult> FullSyncAsync(HttpRequest req, TeamBuilderService teamService)
         {
             using var reader = new StreamReader(req.Body);

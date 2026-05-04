@@ -24,7 +24,6 @@ namespace PokemonGame.Server.Network
 
         public async Task StartAsync(CancellationToken ct = default)
         {
-            Console.WriteLine($"[TCP] Server starting on port {_port}");
             _listener = new TcpListener(IPAddress.Any, _port);
             _listener.Start();
             Console.WriteLine($"[TcpBattleServer] Listening on port {_port}…");
@@ -52,26 +51,18 @@ namespace PokemonGame.Server.Network
 
         private async Task HandleConnectionAsync(TcpClient client, CancellationToken ct)
         {
-            Console.WriteLine($"[TCP] New connection from {client.Client.RemoteEndPoint}");
             var player = new ConnectedPlayer(client);
             try
             {
                 string? raw = await PacketHelper.ReadRawPacketAsync(player.Stream).ConfigureAwait(false);
-                if (raw == null)
-                {
-                    Console.WriteLine($"[TCP] Connection closed before sending FindMatch");
-                    client.Close();
-                    return;
-                }
-
-                Console.WriteLine($"[TCP] First packet: {raw}");
+                if (raw == null) { client.Close(); return; }
 
                 using var doc = JsonDocument.Parse(raw);
                 string type = doc.RootElement.GetProperty("type").GetString() ?? "";
 
                 if (type != "FindMatch")
                 {
-                    Console.WriteLine($"[TCP] Expected FindMatch but got '{type}' — dropping");
+                    Console.WriteLine($"[TcpBattleServer] Unexpected first packet: {type}. Dropping.");
                     client.Close();
                     return;
                 }
@@ -84,39 +75,34 @@ namespace PokemonGame.Server.Network
                 player.TeamId = pkt.TeamId;
                 player.Team = pkt.Team;
 
-                Console.WriteLine($"[TCP] Player registered — Name={player.PlayerName} Id={player.PlayerId} Mode={player.BattleMode} 1v1={player.IsOneVOne} TeamId={player.TeamId} TeamSize={player.Team?.Count}");
+                Console.WriteLine($"[TcpBattleServer] {player.PlayerName} queued ({player.BattleMode}, 1v1={player.IsOneVOne})");
 
                 ConnectedPlayer? opponent = _queue.Enqueue(player);
-                if (opponent == null)
-                {
-                    Console.WriteLine($"[TCP] {player.PlayerName} is queued — waiting for opponent");
-                    return;
-                }
+                if (opponent == null) return; // waiting for second player
 
-                Console.WriteLine($"[TCP] Match found: {opponent.PlayerName} vs {player.PlayerName}");
                 await StartBattleRoomAsync(opponent, player, ct).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[TCP] HandleConnection ERROR for {player.PlayerName}: {ex}");
+                Console.WriteLine($"[TcpBattleServer] Connection error: {ex.Message}");
                 _queue.Remove(player);
                 client.Close();
             }
         }
 
+        // ── Room creation ─────────────────────────────────────────────────────
+
         private static async Task StartBattleRoomAsync(
             ConnectedPlayer playerA, ConnectedPlayer playerB, CancellationToken ct)
         {
-            Console.WriteLine($"[TCP] Building teams — A={playerA.PlayerName} (Id={playerA.PlayerId}) B={playerB.PlayerName} (Id={playerB.PlayerId})");
+            Console.WriteLine($"[TcpBattleServer] Match: {playerA.PlayerName} vs {playerB.PlayerName}");
 
+            // Load full teams from the server DB (falls back to DTO stubs on error)
             PokemonTeam teamA = TeamBuilder.BuildFromPlayer(playerA.PlayerId, playerA.Team);
             PokemonTeam teamB = TeamBuilder.BuildFromPlayer(playerB.PlayerId, playerB.Team);
 
-            Console.WriteLine($"[TCP] TeamA size={teamA?.getAllPokemonCount() ?? -1} TeamB size={teamB?.getAllPokemonCount() ?? -1}");
-
             var room = new BattleRoom.BattleRoom(playerA, playerB, teamA, teamB);
             playerA.RoomId = playerB.RoomId = room.RoomId;
-            Console.WriteLine($"[TCP] Room created: {room.RoomId}");
 
             try
             {
@@ -124,13 +110,13 @@ namespace PokemonGame.Server.Network
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[TCP] Room {room.RoomId} CRASHED: {ex}");
+                Console.WriteLine($"[TcpBattleServer] Room {room.RoomId} crashed: {ex.Message}");
             }
             finally
             {
-                Console.WriteLine($"[TCP] Room {room.RoomId} finished — closing connections");
                 playerA.TcpClient.Close();
                 playerB.TcpClient.Close();
+                Console.WriteLine($"[TcpBattleServer] Room {room.RoomId} closed.");
             }
         }
     }
