@@ -16,10 +16,6 @@ namespace PokemonGame.Server.BattleRoom
     {
         private readonly IMoveService _moveService;
 
-        public MoveTranslator()
-        {
-            _moveService = new MoveService();
-        }
         public MoveTranslator(IMoveService moveService)
         {
             _moveService = moveService;

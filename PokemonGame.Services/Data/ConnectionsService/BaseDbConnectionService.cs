@@ -158,7 +158,7 @@ namespace PokemonGame.Services.Data.ConnectionsService
             if (targetType == typeof(decimal))
             {
                 return (decimal)Convert.ToDouble(value);
-            }
+            }   
 
             if (targetType == typeof(DateTime))
             {

@@ -7,6 +7,7 @@ namespace PokemonGame.Services.Data.Repositories
     internal class TeamRepository : DbRepository<int, TeamData>
     {
         internal TeamRepository(IDbConnectionService db) : base(db) { }
+        public string ConnectionString => _db.ConnectionString;
 
         public bool CanCreateTeam(int battlePlayerId) =>
             GetTeamsByBattlePlayer(battlePlayerId).Count < 3;
@@ -25,8 +26,18 @@ namespace PokemonGame.Services.Data.Repositories
         public TeamData? GetTeamById(int teamID) =>
             _db.QuerySingle<TeamData>($"{TeamSelect} WHERE id = @tid", new { tid = teamID });
 
-        public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
-            _db.QuerySingle<TeamData>($"{TeamSelect} WHERE battle_player_id = @bpid ORDER BY id DESC LIMIT 1", new { bpid = battlePlayerId });
+        public TeamData? GetTeamByBattlePlayer(int battlePlayerId)
+        {
+            var id = _db.QueryScalar<int>(
+                "SELECT id FROM teams WHERE battle_player_id = @bpid ORDER BY id DESC LIMIT 1",
+                new { bpid = battlePlayerId });
+
+            if (id == 0) return null;
+
+            return _db.QuerySingle<TeamData>(
+                $"{TeamSelect} WHERE id = @tid",
+                new { tid = id });
+        }
 
         // Removed userID parameter and from the INSERT statement
         public TeamData CreateTeam(string teamName, int battlePlayerId)

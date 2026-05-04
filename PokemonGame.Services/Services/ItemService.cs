@@ -33,6 +33,15 @@ namespace PokemonGame.Services.Handler
             _effectRepository = effects;
             _numberRepository = numbers;
         }
+        public ItemService(ServiceFactory factory)
+        {
+            _repo = factory.ItemRepository;
+            _conditionRepository = factory.ConditionRepository;
+            _effectRepository = factory.EffectRepository;
+            _numberRepository = factory.NumberRepository;
+        }
+
+
 
         // ── Public entry points ──────────────────────────────────────────────────
 

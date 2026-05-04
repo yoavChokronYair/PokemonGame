@@ -57,14 +57,29 @@ namespace PokemonGame.Services.Handler
             _moveRepository = moveRepository;
         }
 
+        public PokemonService(ServiceFactory factory)
+        {
+            _battlerRepo = factory.BattlerPokemonRepository;
+            _pokemonRepo = factory.PokemonRepository;
+            _teamRepo = factory.TeamRepository;
+            _memberRepo = factory.TeamMemberRepository;
+            _moveLearnsetRepository = factory.MoveLearnsetRepository;
+            _pokemonStatsRepository = factory.PokemonStatsRepository;
+            _moveRepository = factory.MoveRepository;
+        }
         public List<PokemonLoadResult> LoadTeamResults(int battlePlayerId)
         {
-            var team = _teamRepo.GetTeamByBattlePlayer(battlePlayerId)
-                ?? throw new InvalidOperationException($"No team found for player {battlePlayerId}.");
+            Console.WriteLine($"[PokemonService] Using DB: {_teamRepo.ConnectionString}");
+
+            var team = _teamRepo.GetTeamByBattlePlayer(battlePlayerId);
+            Console.WriteLine($"[PokemonService] Raw team: Id={team?.Id}, Name={team?.TeamName}, PlayerId={team?.BattlePlayerId}");
+
+            if (team == null)
+                throw new InvalidOperationException($"No team found for player {battlePlayerId}.");
 
             var members = _memberRepo.GetTeamMembers(team.Id);
+            Console.WriteLine($"[PokemonService] team {team.Id} members: {string.Join(", ", members.Select(m => m.PokemonID))}");
 
-            // Fetch and coordinate data for every member in the team
             return members
                 .OrderBy(m => m.Slot_number)
                 .Select(m => GetPokemon(m.PokemonID)

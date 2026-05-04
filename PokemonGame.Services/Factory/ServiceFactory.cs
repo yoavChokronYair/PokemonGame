@@ -10,8 +10,14 @@ namespace PokemonGame.Services.Factory
         // Client-side singleton (uses bundled DB path)
         private static readonly Lazy<ServiceFactory> _instance = new(() =>
             new ServiceFactory("..\\..\\..\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db"));
-        public static ServiceFactory Instance => _instance.Value;
-
+        public static ServiceFactory Instance
+        {
+            get
+            {
+                Console.WriteLine($"[ServiceFactory] WARNING: Instance accessed from: {Environment.StackTrace}");
+                return _instance.Value;
+            }
+        }
         // Repositories
         private readonly IDbConnectionService _db;
         public string GetConnectionString() => _db.ConnectionString;
@@ -45,6 +51,7 @@ namespace PokemonGame.Services.Factory
         public ServiceFactory(string dbPath)
         {
             var db = new SQLiteConnectionService(dbPath);
+            Console.WriteLine($"[ServiceFactory] Created with: {dbPath}");
             _db = db;
 
             UserRepository = new UserRepository(db);

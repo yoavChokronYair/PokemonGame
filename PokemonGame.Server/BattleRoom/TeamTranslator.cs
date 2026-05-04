@@ -19,14 +19,7 @@ namespace PokemonGame.Server.BattleRoom
         private readonly ItemTranslator _itemTranslator;
         private readonly TeamCreationManager _teamCreator;
 
-        public TeamTranslator()
-        {
-            _moveTranslator = new MoveTranslator();
-            _abilityTranslator = new AbilityTranslator(new AbilityService(), _moveTranslator);
-            _itemTranslator = new ItemTranslator(new ItemService(), _moveTranslator);
-            _pokemonService = new PokemonService();
-            _teamCreator = new TeamCreationManager();
-        }
+        
 
         public TeamTranslator(IPokemonService pokemonService, MoveTranslator moveTranslator,
                                 AbilityTranslator abilityTranslator, ItemTranslator itemTranslator)

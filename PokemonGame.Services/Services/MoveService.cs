@@ -40,7 +40,18 @@ namespace PokemonGame.Services.Handler
             _weightedEntries = f.WeightedEntryRepository;
             _conditions = f.ConditionRepository;
         }
-
+        public MoveService(ServiceFactory factory)
+        {
+            _moves = factory.MoveRepository;
+            _attempts = factory.AttemptRepository;
+            _cascadeSteps = factory.CascadeStepRepository;
+            _effects = factory.EffectRepository;
+            _sequenceSteps = factory.SequenceStepRepository;
+            _multiStatChanges = factory.MultiStatChangeRepository;
+            _numbers = factory.NumberRepository;
+            _weightedEntries = factory.WeightedEntryRepository;
+            _conditions = factory.ConditionRepository;
+        }
         // ── Public entry point ───────────────────────────────────────────────────
 
         public MoveTree? GetMove(string name)

@@ -16,10 +16,7 @@ namespace PokemonGame.Server.BattleRoom
     {
         private readonly IAbilityService _abilityService;
 
-        public AbilityTranslator()
-        {
-            _abilityService = new AbilityService();
-        }
+   
 
         public AbilityTranslator(IAbilityService abilityService, MoveTranslator moveTranslator)
         {

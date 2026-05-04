@@ -6,7 +6,8 @@ using PokemonGame.Services.Factory;
 var builder = WebApplication.CreateBuilder(args);
 
 string dbPath = Path.Combine(AppContext.BaseDirectory, "resources", "ServerDB.db");
-using var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}");
+Console.WriteLine($"[Server] DB path: {dbPath}");
+Console.WriteLine($"[Server] DB exists: {File.Exists(dbPath)}"); using var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}");
 conn.Open();
 using var cmd = conn.CreateCommand();
 cmd.CommandText = "PRAGMA foreign_keys = ON;";

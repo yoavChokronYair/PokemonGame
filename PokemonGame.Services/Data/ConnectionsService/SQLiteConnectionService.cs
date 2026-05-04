@@ -34,7 +34,13 @@ namespace PokemonGame.Services.Data.ConnectionsService
             using var cmd = new SqliteCommand(sql, conn);
             AddParameters(cmd, parameters);
             using var reader = cmd.ExecuteReader();
-            return reader.Read() ? MapReaderToObject<T>(reader) : default!;
+            if (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                    Console.WriteLine($"[Reader] col[{i}] name='{reader.GetName(i)}' value='{reader.GetValue(i)}'");
+                return MapReaderToObject<T>(reader);
+            }
+            return default!;
         }
         public override T QueryScalar<T>(string sql, object parameters = null)
         {

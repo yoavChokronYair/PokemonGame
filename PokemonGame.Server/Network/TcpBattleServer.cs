@@ -67,7 +67,8 @@ namespace PokemonGame.Server.Network
                     return;
                 }
 
-                var pkt = JsonSerializer.Deserialize<FindMatchPacket>(raw)!;
+                var pkt = JsonSerializer.Deserialize<FindMatchPacket>(raw,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
                 player.PlayerId = pkt.PlayerId;
                 player.PlayerName = pkt.PlayerName;
                 player.BattleMode = pkt.BattleMode;

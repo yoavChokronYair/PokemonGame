@@ -19,12 +19,7 @@ namespace PokemonGame.Server.BattleRoom
         private readonly IItemService _itemService;
         private readonly MoveTranslator _moveTranslator;
 
-        public ItemTranslator()
-        {
-            _itemService = new ItemService();
-            _moveTranslator = new MoveTranslator();
-        }
-
+     
         public ItemTranslator(IItemService itemService, MoveTranslator moveTranslator)
         {
             _itemService = itemService;

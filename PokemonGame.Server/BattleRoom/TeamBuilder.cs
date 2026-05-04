@@ -18,28 +18,21 @@ namespace PokemonGame.Server.BattleRoom
 
         public static PokemonTeam BuildFromPlayer(int battlePlayerId, List<BattlePokemonDto> dtos)
         {
-            try
-            {
-                if (_factory == null)
-                    throw new InvalidOperationException("TeamBuilder not initialized.");
-                if (battlePlayerId <= 0)
-                    throw new InvalidOperationException($"Invalid battlePlayerId: {battlePlayerId}");
+           
+            if (_factory == null)
+                throw new InvalidOperationException("TeamBuilder not initialized.");
+            if (battlePlayerId <= 0)
+                throw new InvalidOperationException($"Invalid battlePlayerId: {battlePlayerId}");
+            var moveTranslator = new MoveTranslator(new MoveService(_factory));
+            var abilityTranslator = new AbilityTranslator(
+                new AbilityService(_factory), moveTranslator);
+            var itemTranslator = new ItemTranslator(
+                new ItemService(_factory), moveTranslator);
+            var translator = new TeamTranslator(
+                new PokemonService(_factory), moveTranslator, abilityTranslator, itemTranslator);   
 
-                var moveTranslator = new MoveTranslator();
-                var abilityTranslator = new AbilityTranslator(
-                    _factory.CreateAbilityService(), moveTranslator);
-                var itemTranslator = new ItemTranslator(
-                    _factory.CreateItemService(), moveTranslator);
-                var translator = new TeamTranslator(
-                    _factory.CreatePokemonService(), moveTranslator, abilityTranslator, itemTranslator);
-
-                return translator.LoadTeamByID(battlePlayerId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[TeamBuilder] DB load failed for player {battlePlayerId}: {ex.Message}. Using DTO stubs.");
-                return BuildFromDtos(dtos);
-            }
+            return translator.LoadTeamByID(battlePlayerId); 
+            
         }
 
         public static PokemonTeam BuildFromDtos(List<BattlePokemonDto> dtos)
