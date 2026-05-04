@@ -4,6 +4,7 @@
 
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -16,8 +17,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
     {
         // ── Config — set these to match your hosted server ────────────────────
         // REST base URL (HTTP port 5000)
-        private const string ServerHttpUrl = "http://localhost:5000";
-        private const string TcpHost = "localhost";
+        private const string ServerHttpUrl = "http://192.168.0.7:5000";
+        private const string TcpHost = "192.168.0.7";
         private const int TcpPort = 5001;
         // ─────────────────────────────────────────────────────────────────────
 
@@ -72,95 +73,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             // TODO: navigate to story mode
         }
 
-        private async Task OnOnlineModeAsync()
+        private async void OnOnlineModeSelected()
         {
-            var currentUser = _loginService.GetUser(Username);
-            if (currentUser == null)
-            {
-                await _dialogService.ShowErrorAsync("Error", "User not found. Please create an account first.");
-                return;
-            }
+            _userStore.SyncService = new SyncService("http://server-ip:5000", ServiceFactory.Instance);
+            _userStore.OnlineBattleService = new OnlineBattleService();
 
-            var users = _handler.GetAllOnlinePlayers(currentUser)
-                                .Select(p => p.Name)
-                                .ToList();
+            await _userStore.OnlineBattleService.ConnectAsync("server-ip", 5001);
 
-            string? selectedUser = null;
-            if (users.Count > 0)
-            {
-                selectedUser = await _dialogService.ShowSelectionAsync(
-                    "Quick Login",
-                    "Select your username: \n*cancel to create a new account",
-                    users);
-            }
+            // Flush any queued syncs from offline sessions
+            await _userStore.SyncService.RetryPendingAsync();
 
-            if (string.IsNullOrWhiteSpace(selectedUser))
-            {
-                bool createNew = await _dialogService.ShowConfirmAsync(
-                    "Create Account",
-                    "No account selected. Do you want to create a new account?");
-
-                if (!createNew) return;
-
-                selectedUser = await _dialogService.ShowInputAsync("Create Account", "Enter a username:");
-                if (string.IsNullOrWhiteSpace(selectedUser)) return;
-
-                bool created = _handler.AddOnlineModePlayer(selectedUser, currentUser);
-                if (!created)
-                {
-                    await _dialogService.ShowErrorAsync("Error", "Username already exists. Try another one.");
-                    return;
-                }
-
-                await _dialogService.ShowSuccessAsync("Success", $"Account '{selectedUser}' created successfully!");
-            }
-
-            if (_handler.OnlinePlayerLogIn(selectedUser, currentUser))
-            {
-                var onlinePlayer = _handler.GetOnlinePlayer(selectedUser, _loginService.GetUser(Username));
-                if (onlinePlayer == null)
-                {
-                    await _dialogService.ShowErrorAsync("Error", "Account verified, but profile data could not be retrieved.");
-                    return;
-                }
-
-                if (_userStore != null)
-                {
-                    _userStore.BattlePlayerID = onlinePlayer.BattlePlayerID;
-
-                    // ── NEW: wire online services so BattleConnectorViewModel can use them ──
-                    string localDbConnection = PokemonGame.Services.Factory.ServiceFactory.Instance
-                                                   .GetConnectionString();
-                    _userStore.SyncService = new SyncService(ServerHttpUrl, localDbConnection);
-                    _userStore.OnlineBattleService = new OnlineBattleService();
-
-                    // Pre-connect the TCP client so it is ready when the player clicks "Find Match"
-                    try
-                    {
-                        await _userStore.OnlineBattleService
-                                        .ConnectAsync(TcpHost, TcpPort)
-                                        .ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        await _dialogService.ShowErrorAsync(
-                            "Connection Error",
-                            $"Could not reach the battle server: {ex.Message}");
-                        _userStore.OnlineBattleService.Dispose();
-                        _userStore.OnlineBattleService = null;
-                        return;
-                    }
-
-                    // Flush any queued sync operations from previous sessions
-                    _ = _userStore.SyncService.PushFullSyncAsync(_userStore.BattlePlayerID);
-
-                }
-
-                await _dialogService.ShowSuccessAsync("Success", $"Logged in as '{selectedUser}'!");
-                NavigateToSideMenuCommand.Execute(null);
-            }
+            // Push current player data to server
+            await _userStore.SyncService.SyncPlayerToServerAsync(_userStore.BattlePlayerID);
         }
-
         private async Task OnQuickLoginAsync()
         {
             var currentUser = _loginService.GetUser(Username);
@@ -195,6 +120,38 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             else
             {
                 await _dialogService.ShowErrorAsync("Error", "Username already taken.");
+            }
+        }
+        private async Task OnOnlineModeAsync()
+        {
+            Console.WriteLine($"[GAMEMODE] OnOnlineModeAsync — user={_userStore?.Username} playerId={_userStore?.BattlePlayerID}");
+
+            if (_userStore == null)
+            {
+                Console.WriteLine($"[GAMEMODE] ERROR — UserStore is null");
+                await _dialogService.ShowErrorAsync("Error", "User session not found.");
+                return;
+            }
+
+            try
+            {
+                _userStore.SyncService = new SyncService(ServerHttpUrl, ServiceFactory.Instance);
+                _userStore.OnlineBattleService = new OnlineBattleService();
+
+                Console.WriteLine($"[GAMEMODE] Connecting TCP — {TcpHost}:{TcpPort}");
+                await _userStore.OnlineBattleService.ConnectAsync(TcpHost, TcpPort);
+                Console.WriteLine($"[GAMEMODE] TCP connected");
+
+                await _userStore.SyncService.RetryPendingAsync();
+                await _userStore.SyncService.SyncPlayerToServerAsync(_userStore.BattlePlayerID);
+
+                Console.WriteLine($"[GAMEMODE] Navigating to online shell");
+                NavigateToSideMenuCommand.Execute(null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GAMEMODE] OnOnlineModeAsync ERROR: {ex.Message}");
+                await _dialogService.ShowErrorAsync("Connection Error", $"Could not connect to server: {ex.Message}");
             }
         }
     }

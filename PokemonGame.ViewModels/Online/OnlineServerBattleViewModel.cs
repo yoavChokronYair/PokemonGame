@@ -215,6 +215,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.Online
 
         private void HandleMatchFound(MatchFoundPacket packet)
         {
+            Console.WriteLine($"[VM] HandleMatchFound — rival={packet.RivalName} playerHP={packet.PlayerMaxHp} enemyHP={packet.EnemyMaxHp} moves={string.Join(",", packet.PlayerMoveNames)}");
             RunOnUi(() =>
             {
                 _userStore.BattleSesion.RivalTeamId = packet.RivalTeamId;
@@ -235,6 +236,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.Online
                 BattleMenu.SetActionsEnabled(true);
 
                 Logger.Show($"Battle started vs {packet.RivalName}!");
+                Console.WriteLine($"[VM] MatchFound applied to UI");
+
             });
         }
 
@@ -267,6 +270,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.Online
 
         private void HandleBattleEnd(BattleEndPacket packet)
         {
+            Console.WriteLine($"[VM] HandleBattleEnd — winner={packet.WinnerName} loser={packet.LoserName} opponentPlayerId={packet.OpponentBattlePlayerId}");
             RunOnUi(async () =>
             {
                 BattleMenu.SetActionsEnabled(false);
@@ -291,19 +295,23 @@ namespace PokemonGame.ViewModels.ViewModelPage.Online
                         TeamID = _userStore.BattleSesion.RivalTeamId ?? 0,
                         IsWinner = packet.WinnerName != _userStore.Username ? 1 : 0
                     }).ConfigureAwait(false);
+                    Console.WriteLine($"[VM] BattleEnd — posting result to server");
                 }
             });
         }
 
-        private void HandleError(string message) =>
+        private void HandleError(string message)
+        {
+            Console.WriteLine($"[VM] ERROR received: {message}");
             RunOnUi(() => Logger.Show($"Connection error: {message}"));
+        }
 
         private void OnMoveChosen(int index)
         {
+            Console.WriteLine($"[VM] Player chose move index {index}");
             BattleMenu.SetActionsEnabled(false);
             _ = _onlineService.SendMoveAsync(index);
         }
-
         private async Task SendForfeitAsync()
         {
             await _onlineService.SendForfeitAsync().ConfigureAwait(false);

@@ -129,9 +129,6 @@ namespace PokemonGame.Services.Handler
             // Use the new helper!
             return GetPokemonFromInstance(battler);
         }
-        // Inside PokemonService.cs
-
-        // 3. The missing helper that fills data for a Battler object
         public PokemonLoadResult GetPokemonFromInstance(BattlerPokemon battler)
         {
             var general = _pokemonRepo.GetPokemonById(battler.PokedexID)
