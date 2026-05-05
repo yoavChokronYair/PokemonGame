@@ -168,6 +168,7 @@
     <Compile Include="Converters\IntEqualsConverter.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
+    <Compile Include="Converters\IsNegativeConverter.cs" />
     <Compile Include="Converters\NameToImageConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter .cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="Converters\PokemonImage\PokemonIdToImageConverter.cs" />
     <Compile Include="Converters\PokemonImage\PokemonIdToShinyImageConverter.cs" />
     <Compile Include="Converters\PokemonImage\ThirdOfHeightConverter.cs" />
+    <Compile Include="Converters\RatingToWidthConverter.cs" />
     <Compile Include="Converters\StatusColorConverter.cs" />
     <Compile Include="Converters\TypeToColorConverter.cs" />
     <Compile Include="Converters\TypeToImageConverter.cs" />
@@ -275,6 +277,9 @@
     </Compile>
     <Compile Include="Views\UserControls\TeamBuilderUserControl.xaml.cs">
       <DependentUpon>TeamBuilderUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Windows\BattleResult.xaml.cs">
+      <DependentUpon>BattleResult.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
@@ -415,6 +420,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserControls\TeamBuilderUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Windows\BattleResult.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
