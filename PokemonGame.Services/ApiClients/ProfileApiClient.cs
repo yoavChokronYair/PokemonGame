@@ -9,7 +9,7 @@ namespace PokemonGame.Services.ApiClients
     {
         ProfileDataTree? GetFullProfile(int battlePlayerId);
         void UpdateSetting(int battlePlayerId, string columnName, int value);
-        void SetFavoriteTeam(int battlePlayerId, int teamId);
+        void SetFavoriteTeam(int battlePlayerId, int? teamId);
     }
     public class ProfileApiClient : IProfileApiClient
     {
@@ -35,7 +35,7 @@ namespace PokemonGame.Services.ApiClients
                 new StringContent(body, Encoding.UTF8, "application/json")).Wait();
         }
 
-        public void SetFavoriteTeam(int battlePlayerId, int teamId)
+        public void SetFavoriteTeam(int battlePlayerId, int? teamId)
         {   
             var body = JsonSerializer.Serialize(new { TeamId = teamId });
             _http.PostAsync($"api/profile/{battlePlayerId}/favteam",

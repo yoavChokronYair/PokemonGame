@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Services.ApiClients;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.Repositories;
-using PokemonGame.Services.Data.Sync;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Interfaces;
 
@@ -29,6 +28,17 @@ namespace PokemonGame.Services.Handler
             _pokedexRepo = factory.PokemonRepository;
         }
 
+        internal LocalProfileService(OnlinePlayerRepository playerRepo, BattlePlayerSettingsRepository settingsRepo, BattlePlayerStatsRepository statsRepo, TeamRepository teamRepo, TeamMemberRepository teamMemberRepo, BattlerPokemonRepository battlerPokemonRepo, PokemonRepository pokedexRepo)
+        {
+            _playerRepo = playerRepo;
+            _settingsRepo = settingsRepo;
+            _statsRepo = statsRepo;
+            _teamRepo = teamRepo;
+            _teamMemberRepo = teamMemberRepo;
+            _battlerPokemonRepo = battlerPokemonRepo;
+            _pokedexRepo = pokedexRepo;
+        }
+
         public ProfileDataTree GetFullProfileData(int battlePlayerId)
         {
             return new ProfileDataTree
@@ -45,7 +55,7 @@ namespace PokemonGame.Services.Handler
             _settingsRepo.SaveSetting(battlePlayerId, columnName, value);
         }
 
-        public void SetFavoriteTeam(int battlePlayerId, int teamId)
+        public void SetFavoriteTeam(int battlePlayerId, int? teamId)
         {
             _statsRepo.SaveFaveTeam(battlePlayerId, teamId);
         }
@@ -102,7 +112,7 @@ namespace PokemonGame.Services.Handler
             _local.UpdateSetting(battlePlayerId, columnName, value);
         }
 
-        public void SetFavoriteTeam(int battlePlayerId, int teamId)
+        public void SetFavoriteTeam(int battlePlayerId, int? teamId)
         {
             _api.SetFavoriteTeam(battlePlayerId, teamId);
             _local.SetFavoriteTeam(battlePlayerId, teamId);

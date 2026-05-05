@@ -3,6 +3,8 @@
 using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Data.Sync;
+using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Factory
 {
@@ -48,7 +50,12 @@ namespace PokemonGame.Services.Factory
         internal PokedexEntryRepository PokedexEntryRepository { get; }
         internal MoveLearnsetRepository MoveLearnsetRepository { get; }
         internal BattleTeamSnapshotRepository BattleTeamSnapshotRepository { get; }
-
+        // ── Public services for server use ────────────────────────────────────
+        public IUserService UserService { get; }
+        public IProfileService ProfileService { get; }
+        public IGameModeChooserService GameModeService { get; }
+        public ITeamService TeamService { get; }
+        public IBattleHistoryService BattleHistoryService { get; }
 
         // ── Constructor ───────────────────────────────────────────────────────
         public ServiceFactory(IDbConnectionService db)
@@ -81,6 +88,25 @@ namespace PokemonGame.Services.Factory
             PokedexEntryRepository = new PokedexEntryRepository(db);
             MoveLearnsetRepository = new MoveLearnsetRepository(db);
             BattleTeamSnapshotRepository = new BattleTeamSnapshotRepository(db);
+
+
+            UserService = new LocalUserService(UserRepository);
+            ProfileService = new LocalProfileService(OnlinePlayerRepository, BattlePlayerSettingsRepository,
+                                                     BattlePlayerStatsRepository, TeamRepository,
+                                                     TeamMemberRepository, BattlerPokemonRepository,
+                                                     PokemonRepository);
+            GameModeService = new LocalGameModeChooserService(OnlinePlayerRepository,BattlePlayerSettingsRepository);
+            TeamService = new LocalTeamService(
+                PokemonRepository, AbilityRepository, ItemRepository,
+                MoveLearnsetRepository, MoveRepository, AttemptRepository,
+                EffectRepository, NumberRepository, SequenceStepRepository,
+                PokemonStatsRepository, TeamRepository, TeamMemberRepository,
+                BattlerPokemonRepository
+            ); 
+            BattleHistoryService = new LocalBattleHistoryService(BattleRepository, ParticipantRepository,
+                                                                  TeamMemberRepository, BattlerPokemonRepository,
+                                                                  PokemonRepository, ItemRepository,
+                                                                  OnlinePlayerRepository, BattleTeamSnapshotRepository);
 
         }
 

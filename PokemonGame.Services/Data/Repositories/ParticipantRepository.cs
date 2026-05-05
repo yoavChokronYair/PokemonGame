@@ -12,9 +12,9 @@ namespace PokemonGame.Services.Data.Repositories
         public void AddParticipant(int battleID, int battlePlayerID, int teamID)
         {
             _db.Execute(@"
-            INSERT INTO BattleParticipants (BattleID, BattlePlayerID, TeamID, IsWinner) 
-            VALUES (@bid, @bpid, @tid, 0);",
-                new { bid = battleID, bpid = battlePlayerID, tid = teamID });
+            INSERT INTO BattleParticipants (BattleID, BattlePlayerID,  IsWinner) 
+            VALUES (@bid, @bpid,  0);",
+                new { bid = battleID, bpid = battlePlayerID });
         }
 
         public void UpdateParticipantResult(int battleID, int battlePlayerID, bool isWinner)
@@ -33,22 +33,21 @@ namespace PokemonGame.Services.Data.Repositories
         public void SaveParticipant(BattleParticipantData participant)
         {
             _db.Execute(@"
-                INSERT INTO BattleParticipants (BattleID, BattlePlayerID, TeamID, IsWinner)
-                VALUES (@BattleID, @BattlePlayerID, @TeamID, @IsWinner)",
+                INSERT INTO BattleParticipants (BattleID, BattlePlayerID, IsWinner)
+                VALUES (@BattleID, @BattlePlayerID, @IsWinner)",
                 new
                 {
                     participant.BattleID,
                     participant.BattlePlayerID,
-                    participant.TeamID,
                     participant.IsWinner
                 });
         }
         public void Upsert(BattleParticipantData r)
         {
             _db.Execute(
-                @"INSERT OR REPLACE INTO BattleParticipants (BattleID, BattlePlayerID, TeamID, IsWinner)
-        VALUES (@bid, @bpid, @tid, @winner)",
-                new { bid = r.BattleID, bpid = r.BattlePlayerID, tid = r.TeamID, winner = r.IsWinner });
+                @"INSERT OR REPLACE INTO BattleParticipants (BattleID, BattlePlayerID, IsWinner)
+        VALUES (@bid, @bpid, @winner)",
+                new { bid = r.BattleID, bpid = r.BattlePlayerID, winner = r.IsWinner });
         }
     }
 }

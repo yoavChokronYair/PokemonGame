@@ -72,7 +72,7 @@ namespace PokemonGame.Services.Data.Repositories
                 new { id = battlePlayerId });
         }
 
-        public void SaveFaveTeam(int battlePlayerId, int teamId)
+        public void SaveFaveTeam(int battlePlayerId, int? teamId)
         {
             _db.Execute("UPDATE BattlePlayerStats SET FaveTeamID = @teamId WHERE BattlePlayerID = @id",
                 new { teamId, id = battlePlayerId });

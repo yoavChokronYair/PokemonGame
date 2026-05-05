@@ -75,8 +75,17 @@ namespace PokemonGame.Services.Handler
         public bool CanCreateTeam(int battlePlayerId) =>
             _teams.CanCreateTeam(battlePlayerId);
 
-        public void DeleteTeam(int teamId) =>
+        public void DeleteTeam(int teamId)
+        {
+            if (IsFavoriteTeam(teamId))
+            {
+                throw new InvalidOperationException("Cannot delete this team because it is currently set as a favorite team.");
+            }
+
             _teams.DeleteTeam(teamId);
+        }
+        public bool IsFavoriteTeam(int teamId) =>
+            _teams.IsFavoriteTeam(teamId);
 
         // ── Pokémon list for the picker ───────────────────────────────────────
 
@@ -513,7 +522,22 @@ namespace PokemonGame.Services.Handler
         {
             _inner = new TeamBuilderService();
         }
-
+        internal LocalTeamService(
+        PokemonRepository pokemon, AbilityRepository abilities, ItemRepository items,
+        MoveLearnsetRepository learnsets, MoveRepository moves, AttemptRepository attempts,
+        EffectRepository effects, NumberRepository numbers, SequenceStepRepository sequenceSteps,
+        PokemonStatsRepository stats, TeamRepository teams, TeamMemberRepository teamMembers,
+        BattlerPokemonRepository battlerPokemon)
+        {
+            // Pass all the dependencies directly to the TeamBuilderService constructor
+            _inner = new TeamBuilderService(
+                pokemon, abilities, items,
+                learnsets, moves, attempts,
+                effects, numbers, sequenceSteps,
+                stats, teams, teamMembers,
+                battlerPokemon
+            );
+        }
         public List<TeamData> GetTeamsByBattlePlayer(int battlePlayerId) =>
             _inner.GetTeamsByBattlePlayer(battlePlayerId);
 

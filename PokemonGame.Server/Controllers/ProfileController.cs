@@ -17,40 +17,25 @@ namespace PokemonGame.Server.Controllers
             _factory = factory;
         }
 
-        // ── Full profile fetch (stats + settings + teams) ─────────────────────
         [HttpGet("{battlePlayerId}")]
         public IActionResult GetFullProfile(int battlePlayerId)
         {
-            var player = _factory.OnlinePlayerRepository.LoadOnlinePlayerByID(battlePlayerId);
-            var stats = _factory.BattlePlayerStatsRepository.GetStats(battlePlayerId);
-            var settings = _factory.BattlePlayerSettingsRepository.GetSettings(battlePlayerId);
-            var teams = _factory.TeamRepository.GetTeamsByBattlePlayer(battlePlayerId);
-
-            if (player is null) return NotFound();
-
-            return Ok(new FullProfileDto
-            {
-                Player = player,
-                Stats = stats,
-                Settings = settings,
-                Teams = teams
-            });
+            var data = _factory.ProfileService.GetFullProfileData(battlePlayerId);
+            if (data is null) return NotFound();
+            return Ok(data);
         }
 
-        // ── Update a single setting ───────────────────────────────────────────
         [HttpPost("{battlePlayerId}/setting")]
         public IActionResult UpdateSetting(int battlePlayerId, [FromBody] UpdateSettingRequest req)
         {
-            _factory.BattlePlayerSettingsRepository.SaveSetting(
-                battlePlayerId, req.ColumnName, req.Value);
+            _factory.ProfileService.UpdateSetting(battlePlayerId, req.ColumnName, req.Value);
             return Ok();
         }
 
-        // ── Set favourite team ────────────────────────────────────────────────
         [HttpPost("{battlePlayerId}/favteam")]
         public IActionResult SetFavoriteTeam(int battlePlayerId, [FromBody] SetFavoriteTeamRequest req)
         {
-            _factory.BattlePlayerStatsRepository.SaveFaveTeam(battlePlayerId, req.TeamId);
+            _factory.ProfileService.SetFavoriteTeam(battlePlayerId, req.TeamId);
             return Ok();
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData;
-using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelUserControl

@@ -10,43 +10,37 @@ namespace PokemonGame.Services.Handler
     {
         private readonly BattleRepository _battleRepo;
         private readonly ParticipantRepository _participantRepo;
-        private readonly TeamMemberRepository _teamMemberRepo;
         private readonly BattlerPokemonRepository _battlerPokemonRepo;
         private readonly PokemonRepository _pokedexRepo;
         private readonly ItemRepository _itemRepo;
         private readonly OnlinePlayerRepository _playerRepo;
         private readonly BattleTeamSnapshotRepository _snapshotRepo;
-        private readonly TeamRepository _teamRepo;
 
         public LocalBattleHistoryService()
         {
             var f = ServiceFactory.Instance;
             _battleRepo = f.BattleRepository;
             _participantRepo = f.ParticipantRepository;
-            _teamMemberRepo = f.TeamMemberRepository;
             _battlerPokemonRepo = f.BattlerPokemonRepository;
             _pokedexRepo = f.PokemonRepository;
             _itemRepo = f.ItemRepository;
             _playerRepo = f.OnlinePlayerRepository;
             _snapshotRepo = f.BattleTeamSnapshotRepository;
-            _teamRepo = f.TeamRepository;
         }
 
         internal LocalBattleHistoryService(
             BattleRepository battleRepo, ParticipantRepository participantRepo,
             TeamMemberRepository teamMemberRepo, BattlerPokemonRepository battlerPokemonRepo,
             PokemonRepository pokedexRepo, ItemRepository itemRepo, OnlinePlayerRepository playerRepo,
-            BattleTeamSnapshotRepository snapshotRepo, TeamRepository teamRepo)
+            BattleTeamSnapshotRepository snapshotRepo)
         {
             _battleRepo = battleRepo;
             _participantRepo = participantRepo;
-            _teamMemberRepo = teamMemberRepo;
             _battlerPokemonRepo = battlerPokemonRepo;
             _pokedexRepo = pokedexRepo;
             _itemRepo = itemRepo;
             _playerRepo = playerRepo;
             _snapshotRepo = snapshotRepo;
-            _teamRepo = teamRepo;
         }
 
         public List<BattleTreeData> GetBattleHistoryDisplay(int battlePlayerID, string username)
@@ -83,15 +77,6 @@ namespace PokemonGame.Services.Handler
 
         public int SaveBattleRecord() => _battleRepo.CreateBattle();
 
-        public void SaveParticipant(BattleParticipantData participant)
-        {
-            _participantRepo.SaveParticipant(participant);
-
-            // Look up the team for this battle player and snapshot it
-            var team = _teamRepo.GetTeamByBattlePlayer(participant.BattlePlayerID);
-            if (team != null)
-                _snapshotRepo.SaveSnapshot(participant.BattleID, participant.BattlePlayerID, team.Id);
-        }
 
         private List<BattleHistoryPokemon> GetFormattedPokemonList(int battleId, int? battlePlayerId)
         {
@@ -156,10 +141,6 @@ namespace PokemonGame.Services.Handler
             return battleId.Value;
         }
 
-        public void SaveParticipant(BattleParticipantData participant)
-        {
-            _api.SaveParticipant(participant);
-            _local.SaveParticipant(participant);
-        }
+       
     }
 }

@@ -61,7 +61,15 @@ namespace PokemonGame.Services.Data.Repositories
         public void UpdateTeamName(int teamId, string newName) =>
             _db.Execute("UPDATE teams SET team_name = @name WHERE id = @tid",
                 new { name = newName, tid = teamId });
-
+        public bool IsFavoriteTeam(int teamId)
+        {
+            // Check if any player has this team set as their favorite
+            int count = _db.QuerySingle<int>(
+                "SELECT COUNT(1) FROM BattlePlayerStats WHERE FaveTeamID = @tid",
+                new { tid = teamId }
+            );
+            return count > 0;
+        }
         public void DeleteTeam(int teamId)
         {
             // Get all pokemon IDs for this team

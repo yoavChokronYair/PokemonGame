@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 
 namespace PokemonGame.Services.ApiClients
@@ -8,7 +7,6 @@ namespace PokemonGame.Services.ApiClients
     {
         List<BattleTreeData>? GetBattleHistory(int battlePlayerId, string username);
         int? CreateBattle();
-        void SaveParticipant(BattleParticipantData participant);
     }
     public class BattleHistoryApiClient : IBattleHistoryApiClient
     {
@@ -35,13 +33,6 @@ namespace PokemonGame.Services.ApiClients
 
             var json = response.Content.ReadAsStringAsync().Result;
             return JsonSerializer.Deserialize<int>(json);
-        }
-
-        public void SaveParticipant(BattleParticipantData participant)
-        {
-            var body = JsonSerializer.Serialize(participant);
-            _http.PostAsync("api/battlehistory/participant",
-                new StringContent(body, Encoding.UTF8, "application/json")).Wait();
         }
     }
 }

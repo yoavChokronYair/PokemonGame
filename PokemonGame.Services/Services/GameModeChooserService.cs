@@ -17,6 +17,13 @@ namespace PokemonGame.Services.Handler
             _onlinePlayers = ServiceFactory.Instance.OnlinePlayerRepository;
             _settingsRepo = ServiceFactory.Instance.BattlePlayerSettingsRepository;
         }
+
+        internal LocalGameModeChooserService(OnlinePlayerRepository onlinePlayers, BattlePlayerSettingsRepository settingsRepo)
+        {
+            _onlinePlayers = onlinePlayers;
+            _settingsRepo = settingsRepo;
+        }
+
         public BattlePlayerSettingsData GetSettings(int battlePlayerId) =>
             _settingsRepo.GetSettings(battlePlayerId);
 

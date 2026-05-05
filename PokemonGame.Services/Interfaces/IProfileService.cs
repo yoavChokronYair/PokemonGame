@@ -7,7 +7,7 @@ namespace PokemonGame.Services.Interfaces
     {
         ProfileDataTree GetFullProfileData(int battlePlayerId);
         void UpdateSetting(int battlePlayerId, string columnName, int value);
-        void SetFavoriteTeam(int battlePlayerId, int teamId);
+        void SetFavoriteTeam(int battlePlayerId, int? teamId);
         List<BattleHistoryPokemon> GetTeamFormattedList(int teamId);
     }
 

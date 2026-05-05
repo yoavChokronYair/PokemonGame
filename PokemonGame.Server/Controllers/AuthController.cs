@@ -17,35 +17,26 @@ namespace PokemonGame.Server.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest req)
         {
-            if (string.IsNullOrWhiteSpace(req.Username) ||
-                string.IsNullOrWhiteSpace(req.HashedPassword))
-                return BadRequest("Missing credentials.");
+            if (string.IsNullOrWhiteSpace(req.Username)) return BadRequest();
 
-            var user = _factory.UserRepository.LoadUserByName(req.Username);
-            if (user is null) return NotFound("User not found.");
-            if (user.Password != req.HashedPassword) return Unauthorized("Invalid password.");
+            var result = _factory.UserService.Login(req.Username, req.HashedPassword);
+            if (!result) return Unauthorized();
 
-            return Ok(user);
+            var user = _factory.UserService.GetUser(req.Username);
+            return Ok(new { Success = true, UserData = user });
         }
 
         [HttpPost("create")]
         public IActionResult CreateUser([FromBody] LoginRequest req)
         {
-            if (string.IsNullOrWhiteSpace(req.Username) ||
-                string.IsNullOrWhiteSpace(req.HashedPassword))
-                return BadRequest("Missing credentials.");
-
-            if (_factory.UserRepository.UserExists(req.Username))
-                return Conflict("Username already taken.");
-
-            _factory.UserRepository.CreateUser(req.Username, req.HashedPassword);
-            return Ok();
+            var success = _factory.UserService.CreateUser(req.Username, req.HashedPassword);
+            return success ? Ok() : Conflict("Username already taken.");
         }
 
         [HttpGet("exists/{username}")]
         public IActionResult UserExists(string username)
         {
-            return Ok(_factory.UserRepository.UserExists(username));
+            return Ok(_factory.UserService.UserExists(username));
         }
     }
 
