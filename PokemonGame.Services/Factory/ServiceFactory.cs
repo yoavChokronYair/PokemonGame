@@ -2,7 +2,6 @@
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Data.Repositories.PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Data.Sync;
-using PokemonGame.Services.Handler;
 
 namespace PokemonGame.Services.Factory
 {
@@ -193,41 +192,7 @@ namespace PokemonGame.Services.Factory
             _syncService.OnSyncFailed += onFailure;
         }
 
-        // ── Service factory methods (unchanged from original) ─────────────────
-
-        public SignUpService CreateSignUpService() =>
-            new SignUpService(UserRepository);
-
-        public LogInService CreateLogInService() =>
-            new LogInService(UserRepository);
-
-        public TeamBuilderService CreateTeamBuilderService() =>
-            new TeamBuilderService(PokemonRepository, AbilityRepository, ItemRepository,
-                                   MoveLearnsetRepository, MoveRepository, AttemptRepository,
-                                   EffectRepository, NumberRepository, SequenceStepRepository,
-                                   PokemonStatsRepository, TeamRepository, TeamMemberRepository,
-                                   BattlerPokemonRepository);
-
-        public BattleHistoryService CreateBattleHistoryService() =>
-            new BattleHistoryService(BattleRepository, ParticipantRepository, TeamMemberRepository,
-                                     BattlerPokemonRepository, PokemonRepository, ItemRepository,
-                                     OnlinePlayerRepository);
-
-        public PokemonService CreatePokemonService() =>
-            new PokemonService(
-                BattlerPokemonRepository,
-                PokemonRepository,
-                TeamRepository,
-                TeamMemberRepository,
-                MoveLearnsetRepository,
-                PokemonStatsRepository,
-                MoveRepository);
-
-        public AbilityService CreateAbilityService() =>
-            new AbilityService(AbilityRepository, ConditionRepository, EffectRepository, NumberRepository);
-
-        public ItemService CreateItemService() =>
-            new ItemService(ItemRepository, ConditionRepository, EffectRepository, NumberRepository);
+        // 
 
         // ── IDisposable ───────────────────────────────────────────────────────
 

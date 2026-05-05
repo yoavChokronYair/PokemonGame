@@ -1,10 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.VisualStudio.Settings.Telemetry;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelUserControl;
@@ -21,7 +19,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     }
     public class ProfileViewModel : ViewModelBase
     {
-        private readonly ProfileService _handler;
+        private readonly IProfileService _profileService;  // was: ProfileService _handler
         private readonly UserStore _userStore;
 
         // ── Identity ──────────────────────────────────────────────
@@ -90,11 +88,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             get => _showTypeEffectiveness;
             set { if (SetProperty(ref _showTypeEffectiveness, value)) SaveSetting("ShowTypeEffectiveness", value?.Id ?? 0); }
         }
-       
-        public ProfileViewModel(UserStore userStore)
+
+        public ProfileViewModel(IProfileService profileService, UserStore userStore)
         {
+            _profileService = profileService;
             _userStore = userStore;
-            _handler = new ProfileService();
 
             SetFavouriteTeamCommand = new RelayCommand(OnSetFavouriteTeam);
 
@@ -122,7 +120,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private void LoadProfileData()
         {
             int bpid = _userStore.BattlePlayerID;
-            var data = _handler.GetFullProfileData(bpid);
+            var data = _profileService.GetFullProfileData(_userStore.BattlePlayerID);
 
             // Identity
             UserName = data.Player?.Name ?? "Unknown";
@@ -163,7 +161,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             }
 
             // 1. Get the list of formatted pokemon (BattleHistoryPokemon objects)
-            var teamPokemon = _handler.GetTeamFormattedList(faveTeamId.Value);
+            var teamPokemon = _profileService.GetTeamFormattedList(faveTeamId.Value);
 
             // 2. Map to TeamSlotDisplayEntry format used by your Team ViewModels
             var slots = teamPokemon.Select(p => new TeamSlotDisplayEntry
@@ -182,7 +180,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             if (SelectedTeam == null) return;
 
             // 1. Tell the service to update the FaveTeamID in the BattlePlayerStats table
-            _handler.SetFavoriteTeam(_userStore.BattlePlayerID, SelectedTeam.Id);
+            _profileService.SetFavoriteTeam(_userStore.BattlePlayerID, SelectedTeam.Id);
 
             // 2. Update the visual slots in the FavouriteTeam view model
             // This calls the repo/logic to refresh the actual pokemon icons shown
@@ -191,7 +189,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private void SaveSetting(string columnName, int value)
         {
-            _handler.UpdateSetting(_userStore.BattlePlayerID, columnName, value);
+            _profileService.UpdateSetting(_userStore.BattlePlayerID, columnName, value);
         }
     }
 }
