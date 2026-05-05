@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 
@@ -11,6 +12,7 @@ namespace PokemonGame.ViewModels.Store
 
         public string Username { get; set; }
         public int BattlePlayerID { get; set; }
+        public UserSettings Settings { get; set; } = new();
 
         // ── Pre-battle session ────────────────────────────────────────────────
         public BattleSession BattleSesion { get; set; } = new();
@@ -30,7 +32,18 @@ namespace PokemonGame.ViewModels.Store
         Medium,
         Hard
     }
-
+    public enum TextSpeed
+    {
+        Slow,
+        Mid,
+        Fast
+    }
+    public enum Background
+    {
+        White,
+        Blue,
+        Red
+    }
     public class BattleSession
     {
         public int? RivalTeamId { get; set; }
@@ -46,5 +59,22 @@ namespace PokemonGame.ViewModels.Store
         // ── NEW: resolved before BattleViewModel is created ──────────────────
         public PokemonTeam? ResolvedPlayerTeam { get; set; }
         public PokemonTeam? ResolvedBotTeam { get; set; }
+    }
+    public class UserSettings
+    {
+        public TextSpeed textSpeed { get; set; } = TextSpeed.Mid;
+        public bool AnimationOn { get; set; } = false;
+        public Background background { get; set; } = Background.White;
+        public bool ShowTypeEffect { get; set; } = false;
+    }
+    public static class SettingsMapper
+    {
+        public static UserSettings ToUserSettings(BattlePlayerSettingsData data) => new()
+        {
+            AnimationOn = data.AnimationsEnabled == 1,
+            textSpeed = (TextSpeed)(data.TextSpeedID - 1),
+            background = (Background)(data.BackgroundID - 1),
+            ShowTypeEffect = data.ShowTypeEffectiveness == 1
+        };
     }
 }

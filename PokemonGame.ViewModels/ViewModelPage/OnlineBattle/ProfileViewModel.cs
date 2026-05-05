@@ -93,6 +93,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             _profileService = userStore.Resolver.GetProfileService();
             _userStore = userStore;
+            
 
             SetFavouriteTeamCommand = new RelayCommand(OnSetFavouriteTeam);
 
@@ -121,7 +122,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             int bpid = _userStore.BattlePlayerID;
             var data = _profileService.GetFullProfileData(_userStore.BattlePlayerID);
-
+            SelectedTextSpeed = TextSpeedOptions.FirstOrDefault(o => o.Id == data.Settings.TextSpeedID);
+            SelectedBattleScene = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.AnimationsEnabled);
+            SelectedBackground = BackgroundOptions.FirstOrDefault(o => o.Id == data.Settings.BackgroundID);
+            ShowTypeEffectiveness = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.ShowTypeEffectiveness);
             // Identity
             UserName = data.Player?.Name ?? "Unknown";
 
@@ -190,6 +194,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private void SaveSetting(string columnName, int value)
         {
             _profileService.UpdateSetting(_userStore.BattlePlayerID, columnName, value);
+
+            // Keep UserStore in sync
+            switch (columnName)
+            {
+                case "AnimationsEnabled": _userStore.Settings.AnimationOn = value == 1; break;
+                case "TextSpeedID": _userStore.Settings.textSpeed = (TextSpeed)(value - 1); break;
+                case "BackgroundID": _userStore.Settings.background = (Background)(value - 1); break;
+                case "ShowTypeEffectiveness": _userStore.Settings.ShowTypeEffect = value == 1; break;
+            }
         }
     }
 }

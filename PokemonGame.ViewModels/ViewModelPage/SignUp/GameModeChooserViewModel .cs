@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
@@ -119,6 +120,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 if (onlinePlayer != null)
                 {
                     _userStore.BattlePlayerID = onlinePlayer.BattlePlayerID;
+
+                    var settings = _handler.GetSettings(onlinePlayer.BattlePlayerID);
+                    if (settings != null)
+                        _userStore.Settings = SettingsMapper.ToUserSettings(settings);
+
                     await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{selectedUser}'!");
                     NavigateToSideMenuCommand.Execute(null);
                 }

@@ -1,4 +1,5 @@
 ﻿using PokemonGame.Services.ApiClients;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
@@ -9,11 +10,15 @@ namespace PokemonGame.Services.Handler
     public class LocalGameModeChooserService : IGameModeChooserService
     {
         private readonly OnlinePlayerRepository _onlinePlayers;
+        private readonly BattlePlayerSettingsRepository _settingsRepo;
 
         public LocalGameModeChooserService()
         {
             _onlinePlayers = ServiceFactory.Instance.OnlinePlayerRepository;
+            _settingsRepo = ServiceFactory.Instance.BattlePlayerSettingsRepository;
         }
+        public BattlePlayerSettingsData GetSettings(int battlePlayerId) =>
+            _settingsRepo.GetSettings(battlePlayerId);
 
         public bool AddOnlineModePlayer(string username, UserData user)
         {
@@ -52,7 +57,14 @@ namespace PokemonGame.Services.Handler
             _local = new LocalGameModeChooserService();
             _api = api;
         }
+        public BattlePlayerSettingsData GetSettings(int battlePlayerId)
+        {
+            var dto = _api.GetSettings(battlePlayerId);
+            if (dto != null)
+                ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
 
+            return _local.GetSettings(battlePlayerId);
+        }
         public bool AddOnlineModePlayer(string username, UserData user)
         {
             if (string.IsNullOrWhiteSpace(username)) return false;

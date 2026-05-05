@@ -16,7 +16,7 @@ namespace PokemonGame.Services.ApiClients
         private readonly HttpClient _http;
 
         public ProfileApiClient(string serverBaseUrl)
-        {
+        {   
             _http = new HttpClient { BaseAddress = new Uri(serverBaseUrl) };
         }
 
@@ -36,7 +36,7 @@ namespace PokemonGame.Services.ApiClients
         }
 
         public void SetFavoriteTeam(int battlePlayerId, int teamId)
-        {
+        {   
             var body = JsonSerializer.Serialize(new { TeamId = teamId });
             _http.PostAsync($"api/profile/{battlePlayerId}/favteam",
                 new StringContent(body, Encoding.UTF8, "application/json")).Wait();

@@ -1,9 +1,11 @@
-﻿using PokemonGame.Services.Data.GameData.User;
+﻿using PokemonGame.Services.Data.GameData.OnlineBattleData;
+using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.Services.Interfaces
 {
     public interface IGameModeChooserService
     {
+        BattlePlayerSettingsData GetSettings(int battlePlayerId);
         bool AddOnlineModePlayer(string username, UserData user);
         bool OnlinePlayerLogIn(string username, UserData user);
         bool UserExists(string username, UserData user);

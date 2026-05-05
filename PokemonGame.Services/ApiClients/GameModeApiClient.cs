@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.Services.ApiClients
@@ -10,7 +11,9 @@ namespace PokemonGame.Services.ApiClients
         List<BattlePlayerData>? GetAllOnlinePlayers(int userId);
         bool CreateOnlinePlayer(string username, int userId);
         bool? PlayerExists(string username, int userId);
+        BattlePlayerSettingsData? GetSettings(int battlePlayerId);
     }
+
     public class GameModeApiClient : IGameModeApiClient
     {
         private readonly HttpClient _http;
@@ -54,6 +57,15 @@ namespace PokemonGame.Services.ApiClients
 
             var json = response.Content.ReadAsStringAsync().Result;
             return JsonSerializer.Deserialize<bool>(json);
+        }
+
+        public BattlePlayerSettingsData? GetSettings(int battlePlayerId)
+        {
+            var response = _http.GetAsync($"api/gamemode/settings/{battlePlayerId}").Result;
+            if (!response.IsSuccessStatusCode) return null;
+
+            var json = response.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<BattlePlayerSettingsData>(json);
         }
     }
 }

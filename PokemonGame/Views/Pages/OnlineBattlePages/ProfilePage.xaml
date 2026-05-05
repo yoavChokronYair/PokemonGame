@@ -239,31 +239,27 @@
                 BorderThickness="0">
                 <StackPanel Margin="10">
 
-                    <!--  ANIMATION: Simple On/Off List  -->
                     <uc:SettingRowControl
                         Header="ANIMATION"
                         Options="{Binding BattleSceneOptions}"
-                        SelectedOption="{Binding SelectedBattleScene}" />
+                        SelectedOption="{Binding SelectedBattleScene, Mode=TwoWay}" />
 
-                    <!-- TEXT SPEED: Selector Style with < > arrows -->
                     <uc:SettingRowControl
                         Header="TEXT SPEED"
                         Options="{Binding TextSpeedOptions}"
-                        SelectedOption="{Binding SelectedTextSpeed}"
+                        SelectedOption="{Binding SelectedTextSpeed, Mode=TwoWay}"
                         UseSelectorMode="True" />
 
-                    <!--  BACKGROUND: Selector Style (useful if you have many themes)  -->
                     <uc:SettingRowControl
                         Header="BACKGROUND"
                         Options="{Binding BackgroundOptions}"
-                        SelectedOption="{Binding SelectedBackground}"
+                        SelectedOption="{Binding SelectedBackground, Mode=TwoWay}"
                         UseSelectorMode="True" />
 
-                    <!--  SHOW EFFECTIVE: Simple On/Off List  -->
                     <uc:SettingRowControl
                         Header="SHOW EFFECTIVE"
                         Options="{Binding BattleSceneOptions}"
-                        SelectedOption="{Binding ShowTypeEffectiveness}" />
+                        SelectedOption="{Binding ShowTypeEffectiveness, Mode=TwoWay}" />
 
                 </StackPanel>
             </controls:BoardBackground>
