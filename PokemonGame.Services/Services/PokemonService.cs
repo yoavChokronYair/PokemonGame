@@ -95,39 +95,57 @@ namespace PokemonGame.Services.Handler
             var random = new Random();
             var results = new List<PokemonLoadResult>();
 
-            for (int i = 0; i < count; i++)
+            // Keep going until we have successfully generated the requested count
+            while (results.Count < count)
             {
-                int randomPokedexId = allIds[random.Next(allIds.Count)];
-                var pokemonData = _pokemonRepo.GetPokemonById(randomPokedexId);
-
-                var abilityPool = new List<int?>
+                try
                 {
-                    pokemonData.FirstAbilityID,
-                    pokemonData.SecondAbilityID,
-                    pokemonData.HiddenAbilityID
+                    int randomPokedexId = allIds[random.Next(allIds.Count)];
+                    var pokemonData = _pokemonRepo.GetPokemonById(randomPokedexId);
+
+                    var abilityPool = new List<int?>
+                    {
+                        pokemonData.FirstAbilityID,
+                        pokemonData.SecondAbilityID,
+                        pokemonData.HiddenAbilityID
+                    }
+                    .Where(id => id.HasValue)
+                    .Select(id => id!.Value)
+                    .ToList();
+
+                    // Guard clause in case a Pokémon somehow has zero valid abilities
+                    if (abilityPool.Count == 0)
+                    {
+                        throw new Exception($"Pokemon ID {randomPokedexId} has no valid abilities.");
+                    }
+
+                    int randomAbilityId = abilityPool[random.Next(abilityPool.Count)];
+
+                    var randomBattler = new BattlerPokemon
+                    {
+                        PokedexID = randomPokedexId,
+                        Level = level,
+                        AbilityID = randomAbilityId,
+                        Iv_hp = 31,
+                        Iv_atk = 31,
+                        Iv_def = 31,
+                        Iv_spAtk = 31,
+                        Iv_spDef = 31,
+                        Iv_speed = 31,
+                        Nature = "Hardy",
+                        Move1ID = _moveLearnsetRepository.GetRandomMoveIdForPokemon(randomPokedexId)
+                    };
+
+                    results.Add(GetPokemonFromInstance(randomBattler));
                 }
-                .Where(id => id.HasValue)
-                .Select(id => id!.Value)
-                .ToList();
-
-                int randomAbilityId = abilityPool[random.Next(abilityPool.Count)];
-
-                var randomBattler = new BattlerPokemon
+                catch (Exception ex)
                 {
-                    PokedexID = randomPokedexId,
-                    Level = level,
-                    AbilityID = randomAbilityId,
-                    Iv_hp = 31,
-                    Iv_atk = 31,
-                    Iv_def = 31,
-                    Iv_spAtk = 31,
-                    Iv_spDef = 31,
-                    Iv_speed = 31,
-                    Nature = "Hardy",
-                    Move1ID = _moveLearnsetRepository.GetRandomMoveIdForPokemon(randomPokedexId)
-                };
+                    // Log the error if you have a logger, or write to debug console
+                    Console.WriteLine($"Failed to generate Pokémon. Retrying... Error: {ex.Message}");
 
-                results.Add(GetPokemonFromInstance(randomBattler));
+                    // We do NOT increment or exit. 
+                    // The while loop will spin again and attempt a new random Pokémon.
+                }
             }
 
             return results;

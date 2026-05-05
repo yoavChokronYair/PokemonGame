@@ -7,7 +7,7 @@ using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
-    public class OnlineBattleMenuViewModel : ViewModelBase
+    public class OnlineBattleMenuViewModel : ViewModelBase,IDisposable
     {
         private readonly UserStore _userStore;
         public UserSettings Settings => _userStore.Settings;
@@ -103,9 +103,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public ICommand PlayCommand { get; }
 
         public OnlineBattleMenuViewModel(
-            UserStore userStore,
-            NavigationStore rootNavigationStore,
-            Func<BattleConnectorViewModel> createBattleConnectorViewModel)
+    UserStore userStore,
+    NavigationStore rootNavigationStore,
+    Func<BattleConnectorViewModel> createBattleConnectorViewModel)
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
@@ -113,6 +113,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             _teamService = userStore.Resolver.GetTeamService();
 
             RefreshSavedTeams();
+
+            // Subscribe to navigation changes
+            _rootNavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
             PlayCommand = new RelayCommand(() =>
             {
@@ -126,10 +129,32 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             });
         }
 
+        private void OnCurrentViewModelChanged()
+        {
+            // Check if the newly navigated-to page is of this type
+            if (_rootNavigationStore.CurrentViewModel is OnlineBattleMenuViewModel)
+            {
+                RefreshSavedTeams();
+            }
+        }
+
         private void RefreshSavedTeams()
         {
+            // Keep a reference to the ID of the team they had selected
+            int? previouslySelectedId = SelectedTeam?.Id;
+
             SavedTeams = _teamService.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
-            SelectedTeam = SavedTeams.FirstOrDefault();
+
+            // Try to restore their previous selection if it still exists in the refreshed list
+            var restoredSelection = SavedTeams.FirstOrDefault(t => t.Id == previouslySelectedId);
+
+            // Default to the first team in the list if the previously selected team is gone
+            SelectedTeam = restoredSelection ?? SavedTeams.FirstOrDefault();
+        }
+        public void Dispose()
+        {
+            // Clean up event handlers to prevent memory leaks when the VM is destroyed
+            _rootNavigationStore.CurrentViewModelChanged -= OnCurrentViewModelChanged;
         }
     }
 }
