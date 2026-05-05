@@ -23,6 +23,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private readonly UserStore _userStore;
         public UserSettings Settings => _userStore.Settings;  
         
+        private string _displayName = string.Empty;
+        public string DisplayName { get => _displayName; set => SetProperty(ref _displayName, value); }
         private string _userName = string.Empty;
         public string UserName { get => _userName; set => SetProperty(ref _userName, value); }
 
@@ -129,7 +131,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             _profileService = userStore.Resolver.GetProfileService();
             _userStore = userStore;
-            
+
 
             SetFavouriteTeamCommand = new RelayCommand(OnSetFavouriteTeam);
 
@@ -159,7 +161,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             var data = _profileService.GetFullProfileData(_userStore.BattlePlayerID);
 
             // Identity
-            UserName = data.Player?.Name ?? "Unknown";
+            DisplayName = data.Player?.Name ?? "Unknown";
+            UserName = _userStore.Username; 
 
             // Stats
             CurrentElo1v1 = data.Stats.CurrentElo1v1;
