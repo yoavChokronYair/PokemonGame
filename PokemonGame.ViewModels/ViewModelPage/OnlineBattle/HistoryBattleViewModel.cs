@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelUserControl;
@@ -22,16 +23,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
     public class HistoryBattleViewModel : ViewModelBase
     {
-        private readonly BattleHistoryService _historyService;
+        private readonly IBattleHistoryService _historyService;
         private readonly UserStore _userStore;
 
         public ObservableCollection<BattleHistoryEntry> Battles { get; } = new();
         public bool HasNoBattles => Battles.Count == 0;
 
-        public HistoryBattleViewModel(UserStore player)
+        public HistoryBattleViewModel(UserStore player, IBattleHistoryService battleHistoryService)
         {
             _userStore = player;
-            _historyService = new BattleHistoryService();
+            _historyService = battleHistoryService;
 
             LoadRealBattles();
         }

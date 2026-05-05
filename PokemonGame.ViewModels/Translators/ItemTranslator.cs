@@ -11,7 +11,7 @@ namespace PokemonGame.ViewModels.Translators
 {
     public class ItemTranslator
     {
-        private readonly IItemService _itemService;
+        private readonly ItemService _itemService;
         private readonly MoveTranslator _moveTranslator;
 
         public ItemTranslator()
@@ -20,7 +20,7 @@ namespace PokemonGame.ViewModels.Translators
             _moveTranslator = new MoveTranslator();
         }
 
-        public ItemTranslator(IItemService itemService, MoveTranslator moveTranslator)
+        public ItemTranslator(ItemService itemService, MoveTranslator moveTranslator)
         {
             _itemService = itemService;
             _moveTranslator = moveTranslator;

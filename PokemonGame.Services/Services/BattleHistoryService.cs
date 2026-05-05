@@ -3,10 +3,11 @@ using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Data.Repositories.PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
-    public class BattleHistoryService
+    public class LocalBattleHistoryService : IBattleHistoryService
     {
         private readonly BattleRepository _battleRepo;
         private readonly ParticipantRepository _participantRepo;
@@ -16,7 +17,7 @@ namespace PokemonGame.Services.Handler
         private readonly ItemRepository _itemRepo;
         private readonly OnlinePlayerRepository _playerRepo;
 
-        public BattleHistoryService()
+        public LocalBattleHistoryService()
         {
             var f = ServiceFactory.Instance;
             _battleRepo = f.BattleRepository;
@@ -27,7 +28,8 @@ namespace PokemonGame.Services.Handler
             _itemRepo = f.ItemRepository;
             _playerRepo = f.OnlinePlayerRepository;
         }
-        internal BattleHistoryService(
+
+        internal LocalBattleHistoryService(
             BattleRepository battleRepo, ParticipantRepository participantRepo,
             TeamMemberRepository teamMemberRepo, BattlerPokemonRepository battlerPokemonRepo,
             PokemonRepository pokedexRepo, ItemRepository itemRepo, OnlinePlayerRepository playerRepo)
@@ -52,11 +54,9 @@ namespace PokemonGame.Services.Handler
                 var playerPart = participants.FirstOrDefault(p => p.BattlePlayerID == battlePlayerID);
                 var opponentPart = participants.FirstOrDefault(p => p.BattlePlayerID != battlePlayerID);
 
-                // Fetch actual name from the DB instead of using a placeholder
                 string opponentName = "Unknown Opponent";
                 if (opponentPart != null)
                 {
-                    // Use your PlayerRepository here
                     var oppData = _playerRepo.LoadOnlinePlayerByID(opponentPart.BattlePlayerID);
                     opponentName = oppData?.Name ?? $"Opponent #{opponentPart.BattlePlayerID}";
                 }
@@ -66,7 +66,7 @@ namespace PokemonGame.Services.Handler
                     BattleID = record.BattleID,
                     BattleDate = record.BattleDate,
                     PlayerName = username,
-                    OpponentName = opponentName, // Now shows the actual name
+                    OpponentName = opponentName,
                     IsPlayerWinner = playerPart?.IsWinner == 1,
                     PlayerPokemon = GetFormattedPokemonList(playerPart?.TeamID),
                     OpponentPokemon = GetFormattedPokemonList(opponentPart?.TeamID)
@@ -75,9 +75,14 @@ namespace PokemonGame.Services.Handler
             return displayList;
         }
 
+        public int SaveBattleRecord() => _battleRepo.CreateBattle();
+
+        public void SaveParticipant(BattleParticipantData participant) =>
+            _participantRepo.SaveParticipant(participant);
+
         private List<BattleHistoryPokemon> GetFormattedPokemonList(int? teamID)
         {
-            if (teamID == null) return new List<BattleHistoryPokemon>();
+            if (teamID is null) return new List<BattleHistoryPokemon>();
 
             var results = new List<BattleHistoryPokemon>();
             var slots = _teamMemberRepo.GetTeamMembers(teamID.Value);
@@ -85,10 +90,10 @@ namespace PokemonGame.Services.Handler
             foreach (var slot in slots)
             {
                 var instance = _battlerPokemonRepo.GetPokemonInstance(slot.PokemonID);
-                if (instance == null) continue;
+                if (instance is null) continue;
 
                 var baseData = _pokedexRepo.GetPokemonById(instance.PokedexID);
-                if (baseData == null) continue;
+                if (baseData is null) continue;
 
                 results.Add(new BattleHistoryPokemon
                 {
@@ -96,20 +101,12 @@ namespace PokemonGame.Services.Handler
                     Name = baseData.Name,
                     Type1 = baseData.Type1,
                     Type2 = baseData.Type2,
-                    ItemName = instance.ItemID.HasValue ?
-                               (_itemRepo.GetById(instance.ItemID.Value)?.Name ?? "Unknown Item")
-                               : "None"
+                    ItemName = instance.ItemID.HasValue
+                                ? (_itemRepo.GetById(instance.ItemID.Value)?.Name ?? "Unknown Item")
+                                : "None"
                 });
             }
             return results;
-        }
-        public int SaveBattleRecord()
-        {
-            return _battleRepo.CreateBattle();
-        }
-        public void SaveParticipant(BattleParticipantData participant)
-        {
-            _participantRepo.SaveParticipant(participant);
         }
     }
 }

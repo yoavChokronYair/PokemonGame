@@ -2,48 +2,36 @@
 using PokemonGame.Services.Data.GameData.PokemonData;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
-    public interface IAbilityService
-    {
-        AbilityTree? GetAbility(string name);
-        AbilityTree? GetAbilityById(int id);
-    }
 
-    public class AbilityService : IAbilityService
+    public class LocalAbilityService : IAbilityService
     {
         private readonly AbilityRepository _repo;
         private readonly ConditionRepository _conditionRepository;
         private readonly EffectRepository _effectRepository;
         private readonly NumberRepository _numberRepository;
 
-
-        public AbilityService()
+        public LocalAbilityService()
         {
             _repo = ServiceFactory.Instance.AbilityRepository;
             _conditionRepository = ServiceFactory.Instance.ConditionRepository;
             _effectRepository = ServiceFactory.Instance.EffectRepository;
             _numberRepository = ServiceFactory.Instance.NumberRepository;
         }
-        internal AbilityService(AbilityRepository repo, ConditionRepository conditions,
-                      EffectRepository effects, NumberRepository numbers)
+
+        internal LocalAbilityService(AbilityRepository repo, ConditionRepository conditions,
+                                     EffectRepository effects, NumberRepository numbers)
         {
             _repo = repo;
             _conditionRepository = conditions;
             _effectRepository = effects;
             _numberRepository = numbers;
         }
-        public AbilityService(ServiceFactory factory)
-        {
-            _repo = factory.AbilityRepository;
-            _conditionRepository = factory.ConditionRepository;
-            _effectRepository = factory.EffectRepository;
-            _numberRepository = factory.NumberRepository;
-        }
 
-        // ── Public entry points ──────────────────────────────────────────────────
-
+        // ── All tree-building logic identical to your existing AbilityService ─
         public AbilityTree? GetAbility(string name)
         {
             var ability = _repo.GetAbilityByName(name);
@@ -55,8 +43,6 @@ namespace PokemonGame.Services.Handler
             var ability = _repo.GetAbilityById(id);
             return ability == null ? null : BuildTree(ability);
         }
-
-        // ── Tree builder ─────────────────────────────────────────────────────────
 
         private AbilityTree BuildTree(AbilityData ability)
         {

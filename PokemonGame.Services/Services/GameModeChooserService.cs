@@ -1,36 +1,26 @@
 ﻿using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
-    public class GameModeChooserService
+    public class LocalGameModeChooserService : IGameModeChooserService
     {
         private readonly OnlinePlayerRepository _onlinePlayers;
 
-        public GameModeChooserService()
+        public LocalGameModeChooserService()
         {
             _onlinePlayers = ServiceFactory.Instance.OnlinePlayerRepository;
         }
 
         public bool AddOnlineModePlayer(string username, UserData user)
         {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return false;
-            }
+            if (string.IsNullOrWhiteSpace(username)) return false;
+            if (UserExists(username, user)) return false;
 
-            if (UserExists(username, user))
-            {
-                return false;
-            }
             var currentPlayers = GetAllOnlinePlayers(user);
-
-            // 2. Enforce the limit
-            if (currentPlayers.Count >= 3)
-            {
-                return false; // Or throw a custom Exception
-            }
+            if (currentPlayers.Count >= 3) return false;
 
             _onlinePlayers.CreateOnlinePlayer(username, user);
             return true;
@@ -38,11 +28,7 @@ namespace PokemonGame.Services.Handler
 
         public bool OnlinePlayerLogIn(string username, UserData user)
         {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return false;
-            }
-
+            if (string.IsNullOrWhiteSpace(username)) return false;
             return GetOnlinePlayer(username, user) != null;
         }
 
