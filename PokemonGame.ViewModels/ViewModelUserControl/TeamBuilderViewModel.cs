@@ -20,18 +20,26 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         public TeamBuilderViewModel(UserStore userStore)
         {
-            var service = new TeamBuilderService();
-            State = new TeamBuilderState();
-            var allPokemon = new ObservableCollection<PokemonDisplayEntry>(service.GetAllPokemon());
-            var allItems = new ObservableCollection<ItemData>(service.GetHeldItems());
+            var pokedexService = userStore.Resolver.GetPokedexService();
+            var teamService = userStore.Resolver.GetTeamService();
 
-            SlotBar = new TeamSlotBarViewModel(State, service);
-            Editor = new PokemonEditorViewModel(State, service);
-            MovePicker = new MovePickerViewModel(State, service);
-            ItemPicker = new ItemPickerViewModel(State, service, allItems);
-            PokemonPicker = new PokemonPickerViewModel(State, service, allPokemon);
+            State = new TeamBuilderState();
+            var allPokemon = new ObservableCollection<PokemonDisplayEntry>(pokedexService.GetAllPokemon());
+            var allItems = new ObservableCollection<ItemData>(pokedexService.GetHeldItems());
+
+            SlotBar = new TeamSlotBarViewModel(State);
+            Editor = new PokemonEditorViewModel(State);
+            MovePicker = new MovePickerViewModel(State);
+            ItemPicker = new ItemPickerViewModel(State, allItems);
+            PokemonPicker = new PokemonPickerViewModel(State, allPokemon);
             EvIvEditor = new EvIvEditorViewModel(State);
-            TeamManagement = new TeamManagementViewModel(State, service, userStore, allPokemon, allItems);
+            TeamManagement = new TeamManagementViewModel(
+                State,
+                teamService,
+                pokedexService,
+                userStore,
+                allPokemon,
+                allItems);
         }
     }
     // ── TeamSlotEntry ─────────────────────────────────────────────────────────

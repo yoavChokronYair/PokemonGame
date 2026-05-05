@@ -1,7 +1,6 @@
-﻿using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Data.GameData.User;
+﻿using PokemonGame.Services.ApiClients;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.Repositories;
-using PokemonGame.Services.Data.Repositories.PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Interfaces;
 
@@ -107,6 +106,46 @@ namespace PokemonGame.Services.Handler
                 });
             }
             return results;
+        }
+    }
+    public class OnlineBattleHistoryService : IBattleHistoryService
+    {
+        private readonly LocalBattleHistoryService _local;
+        private readonly IBattleHistoryApiClient _api;
+
+        public OnlineBattleHistoryService(IBattleHistoryApiClient api)
+        {
+            _local = new LocalBattleHistoryService();
+            _api = api;
+        }
+
+        public List<BattleTreeData> GetBattleHistoryDisplay(int battlePlayerId, string username)
+        {
+            var result = _api.GetBattleHistory(battlePlayerId, username);
+
+            if (result is null)
+                return _local.GetBattleHistoryDisplay(battlePlayerId, username);
+
+            // Sync the player's battle data locally so offline is warm
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+
+            return _local.GetBattleHistoryDisplay(battlePlayerId, username);
+        }
+
+        public int SaveBattleRecord()
+        {
+            var battleId = _api.CreateBattle();
+
+            if (battleId is null)
+                return _local.SaveBattleRecord();
+
+            return battleId.Value;
+        }
+
+        public void SaveParticipant(BattleParticipantData participant)
+        {
+            _api.SaveParticipant(participant);
+            _local.SaveParticipant(participant);
         }
     }
 }

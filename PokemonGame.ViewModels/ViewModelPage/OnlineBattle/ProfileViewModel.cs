@@ -89,9 +89,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             set { if (SetProperty(ref _showTypeEffectiveness, value)) SaveSetting("ShowTypeEffectiveness", value?.Id ?? 0); }
         }
 
-        public ProfileViewModel(IProfileService profileService, UserStore userStore)
+        public ProfileViewModel(UserStore userStore)
         {
-            _profileService = profileService;
+            _profileService = userStore.Resolver.GetProfileService();
             _userStore = userStore;
 
             SetFavouriteTeamCommand = new RelayCommand(OnSetFavouriteTeam);

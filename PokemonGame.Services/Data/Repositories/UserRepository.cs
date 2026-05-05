@@ -22,7 +22,15 @@ namespace PokemonGame.Services.Data.Repositories
             return StoreAndReturn(username, () =>
                 _db.QuerySingle<UserData>("SELECT * FROM Users WHERE UserName = @UserName", new { UserName = username }));
         }
+        public void Upsert(UserData r)
+        {
+            _db.Execute(
+                "INSERT OR REPLACE INTO Users (UserID, UserName, Password) VALUES (@uid, @name, @pw)",
+                new { uid = r.UserID, name = r.UserName, pw = r.Password });
 
+            // Keep cache consistent
+            StoreAndReturn(r.UserName, () => r);
+        }
         public List<UserData> GetAllUsers() =>
             GetAllCached(() => _db.Query<UserData>("SELECT * FROM Users").ToList(), u => u.UserName);
     }

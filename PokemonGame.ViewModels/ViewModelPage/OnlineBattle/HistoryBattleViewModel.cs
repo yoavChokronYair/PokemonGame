@@ -29,10 +29,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public ObservableCollection<BattleHistoryEntry> Battles { get; } = new();
         public bool HasNoBattles => Battles.Count == 0;
 
-        public HistoryBattleViewModel(UserStore player, IBattleHistoryService battleHistoryService)
+        public HistoryBattleViewModel(UserStore player)
         {
             _userStore = player;
-            _historyService = battleHistoryService;
+            _historyService = player.Resolver.GetBattleHistoryService();
 
             LoadRealBattles();
         }

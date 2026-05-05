@@ -1,4 +1,5 @@
-﻿using PokemonGame.Services.Data.GameData;
+﻿using PokemonGame.Services.ApiClients;
+using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Data.Repositories;
@@ -65,8 +66,6 @@ namespace PokemonGame.Services.Handler
         }
 
         // ── Team helpers ──────────────────────────────────────────────────────
-        public void DeleteTeamsByPlayer(int battlePlayerId) =>
-    _teams.DeleteTeamsByPlayer(battlePlayerId);
         public TeamData? GetTeamByBattlePlayer(int battlePlayerId) =>
             _teams.GetTeamByBattlePlayer(battlePlayerId);
 
@@ -425,7 +424,41 @@ namespace PokemonGame.Services.Handler
             return _moveDisplayCache;
         }
     }
+    public class LocalPokedexService : IPokedexService
+    {
+        private readonly TeamBuilderService _inner;
 
+        public LocalPokedexService()
+        {
+            _inner = new TeamBuilderService();
+        }
+
+        public List<PokemonDisplayEntry> GetAllPokemon() =>
+            _inner.GetAllPokemon();
+
+        public List<ItemData> GetHeldItems() =>
+            _inner.GetHeldItems();
+
+        public int GetAbilityId(string? abilityName) =>
+            _inner.GetAbilityId(abilityName);
+
+        public string GetAbilityNameById(int abilityId) =>
+            _inner.GetAbilityNameById(abilityId);
+
+        public int? GetItemId(string? itemName) =>
+            _inner.GetItemId(itemName);
+
+        public int? GetMoveId(string? moveName) =>
+            _inner.GetMoveId(moveName);
+
+        public MoveDisplayEntry? GetMoveById(int? moveId, List<MoveDisplayEntry> availableMoves) =>
+            _inner.GetMoveById(moveId, availableMoves);
+
+        public BattlerPokemon ToBattlerPokemon(PokemonDisplayEntry entry, int abilityId,
+                                               int? itemId, int move1Id, int? move2Id,
+                                               int? move3Id, int? move4Id) =>
+            _inner.ToBattlerPokemon(entry, abilityId, itemId, move1Id, move2Id, move3Id, move4Id);
+    }
     // ── DTOs ──────────────────────────────────────────────────────────────────
 
     public class MoveDisplayEntry
@@ -480,7 +513,7 @@ namespace PokemonGame.Services.Handler
         public int IvDef { get; set; } = 31; public int IvSpA { get; set; } = 31;
         public int IvSpD { get; set; } = 31; public int IvSpe { get; set; } = 31;
     }
-    //── online and local ──────────────────────────────────────────────────────────────────
+    //── teamService ──────────────────────────────────────────────────────────────────
     public class LocalTeamService : ITeamService
     {
         private readonly TeamBuilderService _inner;
@@ -502,9 +535,6 @@ namespace PokemonGame.Services.Handler
         public void DeleteTeam(int teamId) =>
             _inner.DeleteTeam(teamId);
 
-        public void DeleteTeamsByPlayer(int battlePlayerId) =>
-            _inner.DeleteTeamsByPlayer(battlePlayerId);
-
         public List<BattlerPokemon> GetTeamMembers(int teamId) =>
             _inner.GetTeamMembers(teamId);
 
@@ -520,39 +550,82 @@ namespace PokemonGame.Services.Handler
         public void RemoveTeamSlot(int teamId, int pokemonId) =>
             _inner.RemoveTeamSlot(teamId, pokemonId);
     }
-    public class LocalPokedexService : IPokedexService
+    public class OnlineTeamService : ITeamService
     {
-        private readonly TeamBuilderService _inner;
+        private readonly LocalTeamService _local;
+        private readonly ITeamApiClient _api;
 
-        public LocalPokedexService()
+        public OnlineTeamService(ITeamApiClient api)
         {
-            _inner = new TeamBuilderService();
+            _local = new LocalTeamService();
+            _api = api;
         }
 
-        public List<PokemonDisplayEntry> GetAllPokemon() =>
-            _inner.GetAllPokemon();
+        public List<TeamData> GetTeamsByBattlePlayer(int battlePlayerId)
+        {
+            var result = _api.GetTeamsByBattlePlayer(battlePlayerId);
+            if (result is null) return _local.GetTeamsByBattlePlayer(battlePlayerId);
 
-        public List<ItemData> GetHeldItems() =>
-            _inner.GetHeldItems();
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+            return _local.GetTeamsByBattlePlayer(battlePlayerId);
+        }
 
-        public int GetAbilityId(string? abilityName) =>
-            _inner.GetAbilityId(abilityName);
+        public TeamData? GetTeamByBattlePlayer(int battlePlayerId)
+        {
+            var result = _api.GetTeamsByBattlePlayer(battlePlayerId);
+            if (result is null) return _local.GetTeamByBattlePlayer(battlePlayerId);
 
-        public string GetAbilityNameById(int abilityId) =>
-            _inner.GetAbilityNameById(abilityId);
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+            return _local.GetTeamByBattlePlayer(battlePlayerId);
+        }
 
-        public int? GetItemId(string? itemName) =>
-            _inner.GetItemId(itemName);
+        public bool CanCreateTeam(int battlePlayerId)
+        {
+            // Sync first to make sure local has latest team count
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+            return _local.CanCreateTeam(battlePlayerId);
+        }
 
-        public int? GetMoveId(string? moveName) =>
-            _inner.GetMoveId(moveName);
+        public void DeleteTeam(int teamId)
+        {
+            _api.DeleteTeam(teamId);
+            _local.DeleteTeam(teamId);
+        }
 
-        public MoveDisplayEntry? GetMoveById(int? moveId, List<MoveDisplayEntry> availableMoves) =>
-            _inner.GetMoveById(moveId, availableMoves);
+        public List<BattlerPokemon> GetTeamMembers(int teamId)
+        {
+            // Team members already synced via SyncPlayerAsync — read local
+            return _local.GetTeamMembers(teamId);
+        }
 
-        public BattlerPokemon ToBattlerPokemon(PokemonDisplayEntry entry, int abilityId,
-                                               int? itemId, int move1Id, int? move2Id,
-                                               int? move3Id, int? move4Id) =>
-            _inner.ToBattlerPokemon(entry, abilityId, itemId, move1Id, move2Id, move3Id, move4Id);
+        public TeamData SaveTeam(string teamName, int battlePlayerId, List<BattlerPokemon> slots)
+        {
+            var result = _api.SaveTeam(teamName, battlePlayerId, slots);
+            if (result is null) return _local.SaveTeam(teamName, battlePlayerId, slots);
+
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+            return _local.GetTeamByBattlePlayer(battlePlayerId)!;
+        }
+
+        public void UpdateTeam(int teamId, string teamName, List<BattlerPokemon> slots)
+        {
+            _api.UpdateTeam(teamId, teamName, slots);
+            _local.UpdateTeam(teamId, teamName, slots);
+        }
+
+        public void ReplaceTeamSlot(int teamId, int slotNumber, BattlerPokemon pokemon)
+        {
+            _api.ReplaceTeamSlot(teamId, slotNumber, pokemon);
+            _local.ReplaceTeamSlot(teamId, slotNumber, pokemon);
+        }
+
+        public void RemoveTeamSlot(int teamId, int pokemonId)
+        {
+            _api.RemoveTeamSlot(teamId, pokemonId);
+            _local.RemoveTeamSlot(teamId, pokemonId);
+        }
     }
+    //── pokedexService ──────────────────────────────────────────────────────────────────
+
+
 }

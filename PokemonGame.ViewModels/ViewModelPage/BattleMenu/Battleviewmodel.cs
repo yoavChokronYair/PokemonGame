@@ -1,13 +1,10 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Move;
-using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
-using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.Store;
-using PokemonGame.ViewModels.Translators;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
@@ -17,42 +14,25 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     {
         private readonly BattleManager _manager;
 
-        // ── Child ViewModels ──────────────────────────────────────────────────
         public PokemonBattleStatusViewModel PlayerStatus { get; }
         public EnemyBattleStatusViewModel EnemyStatus { get; }
         public BattleMenuViewModel BattleMenu { get; }
         public BattleLoggerViewModel Logger { get; }
 
-        // ── Tracks how many log entries have already been queued ──────────────
         private int _logCursor = 0;
 
-        // ── Phase helpers ─────────────────────────────────────────────────────
         public string? WinnerName => _manager.Winner?.Active.Name;
 
-        // ── Constructor (vs real player team) ─────────────────────────────────
-        public BattleViewModel(UserStore playerUserStore, UserStore botUserStore)
-        {
-            var translator = new TeamTranslator();
-            var playerTeam = translator.LoadTeamByID(playerUserStore.BattlePlayerID);
-            var botTeam = translator.LoadTeamByID(botUserStore.BattlePlayerID);
-
-            _manager = new BattleManager(playerTeam, botTeam,BotLevel.Easy);
-
-            Logger = new BattleLoggerViewModel();
-            PlayerStatus = new PokemonBattleStatusViewModel();
-            EnemyStatus = new EnemyBattleStatusViewModel();
-            BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager, Logger);
-
-            SyncAll(flushSetup: true);
-        }
-
-        // ── Constructor (vs random bot team) ──────────────────────────────────
         public BattleViewModel(UserStore playerUserStore)
         {
             var session = playerUserStore.BattleSesion;
 
-            var playerTeam = BuildPlayerTeam(playerUserStore, session);
-            var botTeam = BuildBotTeam(session);
+            var playerTeam = session.ResolvedPlayerTeam
+                ?? throw new InvalidOperationException("ResolvedPlayerTeam was not set before navigating to battle.");
+
+            var botTeam = session.ResolvedBotTeam
+                ?? throw new InvalidOperationException("ResolvedBotTeam was not set before navigating to battle.");
+
             var botLevel = ResolveBotLevel(session.BotDifficulty);
 
             _manager = new BattleManager(playerTeam, botTeam, botLevel);
@@ -64,24 +44,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             SyncAll(flushSetup: true);
         }
-        // ── Called by BattleMenuViewModel when player picks a move ────────────
+
         private void OnMoveChosen(int moveIndex)
         {
             _manager.RunTurn(moveIndex);
             SyncAll();
         }
 
-        // ── Called by BattleMenuViewModel when player picks a switch slot ─────
         private void OnSwitchChosen(int slotIndex)
         {
-            _manager.RunTurn(slotIndex,BattleAction.Switch);
+            _manager.RunTurn(slotIndex, BattleAction.Switch);
             SyncAll();
         }
 
-        // ── Push all state down to child VMs ──────────────────────────────────
         private void SyncAll(bool flushSetup = false)
         {
-            // 1. Sync HP / status bars
             var p = _manager.PlayerActive;
             PlayerStatus.PokedexId = p.PokedexId;
             PlayerStatus.PokemonName = p.Name;
@@ -96,12 +73,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             EnemyStatus.Level = e.Level;
             EnemyStatus.CurrentHP = e.CurrentHP;
             EnemyStatus.MaxHP = e.MaxHP;
-            EnemyStatus.StatusCondition = p.Status.ToString();
+            EnemyStatus.StatusCondition = e.Status.ToString();
 
-            // 2. Refresh move buttons
             BattleMenu.RefreshMoves(_manager.PlayerActive.Moves);
 
-            // 3. Enqueue only NEW log entries since last sync
             var allEntries = _manager.logger.Entries;
             if (allEntries.Count > _logCursor)
             {
@@ -109,66 +84,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 _logCursor = allEntries.Count;
                 Logger.EnqueueEntries(newEntries);
 
-                // On first call, setup messages ("Go! Charizard!") are shown
-                // immediately without requiring a button press
                 if (flushSetup)
-                {
                     Logger.FlushSetupMessages();
-                }
             }
+
             OnPropertyChanged(nameof(WinnerName));
-        }
-        private PokemonTeam BuildPlayerTeam(UserStore playerUserStore, BattleSession session)
-        {
-            var translator = new TeamTranslator();
-            var fullTeam = translator.LoadTeamByID(playerUserStore.BattlePlayerID);
-
-            List<PokemonState> roster;
-
-            if (session.BattleMode == BattleMode.fullTeam || session.SelectedPokemonIds.Count == 0)
-            {
-                roster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
-                    .Select(i => fullTeam.GetPokemonAt(i))
-                    .ToList();
-            }
-            else
-            {
-                roster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
-                    .Select(i => fullTeam.GetPokemonAt(i))
-                    .Where(p => session.SelectedPokemonIds.Contains(p.PokedexId))
-                    .ToList();
-            }
-
-            PadToSix(roster, () => fullTeam.GetPokemonAt(0));
-            return PokemonTeam.Create(roster);
-        }
-
-        private PokemonTeam BuildBotTeam(BattleSession session)
-        {
-            var translator = new TeamTranslator();
-            var service = new PokemonService();
-
-            int teamSize = session.BattleMode switch
-            {
-                BattleMode.halfTeam => 3,
-                BattleMode.TwoThirdsTeam => 4,
-                BattleMode.fullTeam => 6,
-                _ => 6
-            };
-
-            var results = service.GenerateRandomTeam(count: teamSize, level: 50);
-            var roster = results
-                .Select(r => translator.TranslateToDomain(r))
-                .ToList();
-
-            PadToSix(roster, () => roster[0]);
-            return PokemonTeam.Create(roster);
-        }
-
-        private static void PadToSix(List<PokemonState> roster, Func<PokemonState> filler)
-        {
-            while (roster.Count < 6)
-                roster.Add(filler());
         }
 
         private static BotLevel ResolveBotLevel(BotDifficulty difficulty) =>

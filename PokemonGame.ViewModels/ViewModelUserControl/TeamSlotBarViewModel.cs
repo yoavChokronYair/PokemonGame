@@ -15,7 +15,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
         public RelayCommand<TeamSlotEntry> SelectSlotCommand { get; }
         public RelayCommand RemoveFromTeamCommand { get; }
 
-        public TeamSlotBarViewModel(TeamBuilderState state, TeamBuilderService service)
+        public TeamSlotBarViewModel(TeamBuilderState state)
         {
             _state = state;
 

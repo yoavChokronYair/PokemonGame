@@ -1,5 +1,7 @@
-﻿using PokemonGame.Services.Data.GameData.OnlineBattleData;
+﻿using PokemonGame.Services.ApiClients;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.Repositories;
+using PokemonGame.Services.Data.Sync;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Interfaces;
 
@@ -73,8 +75,8 @@ namespace PokemonGame.Services.Handler
     }
     public class OnlineProfileService : IProfileService
     {
-        private readonly LocalProfileService _local;  // fallback + local writes
-        private readonly IProfileApiClient _api;    // thin HTTP wrapper
+        private readonly LocalProfileService _local;
+        private readonly IProfileApiClient _api;
 
         public OnlineProfileService(IProfileApiClient api)
         {
@@ -84,23 +86,18 @@ namespace PokemonGame.Services.Handler
 
         public ProfileDataTree GetFullProfileData(int battlePlayerId)
         {
-            // 1. Fetch from server
             var dto = _api.GetFullProfile(battlePlayerId);
 
-            // 2. If server unreachable, fall back to local silently
             if (dto is null)
                 return _local.GetFullProfileData(battlePlayerId);
 
-            // 3. Mirror fresh data into local DB so offline is always warm
-            _api.SyncToLocal(battlePlayerId, dto);
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
 
-            // 4. Read back from local — single source of truth at runtime
             return _local.GetFullProfileData(battlePlayerId);
         }
 
         public void UpdateSetting(int battlePlayerId, string columnName, int value)
         {
-            // Write to server first, then mirror locally
             _api.UpdateSetting(battlePlayerId, columnName, value);
             _local.UpdateSetting(battlePlayerId, columnName, value);
         }
@@ -113,7 +110,6 @@ namespace PokemonGame.Services.Handler
 
         public List<BattleHistoryPokemon> GetTeamFormattedList(int teamId)
         {
-            // Team member data is already synced locally — no need to hit server
             return _local.GetTeamFormattedList(teamId);
         }
     }

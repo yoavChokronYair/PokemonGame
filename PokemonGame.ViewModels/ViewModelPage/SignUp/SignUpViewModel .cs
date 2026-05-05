@@ -20,11 +20,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private string _confirmPassword = string.Empty;
         private string _statusMessage = string.Empty;
 
-        public SignUpViewModel(UserStore userStore, NavigationStore navigationStore, Func<LogInViewModel> createLogInViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel, IUserService profileService)
+        public SignUpViewModel(UserStore userStore, NavigationStore navigationStore, Func<LogInViewModel> createLogInViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel)
         {
             _userStore = userStore;
             _navigationStore = navigationStore;
-            _signUpHandler = profileService;
+            _signUpHandler = userStore.Resolver.GetUserService();
 
             SignUpCommand = new RelayCommand(SignUp);
             SwitchToLogInCommand = new NavigateCommand(navigationStore, createLogInViewModel);

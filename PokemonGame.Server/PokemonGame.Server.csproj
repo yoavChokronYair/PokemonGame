@@ -17,4 +17,8 @@
 	  <ProjectReference Include="..\PokemonGame.Services\PokemonGame.Services.csproj" />
 	  <ProjectReference Include="..\PokemonGameModel\PokemonGame.Model.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Controllers\" />
+	</ItemGroup>
 </Project>

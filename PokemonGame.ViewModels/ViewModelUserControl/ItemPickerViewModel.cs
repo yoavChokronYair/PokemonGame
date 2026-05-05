@@ -44,7 +44,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
         public RelayCommand ConfirmItemCommand { get; }
 
-        public ItemPickerViewModel(TeamBuilderState state, TeamBuilderService service,
+        public ItemPickerViewModel(TeamBuilderState state,
             ObservableCollection<ItemData> allItems)
         {
             _state = state;

@@ -2,7 +2,6 @@
 
 using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.Repositories;
-using PokemonGame.Services.Data.Repositories.PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Data.Sync;
 
 namespace PokemonGame.Services.Factory
@@ -14,6 +13,7 @@ namespace PokemonGame.Services.Factory
             CreateLocal("..\\..\\..\\PokemonGame.Services\\resources\\DB\\PokemonGameDB.db"));
 
         public static ServiceFactory Instance => _instance.Value;
+        public SyncFactory? Sync { get; private set; }
 
         // ── Internal state ────────────────────────────────────────────────────
         private readonly IDbConnectionService _db;
@@ -48,6 +48,7 @@ namespace PokemonGame.Services.Factory
         internal PokedexEntryRepository PokedexEntryRepository { get; }
         internal MoveLearnsetRepository MoveLearnsetRepository { get; }
 
+
         // ── Constructor ───────────────────────────────────────────────────────
         public ServiceFactory(IDbConnectionService db)
         {
@@ -78,11 +79,13 @@ namespace PokemonGame.Services.Factory
             BreedingRepository = new BreedingRepository(db);
             PokedexEntryRepository = new PokedexEntryRepository(db);
             MoveLearnsetRepository = new MoveLearnsetRepository(db);
+
         }
 
         // ── Factory methods ───────────────────────────────────────────────────
         public static ServiceFactory CreateLocal(string localDbPath) =>
             new ServiceFactory(new SQLiteConnectionService(localDbPath));
+
 
         public static ServiceFactory CreateOnline(
             string localDbPath,
@@ -91,10 +94,9 @@ namespace PokemonGame.Services.Factory
         {
             var local = new SQLiteConnectionService(localDbPath);
             var remote = new SQLiteConnectionService(remoteDbPath);
-            var dual = new DualDbConnectionService(local, remote);
-            var factory = new ServiceFactory(dual);
+            var factory = new ServiceFactory(new DualDbConnectionService(local, remote));
 
-            factory._syncService = new DbSyncService(local, remote, syncIntervalSeconds);
+            factory.Sync = new SyncFactory(local, remote, syncIntervalSeconds);
             return factory;
         }
 

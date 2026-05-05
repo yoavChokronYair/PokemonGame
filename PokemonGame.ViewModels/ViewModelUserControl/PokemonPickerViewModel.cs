@@ -38,7 +38,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
         public RelayCommand<PokemonDisplayEntry> ConfirmPokemonCommand { get; }
 
-        public PokemonPickerViewModel(TeamBuilderState state, TeamBuilderService service,
+        public PokemonPickerViewModel(TeamBuilderState state,
             ObservableCollection<PokemonDisplayEntry> allPokemon)
         {
             _state = state;

@@ -140,7 +140,7 @@ namespace PokemonGame
         }
         private MoveSummaryViewModel CreateMoveSummaryViewModel()
         {
-            return new MoveSummaryViewModel();
+            return new MoveSummaryViewModel(_userStore);
         }
         private BattleViewModel CreateBattleViewModel()
         {
@@ -152,8 +152,7 @@ namespace PokemonGame
                 _userStore,
                 _navigationStore,
                 CreateBattleViewModel,
-                CreateOnlineBattleShellViewModel,
-                CreateOnlineBattleViewModel  // ADD
+                CreateOnlineBattleShellViewModel
             );
         }
         private MapViewModel CreateMapViewModel()
@@ -161,9 +160,6 @@ namespace PokemonGame
             return new MapViewModel();
 
         }
-        private OnlineServerBattleViewModel CreateOnlineBattleViewModel()
-        {
-            return new OnlineServerBattleViewModel(_userStore);
-        }
+  
     }
 }

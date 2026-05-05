@@ -1,6 +1,5 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Data.GameData.User; // Ensure this matches your Settings Data model namespace
 
 namespace PokemonGame.Services.Data.Repositories
 {
@@ -40,6 +39,23 @@ namespace PokemonGame.Services.Data.Repositories
         {
             _db.Execute($"UPDATE BattlePlayerSettings SET {column} = @val, UpdatedAt = datetime('now') WHERE BattlePlayerID = @id",
                 new { val = value, id = battlePlayerId });
+        }
+        public void Upsert(BattlePlayerSettingsData r)
+        {
+            _db.Execute(
+                @"INSERT OR REPLACE INTO BattlePlayerSettings
+            (BattlePlayerID, AnimationsEnabled, TextSpeedID, BackgroundID, ShowTypeEffectiveness)
+          VALUES (@bpid, @anim, @txt, @bg, @eff)",
+                new
+                {
+                    bpid = r.BattlePlayerID,
+                    anim = r.AnimationsEnabled,
+                    txt = r.TextSpeedID,
+                    bg = r.BackgroundID,
+                    eff = r.ShowTypeEffectiveness
+                });
+
+            StoreAndReturn(r.BattlePlayerID, () => r);
         }
     }
 }

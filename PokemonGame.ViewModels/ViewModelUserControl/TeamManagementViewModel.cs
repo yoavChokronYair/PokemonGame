@@ -4,6 +4,7 @@ using PokemonGame.Services.Data.GameData;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
@@ -13,7 +14,8 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
     public class TeamManagementViewModel : ViewModelBase
     {
         private readonly TeamBuilderState _state;
-        private readonly TeamBuilderService _service;
+        private readonly ITeamService _teamService;
+        private readonly IPokedexService _pokedexService;
         private readonly UserStore _userStore;
 
         private readonly ObservableCollection<PokemonDisplayEntry> _allPokemon;
@@ -59,12 +61,17 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
         public RelayCommand NewTeamCommand { get; }
         public RelayCommand<TeamData> DeleteTeamCommand { get; }
 
-        public TeamManagementViewModel(TeamBuilderState state, TeamBuilderService service, UserStore userStore,
-            ObservableCollection<PokemonDisplayEntry> allPokemon,
-            ObservableCollection<ItemData> allItems)
+        public TeamManagementViewModel(
+        TeamBuilderState state,
+        ITeamService teamService,
+        IPokedexService pokedexService,
+        UserStore userStore,
+        ObservableCollection<PokemonDisplayEntry> allPokemon,
+        ObservableCollection<ItemData> allItems)
         {
             _state = state;
-            _service = service;
+            _teamService = teamService;
+            _pokedexService = pokedexService;
             _userStore = userStore;
             _allPokemon = allPokemon;
             _allItems = allItems;
@@ -79,16 +86,16 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
                 if (SelectedTeam != null)
                 {
-                    _service.UpdateTeam(SelectedTeam.Id, TeamName, battlerPokemons);
+                    _teamService.UpdateTeam(SelectedTeam.Id, TeamName, battlerPokemons);
                 }
                 else
                 {
-                    if (!_service.CanCreateTeam(_userStore.BattlePlayerID))
+                    if (!_teamService.CanCreateTeam(_userStore.BattlePlayerID))
                     {
                         return;
                     }
 
-                    var team = _service.SaveTeam(TeamName, _userStore.BattlePlayerID,
+                    var team = _teamService.SaveTeam(TeamName, _userStore.BattlePlayerID,
                                                  battlerPokemons);
                     if (team != null)
                     {
@@ -116,7 +123,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                 _state.SelectedPokemon = null;
 
                 // Load members from DB
-                var members = _service.GetTeamMembers(SelectedTeam.Id);
+                var members = _teamService.GetTeamMembers(SelectedTeam.Id);
                 for (int i = 0; i < members.Count && i < 6; i++)
                 {
                     var bp = members[i];
@@ -138,7 +145,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                         IsShiny = bp.Shiny == 1,
                         Nature = bp.Nature ?? "Serious",
                         HeldItemName = _allItems.FirstOrDefault(it => it.Id == bp.ItemID)?.Name,
-                        SelectedAbility = _service.GetAbilityNameById(bp.AbilityID),
+                        SelectedAbility = _pokedexService.GetAbilityNameById(bp.AbilityID),
                         IvHP = bp.Iv_hp,
                         IvAtk = bp.Iv_atk,
                         IvDef = bp.Iv_def,
@@ -152,10 +159,10 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                         EvSpD = bp.Ev_spDef,
                         EvSpe = bp.Ev_speed,
                     };
-                    slot.Move1 = _service.GetMoveById(bp.Move1ID, pokemon.AvailableMoves);
-                    slot.Move2 = _service.GetMoveById(bp.Move2ID, pokemon.AvailableMoves);
-                    slot.Move3 = _service.GetMoveById(bp.Move3ID, pokemon.AvailableMoves);
-                    slot.Move4 = _service.GetMoveById(bp.Move4ID, pokemon.AvailableMoves);
+                    slot.Move1 = _pokedexService.GetMoveById(bp.Move1ID, pokemon.AvailableMoves);
+                    slot.Move2 = _pokedexService.GetMoveById(bp.Move2ID, pokemon.AvailableMoves);
+                    slot.Move3 = _pokedexService.GetMoveById(bp.Move3ID, pokemon.AvailableMoves);
+                    slot.Move4 = _pokedexService.GetMoveById(bp.Move4ID, pokemon.AvailableMoves);
 
                     _state.TeamSlots[i] = slot;
                 }
@@ -181,7 +188,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                     return;
                 }
 
-                _service.DeleteTeam(team.Id);
+                _teamService.DeleteTeam(team.Id);
                 if (SelectedTeam?.Id == team.Id)
                 {
                     SelectedTeam = null;
@@ -199,7 +206,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
         private void RefreshSavedTeams()
         {
-            SavedTeams = _service.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
+            SavedTeams = _teamService.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
             OnPropertyChanged(nameof(SavedTeams));
             OnPropertyChanged(nameof(CanCreateNewTeam));
         }
@@ -223,8 +230,8 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                 list.Add(new BattlerPokemon
                 {
                     PokedexID = slot.PokedexId,
-                    AbilityID = _service.GetAbilityId(slot.SelectedAbility),
-                    ItemID = _service.GetItemId(slot.HeldItemName),
+                    AbilityID = _pokedexService.GetAbilityId(slot.SelectedAbility),
+                    ItemID = _pokedexService.GetItemId(slot.HeldItemName),
                     Shiny = slot.IsShiny ? 1 : 0,
                     Gender = slot.Gender switch
                     {
@@ -234,10 +241,10 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
                         _ => "Genderless"
                     },
                     Level = slot.Level,
-                    Move1ID = _service.GetMoveId(move1.Name) ?? 0,
-                    Move2ID = _service.GetMoveId(slot.Move2?.Name),
-                    Move3ID = _service.GetMoveId(slot.Move3?.Name),
-                    Move4ID = _service.GetMoveId(slot.Move4?.Name),
+                    Move1ID = _pokedexService.GetMoveId(move1.Name) ?? 0,
+                    Move2ID = _pokedexService.GetMoveId(slot.Move2?.Name),
+                    Move3ID = _pokedexService.GetMoveId(slot.Move3?.Name),
+                    Move4ID = _pokedexService.GetMoveId(slot.Move4?.Name),
                     Iv_hp = slot.IvHP,
                     Iv_atk = slot.IvAtk,
                     Iv_def = slot.IvDef,

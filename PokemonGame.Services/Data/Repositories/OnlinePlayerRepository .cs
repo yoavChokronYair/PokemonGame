@@ -45,5 +45,15 @@ namespace PokemonGame.Services.Data.Repositories
             JOIN BattlePlayer bp ON bp.BattlePlayerID = bt.BattlePlayerID
             WHERE bt.BattleID = @battleID AND bt.BattlePlayerID != @playerID LIMIT 1;",
                 new { battleID, playerID = player.BattlePlayerID });
+        public void Upsert(BattlePlayerData r)
+        {
+            _db.Execute(
+                @"INSERT OR REPLACE INTO BattlePlayer (BattlePlayerID, UserID, Name, CreatedAt)
+          VALUES (@id, @uid, @name, @createdAt)",
+                new { id = r.BattlePlayerID, uid = r.UserID, name = r.Name, createdAt = r.CreatedAt });
+
+            // Keep cache consistent — cache key is "Name_UserID"
+            StoreAndReturn(Key(r.Name, r.UserID), () => r);
+        }
     }
 }

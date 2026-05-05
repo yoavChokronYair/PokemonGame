@@ -1,13 +1,14 @@
 ﻿using System.Collections.ObjectModel;
-using PokemonGame.Services.Data.GameData.Move;
-using PokemonGame.Services.Handler;
+
+using PokemonGame.Services.Interfaces;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.Summery
 {
     public class MoveSummaryViewModel : ViewModelBase
     {
-        private readonly MoveService _moveService;
+        private readonly IMoveService _moveService;
         private MoveSlotViewModel _selectedMove;
 
         public ObservableCollection<MoveSlotViewModel> KnownMoves { get; set; }
@@ -18,10 +19,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.Summery
             set { _selectedMove = value; OnPropertyChanged(nameof(SelectedMove)); }
         }
 
-        public MoveSummaryViewModel()
+        public MoveSummaryViewModel(UserStore userStore)
         {
             KnownMoves = new ObservableCollection<MoveSlotViewModel>();
-            _moveService = new MoveService();
+            _moveService = userStore.Resolver.GetMoveService();
             // For testing: Load a set of moves
             LoadMoves(new[] { "Flamethrower", "Thunderbolt", "Agility", "Toxic" });
         }

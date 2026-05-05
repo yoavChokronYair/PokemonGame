@@ -6,27 +6,26 @@ using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.ViewModels.Translators
 {
-    public class ItemTranslator
+    public class ItemTranslator : BaseTranslator
     {
-        private readonly ItemService _itemService;
+        private readonly IItemService _itemService;
         private readonly MoveTranslator _moveTranslator;
 
         public ItemTranslator()
         {
-            _itemService = new ItemService();
+            _itemService = new LocalItemService();
             _moveTranslator = new MoveTranslator();
         }
 
-        public ItemTranslator(ItemService itemService, MoveTranslator moveTranslator)
+        public ItemTranslator(IItemService itemService, MoveTranslator moveTranslator)
         {
             _itemService = itemService;
             _moveTranslator = moveTranslator;
         }
-
-        // ── Public entry points ──────────────────────────────────────────────
 
         public HeldItemState Translate(string itemName)
         {
@@ -44,12 +43,8 @@ namespace PokemonGame.ViewModels.Translators
             return BuildItemState(tree);
         }
 
-        // ── Builder ──────────────────────────────────────────────────────────
-
         private HeldItemState BuildItemState(ItemTree tree)
         {
-           
-
             ICondition<BattleState> condition = tree.Condition != null
                 ? TranslateCondition(tree.Condition)
                 : new Probability<BattleState>(1.0);
@@ -58,7 +53,7 @@ namespace PokemonGame.ViewModels.Translators
                 ? TranslateEffect(tree.Effect)
                 : new NoEffect();
 
-            return new HeldItemState(tree.Name, condition, effect,tree.IsConsumable,tree.Description);
+            return new HeldItemState(tree.Name, condition, effect, tree.IsConsumable, tree.Description);
         }
 
         // ── Condition ────────────────────────────────────────────────────────

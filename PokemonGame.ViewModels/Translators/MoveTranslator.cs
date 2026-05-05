@@ -6,6 +6,7 @@ using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.ViewModels.Translators
 {
@@ -18,7 +19,7 @@ namespace PokemonGame.ViewModels.Translators
 
         public MoveTranslator()
         {
-            _moveService = new MoveService();
+            _moveService = new LocalMoveService();
         }
         public MoveTranslator(IMoveService moveService)
         {

@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using PokemonGame.Services.ApiClients;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
@@ -67,28 +68,35 @@ namespace PokemonGame.Services.Handler
 
             var result = _api.Login(username, hashedPassword);
             if (result is null)
-                return _local.Login(username, password); // local handles its own hashing
+            {
+                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                    return false;
+                return _local.Login(username, password);
+            }
 
             if (result.Success)
-                _api.SyncUserToLocal(result.UserData!);
+                SyncUserToLocal(result.UserData!);
 
             return result.Success;
         }
 
         public bool CreateUser(string username, string password)
         {
+            if (_api.UserExists(username) ?? _local.UserExists(username))
+                return false;
+
             var hashedPassword = PasswordHelper.Hash(password);
 
             var success = _api.CreateUser(username, hashedPassword);
             if (!success) return false;
 
-            _local.CreateUser(username, password); // local also hashes internally
+            _local.CreateUser(username, password);
             return true;
         }
 
         public bool UserExists(string username)
         {
-            // Check server first, fall back to local cache
+            if (string.IsNullOrEmpty(username)) return false;
             return _api.UserExists(username) ?? _local.UserExists(username);
         }
 
@@ -97,8 +105,13 @@ namespace PokemonGame.Services.Handler
             var dto = _api.GetUser(username);
             if (dto is null) return _local.GetUser(username);
 
-            _api.SyncUserToLocal(dto);
+            SyncUserToLocal(dto);
             return _local.GetUser(username);
+        }
+
+        private void SyncUserToLocal(UserData dto)
+        {
+            ServiceFactory.Instance.Sync?.SyncUserAsync(dto.UserID).Wait();
         }
     }
     internal static class PasswordHelper

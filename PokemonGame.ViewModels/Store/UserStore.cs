@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 
 namespace PokemonGame.ViewModels.Store
@@ -13,10 +14,7 @@ namespace PokemonGame.ViewModels.Store
 
         // ── Pre-battle session ────────────────────────────────────────────────
         public BattleSession BattleSesion { get; set; } = new();
-
-        // ── Online services (null in offline mode) ────────────────────────────
-
-
+        public ServiceResolver Resolver { get; set; } = new ServiceResolver(false);
     }
 
     public enum BattleMode
@@ -43,6 +41,7 @@ namespace PokemonGame.ViewModels.Store
         public List<int> SelectedPokemonIds { get; set; } = new();
         public BotDifficulty BotDifficulty { get; set; } = BotDifficulty.Medium;
         public List<int> RivalPokemonIds { get; set; } = new();
+
 
         // ── NEW: resolved before BattleViewModel is created ──────────────────
         public PokemonTeam? ResolvedPlayerTeam { get; set; }

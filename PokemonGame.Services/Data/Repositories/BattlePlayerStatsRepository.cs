@@ -77,5 +77,36 @@ namespace PokemonGame.Services.Data.Repositories
             _db.Execute("UPDATE BattlePlayerStats SET FaveTeamID = @teamId WHERE BattlePlayerID = @id",
                 new { teamId, id = battlePlayerId });
         }
+        public void Upsert(BattlePlayerStatsData r)
+        {
+            _db.Execute(
+                @"INSERT OR REPLACE INTO BattlePlayerStats
+            (BattlePlayerID,
+             CurrentElo1v1, PeakElo1v1, Wins1v1, CurrentStreak1v1, BestStreak1v1,
+             CurrentElo2v2, PeakElo2v2, Wins2v2, CurrentStreak2v2, BestStreak2v2,
+             FaveTeamID)
+          VALUES
+            (@bpid,
+             @elo1, @peak1, @wins1, @streak1, @best1,
+             @elo2, @peak2, @wins2, @streak2, @best2,
+             @fav)",
+                new
+                {
+                    bpid = r.BattlePlayerID,
+                    elo1 = r.CurrentElo1v1,
+                    peak1 = r.PeakElo1v1,
+                    wins1 = r.Wins1v1,
+                    streak1 = r.CurrentStreak1v1,
+                    best1 = r.BestStreak1v1,
+                    elo2 = r.CurrentElo2v2,
+                    peak2 = r.PeakElo2v2,
+                    wins2 = r.Wins2v2,
+                    streak2 = r.CurrentStreak2v2,
+                    best2 = r.BestStreak2v2,
+                    fav = r.FaveTeamID
+                });
+
+            StoreAndReturn(r.BattlePlayerID, () => r);
+        }
     }
 }

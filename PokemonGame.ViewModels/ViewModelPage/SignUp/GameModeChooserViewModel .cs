@@ -41,14 +41,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         UserStore? user,
         NavigationStore navigationStore,
         IDialogService dialogService,
-        Func<OnlineBattleShellViewModel> createSideMenuViewModel,
-        IGameModeChooserService gameModeChooserService,
-        IUserService userService)                               // replaces new LogInService()
+        Func<OnlineBattleShellViewModel> createSideMenuViewModel)                               // replaces new LogInService()
         {
             _dialogService = dialogService;
             _navigationStore = navigationStore;
-            _handler = gameModeChooserService;
-            _loginService = userService;
+            _handler = user.Resolver.GetGameModeChooserService();
+            _loginService = user.Resolver.GetUserService();
             _userStore = user;
             Username = user?.Username ?? string.Empty;
 

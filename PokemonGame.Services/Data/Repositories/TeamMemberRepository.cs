@@ -36,5 +36,12 @@ namespace PokemonGame.Services.Data.Repositories
         {
             _db.Execute("DELETE FROM team_members WHERE team_id = @tid", new { tid = teamID });
         }
+        public void Upsert(TeamMemberData r)
+        {
+            _db.Execute(
+                "INSERT OR REPLACE INTO team_members (team_id, pokemonID, slot_number) VALUES (@tid, @pid, @slot)",
+                new { tid = r.Team_id, pid = r.PokemonID, slot = r.Slot_number });
+        }
+
     }
 }

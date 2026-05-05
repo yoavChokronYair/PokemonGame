@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -12,7 +13,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private readonly UserStore _userStore;
         private readonly NavigationStore _rootNavigationStore;
         private readonly Func<BattleConnectorViewModel> _createBattleViewModel;
-        private readonly TeamBuilderService _teamBuilderService; // inject this
+        private readonly ITeamService _teamService;
 
         private bool _isOnline = true;
         public bool IsOnline
@@ -103,13 +104,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public OnlineBattleMenuViewModel(
             UserStore userStore,
             NavigationStore rootNavigationStore,
-            Func<BattleConnectorViewModel> createBattleConnectorViewModel) // add this param
+            Func<BattleConnectorViewModel> createBattleConnectorViewModel)
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
             _createBattleViewModel = createBattleConnectorViewModel;
-            _teamBuilderService = new TeamBuilderService();
+            _teamService = userStore.Resolver.GetTeamService();
+
             RefreshSavedTeams();
+
             PlayCommand = new RelayCommand(() =>
             {
                 userStore.BattleSesion.IsOnlineMode = IsOnline;
@@ -119,13 +122,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                                                      : BattleMode.TwoThirdsTeam;
                 userStore.BattleSesion.SelectedTeamId = SelectedTeam?.Id;
                 _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
-
             });
         }
 
         private void RefreshSavedTeams()
         {
-            SavedTeams = _teamBuilderService.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
+            SavedTeams = _teamService.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
             SelectedTeam = SavedTeams.FirstOrDefault();
         }
     }

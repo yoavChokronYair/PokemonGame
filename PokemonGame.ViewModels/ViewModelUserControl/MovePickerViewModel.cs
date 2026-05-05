@@ -47,7 +47,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
         public RelayCommand ConfirmMoveCommand { get; }
 
-        public MovePickerViewModel(TeamBuilderState state, TeamBuilderService service)
+        public MovePickerViewModel(TeamBuilderState state)
         {
             _state = state;
             _state.PropertyChanged += (_, e) =>

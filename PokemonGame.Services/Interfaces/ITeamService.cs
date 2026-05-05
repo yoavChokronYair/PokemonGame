@@ -14,7 +14,6 @@ namespace PokemonGame.Services.Interfaces
         TeamData? GetTeamByBattlePlayer(int battlePlayerId);
         bool CanCreateTeam(int battlePlayerId);
         void DeleteTeam(int teamId);
-        void DeleteTeamsByPlayer(int battlePlayerId);
         List<BattlerPokemon> GetTeamMembers(int teamId);
         TeamData SaveTeam(string teamName, int battlePlayerId, List<BattlerPokemon> slots);
         void UpdateTeam(int teamId, string teamName, List<BattlerPokemon> slots);
