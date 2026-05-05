@@ -19,6 +19,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public bool IsPlayerWinner { get; set; }
         public PokemonTeamViewModel PlayerTeam { get; } = new();
         public PokemonTeamViewModel OpponentTeam { get; } = new();
+        public UserSettings Settings => UserStore.Instance.Settings;
     }
 
     public class HistoryBattleViewModel : ViewModelBase
