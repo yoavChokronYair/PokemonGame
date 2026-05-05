@@ -3,11 +3,15 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
+    xmlns:converters="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uc="clr-namespace:PokemonGame.Views.UserControls.OnlineBattleUserControls"
     Background="White"
     mc:Ignorable="d">
+    <Page.Resources>
+        <converters:BackgroundToBackgroundTypeConverter x:Key="BgConverter" />
+    </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel
@@ -26,7 +30,7 @@
             <!--  ── USER DATA CARD ──  -->
             <controls:BoardBackground
                 Margin="0,0,0,16"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="16">
                     <TextBlock
@@ -58,7 +62,7 @@
             <!--  ── STATS CARD ──  -->
             <controls:BoardBackground
                 Margin="0,0,0,16"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="16">
                     <TextBlock
@@ -197,7 +201,7 @@
             <!--  ── FAVOURITE TEAM CARD ──  -->
             <controls:BoardBackground
                 Margin="0,0,0,16"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="16">
 
@@ -235,7 +239,7 @@
             <!--  ── SETTINGS CARD ──  -->
             <controls:BoardBackground
                 Margin="0,0,0,16"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="10">
 

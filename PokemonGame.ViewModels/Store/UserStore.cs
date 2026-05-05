@@ -3,19 +3,37 @@ using PokemonGame.Model.Enums;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.Store
 {
-    public class UserStore
+    public class UserStore : ViewModelBase
     {
-        // ── Identity ──────────────────────────────────────────────────────────
+        // 1. Thread-safe Lazy Singleton instance
+        private static readonly Lazy<UserStore> _instance =
+            new Lazy<UserStore>(() => new UserStore());
 
+        public static UserStore Instance => _instance.Value;
+
+        // 2. Make the constructor private so nobody can use "new UserStore()" anymore
+        private UserStore()
+        {
+            BattleSesion = new BattleSession();
+        }
+
+        // ── Identity ──────────────────────────────────────────────────────────
         public string Username { get; set; }
         public int BattlePlayerID { get; set; }
-        public UserSettings Settings { get; set; } = new();
+
+        private UserSettings _settings = new();
+        public UserSettings Settings
+        {
+            get => _settings;
+            set => SetProperty(ref _settings, value);
+        }
 
         // ── Pre-battle session ────────────────────────────────────────────────
-        public BattleSession BattleSesion { get; set; } = new();
+        public BattleSession BattleSesion { get; set; }
         public ServiceResolver Resolver { get; set; } = new ServiceResolver(false);
     }
 
@@ -41,8 +59,8 @@ namespace PokemonGame.ViewModels.Store
     public enum Background
     {
         White,
-        Blue,
-        Red
+        Red,
+        Blue
     }
     public class BattleSession
     {
@@ -60,21 +78,33 @@ namespace PokemonGame.ViewModels.Store
         public PokemonTeam? ResolvedPlayerTeam { get; set; }
         public PokemonTeam? ResolvedBotTeam { get; set; }
     }
-    public class UserSettings
+    public class UserSettings:ViewModelBase
     {
         public TextSpeed textSpeed { get; set; } = TextSpeed.Mid;
         public bool AnimationOn { get; set; } = false;
-        public Background background { get; set; } = Background.White;
+        private Background _background = Background.White;
+        public Background background
+        {
+            get => _background;
+            set => SetProperty(ref _background, value);
+        }
         public bool ShowTypeEffect { get; set; } = false;
     }
     public static class SettingsMapper
     {
-        public static UserSettings ToUserSettings(BattlePlayerSettingsData data) => new()
+        public static void ApplyToUserSettings(BattlePlayerSettingsData data, UserSettings target)
         {
-            AnimationOn = data.AnimationsEnabled == 1,
-            textSpeed = (TextSpeed)(data.TextSpeedID - 1),
-            background = (Background)(data.BackgroundID - 1),
-            ShowTypeEffect = data.ShowTypeEffectiveness == 1
-        };
+            target.AnimationOn = data.AnimationsEnabled == 1;
+            target.ShowTypeEffect = data.ShowTypeEffectiveness == 1;
+
+            // Safely convert 1-based database integers to 0-based Enums
+            target.textSpeed = data.TextSpeedID > 0
+                ? (TextSpeed)(data.TextSpeedID - 1)
+                : TextSpeed.Slow;
+
+            target.background = data.BackgroundID > 0
+                ? (Background)(data.BackgroundID - 1)
+                : Background.White;
+        }
     }
 }

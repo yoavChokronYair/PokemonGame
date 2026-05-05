@@ -21,8 +21,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     {
         private readonly IProfileService _profileService;  // was: ProfileService _handler
         private readonly UserStore _userStore;
-
-        // ── Identity ──────────────────────────────────────────────
+        public UserSettings Settings => _userStore.Settings;  
+        
         private string _userName = string.Empty;
         public string UserName { get => _userName; set => SetProperty(ref _userName, value); }
 
@@ -65,28 +65,64 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public SettingOption SelectedTextSpeed
         {
             get => _selectedTextSpeed;
-            set { if (SetProperty(ref _selectedTextSpeed, value)) SaveSetting("TextSpeedID", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _selectedTextSpeed, value))
+                {
+                    SaveSetting("TextSpeedID", value.Id);
+                }
+            }
         }
 
         private SettingOption _selectedBattleScene;
         public SettingOption SelectedBattleScene
         {
             get => _selectedBattleScene;
-            set { if (SetProperty(ref _selectedBattleScene, value)) SaveSetting("AnimationsEnabled", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _selectedBattleScene, value))
+                {
+                    SaveSetting("AnimationsEnabled", value.Id);
+                }
+            }
         }
 
         private SettingOption _selectedBackground;
         public SettingOption SelectedBackground
         {
             get => _selectedBackground;
-            set { if (SetProperty(ref _selectedBackground, value)) SaveSetting("BackgroundID", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _selectedBackground, value))
+                {
+                    SaveSetting("BackgroundID", value.Id);
+                }
+            }
         }
 
         private SettingOption _showTypeEffectiveness;
         public SettingOption ShowTypeEffectiveness
         {
             get => _showTypeEffectiveness;
-            set { if (SetProperty(ref _showTypeEffectiveness, value)) SaveSetting("ShowTypeEffectiveness", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _showTypeEffectiveness, value))
+                {
+                    SaveSetting("ShowTypeEffectiveness", value.Id);
+                }
+            }
         }
 
         public ProfileViewModel(UserStore userStore)
@@ -113,19 +149,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             BattleSceneOptions.Add(new SettingOption { Id = 0, Name = "OFF" });
 
             BackgroundOptions.Clear();
-            BackgroundOptions.Add(new SettingOption { Id = 1, Name = "DEFAULT" });
-            BackgroundOptions.Add(new SettingOption { Id = 2, Name = "DARK" });
-            BackgroundOptions.Add(new SettingOption { Id = 3, Name = "CLASSIC" });
+            BackgroundOptions.Add(new SettingOption { Id = 1, Name = "White" });
+            BackgroundOptions.Add(new SettingOption { Id = 2, Name = "Red" });
+            BackgroundOptions.Add(new SettingOption { Id = 3, Name = "Blue" });
         }
 
         private void LoadProfileData()
         {
-            int bpid = _userStore.BattlePlayerID;
             var data = _profileService.GetFullProfileData(_userStore.BattlePlayerID);
-            SelectedTextSpeed = TextSpeedOptions.FirstOrDefault(o => o.Id == data.Settings.TextSpeedID);
-            SelectedBattleScene = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.AnimationsEnabled);
-            SelectedBackground = BackgroundOptions.FirstOrDefault(o => o.Id == data.Settings.BackgroundID);
-            ShowTypeEffectiveness = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.ShowTypeEffectiveness);
+
             // Identity
             UserName = data.Player?.Name ?? "Unknown";
 
@@ -135,27 +167,30 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             Wins1v1 = data.Stats.Wins1v1;
             CurrentStreak1v1 = data.Stats.CurrentStreak1v1;
             BestStreak1v1 = data.Stats.BestStreak1v1;
-
             CurrentElo2v2 = data.Stats.CurrentElo2v2;
             PeakElo2v2 = data.Stats.PeakElo2v2;
             Wins2v2 = data.Stats.Wins2v2;
             CurrentStreak2v2 = data.Stats.CurrentStreak2v2;
             BestStreak2v2 = data.Stats.BestStreak2v2;
 
-            // Settings - Match selection to DB IDs
-            SelectedTextSpeed = TextSpeedOptions.FirstOrDefault(o => o.Id == data.Settings.TextSpeedID);
-            SelectedBattleScene = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.AnimationsEnabled);
-            SelectedBackground = BackgroundOptions.FirstOrDefault(o => o.Id == data.Settings.BackgroundID);
-            ShowTypeEffectiveness = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.ShowTypeEffectiveness);
+            // Settings - set backing field directly to avoid triggering SaveSetting
+            _selectedTextSpeed = TextSpeedOptions.FirstOrDefault(o => o.Id == data.Settings.TextSpeedID);
+            _selectedBattleScene = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.AnimationsEnabled);
+            _selectedBackground = BackgroundOptions.FirstOrDefault(o => o.Id == data.Settings.BackgroundID);
+            _showTypeEffectiveness = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.ShowTypeEffectiveness);
+
+            // Notify UI after all are set
+            OnPropertyChanged(nameof(SelectedTextSpeed));
+            OnPropertyChanged(nameof(SelectedBattleScene));
+            OnPropertyChanged(nameof(SelectedBackground));
+            OnPropertyChanged(nameof(ShowTypeEffectiveness));
 
             // Teams
             UserTeams.Clear();
             foreach (var team in data.Teams) UserTeams.Add(team);
 
-            // Load visual for Favourite Team
             UpdateFavouriteTeamVisual(data.Stats.FaveTeamID);
         }
-
         private void UpdateFavouriteTeamVisual(int? faveTeamId)
         {
             if (!faveTeamId.HasValue || faveTeamId.Value <= 0)
@@ -195,13 +230,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             _profileService.UpdateSetting(_userStore.BattlePlayerID, columnName, value);
 
-            // Keep UserStore in sync
+            // Keep UserStore in sync safely
             switch (columnName)
             {
-                case "AnimationsEnabled": _userStore.Settings.AnimationOn = value == 1; break;
-                case "TextSpeedID": _userStore.Settings.textSpeed = (TextSpeed)(value - 1); break;
-                case "BackgroundID": _userStore.Settings.background = (Background)(value - 1); break;
-                case "ShowTypeEffectiveness": _userStore.Settings.ShowTypeEffect = value == 1; break;
+                case "AnimationsEnabled":
+                    _userStore.Settings.AnimationOn = value == 1;
+                    break;
+                case "ShowTypeEffectiveness":
+                    _userStore.Settings.ShowTypeEffect = value == 1;
+                    break;
+                case "TextSpeedID":
+                    _userStore.Settings.textSpeed = value > 0 ? (TextSpeed)(value - 1) : TextSpeed.Mid;
+                    break;
+                case "BackgroundID":
+                    _userStore.Settings.background = value > 0 ? (Background)(value - 1) : Background.White;
+                    break;
             }
         }
     }

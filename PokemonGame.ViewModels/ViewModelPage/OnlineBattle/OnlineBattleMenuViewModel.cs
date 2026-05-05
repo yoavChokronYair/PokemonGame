@@ -1,7 +1,6 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -11,6 +10,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     public class OnlineBattleMenuViewModel : ViewModelBase
     {
         private readonly UserStore _userStore;
+        public UserSettings Settings => _userStore.Settings;
+
         private readonly NavigationStore _rootNavigationStore;
         private readonly Func<BattleConnectorViewModel> _createBattleViewModel;
         private readonly ITeamService _teamService;

@@ -14,13 +14,12 @@ namespace PokemonGame
     public partial class App : Application
     {
         private readonly NavigationStore _navigationStore;
-        private readonly UserStore _userStore;
 
         public App()
         {
             _navigationStore = new NavigationStore();
-            _userStore = new UserStore();
-            _userStore.BattleSesion = new BattleSession();
+            UserStore.Instance.BattleSesion = new BattleSession();
+            UserStore.Instance.Settings = new UserSettings();
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -39,7 +38,7 @@ namespace PokemonGame
         private LogInViewModel CreateLogInViewModel()
         {
             return new LogInViewModel(
-                _userStore,
+                UserStore.Instance,
                 _navigationStore,
                 CreateSignUpViewModel,
                 CreateGameModeChooserViewModel
@@ -49,7 +48,7 @@ namespace PokemonGame
         private SignUpViewModel CreateSignUpViewModel()
         {
             return new SignUpViewModel(
-                _userStore,
+                UserStore.Instance,
                 _navigationStore,
                 CreateLogInViewModel,
                 CreateGameModeChooserViewModel
@@ -59,7 +58,7 @@ namespace PokemonGame
         private GameModeChooserViewModel CreateGameModeChooserViewModel()
         {
             return new GameModeChooserViewModel(
-                _userStore,
+                UserStore.Instance,
                 _navigationStore,
                 new DialogService(),
                 CreateOnlineBattleShellViewModel
@@ -111,42 +110,42 @@ namespace PokemonGame
         private OnlineBattleMenuViewModel GetOnlineBattleMenuViewModel()
         {
             if (_battleMenuViewModel == null)
-                _battleMenuViewModel = new OnlineBattleMenuViewModel(_userStore, _navigationStore, CreateBattleConnectorViewModel);
+                _battleMenuViewModel = new OnlineBattleMenuViewModel(UserStore.Instance, _navigationStore, CreateBattleConnectorViewModel);
             return _battleMenuViewModel;
         }
 
         private HistoryBattleViewModel GetHistoryViewModel()
         {
             if (_historyBattleViewModel == null)
-                _historyBattleViewModel = new HistoryBattleViewModel(_userStore);
+                _historyBattleViewModel = new HistoryBattleViewModel(UserStore.Instance);
             return _historyBattleViewModel;
         }
 
         private TeamBuilderViewModel GetTeamSelectPageViewModel()
         {
             if (_teamBuilderViewModel == null)
-                _teamBuilderViewModel = new TeamBuilderViewModel(_userStore);
+                _teamBuilderViewModel = new TeamBuilderViewModel(UserStore.Instance);
             return _teamBuilderViewModel;
         }
 
         private ProfileViewModel GetProfileViewModel()
         {
             if (_profileViewModel == null)
-                _profileViewModel = new ProfileViewModel(_userStore);
+                _profileViewModel = new ProfileViewModel(UserStore.Instance);
             return _profileViewModel;
         }
         private MoveSummaryViewModel CreateMoveSummaryViewModel()
         {
-            return new MoveSummaryViewModel(_userStore);
+            return new MoveSummaryViewModel(UserStore.Instance);
         }
         private BattleViewModel CreateBattleViewModel()
         {
-            return new BattleViewModel(_userStore);
+            return new BattleViewModel(UserStore.Instance);
         }
         private BattleConnectorViewModel CreateBattleConnectorViewModel()
         {
             return new BattleConnectorViewModel(
-                _userStore,
+                UserStore.Instance,
                 _navigationStore,
                 CreateBattleViewModel,
                 CreateOnlineBattleShellViewModel
