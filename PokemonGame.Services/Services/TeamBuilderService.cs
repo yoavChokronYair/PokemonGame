@@ -218,13 +218,6 @@ namespace PokemonGame.Services.Handler
 
         public void ReplaceTeamSlot(int teamId, int slotNumber, BattlerPokemon pokemon)
         {
-            var existing = _teamMembers.GetTeamMembers(teamId)
-                                       .FirstOrDefault(m => m.Slot_number == slotNumber);
-            if (existing != null)
-            {
-                _battlerPokemon.DeletePokemonInstance(existing.PokemonID);
-            }
-
             var newId = _battlerPokemon.CreatePokemonInstance(pokemon);
             _teamMembers.SetPokemonInSlot(teamId, newId, slotNumber);
         }
@@ -235,7 +228,6 @@ namespace PokemonGame.Services.Handler
 
             foreach (var m in _teamMembers.GetTeamMembers(teamId))
             {
-                _battlerPokemon.DeletePokemonInstance(m.PokemonID);
                 _teamMembers.RemovePokemonFromTeam(teamId, m.PokemonID);
             }
 
@@ -261,7 +253,6 @@ namespace PokemonGame.Services.Handler
         public void RemoveTeamSlot(int teamId, int pokemonId)
         {
             _teamMembers.RemovePokemonFromTeam(teamId, pokemonId);
-            _battlerPokemon.DeletePokemonInstance(pokemonId);
         }
 
         // ── Conversion helpers ────────────────────────────────────────────────

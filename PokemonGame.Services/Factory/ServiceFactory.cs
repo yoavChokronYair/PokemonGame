@@ -47,6 +47,7 @@ namespace PokemonGame.Services.Factory
         internal BreedingRepository BreedingRepository { get; }
         internal PokedexEntryRepository PokedexEntryRepository { get; }
         internal MoveLearnsetRepository MoveLearnsetRepository { get; }
+        internal BattleTeamSnapshotRepository BattleTeamSnapshotRepository { get; }
 
 
         // ── Constructor ───────────────────────────────────────────────────────
@@ -79,6 +80,7 @@ namespace PokemonGame.Services.Factory
             BreedingRepository = new BreedingRepository(db);
             PokedexEntryRepository = new PokedexEntryRepository(db);
             MoveLearnsetRepository = new MoveLearnsetRepository(db);
+            BattleTeamSnapshotRepository = new BattleTeamSnapshotRepository(db);
 
         }
 

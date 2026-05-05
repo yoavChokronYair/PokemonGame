@@ -15,6 +15,8 @@ namespace PokemonGame.Services.Handler
         private readonly PokemonRepository _pokedexRepo;
         private readonly ItemRepository _itemRepo;
         private readonly OnlinePlayerRepository _playerRepo;
+        private readonly BattleTeamSnapshotRepository _snapshotRepo;
+        private readonly TeamRepository _teamRepo;
 
         public LocalBattleHistoryService()
         {
@@ -26,12 +28,15 @@ namespace PokemonGame.Services.Handler
             _pokedexRepo = f.PokemonRepository;
             _itemRepo = f.ItemRepository;
             _playerRepo = f.OnlinePlayerRepository;
+            _snapshotRepo = f.BattleTeamSnapshotRepository;
+            _teamRepo = f.TeamRepository;
         }
 
         internal LocalBattleHistoryService(
             BattleRepository battleRepo, ParticipantRepository participantRepo,
             TeamMemberRepository teamMemberRepo, BattlerPokemonRepository battlerPokemonRepo,
-            PokemonRepository pokedexRepo, ItemRepository itemRepo, OnlinePlayerRepository playerRepo)
+            PokemonRepository pokedexRepo, ItemRepository itemRepo, OnlinePlayerRepository playerRepo,
+            BattleTeamSnapshotRepository snapshotRepo, TeamRepository teamRepo)
         {
             _battleRepo = battleRepo;
             _participantRepo = participantRepo;
@@ -40,6 +45,8 @@ namespace PokemonGame.Services.Handler
             _pokedexRepo = pokedexRepo;
             _itemRepo = itemRepo;
             _playerRepo = playerRepo;
+            _snapshotRepo = snapshotRepo;
+            _teamRepo = teamRepo;
         }
 
         public List<BattleTreeData> GetBattleHistoryDisplay(int battlePlayerID, string username)
@@ -67,8 +74,8 @@ namespace PokemonGame.Services.Handler
                     PlayerName = username,
                     OpponentName = opponentName,
                     IsPlayerWinner = playerPart?.IsWinner == 1,
-                    PlayerPokemon = GetFormattedPokemonList(playerPart?.TeamID),
-                    OpponentPokemon = GetFormattedPokemonList(opponentPart?.TeamID)
+                    PlayerPokemon = GetFormattedPokemonList(record.BattleID, playerPart?.BattlePlayerID),
+                    OpponentPokemon = GetFormattedPokemonList(record.BattleID, opponentPart?.BattlePlayerID)
                 });
             }
             return displayList;
@@ -76,19 +83,26 @@ namespace PokemonGame.Services.Handler
 
         public int SaveBattleRecord() => _battleRepo.CreateBattle();
 
-        public void SaveParticipant(BattleParticipantData participant) =>
+        public void SaveParticipant(BattleParticipantData participant)
+        {
             _participantRepo.SaveParticipant(participant);
 
-        private List<BattleHistoryPokemon> GetFormattedPokemonList(int? teamID)
+            // Look up the team for this battle player and snapshot it
+            var team = _teamRepo.GetTeamByBattlePlayer(participant.BattlePlayerID);
+            if (team != null)
+                _snapshotRepo.SaveSnapshot(participant.BattleID, participant.BattlePlayerID, team.Id);
+        }
+
+        private List<BattleHistoryPokemon> GetFormattedPokemonList(int battleId, int? battlePlayerId)
         {
-            if (teamID is null) return new List<BattleHistoryPokemon>();
+            if (battlePlayerId is null) return new List<BattleHistoryPokemon>();
 
             var results = new List<BattleHistoryPokemon>();
-            var slots = _teamMemberRepo.GetTeamMembers(teamID.Value);
+            var snapshots = _snapshotRepo.GetByBattleAndPlayer(battleId, battlePlayerId.Value);
 
-            foreach (var slot in slots)
+            foreach (var snapshot in snapshots)
             {
-                var instance = _battlerPokemonRepo.GetPokemonInstance(slot.PokemonID);
+                var instance = _battlerPokemonRepo.GetPokemonInstance(snapshot.PokemonID);
                 if (instance is null) continue;
 
                 var baseData = _pokedexRepo.GetPokemonById(instance.PokedexID);
@@ -108,6 +122,7 @@ namespace PokemonGame.Services.Handler
             return results;
         }
     }
+
     public class OnlineBattleHistoryService : IBattleHistoryService
     {
         private readonly LocalBattleHistoryService _local;
@@ -126,7 +141,6 @@ namespace PokemonGame.Services.Handler
             if (result is null)
                 return _local.GetBattleHistoryDisplay(battlePlayerId, username);
 
-            // Sync the player's battle data locally so offline is warm
             ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
 
             return _local.GetBattleHistoryDisplay(battlePlayerId, username);
