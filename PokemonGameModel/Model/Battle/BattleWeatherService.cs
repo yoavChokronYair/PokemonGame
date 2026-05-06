@@ -6,6 +6,7 @@
 
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Model.Battle
 {
@@ -57,13 +58,15 @@ namespace PokemonGame.Model.Model.Battle
         public bool IsWeatherActive(Weather weather) => CurrentWeather == weather && WeatherTurnsRemaining > 0;
         private void ApplyWeatherDamage(string source)
         {
+            if (SuppressWeather.IsWeatherSuppressed(_battle)) return;
+
             foreach (var p in new[] { _battle.Attacker, _battle.Defender })
             {
                 bool immune = source == "sandstorm"
                     ? p.HasType(PokemonType.Rock) || p.HasType(PokemonType.Steel) || p.HasType(PokemonType.Ground)
                     : p.HasType(PokemonType.Ice);
 
-                if (!immune)
+                if (!immune && !BlockIndirectDamage.IsActive(_battle, p))
                 {
                     int dmg = p.MaxHP / 16;
                     p.TakeDamage(dmg);

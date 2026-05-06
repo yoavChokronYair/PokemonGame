@@ -10,6 +10,7 @@ using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
@@ -88,7 +89,8 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                 TypeEffectivenessChartConst.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), Battle.Logger) *
                 RNGHelper.getCritModifier(Battle.Logger) *
                 RandomHelper.NextDouble(0.85, 1.0) *
-                GetHeldItemAndAbilityModifier(Battle, move, basePower);
+                GetHeldItemAndAbilityModifier(Battle, move, basePower) *
+                GenderRivalry.GetModifier(attacker, defender);
 
             double levelFactor = ((2.0 * attacker.Level) + 10) / 250;
 

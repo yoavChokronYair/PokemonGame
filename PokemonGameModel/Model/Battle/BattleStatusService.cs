@@ -7,6 +7,7 @@
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Model.Battle
 {
@@ -19,13 +20,13 @@ namespace PokemonGame.Model.Model.Battle
         public void ApplyEndOfTurnStatus(PokemonState pokemon)
         {
             var status = pokemon.PokemonStatusCondition();
+            bool magicGuard = BlockIndirectDamage.IsActive(null!, pokemon);
 
             switch (status)
             {
                 case StatusCondition.Sleep:
                     if (RandomHelper.Next(0, 3) == 0)
                     {
-                        pokemon.ApplyStatus(StatusCondition.None);
                         pokemon.ClearStatus();
                         _logger.Log($"{pokemon.Name} woke up!");
                     }
@@ -34,26 +35,35 @@ namespace PokemonGame.Model.Model.Battle
                 case StatusCondition.Freeze:
                     if (RandomHelper.Next(0, 5) == 0)
                     {
-                        pokemon.ApplyStatus(StatusCondition.None);
+                        pokemon.ClearStatus();
                         _logger.Log($"{pokemon.Name} thawed out!");
                     }
                     break;
 
                 case StatusCondition.Burn:
-                    pokemon.TakeDamage(pokemon.MaxHP / 8);
-                    _logger.Log($"{pokemon.Name} is hurt by its burn!");
+                    if (!magicGuard)
+                    {
+                        pokemon.TakeDamage(pokemon.MaxHP / 8);
+                        _logger.Log($"{pokemon.Name} is hurt by its burn!");
+                    }
                     break;
 
                 case StatusCondition.Poison:
-                    pokemon.TakeDamage(pokemon.MaxHP / 8);
-                    _logger.Log($"{pokemon.Name} is hurt by poison!");
+                    if (!magicGuard)
+                    {
+                        pokemon.TakeDamage(pokemon.MaxHP / 8);
+                        _logger.Log($"{pokemon.Name} is hurt by poison!");
+                    }
                     break;
 
                 case StatusCondition.Toxic:
-                    pokemon.ApplyToxicByOne();
-                    int damage = pokemon.MaxHP * pokemon.ToxicCounter / 16;
-                    pokemon.TakeDamage(damage);
-                    _logger.Log($"{pokemon.Name} is hurt by bad poison!");
+                    if (!magicGuard)
+                    {
+                        pokemon.ApplyToxicByOne();
+                        int damage = pokemon.MaxHP * pokemon.ToxicCounter / 16;
+                        pokemon.TakeDamage(damage);
+                        _logger.Log($"{pokemon.Name} is hurt by bad poison!");
+                    }
                     break;
             }
         }
