@@ -16,8 +16,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
     {
         // ── Config — set these to match your hosted server ────────────────────
         // REST base URL (HTTP port 5000)
-        private const string ServerHttpUrl = "http://localhost:5000";
-        private const string TcpHost = "localhost";
+        private const string ServerHttpUrl = "http://192.168.0.7:5000";
+        private const string TcpHost = "192.168.0.7";
         private const int TcpPort = 5001;
         // ─────────────────────────────────────────────────────────────────────
 
