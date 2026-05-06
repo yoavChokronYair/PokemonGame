@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using PokemonGame.Services.ApiClients;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Data.GameData.Pokemon;
-using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
-    public class ProfileService
+    public class LocalProfileService : IProfileService
     {
         private readonly OnlinePlayerRepository _playerRepo;
         private readonly BattlePlayerSettingsRepository _settingsRepo;
@@ -16,9 +15,9 @@ namespace PokemonGame.Services.Handler
         private readonly TeamMemberRepository _teamMemberRepo;
         private readonly BattlerPokemonRepository _battlerPokemonRepo;
         private readonly PokemonRepository _pokedexRepo;
-        public ProfileService()
+
+        public LocalProfileService()
         {
-            // Accessing repositories via your existing ServiceFactory pattern
             var factory = ServiceFactory.Instance;
             _playerRepo = factory.OnlinePlayerRepository;
             _settingsRepo = factory.BattlePlayerSettingsRepository;
@@ -29,69 +28,99 @@ namespace PokemonGame.Services.Handler
             _pokedexRepo = factory.PokemonRepository;
         }
 
-        /// <summary>
-        /// Gathers all data needed for the Profile View in one call.
-        /// </summary>
-        public (BattlePlayerData Player, BattlePlayerStatsData Stats, BattlePlayerSettingsData Settings, List<TeamData> Teams)
-            GetFullProfileData(int battlePlayerId)
+        internal LocalProfileService(OnlinePlayerRepository playerRepo, BattlePlayerSettingsRepository settingsRepo, BattlePlayerStatsRepository statsRepo, TeamRepository teamRepo, TeamMemberRepository teamMemberRepo, BattlerPokemonRepository battlerPokemonRepo, PokemonRepository pokedexRepo)
         {
-            var player = _playerRepo.LoadOnlinePlayerByID(battlePlayerId);
-            var stats = _statsRepo.GetStats(battlePlayerId);
-            var settings = _settingsRepo.GetSettings(battlePlayerId);
-            var teams = _teamRepo.GetTeamsByBattlePlayer(battlePlayerId);
-
-            return (player, stats, settings, teams);
+            _playerRepo = playerRepo;
+            _settingsRepo = settingsRepo;
+            _statsRepo = statsRepo;
+            _teamRepo = teamRepo;
+            _teamMemberRepo = teamMemberRepo;
+            _battlerPokemonRepo = battlerPokemonRepo;
+            _pokedexRepo = pokedexRepo;
         }
 
-        /// <summary>
-        /// Specifically fetches the favorite team details based on the stats table ID.
-        /// </summary>
-        public TeamData? GetFavoriteTeam(int battlePlayerId)
+        public ProfileDataTree GetFullProfileData(int battlePlayerId)
         {
-            var stats = _statsRepo.GetStats(battlePlayerId);
-            if (stats.FaveTeamID.HasValue)
+            return new ProfileDataTree
             {
-                return _teamRepo.GetTeamById(stats.FaveTeamID.Value);
-            }
-            return null;
+                Player = _playerRepo.LoadOnlinePlayerByID(battlePlayerId),
+                Stats = _statsRepo.GetStats(battlePlayerId),
+                Settings = _settingsRepo.GetSettings(battlePlayerId),
+                Teams = _teamRepo.GetTeamsByBattlePlayer(battlePlayerId)
+            };
         }
 
-        /// <summary>
-        /// Updates a single setting via the Settings Repository.
-        /// </summary>
         public void UpdateSetting(int battlePlayerId, string columnName, int value)
         {
             _settingsRepo.SaveSetting(battlePlayerId, columnName, value);
         }
-        public List<BattleHistoryPokemon> GetTeamFormattedList(int teamID)
+
+        public void SetFavoriteTeam(int battlePlayerId, int? teamId)
+        {
+            _statsRepo.SaveFaveTeam(battlePlayerId, teamId);
+        }
+
+        public List<BattleHistoryPokemon> GetTeamFormattedList(int teamId)
         {
             var results = new List<BattleHistoryPokemon>();
-            var slots = _teamMemberRepo.GetTeamMembers(teamID);
+            var slots = _teamMemberRepo.GetTeamMembers(teamId);
 
             foreach (var slot in slots)
             {
                 var instance = _battlerPokemonRepo.GetPokemonInstance(slot.PokemonID);
-                if (instance == null) continue;
+                if (instance is null) continue;
 
                 var baseData = _pokedexRepo.GetPokemonById(instance.PokedexID);
-                if (baseData == null) continue;
+                if (baseData is null) continue;
 
                 results.Add(new BattleHistoryPokemon
                 {
                     PokedexId = baseData.PokedexID,
-                    Name = baseData.Name,
-                    // Add other properties if needed for the display format
+                    Name = baseData.Name
                 });
             }
+
             return results;
         }
-        /// <summary>
-        /// Sets the favorite team in the stats table.
-        /// </summary>
-        public void SetFavoriteTeam(int battlePlayerId, int teamId)
-        {
+    }
+    public class OnlineProfileService : IProfileService
+    {
+        private readonly LocalProfileService _local;
+        private readonly IProfileApiClient _api;
 
-            _statsRepo.SaveFaveTeam(battlePlayerId, teamId);
+        public OnlineProfileService(IProfileApiClient api)
+        {
+            _local = new LocalProfileService();
+            _api = api;
+        }
+
+        public ProfileDataTree GetFullProfileData(int battlePlayerId)
+        {
+            var dto = _api.GetFullProfile(battlePlayerId);
+
+            if (dto is null)
+                return _local.GetFullProfileData(battlePlayerId);
+
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+
+            return _local.GetFullProfileData(battlePlayerId);
+        }
+
+        public void UpdateSetting(int battlePlayerId, string columnName, int value)
+        {
+            _api.UpdateSetting(battlePlayerId, columnName, value);
+            _local.UpdateSetting(battlePlayerId, columnName, value);
+        }
+
+        public void SetFavoriteTeam(int battlePlayerId, int? teamId)
+        {
+            _api.SetFavoriteTeam(battlePlayerId, teamId);
+            _local.SetFavoriteTeam(battlePlayerId, teamId);
+        }
+
+        public List<BattleHistoryPokemon> GetTeamFormattedList(int teamId)
+        {
+            return _local.GetTeamFormattedList(teamId);
         }
     }
 }

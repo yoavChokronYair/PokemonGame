@@ -15,6 +15,7 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter" />
+        <converters:BackgroundToBackgroundTypeConverter x:Key="BgConverter" />
     </Page.Resources>
 
     <StackPanel Margin="24" VerticalAlignment="Center">
@@ -27,7 +28,7 @@
             <!--  CARD 1: Mode  -->
             <controls:BoardBackground
                 Margin="0,0,8,0"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="8" VerticalAlignment="Top">
                     <TextBlock
@@ -53,7 +54,7 @@
             <!--  CARD 2: Format  -->
             <controls:BoardBackground
                 Margin="4,0,4,0"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="8" VerticalAlignment="Top">
                     <TextBlock
@@ -79,7 +80,7 @@
             <!--  CARD 3: Game Mode  -->
             <controls:BoardBackground
                 Margin="6,0,0,0"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="8" VerticalAlignment="Top">
                     <TextBlock
@@ -119,7 +120,7 @@
             Margin="0,0,0,16"
             HorizontalAlignment="Center"
             Orientation="Horizontal">
-            <controls:BoardBackground BackgroundType="{x:Static controls:BackgroundType.White}" BorderThickness="0">
+            <controls:BoardBackground BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}" BorderThickness="0">
                 <StackPanel Margin="10,4" Orientation="Horizontal">
                     <TextBlock
                         FontSize="12"
@@ -140,7 +141,7 @@
             <controls:BoardBackground
                 Margin="0,0,16,0"
                 HorizontalAlignment="Left"
-                BackgroundType="{x:Static controls:BackgroundType.White}"
+                BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}"
                 BorderThickness="0">
                 <StackPanel Margin="10,6">
                     <TextBlock
@@ -164,7 +165,7 @@
             </controls:BoardBackground>
 
             <!--  PLAY BUTTON  -->
-            <controls:BoardBackground BackgroundType="{x:Static controls:BackgroundType.White}" BorderThickness="0">
+            <controls:BoardBackground BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}" BorderThickness="0">
                 <Button
                     Width="200"
                     Height="40"

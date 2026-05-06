@@ -33,9 +33,7 @@
             <DataTemplate DataType="{x:Type signinvm:SignUpViewModel}">
                 <local2:SignUp />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type online:OnlineServerBattleViewModel}">
-                <onlinePages:OnlineBattlePage />
-            </DataTemplate>
+
             <DataTemplate DataType="{x:Type signinvm:GameModeChooserViewModel}">
                 <local2:GameModeChooser />
             </DataTemplate>

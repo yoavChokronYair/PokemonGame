@@ -1,14 +1,13 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net.Sockets;
 using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Model.Enums;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Services.Data.GameData.Pokemon;
-using PokemonGame.Services.Handler;
-using PokemonGame.Services.Network.Packets;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
+using PokemonGame.ViewModels.Translators;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
-using PokemonGame.ViewModels.ViewModelPage.Online;
+
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
@@ -16,7 +15,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     {
         private readonly UserStore _userStore;
         private readonly NavigationStore _rootNavigationStore;
-        private readonly TeamBuilderService _teamBuilderService;
+        private readonly ITeamService _teamService;
         private readonly Func<BattleViewModel> _createBattleViewModel;
 
         public int RequiredCount { get; }
@@ -77,19 +76,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public RelayCommand<ConnectorSlotEntry> ToggleCommand { get; }
         public RelayCommand ConfirmCommand { get; }
         public RelayCommand BackCommand { get; }
-        private readonly Func<OnlineServerBattleViewModel> _createOnlineBattleViewModel;
 
         public BattleConnectorViewModel(
             UserStore userStore,
             NavigationStore rootNavigationStore,
             Func<BattleViewModel> createBattleViewModel,
-            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel,
-            Func<OnlineServerBattleViewModel> createOnlineBattleViewModel)  // ADD
+            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel)
         {
-            _createOnlineBattleViewModel = createOnlineBattleViewModel;
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
-            _teamBuilderService = new TeamBuilderService();
+            _teamService = userStore.Resolver.GetTeamService();
             _createBattleViewModel = createBattleViewModel;
 
             var session = _userStore.BattleSesion;
@@ -102,10 +98,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 _ => 6
             };
 
-            // Load player team members
             if (session.SelectedTeamId.HasValue)
             {
-                var members = _teamBuilderService.GetTeamMembers(session.SelectedTeamId.Value);
+                var members = _teamService.GetTeamMembers(session.SelectedTeamId.Value);
                 foreach (var m in members)
                 {
                     var slot = new ConnectorSlotEntry(m);
@@ -120,18 +115,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 }
             }
 
-            // Generate rival team preview
-            var service = new PokemonService();
+            var service = _userStore.Resolver.GetPokemonService();
             var rivalResults = service.GenerateRandomTeam(count: RequiredCount, level: 50);
 
-            // Save rival IDs to session for BattleViewModel to use
             session.RivalPokemonIds = rivalResults.Select(r => r.Battler.PokedexID).ToList();
 
-            // Populate rival slots with real pokemon
             foreach (var r in rivalResults)
                 RivalSlots.Add(new ConnectorSlotEntry(r.Battler.PokedexID, r.Battler.Name));
 
-            // Pad to 6 slots with empty placeholders for UI symmetry
             for (int i = RivalSlots.Count; i < 6; i++)
                 RivalSlots.Add(new ConnectorSlotEntry());
 
@@ -145,20 +136,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                     slot.IsSelected = false;
                     slot.PickOrder = null;
 
-                    // Shift down all slots with higher order
                     foreach (var s in TeamSlots.Where(s => s.PickOrder > removedOrder))
                         s.PickOrder--;
                 }
                 else if (SelectedCount < RequiredCount)
                 {
                     slot.IsSelected = true;
-                    slot.PickOrder = SelectedCount; // SelectedCount already updated
+                    slot.PickOrder = SelectedCount;
                 }
             });
 
             ConfirmCommand = new RelayCommand(() =>
             {
-                // 1. Sync the session data from the UI state
                 var selectedIds = TeamSlots
                     .Where(s => s.IsSelected)
                     .OrderBy(s => s.PickOrder)
@@ -168,45 +157,45 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 _userStore.BattleSesion.SelectedPokemonIds = selectedIds;
                 _userStore.BattleSesion.BotDifficulty = BotDifficulty;
 
-                if (_userStore.BattleSesion.IsOnlineMode)
+                // ── Build and store player team ───────────────────────────────────
+                var translator = new TeamTranslator(_userStore);
+                var fullTeam = translator.LoadTeamByID(_userStore.BattlePlayerID);
+
+                List<PokemonState> playerRoster;
+
+                if (session.BattleMode == BattleMode.fullTeam || selectedIds.Count == 0)
                 {
-                    IsSearching = true;
-
-                    // 2. Build the packet using UserStore data
-                    var packet = new FindMatchPacket
-                    {
-                        PlayerId = _userStore.BattlePlayerID,
-                        PlayerName = _userStore.Username,
-                        BattleMode = _userStore.BattleSesion.BattleMode.ToString(),
-                        IsOneVOne = _userStore.BattleSesion.IsOneVOne,
-                        TeamId = _userStore.BattleSesion.SelectedTeamId ?? 0,
-                        // Mapping the list of IDs to the expected DTO list
-                        Team = selectedIds.Select(id => new BattlePokemonDto { PokedexId = id }).ToList()
-                    };
-
-                    // 3. Setup the Navigation Callback
-                    // Use a local variable to prevent multiple subscriptions/memory leaks
-                    Action<object> matchHandler = null!;
-                    matchHandler = _ =>
-                    {
-                        _userStore.OnlineBattleService!.OnMatchFound -= matchHandler;
-
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            _rootNavigationStore.CurrentViewModel = _createOnlineBattleViewModel();
-                        });
-                    };
-
-                    _userStore.OnlineBattleService!.OnMatchFound += matchHandler;
-
-                    // 4. Fire the async request
-                    _ = _userStore.OnlineBattleService!.FindMatchAsync(packet);
+                    playerRoster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
+                        .Select(i => fullTeam.GetPokemonAt(i))
+                        .ToList();
                 }
                 else
                 {
-                    // Offline flow
-                    _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+                    playerRoster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
+                        .Select(i => fullTeam.GetPokemonAt(i))
+                        .Where(p => selectedIds.Contains(p.PokedexId))
+                        .ToList();
                 }
+
+                while (playerRoster.Count < 6)
+                    playerRoster.Add(fullTeam.GetPokemonAt(0));
+
+                _userStore.BattleSesion.ResolvedPlayerTeam = PokemonTeam.Create(playerRoster);
+
+                // ── Build and store bot team ──────────────────────────────────────
+                var rivalRoster = session.RivalPokemonIds
+                    .Select(id => translator.TranslateToDomain(
+                        rivalResults.First(r => r.Battler.PokedexID == id)))
+                    .ToList();
+
+                while (rivalRoster.Count < 6)
+                    rivalRoster.Add(rivalRoster[0]);
+
+                _userStore.BattleSesion.ResolvedBotTeam = PokemonTeam.Create(rivalRoster);
+
+                // ── Navigate ──────────────────────────────────────────────────────
+                _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+
             }, () => CanConfirm);
 
             BackCommand = new RelayCommand(() =>

@@ -1,10 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.VisualStudio.Settings.Telemetry;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelUserControl;
@@ -21,10 +19,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
     }
     public class ProfileViewModel : ViewModelBase
     {
-        private readonly ProfileService _handler;
+        private readonly IProfileService _profileService;  // was: ProfileService _handler
         private readonly UserStore _userStore;
-
-        // ── Identity ──────────────────────────────────────────────
+        public UserSettings Settings => _userStore.Settings;  
+        
+        private string _displayName = string.Empty;
+        public string DisplayName { get => _displayName; set => SetProperty(ref _displayName, value); }
         private string _userName = string.Empty;
         public string UserName { get => _userName; set => SetProperty(ref _userName, value); }
 
@@ -67,34 +67,71 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public SettingOption SelectedTextSpeed
         {
             get => _selectedTextSpeed;
-            set { if (SetProperty(ref _selectedTextSpeed, value)) SaveSetting("TextSpeedID", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _selectedTextSpeed, value))
+                {
+                    SaveSetting("TextSpeedID", value.Id);
+                }
+            }
         }
 
         private SettingOption _selectedBattleScene;
         public SettingOption SelectedBattleScene
         {
             get => _selectedBattleScene;
-            set { if (SetProperty(ref _selectedBattleScene, value)) SaveSetting("AnimationsEnabled", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _selectedBattleScene, value))
+                {
+                    SaveSetting("AnimationsEnabled", value.Id);
+                }
+            }
         }
 
         private SettingOption _selectedBackground;
         public SettingOption SelectedBackground
         {
             get => _selectedBackground;
-            set { if (SetProperty(ref _selectedBackground, value)) SaveSetting("BackgroundID", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _selectedBackground, value))
+                {
+                    SaveSetting("BackgroundID", value.Id);
+                }
+            }
         }
 
         private SettingOption _showTypeEffectiveness;
         public SettingOption ShowTypeEffectiveness
         {
             get => _showTypeEffectiveness;
-            set { if (SetProperty(ref _showTypeEffectiveness, value)) SaveSetting("ShowTypeEffectiveness", value?.Id ?? 0); }
+            set
+            {
+                // SAFEGUARD: Ignore null values pushed during UI Unload
+                if (value == null) return;
+
+                if (SetProperty(ref _showTypeEffectiveness, value))
+                {
+                    SaveSetting("ShowTypeEffectiveness", value.Id);
+                }
+            }
         }
-       
+
         public ProfileViewModel(UserStore userStore)
         {
+            _profileService = userStore.Resolver.GetProfileService();
             _userStore = userStore;
-            _handler = new ProfileService();
+
 
             SetFavouriteTeamCommand = new RelayCommand(OnSetFavouriteTeam);
 
@@ -114,18 +151,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             BattleSceneOptions.Add(new SettingOption { Id = 0, Name = "OFF" });
 
             BackgroundOptions.Clear();
-            BackgroundOptions.Add(new SettingOption { Id = 1, Name = "DEFAULT" });
-            BackgroundOptions.Add(new SettingOption { Id = 2, Name = "DARK" });
-            BackgroundOptions.Add(new SettingOption { Id = 3, Name = "CLASSIC" });
+            BackgroundOptions.Add(new SettingOption { Id = 1, Name = "White" });
+            BackgroundOptions.Add(new SettingOption { Id = 2, Name = "Red" });
+            BackgroundOptions.Add(new SettingOption { Id = 3, Name = "Blue" });
         }
 
         private void LoadProfileData()
         {
-            int bpid = _userStore.BattlePlayerID;
-            var data = _handler.GetFullProfileData(bpid);
+            var data = _profileService.GetFullProfileData(_userStore.BattlePlayerID);
 
             // Identity
-            UserName = data.Player?.Name ?? "Unknown";
+            DisplayName = data.Player?.Name ?? "Unknown";
+            UserName = _userStore.Username; 
 
             // Stats
             CurrentElo1v1 = data.Stats.CurrentElo1v1;
@@ -133,27 +170,30 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             Wins1v1 = data.Stats.Wins1v1;
             CurrentStreak1v1 = data.Stats.CurrentStreak1v1;
             BestStreak1v1 = data.Stats.BestStreak1v1;
-
             CurrentElo2v2 = data.Stats.CurrentElo2v2;
             PeakElo2v2 = data.Stats.PeakElo2v2;
             Wins2v2 = data.Stats.Wins2v2;
             CurrentStreak2v2 = data.Stats.CurrentStreak2v2;
             BestStreak2v2 = data.Stats.BestStreak2v2;
 
-            // Settings - Match selection to DB IDs
-            SelectedTextSpeed = TextSpeedOptions.FirstOrDefault(o => o.Id == data.Settings.TextSpeedID);
-            SelectedBattleScene = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.AnimationsEnabled);
-            SelectedBackground = BackgroundOptions.FirstOrDefault(o => o.Id == data.Settings.BackgroundID);
-            ShowTypeEffectiveness = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.ShowTypeEffectiveness);
+            // Settings - set backing field directly to avoid triggering SaveSetting
+            _selectedTextSpeed = TextSpeedOptions.FirstOrDefault(o => o.Id == data.Settings.TextSpeedID);
+            _selectedBattleScene = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.AnimationsEnabled);
+            _selectedBackground = BackgroundOptions.FirstOrDefault(o => o.Id == data.Settings.BackgroundID);
+            _showTypeEffectiveness = BattleSceneOptions.FirstOrDefault(o => o.Id == data.Settings.ShowTypeEffectiveness);
+
+            // Notify UI after all are set
+            OnPropertyChanged(nameof(SelectedTextSpeed));
+            OnPropertyChanged(nameof(SelectedBattleScene));
+            OnPropertyChanged(nameof(SelectedBackground));
+            OnPropertyChanged(nameof(ShowTypeEffectiveness));
 
             // Teams
             UserTeams.Clear();
             foreach (var team in data.Teams) UserTeams.Add(team);
 
-            // Load visual for Favourite Team
             UpdateFavouriteTeamVisual(data.Stats.FaveTeamID);
         }
-
         private void UpdateFavouriteTeamVisual(int? faveTeamId)
         {
             if (!faveTeamId.HasValue || faveTeamId.Value <= 0)
@@ -163,7 +203,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             }
 
             // 1. Get the list of formatted pokemon (BattleHistoryPokemon objects)
-            var teamPokemon = _handler.GetTeamFormattedList(faveTeamId.Value);
+            var teamPokemon = _profileService.GetTeamFormattedList(faveTeamId.Value);
 
             // 2. Map to TeamSlotDisplayEntry format used by your Team ViewModels
             var slots = teamPokemon.Select(p => new TeamSlotDisplayEntry
@@ -182,7 +222,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             if (SelectedTeam == null) return;
 
             // 1. Tell the service to update the FaveTeamID in the BattlePlayerStats table
-            _handler.SetFavoriteTeam(_userStore.BattlePlayerID, SelectedTeam.Id);
+            _profileService.SetFavoriteTeam(_userStore.BattlePlayerID, SelectedTeam.Id);
 
             // 2. Update the visual slots in the FavouriteTeam view model
             // This calls the repo/logic to refresh the actual pokemon icons shown
@@ -191,7 +231,24 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private void SaveSetting(string columnName, int value)
         {
-            _handler.UpdateSetting(_userStore.BattlePlayerID, columnName, value);
+            _profileService.UpdateSetting(_userStore.BattlePlayerID, columnName, value);
+
+            // Keep UserStore in sync safely
+            switch (columnName)
+            {
+                case "AnimationsEnabled":
+                    _userStore.Settings.AnimationOn = value == 1;
+                    break;
+                case "ShowTypeEffectiveness":
+                    _userStore.Settings.ShowTypeEffect = value == 1;
+                    break;
+                case "TextSpeedID":
+                    _userStore.Settings.textSpeed = value > 0 ? (TextSpeed)(value - 1) : TextSpeed.Mid;
+                    break;
+                case "BackgroundID":
+                    _userStore.Settings.background = value > 0 ? (Background)(value - 1) : Background.White;
+                    break;
+            }
         }
     }
 }

@@ -1,44 +1,46 @@
-﻿using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Data.GameData.User;
+﻿using PokemonGame.Services.ApiClients;
+using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.Repositories;
-using PokemonGame.Services.Data.Repositories.PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
-    public class BattleHistoryService
+    public class LocalBattleHistoryService : IBattleHistoryService
     {
         private readonly BattleRepository _battleRepo;
         private readonly ParticipantRepository _participantRepo;
-        private readonly TeamMemberRepository _teamMemberRepo;
         private readonly BattlerPokemonRepository _battlerPokemonRepo;
         private readonly PokemonRepository _pokedexRepo;
         private readonly ItemRepository _itemRepo;
         private readonly OnlinePlayerRepository _playerRepo;
+        private readonly BattleTeamSnapshotRepository _snapshotRepo;
 
-        public BattleHistoryService()
+        public LocalBattleHistoryService()
         {
             var f = ServiceFactory.Instance;
             _battleRepo = f.BattleRepository;
             _participantRepo = f.ParticipantRepository;
-            _teamMemberRepo = f.TeamMemberRepository;
             _battlerPokemonRepo = f.BattlerPokemonRepository;
             _pokedexRepo = f.PokemonRepository;
             _itemRepo = f.ItemRepository;
             _playerRepo = f.OnlinePlayerRepository;
+            _snapshotRepo = f.BattleTeamSnapshotRepository;
         }
-        internal BattleHistoryService(
+
+        internal LocalBattleHistoryService(
             BattleRepository battleRepo, ParticipantRepository participantRepo,
             TeamMemberRepository teamMemberRepo, BattlerPokemonRepository battlerPokemonRepo,
-            PokemonRepository pokedexRepo, ItemRepository itemRepo, OnlinePlayerRepository playerRepo)
+            PokemonRepository pokedexRepo, ItemRepository itemRepo, OnlinePlayerRepository playerRepo,
+            BattleTeamSnapshotRepository snapshotRepo)
         {
             _battleRepo = battleRepo;
             _participantRepo = participantRepo;
-            _teamMemberRepo = teamMemberRepo;
             _battlerPokemonRepo = battlerPokemonRepo;
             _pokedexRepo = pokedexRepo;
             _itemRepo = itemRepo;
             _playerRepo = playerRepo;
+            _snapshotRepo = snapshotRepo;
         }
 
         public List<BattleTreeData> GetBattleHistoryDisplay(int battlePlayerID, string username)
@@ -52,11 +54,9 @@ namespace PokemonGame.Services.Handler
                 var playerPart = participants.FirstOrDefault(p => p.BattlePlayerID == battlePlayerID);
                 var opponentPart = participants.FirstOrDefault(p => p.BattlePlayerID != battlePlayerID);
 
-                // Fetch actual name from the DB instead of using a placeholder
                 string opponentName = "Unknown Opponent";
                 if (opponentPart != null)
                 {
-                    // Use your PlayerRepository here
                     var oppData = _playerRepo.LoadOnlinePlayerByID(opponentPart.BattlePlayerID);
                     opponentName = oppData?.Name ?? $"Opponent #{opponentPart.BattlePlayerID}";
                 }
@@ -66,29 +66,32 @@ namespace PokemonGame.Services.Handler
                     BattleID = record.BattleID,
                     BattleDate = record.BattleDate,
                     PlayerName = username,
-                    OpponentName = opponentName, // Now shows the actual name
+                    OpponentName = opponentName,
                     IsPlayerWinner = playerPart?.IsWinner == 1,
-                    PlayerPokemon = GetFormattedPokemonList(playerPart?.TeamID),
-                    OpponentPokemon = GetFormattedPokemonList(opponentPart?.TeamID)
+                    PlayerPokemon = GetFormattedPokemonList(record.BattleID, playerPart?.BattlePlayerID),
+                    OpponentPokemon = GetFormattedPokemonList(record.BattleID, opponentPart?.BattlePlayerID)
                 });
             }
             return displayList;
         }
 
-        private List<BattleHistoryPokemon> GetFormattedPokemonList(int? teamID)
+        public int SaveBattleRecord() => _battleRepo.CreateBattle();
+
+
+        private List<BattleHistoryPokemon> GetFormattedPokemonList(int battleId, int? battlePlayerId)
         {
-            if (teamID == null) return new List<BattleHistoryPokemon>();
+            if (battlePlayerId is null) return new List<BattleHistoryPokemon>();
 
             var results = new List<BattleHistoryPokemon>();
-            var slots = _teamMemberRepo.GetTeamMembers(teamID.Value);
+            var snapshots = _snapshotRepo.GetByBattleAndPlayer(battleId, battlePlayerId.Value);
 
-            foreach (var slot in slots)
+            foreach (var snapshot in snapshots)
             {
-                var instance = _battlerPokemonRepo.GetPokemonInstance(slot.PokemonID);
-                if (instance == null) continue;
+                var instance = _battlerPokemonRepo.GetPokemonInstance(snapshot.PokemonID);
+                if (instance is null) continue;
 
                 var baseData = _pokedexRepo.GetPokemonById(instance.PokedexID);
-                if (baseData == null) continue;
+                if (baseData is null) continue;
 
                 results.Add(new BattleHistoryPokemon
                 {
@@ -96,20 +99,48 @@ namespace PokemonGame.Services.Handler
                     Name = baseData.Name,
                     Type1 = baseData.Type1,
                     Type2 = baseData.Type2,
-                    ItemName = instance.ItemID.HasValue ?
-                               (_itemRepo.GetById(instance.ItemID.Value)?.Name ?? "Unknown Item")
-                               : "None"
+                    ItemName = instance.ItemID.HasValue
+                                ? (_itemRepo.GetById(instance.ItemID.Value)?.Name ?? "Unknown Item")
+                                : "None"
                 });
             }
             return results;
         }
+    }
+
+    public class OnlineBattleHistoryService : IBattleHistoryService
+    {
+        private readonly LocalBattleHistoryService _local;
+        private readonly IBattleHistoryApiClient _api;
+
+        public OnlineBattleHistoryService(IBattleHistoryApiClient api)
+        {
+            _local = new LocalBattleHistoryService();
+            _api = api;
+        }
+
+        public List<BattleTreeData> GetBattleHistoryDisplay(int battlePlayerId, string username)
+        {
+            var result = _api.GetBattleHistory(battlePlayerId, username);
+
+            if (result is null)
+                return _local.GetBattleHistoryDisplay(battlePlayerId, username);
+
+            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+
+            return _local.GetBattleHistoryDisplay(battlePlayerId, username);
+        }
+
         public int SaveBattleRecord()
         {
-            return _battleRepo.CreateBattle();
+            var battleId = _api.CreateBattle();
+
+            if (battleId is null)
+                return _local.SaveBattleRecord();
+
+            return battleId.Value;
         }
-        public void SaveParticipant(BattleParticipantData participant)
-        {
-            _participantRepo.SaveParticipant(participant);
-        }
+
+       
     }
 }

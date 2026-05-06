@@ -30,5 +30,11 @@ namespace PokemonGame.Services.Data.Repositories
                 ORDER BY b.BattleDate DESC",
                 new { bpid = battlePlayerID }).ToList();
         }
+        public void Upsert(BattleRecordData r)
+        {
+            _db.Execute(
+                "INSERT OR REPLACE INTO Battle (BattleID, BattleDate) VALUES (@id, @date)",
+                new { id = r.BattleID, date = r.BattleDate });
+        }
     }
 }

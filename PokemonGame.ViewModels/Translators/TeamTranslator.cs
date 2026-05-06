@@ -1,8 +1,7 @@
-﻿using PokemonGame.Model.Domain.Item;
-using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Model.Interface;
+﻿using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Model.Managers;
-using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
+using PokemonGame.ViewModels.Store;
 
 namespace PokemonGame.ViewModels.Translators
 {
@@ -14,12 +13,12 @@ namespace PokemonGame.ViewModels.Translators
         private readonly ItemTranslator _itemTranslator;
         private readonly TeamCreationManager _teamCreator;
 
-        public TeamTranslator()
+        public TeamTranslator(UserStore userStore)
         {
             _moveTranslator = new MoveTranslator();
-            _abilityTranslator = new AbilityTranslator(new AbilityService(), _moveTranslator);
-            _itemTranslator = new ItemTranslator(new ItemService(), _moveTranslator);
-            _pokemonService = new PokemonService();
+            _abilityTranslator = new AbilityTranslator();
+            _itemTranslator = new ItemTranslator();
+            _pokemonService = userStore.Resolver.GetPokemonService();
             _teamCreator = new TeamCreationManager();
         }
 

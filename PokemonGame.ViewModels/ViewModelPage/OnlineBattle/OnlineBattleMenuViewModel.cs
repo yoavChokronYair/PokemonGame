@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
-using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
-using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
-    public class OnlineBattleMenuViewModel : ViewModelBase
+    public class OnlineBattleMenuViewModel : ViewModelBase,IDisposable
     {
         private readonly UserStore _userStore;
+        public UserSettings Settings => _userStore.Settings;
+
         private readonly NavigationStore _rootNavigationStore;
         private readonly Func<BattleConnectorViewModel> _createBattleViewModel;
-        private readonly TeamBuilderService _teamBuilderService; // inject this
+        private readonly ITeamService _teamService;
 
         private bool _isOnline = true;
         public bool IsOnline
@@ -103,15 +103,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public ICommand PlayCommand { get; }
 
         public OnlineBattleMenuViewModel(
-            UserStore userStore,
-            NavigationStore rootNavigationStore,
-            Func<BattleConnectorViewModel> createBattleConnectorViewModel) // add this param
+    UserStore userStore,
+    NavigationStore rootNavigationStore,
+    Func<BattleConnectorViewModel> createBattleConnectorViewModel)
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
             _createBattleViewModel = createBattleConnectorViewModel;
-            _teamBuilderService = new TeamBuilderService();
+            _teamService = userStore.Resolver.GetTeamService();
+
             RefreshSavedTeams();
+
+            // Subscribe to navigation changes
+            _rootNavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+
             PlayCommand = new RelayCommand(() =>
             {
                 userStore.BattleSesion.IsOnlineMode = IsOnline;
@@ -121,14 +126,35 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                                                      : BattleMode.TwoThirdsTeam;
                 userStore.BattleSesion.SelectedTeamId = SelectedTeam?.Id;
                 _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
-
             });
+        }
+
+        private void OnCurrentViewModelChanged()
+        {
+            // Check if the newly navigated-to page is of this type
+            if (_rootNavigationStore.CurrentViewModel is OnlineBattleMenuViewModel)
+            {
+                RefreshSavedTeams();
+            }
         }
 
         private void RefreshSavedTeams()
         {
-            SavedTeams = _teamBuilderService.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
-            SelectedTeam = SavedTeams.FirstOrDefault();
+            // Keep a reference to the ID of the team they had selected
+            int? previouslySelectedId = SelectedTeam?.Id;
+
+            SavedTeams = _teamService.GetTeamsByBattlePlayer(_userStore.BattlePlayerID);
+
+            // Try to restore their previous selection if it still exists in the refreshed list
+            var restoredSelection = SavedTeams.FirstOrDefault(t => t.Id == previouslySelectedId);
+
+            // Default to the first team in the list if the previously selected team is gone
+            SelectedTeam = restoredSelection ?? SavedTeams.FirstOrDefault();
+        }
+        public void Dispose()
+        {
+            // Clean up event handlers to prevent memory leaks when the VM is destroyed
+            _rootNavigationStore.CurrentViewModelChanged -= OnCurrentViewModelChanged;
         }
     }
 }

@@ -1,17 +1,12 @@
 ﻿using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
-    public interface IMoveService
+    public class LocalMoveService : IMoveService
     {
-        MoveTree? GetMove(string name);
-    }
-
-    public class MoveService : IMoveService
-    {
-        // ── Repositories ─────────────────────────────────────────────────────────
         private readonly MoveRepository _moves;
         private readonly AttemptRepository _attempts;
         private readonly CascadeStepRepository _cascadeSteps;
@@ -22,12 +17,11 @@ namespace PokemonGame.Services.Handler
         private readonly WeightedEntryRepository _weightedEntries;
         private readonly ConditionRepository _conditions;
 
-        // ── Cycle guards (reset per GetMove call) ────────────────────────────────
         private readonly HashSet<int> _visitedEffects = new();
         private readonly HashSet<int> _visitedNumbers = new();
         private readonly HashSet<int> _visitedAttempts = new();
 
-        public MoveService()
+        public LocalMoveService()
         {
             var f = ServiceFactory.Instance;
             _moves = f.MoveRepository;
@@ -40,27 +34,30 @@ namespace PokemonGame.Services.Handler
             _weightedEntries = f.WeightedEntryRepository;
             _conditions = f.ConditionRepository;
         }
-        public MoveService(ServiceFactory factory)
-        {
-            _moves = factory.MoveRepository;
-            _attempts = factory.AttemptRepository;
-            _cascadeSteps = factory.CascadeStepRepository;
-            _effects = factory.EffectRepository;
-            _sequenceSteps = factory.SequenceStepRepository;
-            _multiStatChanges = factory.MultiStatChangeRepository;
-            _numbers = factory.NumberRepository;
-            _weightedEntries = factory.WeightedEntryRepository;
-            _conditions = factory.ConditionRepository;
-        }
-        // ── Public entry point ───────────────────────────────────────────────────
 
+        internal LocalMoveService(
+            MoveRepository moves, AttemptRepository attempts,
+            CascadeStepRepository cascadeSteps, EffectRepository effects,
+            SequenceStepRepository sequenceSteps, MultiStatChangeRepository multiStatChanges,
+            NumberRepository numbers, WeightedEntryRepository weightedEntries,
+            ConditionRepository conditions)
+        {
+            _moves = moves;
+            _attempts = attempts;
+            _cascadeSteps = cascadeSteps;
+            _effects = effects;
+            _sequenceSteps = sequenceSteps;
+            _multiStatChanges = multiStatChanges;
+            _numbers = numbers;
+            _weightedEntries = weightedEntries;
+            _conditions = conditions;
+        }
+
+        // ── All tree-building logic identical to your existing MoveService ────
         public MoveTree? GetMove(string name)
         {
             var move = _moves.LoadByName(name);
-            if (move == null)
-            {
-                return null;
-            }
+            if (move == null) return null;
 
             _visitedEffects.Clear();
             _visitedNumbers.Clear();
@@ -75,9 +72,7 @@ namespace PokemonGame.Services.Handler
             };
 
             foreach (var row in _attempts.LoadForMove(move.Id))
-            {
                 tree.Attempts.Add(BuildAttempt(row));
-            }
 
             return tree;
         }

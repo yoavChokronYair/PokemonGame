@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData;
-using PokemonGame.Services.Handler;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelUserControl
@@ -44,7 +43,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
 
         public RelayCommand ConfirmItemCommand { get; }
 
-        public ItemPickerViewModel(TeamBuilderState state, TeamBuilderService service,
+        public ItemPickerViewModel(TeamBuilderState state,
             ObservableCollection<ItemData> allItems)
         {
             _state = state;

@@ -61,7 +61,15 @@ namespace PokemonGame.Services.Data.Repositories
         public void UpdateTeamName(int teamId, string newName) =>
             _db.Execute("UPDATE teams SET team_name = @name WHERE id = @tid",
                 new { name = newName, tid = teamId });
-
+        public bool IsFavoriteTeam(int teamId)
+        {
+            // Check if any player has this team set as their favorite
+            int count = _db.QuerySingle<int>(
+                "SELECT COUNT(1) FROM BattlePlayerStats WHERE FaveTeamID = @tid",
+                new { tid = teamId }
+            );
+            return count > 0;
+        }
         public void DeleteTeam(int teamId)
         {
             // Get all pokemon IDs for this team
@@ -82,25 +90,11 @@ namespace PokemonGame.Services.Data.Repositories
             _db.Execute("DELETE FROM teams WHERE id = @tid",
                 new { tid = teamId });
         }
-        public void DeleteTeamsByPlayer(int battlePlayerId)
+        public void Upsert(TeamData r)
         {
-            // Get pokemon IDs first
-            var pokemonIds = _db.Query<int>(
-                @"SELECT tm.pokemonID FROM team_members tm
-          INNER JOIN teams t ON t.id = tm.team_id
-          WHERE t.battle_player_id = @bpid",
-                new { bpid = battlePlayerId }).ToList();
-
-            foreach (var pid in pokemonIds)
-                _db.Execute("DELETE FROM battler_pokemon WHERE pokemonID = @pid", new { pid });
-
             _db.Execute(
-                @"DELETE FROM team_members WHERE team_id IN 
-          (SELECT id FROM teams WHERE battle_player_id = @bpid)",
-                new { bpid = battlePlayerId });
-
-            _db.Execute("DELETE FROM teams WHERE battle_player_id = @bpid",
-                new { bpid = battlePlayerId });
+                "INSERT OR REPLACE INTO teams (id, team_name, battle_player_id) VALUES (@id, @name, @bpid)",
+                new { id = r.Id, name = r.TeamName, bpid = r.BattlePlayerId });
         }
     }
 }

@@ -188,12 +188,6 @@
                                     FontSize="10"
                                     Foreground="#AAA"
                                     Text="{Binding PokedexId}" />
-                                <Image
-                                    Grid.Column="1"
-                                    Width="28"
-                                    Height="28"
-                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                    Source="{Binding SpriteImage}" />
                                 <TextBlock
                                     Grid.Column="2"
                                     VerticalAlignment="Center"

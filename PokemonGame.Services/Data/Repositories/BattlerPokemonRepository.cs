@@ -58,5 +58,48 @@ namespace PokemonGame.Services.Data.Repositories
         // Delete a Pokemon (e.g., releasing it)
         public void DeletePokemonInstance(int pokemonID) =>
             _db.Execute("DELETE FROM battler_pokemon WHERE pokemonID = @pid", new { pid = pokemonID });
+        public void Upsert(BattlerPokemon r)
+        {
+            _db.Execute(
+                @"INSERT OR REPLACE INTO battler_pokemon
+            (pokemonID, pokedexID, abilityID, itemID, shiny, gender, level,
+             move1ID, move2ID, move3ID, move4ID,
+             iv_hp, iv_atk, iv_def, iv_spAtk, iv_spDef, iv_speed,
+             ev_hp, ev_atk, ev_def, ev_spAtk, ev_spDef, ev_speed,
+             nature)
+          VALUES
+            (@pokemonID, @pokedexID, @abilityID, @itemID, @shiny, @gender, @level,
+             @move1, @move2, @move3, @move4,
+             @ivHp, @ivAtk, @ivDef, @ivSpAtk, @ivSpDef, @ivSpeed,
+             @evHp, @evAtk, @evDef, @evSpAtk, @evSpDef, @evSpeed,
+             @nature)",
+                new
+                {
+                    pokemonID = r.PokemonID,
+                    pokedexID = r.PokedexID,
+                    abilityID = r.AbilityID,
+                    itemID = r.ItemID,
+                    shiny = r.Shiny,
+                    gender = r.Gender,
+                    level = r.Level,
+                    move1 = r.Move1ID,
+                    move2 = r.Move2ID,
+                    move3 = r.Move3ID,
+                    move4 = r.Move4ID,
+                    ivHp = r.Iv_hp,
+                    ivAtk = r.Iv_atk,
+                    ivDef = r.Iv_def,
+                    ivSpAtk = r.Iv_spAtk,
+                    ivSpDef = r.Iv_spDef,
+                    ivSpeed = r.Iv_speed,
+                    evHp = r.Ev_hp,
+                    evAtk = r.Ev_atk,
+                    evDef = r.Ev_def,
+                    evSpAtk = r.Ev_spAtk,
+                    evSpDef = r.Ev_spDef,
+                    evSpeed = r.Ev_speed,
+                    nature = r.Nature
+                });
+        }
     }
 }

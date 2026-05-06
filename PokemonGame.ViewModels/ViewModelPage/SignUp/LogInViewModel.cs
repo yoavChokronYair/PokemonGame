@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -13,7 +13,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
 
-        private readonly LogInService _handler;
+        private readonly IUserService _handler;
 
         private string _username = "";
         public string Username
@@ -56,15 +56,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand SwitchToSignUpCommand { get; }
         public ICommand NavigateToGameModeChooserCommand { get; }
 
-        public LogInViewModel(UserStore user, NavigationStore navigationStore, Func<SignUpViewModel> createViewModel, Func<GameModeChooserViewModel> createGameChooserViewModel)
+        public LogInViewModel(UserStore user, NavigationStore navigationStore,
+            Func<SignUpViewModel> createViewModel,
+            Func<GameModeChooserViewModel> createGameChooserViewModel)
         {
             _userStore = user;
             _navigationStore = navigationStore;
-            _handler = new LogInService();
+            _handler = user.Resolver.GetUserService();
             LoginCommand = new RelayCommand(Login);
             SwitchToSignUpCommand = new NavigateCommand(navigationStore, createViewModel);
-            NavigateToGameModeChooserCommand =
-            new NavigateCommand(navigationStore, createGameChooserViewModel);
+            NavigateToGameModeChooserCommand = new NavigateCommand(navigationStore, createGameChooserViewModel);
         }
 
         private void Login()

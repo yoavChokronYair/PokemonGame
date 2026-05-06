@@ -29,7 +29,7 @@ namespace PokemonGame.ViewModels.ViewModelUserControl
         public RelayCommand OpenItemPickerCommand { get; }
         public RelayCommand OpenPokemonPickerCommand { get; }
 
-        public PokemonEditorViewModel(TeamBuilderState state, TeamBuilderService service)
+        public PokemonEditorViewModel(TeamBuilderState state)
         {
             _state = state;
             _state.PropertyChanged += (_, e) =>

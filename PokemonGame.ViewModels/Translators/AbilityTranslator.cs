@@ -2,26 +2,24 @@
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.DesignPatterns;
-using PokemonGame.Services.Data.GameData.PokemonData;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.ViewModels.Translators
 {
-    public class AbilityTranslator  :BaseTranslator
+    public class AbilityTranslator : BaseTranslator
     {
         private readonly IAbilityService _abilityService;
 
         public AbilityTranslator()
         {
-            _abilityService = new AbilityService();
+            _abilityService = new LocalAbilityService();
         }
 
-        public AbilityTranslator(IAbilityService abilityService, MoveTranslator moveTranslator)
+        public AbilityTranslator(IAbilityService abilityService)
         {
             _abilityService = abilityService;
         }
-
-        // ── Public entry points ──────────────────────────────────────────────
 
         public AbilityState Translate(string abilityName)
         {
@@ -39,18 +37,17 @@ namespace PokemonGame.ViewModels.Translators
             return BuildAbilityState(tree);
         }
 
-        // ── Builder ──────────────────────────────────────────────────────────
-
         private AbilityState BuildAbilityState(AbilityTree tree)
         {
             ICondition<BattleState> condition = tree.Condition != null
-             ? TranslateCondition(tree.Condition)
-             : new Probability<BattleState>(1.0);   // always passes
+                ? TranslateCondition(tree.Condition)
+                : new Probability<BattleState>(1.0);
 
             IEffect effect = tree.Effect != null
                 ? TranslateEffect(tree.Effect)
                 : new NoEffect();
-            return new AbilityState(tree.Name, effect,tree.Description);
+
+            return new AbilityState(tree.Name, effect, tree.Description);
         }
     }
 }

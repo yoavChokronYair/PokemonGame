@@ -2,49 +2,36 @@
 using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
-    public interface IItemService
-    {
-        ItemTree? GetItem(string name);
-        ItemTree? GetItemById(int id);
-    }
 
-    public class ItemService : IItemService
+    public class LocalItemService : IItemService
     {
         private readonly ItemRepository _repo;
         private readonly ConditionRepository _conditionRepository;
         private readonly EffectRepository _effectRepository;
         private readonly NumberRepository _numberRepository;
 
-        public ItemService()
+        public LocalItemService()
         {
             _repo = ServiceFactory.Instance.ItemRepository;
             _conditionRepository = ServiceFactory.Instance.ConditionRepository;
             _effectRepository = ServiceFactory.Instance.EffectRepository;
             _numberRepository = ServiceFactory.Instance.NumberRepository;
         }
-        internal ItemService(ItemRepository repo, ConditionRepository conditions,
-                   EffectRepository effects, NumberRepository numbers)
+
+        internal LocalItemService(ItemRepository repo, ConditionRepository conditions,
+                                  EffectRepository effects, NumberRepository numbers)
         {
             _repo = repo;
             _conditionRepository = conditions;
             _effectRepository = effects;
             _numberRepository = numbers;
         }
-        public ItemService(ServiceFactory factory)
-        {
-            _repo = factory.ItemRepository;
-            _conditionRepository = factory.ConditionRepository;
-            _effectRepository = factory.EffectRepository;
-            _numberRepository = factory.NumberRepository;
-        }
 
-
-
-        // ── Public entry points ──────────────────────────────────────────────────
-
+        // ── All tree-building logic identical to your existing ItemService ────
         public ItemTree? GetItem(string name)
         {
             var item = _repo.GetByName(name);
@@ -56,7 +43,6 @@ namespace PokemonGame.Services.Handler
             var item = _repo.GetById(id);
             return item == null ? null : BuildTree(item);
         }
-
         // ── Tree builder ─────────────────────────────────────────────────────────
 
         private ItemTree BuildTree(ItemData item)
@@ -217,18 +203,7 @@ namespace PokemonGame.Services.Handler
 
             return condition;
         }
+
     }
 
-    // ── ItemTree ─────────────────────────────────────────────────────────────────
-
-    public class ItemTree
-    {
-        public ItemData Item { get; set; } = null!;
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? Category { get; set; }
-        public bool IsConsumable { get; set; }
-        public MoveEffect? Effect { get; set; }
-        public MoveCondition? Condition { get; set; }
-    }
 }

@@ -10,6 +10,7 @@
     <Page.Resources>
         <conv:WinnerTextConverter x:Key="WinnerTextConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:BackgroundToBackgroundTypeConverter x:Key="BgConverter" />
     </Page.Resources>
 
     <Grid>
@@ -42,7 +43,7 @@
                             Margin="10"
                             HorizontalAlignment="Center"
                             Orientation="Horizontal">
-                            <controls:BoardBackground BackgroundType="{x:Static controls:BackgroundType.White}" BorderThickness="0">
+                            <controls:BoardBackground BackgroundType="{Binding Settings.background, Converter={StaticResource BgConverter}}" BorderThickness="0">
 
                                 <Grid Margin="10">
                                     <Grid.ColumnDefinitions>

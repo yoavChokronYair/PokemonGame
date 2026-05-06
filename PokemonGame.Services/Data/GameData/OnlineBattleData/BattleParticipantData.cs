@@ -4,7 +4,6 @@
     {
         public int BattleID { get; set; }
         public int BattlePlayerID { get; set; }
-        public int TeamID { get; set; }
         public int IsWinner { get; set; }
     }
 }
