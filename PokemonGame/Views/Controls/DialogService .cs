@@ -68,30 +68,38 @@ namespace PokemonGame.ViewModels.ViewModelHelper.Service
 
             return Task.FromResult(result);
         }
-        public Task<BattleResultAction> ShowBattleResultAsync(BattleViewModel vm)
+        public Task<BattleResultAction> ShowBattleResultAsync(BattleViewModel battleViewModel)
         {
-            BattleResultAction chosen = BattleResultAction.Back;
+            var tcs = new TaskCompletionSource<BattleResultAction>();
 
+            // Always create and show the window on the UI thread.
+            // OnBattleEndedAsync runs after an await so it may be on a thread-pool thread.
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // Create the actual BattleResult WPF Window
+                var result = BattleResultAction.Back;
+
                 var window = new BattleResult
                 {
-                    DataContext = vm, // Set the current BattleViewModel as DataContext
-                    Owner = Application.Current.MainWindow
+                    DataContext = battleViewModel,
+                    Owner = Application.Current.MainWindow,
                 };
 
-                // Close the window on the vm action request
-                vm.CloseRequested += ((_, action) =>
+                void OnCloseRequested(object sender, BattleResultAction action)
                 {
-                    chosen = action;
+                    battleViewModel.CloseRequested -= OnCloseRequested;
+                    result = action;
                     window.Close();
-                });
+                }
+
+                battleViewModel.CloseRequested += OnCloseRequested;
 
                 window.ShowDialog();
+
+                tcs.TrySetResult(result);
             });
 
-            return Task.FromResult(chosen);
+            return tcs.Task;
         }
     }
 }
+

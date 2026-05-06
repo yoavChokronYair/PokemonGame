@@ -186,7 +186,7 @@ namespace PokemonGame.ViewModels.Translators
                 // OpponentCondition wraps an ICondition<PokemonState> to check the Defender
                 "OpponentCondition" => new OpponentCondition(TranslatePokemonCondition(c.Inner!)),
 
-                _ => throw new NotSupportedException($"Unknown battle condition type: '{c.Type}'")
+                _ => new NoCondition()
             };
         }
 

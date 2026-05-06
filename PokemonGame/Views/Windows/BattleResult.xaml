@@ -8,17 +8,55 @@
     xmlns:local="clr-namespace:PokemonGame.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Width="350"
-    Height="350"
+    Height="380"
+    AllowsTransparency="True"
+    Background="Transparent"
     WindowStartupLocation="CenterOwner"
     WindowStyle="None"
     mc:Ignorable="d">
-    <Window.Resources>
-        <converters:IsNegativeConverter x:Key="IsNegativeConverter" />
-    </Window.Resources>
     <Grid>
         <controls:BoardBackground>
             <Viewbox>
-                <Grid Width="300" Margin="20">
+                <Grid
+                    x:Name="RootCard"
+                    Width="280"
+                    Margin="20"
+                    Opacity="0">
+
+                    <!--  Card entrance: fade + slide up  -->
+                    <Grid.Triggers>
+                        <EventTrigger RoutedEvent="Grid.Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="RootCard"
+                                        Storyboard.TargetProperty="Opacity"
+                                        From="0"
+                                        To="1"
+                                        Duration="0:0:0.35">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="SlideTransform"
+                                        Storyboard.TargetProperty="Y"
+                                        From="30"
+                                        To="0"
+                                        Duration="0:0:0.4">
+                                        <DoubleAnimation.EasingFunction>
+                                            <CubicEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Grid.Triggers>
+
+                    <Grid.RenderTransform>
+                        <TranslateTransform x:Name="SlideTransform" />
+                    </Grid.RenderTransform>
+
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <!--  Header  -->
@@ -28,114 +66,221 @@
                         <!--  Rank  -->
                         <RowDefinition Height="Auto" />
                         <!--  Progress  -->
-                        <RowDefinition Height="Auto" />
-                        <!--  Time  -->
                         <RowDefinition Height="*" />
                         <!--  Spacer  -->
                         <RowDefinition Height="Auto" />
                         <!--  Buttons  -->
                     </Grid.RowDefinitions>
 
-                    <!--  Header: winner text  -->
+                    <!--  ── Header ──  -->
                     <TextBlock
                         Grid.Row="0"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontSize="20"
+                        FontSize="22"
                         FontWeight="Bold"
                         Text="{Binding WinnerText}" />
 
-                    <!--  Subtitle: result method  -->
+                    <!--  ── Subtitle ──  -->
                     <TextBlock
                         Grid.Row="1"
-                        Margin="0,5,0,10"
+                        Margin="0,4,0,14"
                         HorizontalAlignment="Center"
                         Foreground="#B0B0B0"
                         Text="{Binding ResultMethod}" />
 
-                    <!--  Rank section  -->
-                    <StackPanel Grid.Row="2" Margin="0,0,0,10">
-                        <TextBlock
-                            FontSize="14"
-                            Foreground="Black"
-                            Text="{Binding RankLabel}" />
+                    <!--  ── Rank section ──  -->
+                    <StackPanel Grid.Row="2" Margin="0,0,0,14">
 
                         <TextBlock
-                            FontSize="26"
+                            FontSize="13"
+                            Foreground="#888888"
+                            Text="YOUR RANK:" />
+
+                        <TextBlock
+                            FontSize="24"
                             FontWeight="Bold"
                             Text="{Binding RankName}" />
 
+                        <!--  Delta: animates up/down, green/red, all inline  -->
                         <TextBlock
-                            Margin="0,5,0,10"
+                            Margin="0,4,0,0"
                             FontSize="30"
                             FontWeight="Bold"
+                            Opacity="0"
                             Text="{Binding RankDeltaText}">
-                            <TextBlock.Foreground>
-                                <Binding Path="RankDeltaColor" />
-                            </TextBlock.Foreground>
+
+                            <TextBlock.RenderTransform>
+                                <TranslateTransform />
+                            </TextBlock.RenderTransform>
+
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RankDelta, Converter={StaticResource IsNegativeConverter}}" Value="True">
-                                            <Setter Property="Foreground" Value="#E53935" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RankDelta, Converter={StaticResource IsNegativeConverter}}" Value="False">
+
+                                        <!--  Positive → green + float up  -->
+                                        <DataTrigger Binding="{Binding IsPositiveDelta}" Value="True">
                                             <Setter Property="Foreground" Value="#4CAF50" />
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <!--  Target self via property path — no TargetName allowed in Style  -->
+                                                        <DoubleAnimation
+                                                            BeginTime="0:0:0.45"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                            From="20"
+                                                            To="0"
+                                                            Duration="0:0:0.55">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <ElasticEase
+                                                                    EasingMode="EaseOut"
+                                                                    Oscillations="1"
+                                                                    Springiness="4" />
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <DoubleAnimation
+                                                            BeginTime="0:0:0.45"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            From="0"
+                                                            To="1"
+                                                            Duration="0:0:0.25" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
                                         </DataTrigger>
+
+                                        <!--  Negative → red + drop down  -->
+                                        <DataTrigger Binding="{Binding IsPositiveDelta}" Value="False">
+                                            <Setter Property="Foreground" Value="#E53935" />
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            BeginTime="0:0:0.45"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                            From="-20"
+                                                            To="0"
+                                                            Duration="0:0:0.55">
+                                                            <DoubleAnimation.EasingFunction>
+                                                                <ElasticEase
+                                                                    EasingMode="EaseOut"
+                                                                    Oscillations="1"
+                                                                    Springiness="4" />
+                                                            </DoubleAnimation.EasingFunction>
+                                                        </DoubleAnimation>
+                                                        <DoubleAnimation
+                                                            BeginTime="0:0:0.45"
+                                                            Storyboard.TargetProperty="Opacity"
+                                                            From="0"
+                                                            To="1"
+                                                            Duration="0:0:0.25" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                        </DataTrigger>
+
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
                     </StackPanel>
 
-                    <!--  Progress section  -->
-                    <StackPanel Grid.Row="3" Margin="0,0,0,10">
+                    <!--  ── Progress bar ──  -->
+                    <StackPanel Grid.Row="3" Margin="0,0,0,14">
+
                         <Border
                             Height="12"
                             Background="#3A3D4F"
+                            ClipToBounds="True"
                             CornerRadius="10">
+
+                            <!--  Width bound to pixel value; ScaleX animates 0→1 on load (no bound To needed)  -->
                             <Border
+                                x:Name="ProgressFill"
                                 Width="{Binding ProgressBarWidth}"
                                 HorizontalAlignment="Left"
-                                Background="#4A90E2"
-                                CornerRadius="10" />
+                                CornerRadius="10"
+                                RenderTransformOrigin="0,0.5">
+
+                                <Border.RenderTransform>
+                                    <ScaleTransform x:Name="ProgressScale" ScaleX="0" />
+                                </Border.RenderTransform>
+
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="#4A90E2" />
+                                        <GradientStop Offset="1" Color="#7B61FF" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                                <Border.Triggers>
+                                    <EventTrigger RoutedEvent="Border.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    BeginTime="0:0:0.6"
+                                                    Storyboard.TargetName="ProgressScale"
+                                                    Storyboard.TargetProperty="ScaleX"
+                                                    From="0"
+                                                    To="1"
+                                                    Duration="0:0:0.7">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
+                            </Border>
                         </Border>
 
-                        <DockPanel Margin="0,5,0,0">
+                        <DockPanel Margin="0,6,0,0">
                             <TextBlock
                                 DockPanel.Dock="Left"
+                                FontSize="12"
                                 Foreground="#CCCCCC"
                                 Text="RANKED RATING" />
                             <TextBlock
                                 DockPanel.Dock="Right"
+                                FontSize="12"
                                 Foreground="#CCCCCC"
                                 Text="{Binding RatingText}" />
                         </DockPanel>
                     </StackPanel>
 
-                    <!--  Time section (extend as needed)  -->
-                    <StackPanel
-                        Grid.Row="4"
-                        Margin="0,10"
-                        HorizontalAlignment="Center"
-                        Orientation="Horizontal" />
+                    <!--  ── Buttons ──  -->
+                    <StackPanel Grid.Row="5">
 
-                    <!--  Buttons  -->
-                    <StackPanel Grid.Row="6">
                         <Button
                             Height="45"
                             Margin="0,5"
-                            BorderThickness="0"
                             Command="{Binding NewGameCommand}"
                             Content="new game"
+                            Cursor="Hand"
                             FontSize="16"
+                            FontWeight="SemiBold"
                             Foreground="White">
-                            <Button.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <GradientStop Offset="0" Color="#7ED957" />
-                                    <GradientStop Offset="1" Color="#4CAF50" />
-                                </LinearGradientBrush>
-                            </Button.Background>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="6">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Offset="0" Color="#7ED957" />
+                                                <GradientStop Offset="1" Color="#4CAF50" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.88" />
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" Value="0.72" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
                         </Button>
 
                         <Grid Margin="0,5">
@@ -147,22 +292,52 @@
                             <Button
                                 Grid.Column="0"
                                 Height="40"
-                                Margin="5"
-                                Background="#3A3D4F"
-                                BorderThickness="0"
+                                Margin="0,0,4,0"
                                 Command="{Binding BackCommand}"
                                 Content="back"
-                                Foreground="White" />
+                                Cursor="Hand"
+                                Foreground="White">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="#3A3D4F" CornerRadius="6">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Opacity" Value="0.80" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Opacity" Value="0.65" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
 
                             <Button
                                 Grid.Column="1"
                                 Height="40"
-                                Margin="5"
-                                Background="#3A3D4F"
-                                BorderThickness="0"
+                                Margin="4,0,0,0"
                                 Command="{Binding RematchCommand}"
                                 Content="Rematch"
-                                Foreground="White" />
+                                Cursor="Hand"
+                                Foreground="White">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="#3A3D4F" CornerRadius="6">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Opacity" Value="0.80" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Opacity" Value="0.65" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
                         </Grid>
                     </StackPanel>
                 </Grid>

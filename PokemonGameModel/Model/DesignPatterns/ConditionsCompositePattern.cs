@@ -18,7 +18,13 @@ using PokemonGame.Model.Interface;
 namespace PokemonGame.Model.Model.DesignPatterns
 {
     // ── Condition Combinators ─────────────────────────────────────────────────
-
+    public class NoCondition : ICondition<BattleState>
+    {
+        public bool Check(BattleState entity)
+        {
+            return true;
+        }
+    }
     public class And<T> : ICondition<T>
     {
         private readonly ICondition<T> _left;

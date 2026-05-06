@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.ViewModels.Store;
@@ -10,13 +11,18 @@ using PokemonGame.ViewModels.ViewModelHelper.Service;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
-    // ── Root page VM — set as DataContext on PokemonBattlePage ───────────────
+    // ── Root page VM — set as DataContext on PokemonBattlePage ──────────────-
+
+
     public class BattleViewModel : ViewModelBase
     {
         private readonly BattleManager _manager;
         private readonly NavigationStore _navigationStore;
         private readonly IDialogService _dialogService;
         private readonly Func<ViewModelBase> _createGameModeChooserViewModel;
+
+        // Constant starting Elo for now
+        private const int STARTING_ELO = 1525;
 
         public PokemonBattleStatusViewModel PlayerStatus { get; }
         public EnemyBattleStatusViewModel EnemyStatus { get; }
@@ -29,14 +35,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public string? WinnerName => _manager.Winner?.Active.Name;
 
         // ── Winner & Method ──────────────────────────────────────────────
-        private string _winnerText = "BLACK WON";
+        public double ProgressBarWidth =>
+            RatingMax > 0 ? MathHelper.Clamp((double)RatingCurrent / RatingMax * 200.0, 0, 200) : 0;
+        private string _winnerText = "";
         public string WinnerText
         {
             get => _winnerText;
             set => SetProperty(ref _winnerText, value);
         }
 
-        private string _resultMethod = "by resignation";
+        private string _resultMethod = "";
         public string ResultMethod
         {
             get => _resultMethod;
@@ -44,14 +52,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         // ── Rank Section ─────────────────────────────────────────────────
-        private string _rankName = "Gold III";
+        private string _rankName = "";
         public string RankName
         {
             get => _rankName;
             set => SetProperty(ref _rankName, value);
         }
 
-        private int _rankDelta = -25;
+        private int _rankDelta;
         public int RankDelta
         {
             get => _rankDelta;
@@ -69,14 +77,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public bool IsPositiveDelta => RankDelta >= 0;
 
         // ── Progress Bar ─────────────────────────────────────────────────
-        private int _ratingCurrent = 35;
+        // Fire it from both setters:
+        private int _ratingCurrent;
         public int RatingCurrent
         {
             get => _ratingCurrent;
             set
             {
                 if (SetProperty(ref _ratingCurrent, value))
+                {
                     OnPropertyChanged(nameof(RatingText));
+                    OnPropertyChanged(nameof(ProgressBarWidth));
+                }
             }
         }
 
@@ -87,7 +99,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             set
             {
                 if (SetProperty(ref _ratingMax, value))
+                {
                     OnPropertyChanged(nameof(RatingText));
+                    OnPropertyChanged(nameof(ProgressBarWidth));
+                }
             }
         }
 
@@ -97,9 +112,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public ICommand NewGameCommand { get; }
         public ICommand BackCommand { get; }
         public ICommand RematchCommand { get; }
+        
+        public event EventHandler<BattleResultAction> CloseRequested;
 
-        // Event for the Dialog Window to subscribe to
-        public event EventHandler<BattleResultAction>? CloseRequested;
 
         public BattleViewModel(
             UserStore playerUserStore,
@@ -112,13 +127,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             _createGameModeChooserViewModel = createGameModeChooserViewModel;
 
             var session = playerUserStore.BattleSesion;
-
-            var playerTeam = session.ResolvedPlayerTeam
-                ?? throw new InvalidOperationException("ResolvedPlayerTeam was not set before navigating to battle.");
-
-            var botTeam = session.ResolvedBotTeam
-                ?? throw new InvalidOperationException("ResolvedBotTeam was not set before navigating to battle.");
-
+            var playerTeam = session.ResolvedPlayerTeam ?? throw new InvalidOperationException("Team not set.");
+            var botTeam = session.ResolvedBotTeam ?? throw new InvalidOperationException("Bot team not set.");
             var botLevel = ResolveBotLevel(session.BotDifficulty);
 
             _manager = new BattleManager(playerTeam, botTeam, botLevel);
@@ -128,7 +138,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             EnemyStatus = new EnemyBattleStatusViewModel();
             BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager, Logger);
 
-            // Initialize command logic to publish event actions back up
             NewGameCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.NewGame));
             BackCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.Back));
             RematchCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.Rematch));
@@ -136,17 +145,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             SyncAll(flushSetup: true);
         }
 
-        private void OnMoveChosen(int moveIndex)
-        {
-            _manager.RunTurn(moveIndex);
-            SyncAll();
-        }
-
-        private void OnSwitchChosen(int slotIndex)
-        {
-            _manager.RunTurn(slotIndex, BattleAction.Switch);
-            SyncAll();
-        }
+        private void OnMoveChosen(int moveIndex) { _manager.RunTurn(moveIndex); SyncAll(); }
+        private void OnSwitchChosen(int slotIndex) { _manager.RunTurn(slotIndex, BattleAction.Switch); SyncAll(); }
 
         private void SyncAll(bool flushSetup = false)
         {
@@ -174,9 +174,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 var newEntries = allEntries.Skip(_logCursor).ToList();
                 _logCursor = allEntries.Count;
                 Logger.EnqueueEntries(newEntries);
-
-                if (flushSetup)
-                    Logger.FlushSetupMessages();
+                if (flushSetup) Logger.FlushSetupMessages();
             }
 
             OnPropertyChanged(nameof(WinnerName));
@@ -192,15 +190,24 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             bool playerWon = _manager.Winner == _manager.PlayerTeam;
 
-            // Set properties inside this viewmodel!
+            // 1. Calculate points gained or lost
+            RankDelta = playerWon ? 22 : -18;
+
+            // 2. Apply to the current Elo (Using our Const for now)
+            int newTotalElo = Math.Max(0, STARTING_ELO + RankDelta);
+
+            // 3. Use the RankManager to get the new display info
+            var rankInfo = RankManager.GetRank(newTotalElo);
+
+            // 4. Update the View Properties
             WinnerText = playerWon ? "YOU WON!" : "YOU LOST!";
             ResultMethod = playerWon ? "All opposing Pokémon fainted" : "Your party fainted";
-            RankName = "Gold III";
-            RankDelta = playerWon ? 18 : -25;
-            RatingCurrent = 35;
-            RatingMax = 100;
 
-            // Trigger the service directly passing this viewmodel instance
+            RankName = rankInfo.RankName;           // e.g., "Gold III"
+            RatingCurrent = rankInfo.CurrentProgress; // e.g., 47
+            RatingMax = rankInfo.MaxProgress;         // 100
+
+            // Show the Result Dialog (Slider and Text will bind to the values set above)
             BattleResultAction action = await _dialogService.ShowBattleResultAsync(this);
 
             switch (action)
@@ -209,14 +216,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 case BattleResultAction.Back:
                     _navigationStore.CurrentViewModel = _createGameModeChooserViewModel();
                     break;
-
                 case BattleResultAction.Rematch:
                     _navigationStore.CurrentViewModel = new BattleViewModel(
-                        UserStore.Instance,
-                        _navigationStore,
-                        _dialogService,
-                        _createGameModeChooserViewModel
-                    );
+                        UserStore.Instance, _navigationStore, _dialogService, _createGameModeChooserViewModel);
                     break;
             }
         }
