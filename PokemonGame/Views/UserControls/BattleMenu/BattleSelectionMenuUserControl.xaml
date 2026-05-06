@@ -31,8 +31,8 @@
             <UniformGrid Columns="2" Rows="2">
                 <Button Command="{Binding OpenMovesetCommand}" Content="FIGHT" />
                 <Button Content="BAG" />
-                <Button Content="POKEMON" />
-                <Button Content="RUN" />
+                <Button Command="{Binding OpenSwitchCommand}" Content="POKEMON" />
+                <Button Command="{Binding ForfeitCommand}" Content="RUN" />
             </UniformGrid>
         </controls:BoardBackground>
 

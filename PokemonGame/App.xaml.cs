@@ -144,10 +144,21 @@ namespace PokemonGame
             return new BattleViewModel(
                 UserStore.Instance,
                 _navigationStore,
-                new DialogService(),                     // Pass your concrete DialogService
-                CreateGameModeChooserViewModel      // Pass the navigation target factory
+                new DialogService(),
+                CreateGameModeChooserViewModel,
+                CreateTeamSelectionViewModel        // ← add this
             );
         }
+
+        private TeamSelectionViewModel CreateTeamSelectionViewModel()
+        {
+            return new TeamSelectionViewModel(
+                UserStore.Instance,
+                _navigationStore,
+                CreateBattleViewModel               // navigate back to battle on cancel/confirm
+            );
+        }
+
         private BattleConnectorViewModel CreateBattleConnectorViewModel()
         {
             return new BattleConnectorViewModel(

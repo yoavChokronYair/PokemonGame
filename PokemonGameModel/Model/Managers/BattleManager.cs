@@ -45,6 +45,18 @@ namespace PokemonGame.Model.Model.Managers
             _state.Logger.LogSetup($"Enemy sent out {_botTeam.Active.Name}!");
             _state.Logger.LogSetup($"Go! {_playerTeam.Active.Name}!");
         }
+        public void ForceWinner(PokemonTeam winner)
+        {
+            // Determine the loser based on who is being forced as the winner
+            PokemonTeam loser = (winner == _playerTeam) ? _botTeam : _playerTeam;
+
+            Winner = winner;
+            Loser = loser;
+
+            // Log the end of the battle explicitly for the forfeit scenario
+            _state.Logger.LogBattleEnd("The battle ended by declaration (Forfeit).");
+            _state.Logger.LogBattleEnd($"Winner: {(Winner == _playerTeam ? "Player" : "Opponent")}");
+        }
 
         private void EndBattle(PokemonTeam winner, PokemonTeam loser)
         {

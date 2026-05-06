@@ -1,0 +1,113 @@
+﻿<Page
+    x:Class="PokemonGame.Views.Pages.PokemonBattlePages.TeamSelectionPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.OnlineBattleUserControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="ItemSelectionPage"
+    mc:Ignorable="d">
+    <!--  Full background image  -->
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/Background.png" Stretch="Fill" />
+        </Grid.Background>
+
+        <!--  Root layout: left panel | right list  -->
+        <Grid
+            Width="560"
+            Height="380"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <!--  Content  -->
+                <RowDefinition Height="Auto" />
+                <!--  Bottom bar  -->
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <!--  Main slot  -->
+                <ColumnDefinition Width="*" />
+                <!--  Holder list  -->
+            </Grid.ColumnDefinitions>
+
+            <!--  ── Main pokemon (slot 0, large left card) ──  -->
+            <local:MainPokemonSlotUserControl
+                Grid.Row="0"
+                Grid.Column="0"
+                DataContext="{Binding Slots[0]}" />
+
+            <!--  ── Holder slots 1-5 (right column) ──  -->
+            <ItemsControl
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="0,4,4,4"
+                ItemsSource="{Binding Slots}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:PokemonHolderSlotUserControl Margin="0,2" DataContext="{Binding}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <!--  Skip slot 0 — it's the main slot  -->
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+
+            <!--  ── Bottom bar: "Choose a Pokemon" text image + Cancel button ──  -->
+            <Grid
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Height="50">
+
+                <!--  "Choose a Pokemon" label image  -->
+                <Image
+                    Margin="8,0,0,0"
+                    HorizontalAlignment="Left"
+                    Source="/PokemonGame;component/Assets/Images/TeamSelection/BackgoundText.png"
+                    Stretch="None" />
+
+                <!--  Cancel button  -->
+                <Button
+                    Margin="0,0,8,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding CancelCommand}"
+                    Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Image
+                                x:Name="CancelImg"
+                                Source="/PokemonGame;component/Assets/Images/TeamSelection/CancelNotSelected.png"
+                                Stretch="None" />
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="CancelImg" Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/CancelSelected.png" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="CancelImg" Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/CancelSelected.png" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

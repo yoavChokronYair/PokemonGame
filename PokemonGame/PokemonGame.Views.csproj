@@ -165,6 +165,7 @@
     <Compile Include="Converters\BoolToCloseNextConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\CategoryToImageConverter.cs" />
+    <Compile Include="Converters\HpToWidthConverter.cs" />
     <Compile Include="Converters\IntEqualsConverter.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
@@ -215,6 +216,9 @@
     <Compile Include="Views\Pages\OnlineBattlePages\HistoryBattlePage.xaml.cs">
       <DependentUpon>HistoryBattlePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\PokemonBattlePages\TeamSelectionPage.xaml.cs">
+      <DependentUpon>TeamSelectionPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\PokemonBattlePages\PokemonBattlePage.xaml.cs">
       <DependentUpon>PokemonBattlePage.xaml</DependentUpon>
     </Compile>
@@ -259,6 +263,12 @@
     </Compile>
     <Compile Include="Views\UserControls\MoveSlotControl.xaml.cs">
       <DependentUpon>MoveSlotControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\OnlineBattleUserControls\MainPokemonSlotUserControl.xaml.cs">
+      <DependentUpon>MainPokemonSlotUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\OnlineBattleUserControls\PokemonHolderSlotUserControl.xaml.cs">
+      <DependentUpon>PokemonHolderSlotUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserControls\OnlineBattleUserControls\SettingRowControl.xaml.cs">
       <DependentUpon>SettingRowControl.xaml</DependentUpon>
@@ -339,6 +349,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Pages\PokemonBattlePages\TeamSelectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\PokemonBattlePages\PokemonBattlePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -396,6 +410,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserControls\MoveSlotControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\OnlineBattleUserControls\MainPokemonSlotUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\OnlineBattleUserControls\PokemonHolderSlotUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -575,6 +597,14 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\TeamSelection\BackgoundText.png" />
+    <Resource Include="Assets\Images\TeamSelection\CancelSelected.png" />
+    <Resource Include="Assets\Images\TeamSelection\CancelNotSelected.png" />
+    <Resource Include="Assets\Images\TeamSelection\PokemonHolderSelected.png" />
+    <Resource Include="Assets\Images\TeamSelection\PokemonHolderNotSelected.png" />
+    <Resource Include="Assets\Images\TeamSelection\MainPokemonSelected.png" />
+    <Resource Include="Assets\Images\TeamSelection\MainPokemonNotSelected.png" />
+    <Resource Include="Assets\Images\TeamSelection\Background.png" />
     <Resource Include="Assets\Images\Items\ability-capsule.png" />
     <Resource Include="Assets\Images\Items\ability-urge.png" />
     <Resource Include="Assets\Images\Items\abomasite.png" />

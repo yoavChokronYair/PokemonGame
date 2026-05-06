@@ -1,0 +1,122 @@
+﻿<UserControl
+    x:Class="PokemonGame.Views.UserControls.OnlineBattleUserControls.MainPokemonSlotUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:PokemonGame.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.OnlineBattleUserControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="180"
+    d:DesignWidth="220"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:HpToWidthConverter x:Key="HpToWidthConverter" />
+        <converters:PokemonIdToImageConverter x:Key="PokedexIdToSpriteConverter" />
+    </UserControl.Resources>
+    <!--  Background swaps between selected / not selected image  -->
+    <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/MainPokemonNotSelected.png" Stretch="Fill" />
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/MainPokemonSelected.png" Stretch="Fill" />
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+
+        <Button Command="{Binding SelectCommand}" Opacity="0" />
+
+        <Grid Margin="60,20,10,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <!--  Name  -->
+                <RowDefinition Height="Auto" />
+                <!--  Level  -->
+                <RowDefinition Height="Auto" />
+                <!--  HP label  -->
+                <RowDefinition Height="Auto" />
+                <!--  HP bar  -->
+                <RowDefinition Height="Auto" />
+                <!--  HP numbers  -->
+            </Grid.RowDefinitions>
+
+            <!--  Pokemon sprite (top-left of card)  -->
+            <Image
+                Grid.Row="0"
+                Grid.RowSpan="5"
+                Width="64"
+                Height="64"
+                Margin="-55,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center">
+                <Image.Source>
+                    <Binding Converter="{StaticResource PokedexIdToSpriteConverter}" Path="PokedexId" />
+                </Image.Source>
+            </Image>
+
+            <!--  Name  -->
+            <TextBlock
+                Grid.Row="0"
+                FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
+                FontSize="11"
+                Foreground="Black"
+                Text="{Binding PokemonName}" />
+
+            <!--  Level  -->
+            <TextBlock
+                Grid.Row="1"
+                FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
+                FontSize="9"
+                Foreground="Black"
+                Text="{Binding LevelText}" />
+
+
+
+            <!--  HP bar track  -->
+            <Grid
+                Grid.Row="3"
+                Height="8"
+                Margin="0,2,0,2">
+                <Rectangle
+                    Margin="0,64,0,-64"
+                    Fill="#383030"
+                    RadiusX="2"
+                    RadiusY="2" />
+                <Rectangle
+                    HorizontalAlignment="Left"
+                    Fill="{Binding HPColor}"
+                    RadiusX="2"
+                    RadiusY="2">
+                    <Rectangle.Width>
+                        <MultiBinding Converter="{StaticResource HpToWidthConverter}" ConverterParameter="80">
+                            <Binding Path="CurrentHp" />
+                            <Binding Path="MaxHp" />
+                        </MultiBinding>
+                    </Rectangle.Width>
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform ScaleX="1" />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+            </Grid>
+
+            <!--  HP numbers  -->
+            <TextBlock
+                Grid.Row="4"
+                HorizontalAlignment="Right"
+                FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
+                FontSize="9"
+                Foreground="Black"
+                Text="{Binding HpText}" />
+        </Grid>
+    </Grid>
+</UserControl>
