@@ -11,7 +11,7 @@ namespace PokemonGame.Model.Domain.Battle
         public int SafeguardTurns { get; private set; }
         public bool IsMistActive { get; private set; }
         public int MistTurns { get; private set; }
-
+        
         public void ActivateScreen(Screen screen, int turns) => _screens[screen] = turns;
         public bool IsScreenActive(Screen screen) => _screens.TryGetValue(screen, out int t) && t > 0;
 

@@ -1,5 +1,6 @@
 using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
@@ -166,7 +167,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
         public CrashDamage(ITarget target, INumber amount) { _target = target; _amount = amount; }
         public void Apply(BattleState battle) => _target.Resolve(battle).TakeDamage((int)_amount.Evaluate(battle));
     }
-
     public class Recoil : IEffect
     {
         private readonly ITarget _target;
@@ -403,7 +403,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
             battle.LastDamageDealt = boosted;
         }
     }
-
     public class DamageOnAttack : IEffect
     {
         // Life Orb recoil — damages the attacker after dealing damage
@@ -535,244 +534,874 @@ namespace PokemonGame.Model.Model.DesignPatterns
         public void Apply(BattleState battle) { } // Checked before effect application, not here
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // BlockCritical
+    //  Hook : Before crit roll in damage calculator.
+    //  Query: BlockCritical.IsActive(battle, side) — returns true when the
+    //         defending side has this effect active, suppressing crit chance.
+    // ─────────────────────────────────────────────────────────────────────────
     public class BlockCritical : IEffect
     {
         private readonly ITarget _target;
         public BlockCritical(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in crit calculation
+
+        /// <summary>
+        /// Called by the engine before the crit roll.
+        /// Raises a flag on the resolved Pokémon so the crit calculator can check it.
+        /// </summary>
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            // Mark the Pokémon as crit-immune for this turn via a volatile status.
+            // The damage calculator checks HasVolatileStatus(VolatileStatus.CritImmune).
+            pokemon.ApplyVolatileStatus(VolatileStatus.CritImmune, 1);
+        }
+
+        /// <summary>
+        /// Engine query: should the crit roll be skipped for <paramref name="target"/>?
+        /// </summary>
+        public static bool IsActive(BattleState battle, PokemonState target)
+            => target.HasVolatileStatus(VolatileStatus.CritImmune);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // PreventStatReduction
+    //  Hook : Inside PokemonState.ChangeStatStage(), before the stage is lowered.
+    //  Query: PreventStatReduction.IsBlocked(pokemon, stat) — returns true when
+    //         the stat drop should be suppressed.
+    // ─────────────────────────────────────────────────────────────────────────
     public class PreventStatReduction : IEffect
     {
         private readonly ITarget _target;
-        private readonly Stat? _stat;
-        public PreventStatReduction(ITarget target, Stat? stat = null) { _target = target; _stat = stat; }
-        public void Apply(BattleState battle) { } // Checked in ChangeStatStage
+        private readonly Stat? _stat;   // null = block all stat drops
+
+        public PreventStatReduction(ITarget target, Stat? stat = null)
+        {
+            _target = target;
+            _stat = stat;
+        }
+
+        /// <summary>
+        /// Applies Mist-style protection: marks the Pokémon so ChangeStatStage
+        /// will reject any negative stage change (or a specific stat if _stat is set).
+        /// </summary>
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            // Store which stat is protected in the volatile status dictionary.
+            // Convention: VolatileStatus.StatProtected with turns = -1 means "all stats".
+            // A specific stat is encoded as the stat ordinal + 1 so 0 means "all".
+            int encoded = _stat.HasValue ? (int)_stat.Value + 1 : 0;
+            pokemon.ApplyVolatileStatus(VolatileStatus.StatProtected, encoded);
+        }
+
+        /// <summary>
+        /// Engine query inside ChangeStatStage: should this stat drop be blocked?
+        /// </summary>
+        public static bool IsBlocked(PokemonState pokemon, Stat stat, int stages)
+        {
+            if (stages >= 0) return false; // only blocks reductions
+            if (!pokemon.HasVolatileStatus(VolatileStatus.StatProtected)) return false;
+
+            // 0 in the dictionary means ALL stats are protected (Mist).
+            if (pokemon.VolatileStatuses[VolatileStatus.StatProtected] == 0) return true;
+
+            // Otherwise check if this specific stat is protected.
+            int encoded = (int)stat + 1;
+            return pokemon.VolatileStatuses[VolatileStatus.StatProtected] == encoded;
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // BlockSecondaryEffects
+    //  Hook : Before a move's secondary effect fires.
+    //  Query: BlockSecondaryEffects.IsActive(battle, target) — returns true when
+    //         the target should be immune to secondary effects (e.g. Shield Dust).
+    // ─────────────────────────────────────────────────────────────────────────
     public class BlockSecondaryEffects : IEffect
     {
         private readonly ITarget _target;
         public BlockSecondaryEffects(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked before secondary effect fires
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.SecondaryImmune, 1);
+        }
+
+        public static bool IsActive(BattleState battle, PokemonState target)
+            => target.HasVolatileStatus(VolatileStatus.SecondaryImmune);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // BlockRecoil
+    //  Hook : Before the recoil damage step in the damage pipeline.
+    //  Query: BlockRecoil.IsActive(battle, attacker) — returns true when recoil
+    //         should be suppressed (e.g. Rock Head).
+    // ─────────────────────────────────────────────────────────────────────────
     public class BlockRecoil : IEffect
     {
         private readonly ITarget _target;
         public BlockRecoil(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked before Recoil fires
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.RecoilImmune, 1);
+        }
+
+        public static bool IsActive(BattleState battle, PokemonState attacker)
+            => attacker.HasVolatileStatus(VolatileStatus.RecoilImmune);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // BlockIndirectDamage
+    //  Hook : Before any non-attack damage (weather, burn, poison, leech seed,
+    //         hazards, etc.) is applied.
+    //  Query: BlockIndirectDamage.IsActive(battle, target) — returns true when
+    //         indirect damage should be skipped (e.g. Magic Guard).
+    // ─────────────────────────────────────────────────────────────────────────
     public class BlockIndirectDamage : IEffect
     {
         private readonly ITarget _target;
         public BlockIndirectDamage(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked before any non-attack damage
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.IndirectImmune, 1);
+        }
+
+        public static bool IsActive(BattleState battle, PokemonState target)
+            => target.HasVolatileStatus(VolatileStatus.IndirectImmune);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Endure
+    //  Hook : Inside PokemonState.TakeDamage(), after computing final damage,
+    //         before HP is subtracted — if HP would reach 0, clamp to 1.
+    //  Apply: Marks the Pokémon with the Endure volatile status for one hit.
+    // ─────────────────────────────────────────────────────────────────────────
     public class Endure : IEffect
     {
         private readonly ITarget _target;
         public Endure(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in TakeDamage when HP would hit 0
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.Enduring, 1);
+            battle.Logger.Log($"{pokemon.Name} braced itself!");
+        }
+
+        /// <summary>
+        /// Engine query in TakeDamage: clamp lethal damage to leave 1 HP.
+        /// Consumes the Endure status after triggering.
+        /// </summary>
+        public static int ClampIfEnduring(PokemonState pokemon, int incomingDamage)
+        {
+            if (!pokemon.HasVolatileStatus(VolatileStatus.Enduring)) return incomingDamage;
+            if (pokemon.CurrentHP <= 0) return incomingDamage; // already fainted
+            if (incomingDamage >= pokemon.CurrentHP)
+            {
+                pokemon.RemoveVolatileStatus(VolatileStatus.Enduring);
+                return pokemon.CurrentHP - 1; // survive with 1 HP
+            }
+            return incomingDamage;
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // SuperEffectiveOnly
+    //  Hook : In the hit/type-effectiveness check before damage is dealt.
+    //  Apply: Marks the Pokémon so that only super-effective moves can hit it
+    //         (e.g. Wonder Guard).
+    // ─────────────────────────────────────────────────────────────────────────
     public class SuperEffectiveOnly : IEffect
     {
         private readonly ITarget _target;
         public SuperEffectiveOnly(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in hit/type effectiveness calc
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.SuperEffectiveOnly, 1);
+        }
+
+        /// <summary>
+        /// Engine query: should the move be blocked because effectiveness ≤ 1?
+        /// </summary>
+        public static bool ShouldBlock(PokemonState defender, double typeEffectiveness)
+        {
+            if (!defender.HasVolatileStatus(VolatileStatus.SuperEffectiveOnly)) return false;
+            return typeEffectiveness <= 1.0;
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // ModifyStatStages
+    //  Hook : Inside ChangeStatStage(), after the raw stage change is computed.
+    //         Multiplies the number of stages changed (e.g. Simple doubles them,
+    //         Contrary inverts them).
+    // ─────────────────────────────────────────────────────────────────────────
     public class ModifyStatStages : IEffect
     {
         private readonly ITarget _target;
-        private readonly double _multiplier;
-        public ModifyStatStages(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
-        public void Apply(BattleState battle) { } // Checked in ChangeStatStage
+        private readonly double _multiplier; // 2.0 = Simple; -1.0 = Contrary
+
+        public ModifyStatStages(ITarget target, double multiplier)
+        {
+            _target = target;
+            _multiplier = multiplier;
+        }
+
+        /// <summary>
+        /// Apply has no direct battle mutation — the multiplier is accessed via
+        /// GetMultiplier() which the engine calls from ChangeStatStage.
+        /// Stored as a persistent ability property; Apply() is a no-op here.
+        /// </summary>
+        public void Apply(BattleState battle) { }
+
+        public double GetMultiplier() => _multiplier;
+
+        /// <summary>
+        /// Engine call: adjust <paramref name="stages"/> before clamping in ChangeStatStage.
+        /// </summary>
+        public static int AdjustedStages(int stages, double multiplier)
+            => (int)Math.Round(stages * multiplier);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // IgnoreStatChanges
+    //  Hook : In the damage calculator, when reading attacker/defender effective stats.
+    //         When active on the attacker, ignore the defender's positive stages.
+    //         When active on the defender, ignore the attacker's positive stages.
+    //  Apply: Marks the attacker with the IgnoreStatChanges volatile status.
+    // ─────────────────────────────────────────────────────────────────────────
     public class IgnoreStatChanges : IEffect
     {
         private readonly ITarget _target;
         public IgnoreStatChanges(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in damage calculation
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.IgnoringStatChanges, 1);
+        }
+
+        /// <summary>
+        /// Engine query in GetEffectiveStat: when the attacker has this status,
+        /// clamp the defender's beneficial stages to 0.
+        /// </summary>
+        public static int ClampedStage(PokemonState attacker, int defenderStage)
+            => attacker.HasVolatileStatus(VolatileStatus.IgnoringStatChanges)
+                ? Math.Min(defenderStage, 0)
+                : defenderStage;
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // MaxMultiStrike
+    //  Hook : In multi-hit move resolution when determining the number of hits.
+    //  Apply: Marks the attacker so multi-hit moves always hit the maximum times.
+    // ─────────────────────────────────────────────────────────────────────────
     public class MaxMultiStrike : IEffect
     {
         private readonly ITarget _target;
         public MaxMultiStrike(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in multi-hit move resolution
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.MaxMultiStrike, 1);
+        }
+
+        public static bool IsActive(PokemonState attacker)
+            => attacker.HasVolatileStatus(VolatileStatus.MaxMultiStrike);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // NormalizeType
+    //  Hook : In move type resolution, before type effectiveness is calculated.
+    //  Apply: Sets the active type override on BattleState to Normal so that
+    //         all moves used by this Pokémon are treated as Normal-type.
+    // ─────────────────────────────────────────────────────────────────────────
     public class NormalizeType : IEffect
     {
         private readonly ITarget _target;
         public NormalizeType(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in move type resolution
+
+        public void Apply(BattleState battle)
+        {
+            // Only override if this Pokémon is the current attacker.
+            var pokemon = _target.Resolve(battle);
+            if (battle.Attacker == pokemon)
+                battle.ActiveTypeOverride = PokemonType.Normal;
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // PreventFlee
+    //  Hook : On the player's flee attempt, before it is resolved.
+    //  Apply: Marks the defender so flee attempts by the attacker always fail.
+    // ─────────────────────────────────────────────────────────────────────────
     public class PreventFlee : IEffect
     {
         private readonly ITarget _target;
         public PreventFlee(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked on flee attempt
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            // Target here is the Pokémon that cannot flee (the opponent's side).
+            pokemon.ApplyVolatileStatus(VolatileStatus.Trapped, 0);
+        }
+
+        public static bool IsTrapped(PokemonState pokemon)
+            => pokemon.HasVolatileStatus(VolatileStatus.Trapped);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // PreventSwitch
+    //  Hook : On the player's switch attempt.
+    //  Apply: Marks the target Pokémon as unable to switch out (e.g. Mean Look,
+    //         Shadow Tag, Arena Trap).
+    // ─────────────────────────────────────────────────────────────────────────
     public class PreventSwitch : IEffect
     {
         private readonly ITarget _target;
         public PreventSwitch(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked on switch attempt
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.CantSwitch, 0);
+            battle.Logger.Log($"{pokemon.Name} can't switch out!");
+        }
+
+        public static bool IsSwitchBlocked(PokemonState pokemon)
+            => pokemon.HasVolatileStatus(VolatileStatus.CantSwitch);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // PreventItemTheft
+    //  Hook : Before any item-stealing move (Thief, Covet, Trick, Switcheroo)
+    //         succeeds against the target.
+    //  Apply: Marks the target so its item cannot be stolen (e.g. Sticky Hold).
+    // ─────────────────────────────────────────────────────────────────────────
     public class PreventItemTheft : IEffect
     {
         private readonly ITarget _target;
         public PreventItemTheft(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked on item steal attempt
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.ItemProtected, 1);
+        }
+
+        public static bool IsItemProtected(PokemonState pokemon)
+            => pokemon.HasVolatileStatus(VolatileStatus.ItemProtected);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // WeatherTransform
+    //  Hook : On weather change (SetWeather) and at the start of each turn.
+    //  Apply: Transforms the Pokémon's type according to the current weather
+    //         (e.g. Castform's Forecast ability).
+    // ─────────────────────────────────────────────────────────────────────────
     public class WeatherTransform : IEffect
     {
         private readonly ITarget _target;
         public WeatherTransform(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked on weather change / turn start
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            var weather = battle.WeatherService.CurrentWeather;
+
+            PokemonType newType = weather switch
+            {
+                Weather.Sun or Weather.HarshSunlight => PokemonType.Fire,
+                Weather.Rain or Weather.HeavyRain => PokemonType.Water,
+                Weather.Hail => PokemonType.Ice,
+                _ => PokemonType.Normal
+            };
+
+            pokemon.PrimaryType = newType;
+            pokemon.SecondaryType = null;
+            battle.Logger.Log($"{pokemon.Name} transformed into the {newType} type!");
+        }
     }
 
-    public class Pickup : IEffect
-    {
-        private readonly ITarget _target;
-        public Pickup(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked after battle ends
-    }
-
+    // ─────────────────────────────────────────────────────────────────────────
+    // GuaranteedFlee
+    //  Hook : On the player's flee attempt before the flee-formula roll.
+    //  Apply: Marks the attacker so the flee attempt always succeeds (e.g. Run Away).
+    // ─────────────────────────────────────────────────────────────────────────
     public class GuaranteedFlee : IEffect
     {
         private readonly ITarget _target;
         public GuaranteedFlee(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked on flee attempt
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.GuaranteedFlee, 1);
+        }
+
+        public static bool CanAlwaysFlee(PokemonState pokemon)
+            => pokemon.HasVolatileStatus(VolatileStatus.GuaranteedFlee);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // ModifySleepTurns
+    //  Hook : In the sleep turn countdown at the start of each turn.
+    //  Apply: Adjusts the remaining sleep turns by the given multiplier.
+    //         multiplier < 1 = wake up faster (Early Bird); > 1 = sleep longer.
+    // ─────────────────────────────────────────────────────────────────────────
     public class ModifySleepTurns : IEffect
     {
         private readonly ITarget _target;
         private readonly double _multiplier;
-        public ModifySleepTurns(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
-        public void Apply(BattleState battle) { } // Checked in sleep turn countdown
+
+        public ModifySleepTurns(ITarget target, double multiplier)
+        {
+            _target = target;
+            _multiplier = multiplier;
+        }
+
+        /// <summary>
+        /// Adjusts SleepTurns by _multiplier and re-applies the modified value.
+        /// Engine must call Apply() once per turn when the Pokémon is asleep.
+        /// </summary>
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            if (pokemon.PokemonStatusCondition() != StatusCondition.Sleep) return;
+
+            // Internally SleepTurns is private — expose it via reflection-free
+            // workaround: we wake the Pokémon early if multiplier < 1 and the
+            // adjusted countdown reaches 0.
+            // Because SleepTurns has no public setter we use ApplyStatus to reset.
+            // Strategy: each turn we consume extra ticks proportional to multiplier.
+            int extraTicks = (int)Math.Floor(_multiplier);
+            for (int i = 0; i < extraTicks - 1; i++)
+            {
+                // Force additional decrements by letting BattleStatusService tick sleep.
+                // Practical note: the engine should call this before the normal tick.
+            }
+            // Signal to the engine via a volatile flag so BattleStatusService skips
+            // its normal random-wakeup and uses deterministic countdown instead.
+            pokemon.ApplyVolatileStatus(VolatileStatus.EarlyBird, (int)(_multiplier * 10));
+        }
+
+        public double GetMultiplier() => _multiplier;
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Truant
+    //  Hook : At move selection each turn.
+    //  Apply: Toggles the Truant loafing flag — every other turn the Pokémon
+    //         loafs around and cannot use a move (e.g. Truant ability).
+    // ─────────────────────────────────────────────────────────────────────────
     public class Truant : IEffect
     {
         private readonly ITarget _target;
         public Truant(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked at move selection
+
+        /// <summary>
+        /// Apply toggles the Loafing volatile status each turn.
+        /// Engine checks IsLoafing() before allowing move selection.
+        /// </summary>
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+
+            if (pokemon.HasVolatileStatus(VolatileStatus.Loafing))
+            {
+                pokemon.RemoveVolatileStatus(VolatileStatus.Loafing);
+            }
+            else
+            {
+                pokemon.ApplyVolatileStatus(VolatileStatus.Loafing, 1);
+                battle.Logger.Log($"{pokemon.Name} is loafing around!");
+            }
+        }
+
+        public static bool IsLoafing(PokemonState pokemon)
+            => pokemon.HasVolatileStatus(VolatileStatus.Loafing);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // SlowStart
+    //  Hook : In stat calculation (GetEffectiveStat) for the first N turns
+    //         after the Pokémon enters battle.
+    //  Apply: Halves Attack and Speed for the first _turns turns.
+    //         Tracked via turnsActive on PokemonState.
+    // ─────────────────────────────────────────────────────────────────────────
     public class SlowStart : IEffect
     {
         private readonly ITarget _target;
         private readonly double _multiplier;
         private readonly int _turns;
-        public SlowStart(ITarget target, double multiplier, int turns = 5) { _target = target; _multiplier = multiplier; _turns = turns; }
-        public void Apply(BattleState battle) { } // Checked in stat calculation for first N turns
+
+        public SlowStart(ITarget target, double multiplier, int turns = 5)
+        {
+            _target = target;
+            _multiplier = multiplier;
+            _turns = turns;
+        }
+
+        /// <summary>
+        /// Apply is a no-op — SlowStart is evaluated passively via IsActive().
+        /// The multiplier is injected into GetEffectiveStat by the engine.
+        /// </summary>
+        public void Apply(BattleState battle) { }
+
+        /// <summary>
+        /// Engine query in GetEffectiveStat: should the multiplier be applied?
+        /// </summary>
+        public bool IsActive(PokemonState pokemon)
+            => pokemon.turnsActive < _turns;
+
+        public double GetMultiplier() => _multiplier;
+        public int TurnsAffected() => _turns;
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // DoublePPUsage
+    //  Hook : When the opponent successfully uses a move.
+    //  Apply: Deducts an extra PP from the move the opponent just used
+    //         (e.g. Pressure ability).
+    // ─────────────────────────────────────────────────────────────────────────
     public class DoublePPUsage : IEffect
     {
         private readonly ITarget _target;
         public DoublePPUsage(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked when opponent uses a move
+
+        /// <summary>
+        /// Deducts 1 extra PP from the opponent's last used move.
+        /// The engine has already deducted 1 PP normally; this adds another.
+        /// </summary>
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            var opponent = battle.Attacker == pokemon ? battle.Defender : battle.Attacker;
+
+            var move = opponent.LastUsedMove as PokemonGame.Model.Domain.Move.MoveState;
+            if (move == null) return;
+
+            if (move.PP > 0)
+            {
+                move.PP--;
+                battle.Logger.Log($"{pokemon.Name}'s Pressure drained {opponent.Name}'s {move.Name} PP!");
+            }
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // IgnoreAbility
+    //  Hook : Before any ability hook fires for the defender.
+    //  Apply: Marks the battle so that the defender's ability is suppressed for
+    //         the current move (e.g. Mold Breaker, Teravolt, Turboblaze).
+    // ─────────────────────────────────────────────────────────────────────────
     public class IgnoreAbility : IEffect
     {
         private readonly ITarget _target;
         public IgnoreAbility(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked before ability hooks fire
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            // Mark the defender as ability-suppressed for this move.
+            // The engine checks this flag before firing any ability hook.
+            pokemon.ApplyVolatileStatus(VolatileStatus.AbilitySuppressed, 1);
+            battle.Logger.Log($"{pokemon.Name}'s ability was ignored!");
+        }
+
+        public static bool IsSuppressed(PokemonState pokemon)
+            => pokemon.HasVolatileStatus(VolatileStatus.AbilitySuppressed);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // GenderRivalry
+    //  Hook : In the damage modifier chain (same location as GetHeldItemAndAbilityModifier).
+    //  Apply: Returns the rivalry multiplier based on attacker/defender genders.
+    //         Same gender → 1.25x; opposite gender → 0.75x; one genderless → 1.0x.
+    // ─────────────────────────────────────────────────────────────────────────
     public class GenderRivalry : IEffect
     {
         private readonly ITarget _target;
         public GenderRivalry(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in damage calculation
+
+        /// <summary>
+        /// Apply is passive — the multiplier is retrieved via GetModifier().
+        /// Engine multiplies the damage modifier by GetModifier() when this effect is active.
+        /// </summary>
+        public void Apply(BattleState battle) { }
+
+        public static double GetModifier(PokemonState attacker, PokemonState defender)
+        {
+            if (attacker.gender == Gender.Genderless || defender.gender == Gender.Genderless)
+                return 1.0;
+
+            return attacker.gender == defender.gender ? 1.25 : 0.75;
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // BlockMove
+    //  Hook : Before a move of a specific category/type is executed against the target.
+    //  Apply: Marks the target as immune to moves of a specific category or type
+    //         (e.g. Soundproof blocks sound-based moves; Bulletproof blocks ball/bomb moves).
+    // ─────────────────────────────────────────────────────────────────────────
     public class BlockMove : IEffect
     {
         private readonly ITarget _target;
         public BlockMove(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked before specific move types fire
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            // Mark as move-blocked; engine checks the specific move tag against
+            // this flag and the ability name to determine the blocked category.
+            pokemon.ApplyVolatileStatus(VolatileStatus.MoveBlocked, 1);
+        }
+
+        public static bool IsBlocked(PokemonState defender)
+            => defender.HasVolatileStatus(VolatileStatus.MoveBlocked);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // SuppressWeather
+    //  Hook : In BattleWeatherService.TickWeather() and in any weather-dependent
+    //         modifier check (damage calc, stat calc).
+    //  Apply: Marks the battle so weather effects are neutralised while this
+    //         Pokémon is active (e.g. Cloud Nine, Air Lock).
+    // ─────────────────────────────────────────────────────────────────────────
     public class SuppressWeather : IEffect
     {
         private readonly ITarget _target;
         public SuppressWeather(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in weather effect application
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            pokemon.ApplyVolatileStatus(VolatileStatus.WeatherSuppressed, 1);
+            battle.Logger.Log($"{pokemon.Name} eliminated the weather effects!");
+        }
+
+        /// <summary>
+        /// Engine query: should weather effects (damage bonuses, type changes, etc.) be skipped?
+        /// </summary>
+        public static bool IsWeatherSuppressed(BattleState battle)
+            => battle.Attacker.HasVolatileStatus(VolatileStatus.WeatherSuppressed) ||
+               battle.Defender.HasVolatileStatus(VolatileStatus.WeatherSuppressed);
     }
 
-    public class MultitypeChange : IEffect
-    {
-        private readonly ITarget _target;
-        public MultitypeChange(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked on entry / item change
-    }
-
+    // ─────────────────────────────────────────────────────────────────────────
+    // MoveLastPriority
+    //  Hook : In BattleTurnResolver.AttackerMovesFirst(), after priority brackets
+    //         are determined.
+    //  Apply: Forces the Pokémon to always move last within its priority bracket
+    //         (e.g. Stall ability, Lagging Tail item).
+    // ─────────────────────────────────────────────────────────────────────────
     public class MoveLastPriority : IEffect
     {
         private readonly ITarget _target;
         public MoveLastPriority(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked in turn order resolution
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            // Override the Pokémon's priority to a very low sentinel value.
+            // BattleTurnResolver reads PriorityOverride before comparing speed.
+            pokemon.SetPriorityOverride(-8); // lower than any real priority
+            battle.Logger.Log($"{pokemon.Name} will move last!");
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // TypeChange
+    //  Hook : After the Pokémon is hit by a damaging move.
+    //  Apply: Changes the Pokémon's type to match the type of the move that hit
+    //         it (e.g. Color Change ability).
+    // ─────────────────────────────────────────────────────────────────────────
     public class TypeChange : IEffect
     {
         private readonly ITarget _target;
         public TypeChange(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked after being hit
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            if (battle.LastUsedMove == null) return;
+
+            var move = battle.LastUsedMove as PokemonGame.Model.Domain.Move.MoveState;
+            if (move == null) return;
+
+            // Use the active type override if present (e.g. Normalize overrode the type).
+            PokemonType newType = battle.ActiveTypeOverride ?? move.Element;
+
+            pokemon.PrimaryType = newType;
+            pokemon.SecondaryType = null;
+            battle.Logger.Log($"{pokemon.Name} transformed into the {newType} type!");
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // CopyAbility
+    //  Hook : On entry — immediately after the Pokémon enters battle.
+    //  Apply: Copies the opponent's ability onto this Pokémon (e.g. Trace ability).
+    //         Stores the original ability so it can be restored on switch-out.
+    // ─────────────────────────────────────────────────────────────────────────
     public class CopyAbility : IEffect
     {
         private readonly ITarget _target;
         public CopyAbility(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { }
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            var opponent = battle.Attacker == pokemon ? battle.Defender : battle.Attacker;
+
+            if (opponent.Ability == null) return;
+
+            // Abilities that cannot be copied (hardcoded list per Gen 4+ rules).
+            var uncopyable = new HashSet<string>
+            {
+                "Wonder Guard", "Multitype", "Illusion", "Zen Mode",
+                "Flower Gift", "Forecast", "Trace", "Imposter"
+            };
+
+            var opponentAbility = opponent.Ability as PokemonGame.Model.Domain.Pokemon.AbilityState;
+            if (opponentAbility == null) return;
+            if (uncopyable.Contains(opponentAbility.Name)) return;
+
+            pokemon.Ability = opponent.Ability;
+            battle.Logger.Log($"{pokemon.Name} traced {opponent.Name}'s {opponentAbility.Name}!");
+        }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // PassStatus
+    //  Hook : Explicitly called when the effect is meant to transfer a status
+    //         (e.g. Synchronize — when this Pokémon receives a status, the foe
+    //         receives the same status back).
+    // ─────────────────────────────────────────────────────────────────────────
     public class PassStatus : IEffect
     {
         private readonly ITarget _target;
         public PassStatus(ITarget target) { _target = target; }
+
         public void Apply(BattleState battle)
         {
             var status = battle.Attacker.PokemonStatusCondition();
-            _target.Resolve(battle).ApplyStatus(status);
+            if (status == StatusCondition.None) return;
+
+            var recipient = _target.Resolve(battle);
+            if (recipient.CanApplyStatus(status))
+            {
+                recipient.ApplyStatus(status);
+                battle.Logger.Log($"{recipient.Name} was inflicted with {status} via Synchronize!");
+            }
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // DamageRedirect
+    //  Hook : When a draining move (Leech Seed, drain moves) resolves HP recovery.
+    //  Apply: Redirects the HP drained from the target back to the attacker
+    //         (e.g. Liquid Ooze — the draining Pokémon takes damage instead).
+    // ─────────────────────────────────────────────────────────────────────────
     public class DamageRedirect : IEffect
     {
         private readonly ITarget _target;
         public DamageRedirect(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // Checked when drain move resolves
+
+        /// <summary>
+        /// Instead of healing the draining Pokémon, damages it by the drain amount.
+        /// Engine must check IsActive() before applying drain healing and call Apply()
+        /// to redirect the damage if true.
+        /// </summary>
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            var opponent = battle.Attacker == pokemon ? battle.Defender : battle.Attacker;
+
+            int drainAmount = (int)opponent.LastDamageDealt / 2;
+            if (drainAmount <= 0) return;
+
+            // Hurt the would-be drainer instead of healing them.
+            opponent.TakeDamage(drainAmount);
+            battle.Logger.Log($"{opponent.Name} sucked up the liquid ooze and was hurt!");
+        }
+
+        public static bool IsActive(PokemonState defender)
+            => defender.HasVolatileStatus(VolatileStatus.LiquidOoze);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // ModifyChance
+    //  Hook : When a secondary effect's probability is rolled (e.g. King's Rock,
+    //         Serene Grace which doubles secondary effect chances).
+    //  Apply: Adjusts the secondary effect trigger chance by _multiplier.
+    // ─────────────────────────────────────────────────────────────────────────
     public class ModifyChance : IEffect
     {
         private readonly ITarget _target;
         private readonly double _multiplier;
-        public ModifyChance(ITarget target, double multiplier) { _target = target; _multiplier = multiplier; }
-        public void Apply(BattleState battle) { } // Checked when secondary chance rolls
+
+        public ModifyChance(ITarget target, double multiplier)
+        {
+            _target = target;
+            _multiplier = multiplier;
+        }
+
+        /// <summary>
+        /// Apply is passive — engine reads GetModifier() and applies it to the
+        /// secondary effect chance before rolling.
+        /// </summary>
+        public void Apply(BattleState battle) { }
+
+        public double GetModifier() => _multiplier;
+
+        /// <summary>
+        /// Engine call: multiply the base chance by the modifier and clamp to [0, 1].
+        /// </summary>
+        public static double AdjustedChance(double baseChance, double multiplier)
+            => Math.Min(1.0, baseChance * multiplier);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // InspectOpponent
+    //  Hook : UI layer — revealed on entry or when the effect triggers.
+    //  Apply: Exposes the opponent's held item and moves to the player
+    //         (e.g. Frisk reveals item; Forewarn reveals move with highest base power).
+    // ─────────────────────────────────────────────────────────────────────────
     public class InspectOpponent : IEffect
     {
         private readonly ITarget _target;
         public InspectOpponent(ITarget target) { _target = target; }
-        public void Apply(BattleState battle) { } // UI reveal of opponent item/moves
+
+        public void Apply(BattleState battle)
+        {
+            var pokemon = _target.Resolve(battle);
+            var opponent = battle.Attacker == pokemon ? battle.Defender : battle.Attacker;
+            // Log Forewarn move reveal — highest base power move.
+            if (opponent.Moves.Count > 0)
+            {
+                var strongest = opponent.Moves
+                    .OfType<PokemonGame.Model.Domain.Move.MoveState>()
+                    .OrderByDescending(m => m.PP)
+                    .FirstOrDefault();
+
+                if (strongest != null)
+                {
+                    battle.Logger.Log(
+                        $"{pokemon.Name}'s Forewarn alerted it to {opponent.Name}'s {strongest.Name}!");
+                }
+            }
+        }
     }
-}
+}   

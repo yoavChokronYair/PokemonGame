@@ -4,6 +4,7 @@ using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Domain.Pokemon
 {
@@ -93,12 +94,6 @@ namespace PokemonGame.Model.Domain.Pokemon
         public PokemonState() { }
 
         // ── HP ────────────────────────────────────────────────────────────────
-        public void TakeDamage(int amount)
-        {
-            LastDamageTaken = Math.Min(amount, CurrentHP);
-            CurrentHP = Math.Max(0, CurrentHP - amount);
-        }
-
         public void RestoreHP(int amount) => CurrentHP = Math.Min(MaxHP, CurrentHP + amount);
         public void RegisterDamageDealt(int amount) => LastDamageDealt = amount;
         public void RegisterDamageTaken(int amount) => LastDamageTaken = amount;
@@ -160,7 +155,20 @@ namespace PokemonGame.Model.Domain.Pokemon
             if (!VolatileStatuses.ContainsKey(status))
                 VolatileStatuses[status] = turns;
         }
+        public void TakeDamage(int amount)
+        {
+            amount = Endure.ClampIfEnduring(this, amount);
+            LastDamageTaken = Math.Min(amount, CurrentHP);
+            CurrentHP = Math.Max(0, CurrentHP - amount);
+        }
 
+        public void ChangeStatStage(Stat stat, int stages)
+        {
+            if (PreventStatReduction.IsBlocked(this, stat, stages))
+                return;
+
+            StatStages[stat] = MathHelper.Clamp(StatStages[stat] + stages, -6, 6);
+        }
         public bool HasVolatileStatus(VolatileStatus status) => VolatileStatuses.ContainsKey(status);
         public void RemoveVolatileStatus(VolatileStatus status) => VolatileStatuses.Remove(status);
 
@@ -227,9 +235,6 @@ namespace PokemonGame.Model.Domain.Pokemon
 
             return (int)(baseStat * multiplier);
         }
-
-        public void ChangeStatStage(Stat stat, int stages)
-            => StatStages[stat] = MathHelper.Clamp(StatStages[stat] + stages, -6, 6);
 
         public bool CanIncreaseStat(Stat stat)
             => StatStages.TryGetValue(stat, out int stage) && stage < 6;

@@ -209,5 +209,4 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             _navigationStore.CurrentViewModel = _createCancelViewModel();
         }
     }
-
 }

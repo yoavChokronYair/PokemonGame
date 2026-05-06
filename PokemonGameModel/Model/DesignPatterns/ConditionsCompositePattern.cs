@@ -17,24 +17,29 @@ using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.DesignPatterns
 {
-    // ── Condition Combinators ─────────────────────────────────────────────────
-    public class NoCondition : ICondition<BattleState>
+    public class IsBattleOver : ICondition<BattleState>
     {
-        public bool Check(BattleState entity)
+        public bool Check(BattleState battle) => battle.IsBattleOver;
+    }
+    public class WasHitByCrit : ICondition<BattleState>
+    {
+        public bool Check(BattleState battle)
         {
-            return true;
+            if (battle.LastUsedMove is MoveState lastMove)
+            {
+
+                return lastMove.CritStage == 1;
+            }
+            return false;
         }
     }
+    // ── Condition Combinators ─────────────────────────────────────────────────
     public class And<T> : ICondition<T>
     {
         private readonly ICondition<T> _left;
         private readonly ICondition<T> _right;
         public And(ICondition<T> left, ICondition<T> right) { _left = left; _right = right; }
         public bool Check(T entity) => _left.Check(entity) && _right.Check(entity);
-    }
-    public class AlwaysFalseCondition<T> : ICondition<T>
-    {
-        public bool Check(T state) => false;
     }
     public class Or<T> : ICondition<T>
     {
@@ -79,23 +84,12 @@ namespace PokemonGame.Model.Model.DesignPatterns
         public bool Check(PokemonState battle) => RandomHelper.NextBool(_probability);
     }
     // ── Battle/Environment Conditions ─────────────────────────────────────────
-
+    
     public class IsNewPokemon : ICondition<BattleState>
     {
         public bool Check(BattleState battle) => battle.Attacker.turnsActive == 0;
     }
-    public class WasHitByCrit : ICondition<BattleState>
-    {
-        public bool Check(BattleState battle)
-        {
-            if (battle.LastUsedMove is MoveState lastMove)
-            {
-
-                return lastMove.CritStage == 1;
-            }
-            return false;
-        }
-    }
+    
     public class IsWeatherActive : ICondition<BattleState>
     {
         private readonly Weather _weather;
@@ -114,12 +108,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         public bool Check(BattleState battle) => battle.TerrainService.CurrentTerrain != TerrainType.None;
     }
-
-    public class IsBattleOver : ICondition<BattleState>
-    {
-        public bool Check(BattleState battle) => battle.IsBattleOver;
-    }
-
     // ── Move-Based Conditions (on Attacker's last move) ───────────────────────
 
     public class WasHitByContact : ICondition<BattleState>
@@ -198,32 +186,26 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         public bool Check(BattleState battle) => battle.Attacker.WasStatLoweredThisTurn;
     }
-   
-
     public class IsFainted : ICondition<BattleState>
     {
         public bool Check(BattleState battle) => battle.Attacker.IsFainted;
     }
-
     public class IsFullHP : ICondition<BattleState>
     {
         public bool Check(BattleState battle) => battle.Attacker.CurrentHP == battle.Attacker.MaxHP;
     }
-
     public class HPBelow : ICondition<BattleState>
     {
         private readonly double _fraction;
         public HPBelow(double fraction) { _fraction = fraction; }
         public bool Check(BattleState battle) => battle.Attacker.GetHPFraction() < _fraction;
     }
-
     public class HasType : ICondition<BattleState>
     {
         private readonly PokemonType _type;
         public HasType(PokemonType type) { _type = type; }
         public bool Check(BattleState battle) => battle.Attacker.HasType(_type);
     }
-
     // Adapter: wraps a PokemonDomain condition so it can be used as ICondition<BattleDomain>.
     public class UserCondition : ICondition<BattleState>
     {

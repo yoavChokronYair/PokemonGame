@@ -31,7 +31,7 @@ namespace PokemonGame.ViewModels.Translators
                 "RestoreHP" => new RestoreHP(ResolveTarget(e.Target), TranslateNumber(e.Number!)),
                 "OHKO" => new OHKO(ResolveTarget(e.Target)),
                 "Faint" => new Faint(ResolveTarget(e.Target)),
-
+                "PowerUpMove" => new PowerUpMove( e.Multiplier ?? 1.0),
                 "Paralyze" => new Paralyze(ResolveTarget(e.Target)),
                 "Burn" => new Burn(ResolveTarget(e.Target)),
                 "Poison" => new Poison(ResolveTarget(e.Target), e.IsToxic),
@@ -89,7 +89,6 @@ namespace PokemonGame.ViewModels.Translators
                 "PreventSwitch" => new PreventSwitch(ResolveTarget(e.Target)),
                 "PreventItemTheft" => new PreventItemTheft(ResolveTarget(e.Target)),
                 "WeatherTransform" => new WeatherTransform(ResolveTarget(e.Target)),
-                "Pickup" => new Pickup(ResolveTarget(e.Target)),
                 "GuaranteedFlee" => new GuaranteedFlee(ResolveTarget(e.Target)),
                 "ModifySleepTurns" => new ModifySleepTurns(ResolveTarget(e.Target), e.Multiplier ?? 1.0),
                 "Truant" => new Truant(ResolveTarget(e.Target)),
@@ -99,7 +98,6 @@ namespace PokemonGame.ViewModels.Translators
                 "GenderRivalry" => new GenderRivalry(ResolveTarget(e.Target)),
                 "BlockMove" => new BlockMove(ResolveTarget(e.Target)),
                 "SuppressWeather" => new SuppressWeather(ResolveTarget(e.Target)),
-                "MultitypeChange" => new MultitypeChange(ResolveTarget(e.Target)),
                 "MoveLastPriority" => new MoveLastPriority(ResolveTarget(e.Target)),
                 "TypeChange" => new TypeChange(ResolveTarget(e.Target)),
                 "CopyAbility" => new CopyAbility(ResolveTarget(e.Target)),
@@ -150,8 +148,7 @@ namespace PokemonGame.ViewModels.Translators
                 "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
                 "IsTerrainActive" => new IsTerrainActive(ParseEnum<TerrainType>(c.Terrain!)),
                 "IsAnyTerrainActive" => new IsAnyTerrainActive(),
-                "IsBattleOver" => new IsBattleOver(),
-                "IsNewPokemon" => new IsNewPokemon(),
+                
 
                 // --- Move Context Conditions ---
                 "WasHitByContact" => new WasHitByContact(),
@@ -173,6 +170,8 @@ namespace PokemonGame.ViewModels.Translators
                 "DidKnockoutOpponent" => new DidKnockoutOpponent(),
                 "HasBaseStatChanged" => new HasBaseStatChanged(),
                 "IsGrounded" => new IsGrounded(),
+                "IsBattleOver" => new IsBattleOver(),
+                "IsNewPokemon" => new IsNewPokemon(),
 
                 // --- Combinators (Recursive) ---
                 "And" => new And<BattleState>(TranslateCondition(c.Left), TranslateCondition(c.Right)),
@@ -186,7 +185,7 @@ namespace PokemonGame.ViewModels.Translators
                 // OpponentCondition wraps an ICondition<PokemonState> to check the Defender
                 "OpponentCondition" => new OpponentCondition(TranslatePokemonCondition(c.Inner!)),
 
-                _ => new NoCondition()
+                _ => throw new NotSupportedException($"Unknown condition type: '{c.Type}'")
             };
         }
 
