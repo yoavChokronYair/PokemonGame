@@ -26,6 +26,7 @@ namespace PokemonGame.Model.Model.Battle
                     if (RandomHelper.Next(0, 3) == 0)
                     {
                         pokemon.ApplyStatus(StatusCondition.None);
+                        pokemon.ClearStatus();
                         _logger.Log($"{pokemon.Name} woke up!");
                     }
                     break;

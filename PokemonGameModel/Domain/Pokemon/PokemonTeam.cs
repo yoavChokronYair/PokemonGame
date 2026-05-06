@@ -12,10 +12,16 @@ namespace PokemonGame.Model.Domain.Pokemon
 
         private PokemonTeam(IReadOnlyList<PokemonState> roster)
         {
-            if (roster.Count != PokemonConstants.PartyCapacity)
+            // Fix: Check that the roster is between 1 and the maximum allowed capacity (6)
+            if (roster == null || roster.Count == 0)
+            {
+                throw new ArgumentException("A team must have at least 1 Pokémon.");
+            }
+
+            if (roster.Count > PokemonConstants.PartyCapacity)
             {
                 throw new ArgumentException(
-                    $"A team must have exactly {PokemonConstants.PartyCapacity} Pokémon, got {roster.Count}.");
+                    $"A team cannot exceed {PokemonConstants.PartyCapacity} Pokémon, got {roster.Count}.");
             }
 
             _slots = roster.ToArray();

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using Newtonsoft.Json.Linq;
 
 namespace PokemonGame.Converters
 {
@@ -17,7 +18,8 @@ namespace PokemonGame.Converters
             if (!double.TryParse(values[1]?.ToString(), out var max) || max <= 0) return 0d;
 
             double barWidth = parameter is string p && double.TryParse(p, out var pw) ? pw : 200d;
-            return Math.Clamp(current / max * barWidth, 0, barWidth);
+            var value = (current / max) * barWidth;
+            return Math.Max(0, Math.Min(value, barWidth));
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

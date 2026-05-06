@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 using PokemonGame.Views.Windows;
 
 namespace PokemonGame.ViewModels.ViewModelHelper.Service
@@ -66,6 +67,31 @@ namespace PokemonGame.ViewModels.ViewModelHelper.Service
             });
 
             return Task.FromResult(result);
+        }
+        public Task<BattleResultAction> ShowBattleResultAsync(BattleViewModel vm)
+        {
+            BattleResultAction chosen = BattleResultAction.Back;
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // Create the actual BattleResult WPF Window
+                var window = new BattleResult
+                {
+                    DataContext = vm, // Set the current BattleViewModel as DataContext
+                    Owner = Application.Current.MainWindow
+                };
+
+                // Close the window on the vm action request
+                vm.CloseRequested += ((_, action) =>
+                {
+                    chosen = action;
+                    window.Close();
+                });
+
+                window.ShowDialog();
+            });
+
+            return Task.FromResult(chosen);
         }
     }
 }

@@ -6,6 +6,7 @@ using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.ViewModels.ViewModelHelper.Service;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
@@ -13,6 +14,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     public class BattleViewModel : ViewModelBase
     {
         private readonly BattleManager _manager;
+        private readonly NavigationStore _navigationStore;
+        private readonly IDialogService _dialogService;
+        private readonly Func<ViewModelBase> _createGameModeChooserViewModel;
 
         public PokemonBattleStatusViewModel PlayerStatus { get; }
         public EnemyBattleStatusViewModel EnemyStatus { get; }
@@ -20,11 +24,93 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public BattleLoggerViewModel Logger { get; }
 
         private int _logCursor = 0;
+        private bool _isBattleOverHandled = false;
 
         public string? WinnerName => _manager.Winner?.Active.Name;
 
-        public BattleViewModel(UserStore playerUserStore)
+        // ── Winner & Method ──────────────────────────────────────────────
+        private string _winnerText = "BLACK WON";
+        public string WinnerText
         {
+            get => _winnerText;
+            set => SetProperty(ref _winnerText, value);
+        }
+
+        private string _resultMethod = "by resignation";
+        public string ResultMethod
+        {
+            get => _resultMethod;
+            set => SetProperty(ref _resultMethod, value);
+        }
+
+        // ── Rank Section ─────────────────────────────────────────────────
+        private string _rankName = "Gold III";
+        public string RankName
+        {
+            get => _rankName;
+            set => SetProperty(ref _rankName, value);
+        }
+
+        private int _rankDelta = -25;
+        public int RankDelta
+        {
+            get => _rankDelta;
+            set
+            {
+                if (SetProperty(ref _rankDelta, value))
+                {
+                    OnPropertyChanged(nameof(RankDeltaText));
+                    OnPropertyChanged(nameof(IsPositiveDelta));
+                }
+            }
+        }
+
+        public string RankDeltaText => RankDelta >= 0 ? $"+{RankDelta}" : $"{RankDelta}";
+        public bool IsPositiveDelta => RankDelta >= 0;
+
+        // ── Progress Bar ─────────────────────────────────────────────────
+        private int _ratingCurrent = 35;
+        public int RatingCurrent
+        {
+            get => _ratingCurrent;
+            set
+            {
+                if (SetProperty(ref _ratingCurrent, value))
+                    OnPropertyChanged(nameof(RatingText));
+            }
+        }
+
+        private int _ratingMax = 100;
+        public int RatingMax
+        {
+            get => _ratingMax;
+            set
+            {
+                if (SetProperty(ref _ratingMax, value))
+                    OnPropertyChanged(nameof(RatingText));
+            }
+        }
+
+        public string RatingText => $"{RatingCurrent}/{RatingMax}";
+
+        // ── Commands ─────────────────────────────────────────────────────
+        public ICommand NewGameCommand { get; }
+        public ICommand BackCommand { get; }
+        public ICommand RematchCommand { get; }
+
+        // Event for the Dialog Window to subscribe to
+        public event EventHandler<BattleResultAction>? CloseRequested;
+
+        public BattleViewModel(
+            UserStore playerUserStore,
+            NavigationStore navigationStore,
+            IDialogService dialogService,
+            Func<ViewModelBase> createGameModeChooserViewModel)
+        {
+            _navigationStore = navigationStore;
+            _dialogService = dialogService;
+            _createGameModeChooserViewModel = createGameModeChooserViewModel;
+
             var session = playerUserStore.BattleSesion;
 
             var playerTeam = session.ResolvedPlayerTeam
@@ -41,6 +127,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             PlayerStatus = new PokemonBattleStatusViewModel();
             EnemyStatus = new EnemyBattleStatusViewModel();
             BattleMenu = new BattleMenuViewModel(OnMoveChosen, OnSwitchChosen, _manager, Logger);
+
+            // Initialize command logic to publish event actions back up
+            NewGameCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.NewGame));
+            BackCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.Back));
+            RematchCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.Rematch));
 
             SyncAll(flushSetup: true);
         }
@@ -89,6 +180,45 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
 
             OnPropertyChanged(nameof(WinnerName));
+
+            if (_manager.Winner != null && !_isBattleOverHandled)
+            {
+                _isBattleOverHandled = true;
+                _ = OnBattleEndedAsync();
+            }
+        }
+
+        private async Task OnBattleEndedAsync()
+        {
+            bool playerWon = _manager.Winner == _manager.PlayerTeam;
+
+            // Set properties inside this viewmodel!
+            WinnerText = playerWon ? "YOU WON!" : "YOU LOST!";
+            ResultMethod = playerWon ? "All opposing Pokémon fainted" : "Your party fainted";
+            RankName = "Gold III";
+            RankDelta = playerWon ? 18 : -25;
+            RatingCurrent = 35;
+            RatingMax = 100;
+
+            // Trigger the service directly passing this viewmodel instance
+            BattleResultAction action = await _dialogService.ShowBattleResultAsync(this);
+
+            switch (action)
+            {
+                case BattleResultAction.NewGame:
+                case BattleResultAction.Back:
+                    _navigationStore.CurrentViewModel = _createGameModeChooserViewModel();
+                    break;
+
+                case BattleResultAction.Rematch:
+                    _navigationStore.CurrentViewModel = new BattleViewModel(
+                        UserStore.Instance,
+                        _navigationStore,
+                        _dialogService,
+                        _createGameModeChooserViewModel
+                    );
+                    break;
+            }
         }
 
         private static BotLevel ResolveBotLevel(BotDifficulty difficulty) =>
@@ -100,7 +230,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 _ => BotLevel.Easy
             };
     }
-
 
     // ── BattlePokemonMovesetChooserViewModel ──────────────────────────────────
     public class BattlePokemonMovesetChooserViewModel : ViewModelBase

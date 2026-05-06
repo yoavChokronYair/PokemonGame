@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using GalaSoft.MvvmLight.Views;
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -140,7 +141,12 @@ namespace PokemonGame
         }
         private BattleViewModel CreateBattleViewModel()
         {
-            return new BattleViewModel(UserStore.Instance);
+            return new BattleViewModel(
+                UserStore.Instance,
+                _navigationStore,
+                new DialogService(),                     // Pass your concrete DialogService
+                CreateGameModeChooserViewModel      // Pass the navigation target factory
+            );
         }
         private BattleConnectorViewModel CreateBattleConnectorViewModel()
         {
