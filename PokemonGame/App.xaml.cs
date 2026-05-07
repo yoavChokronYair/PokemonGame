@@ -158,7 +158,7 @@ namespace PokemonGame
                 _navigationStore,
                 CreateBattleViewModel,
                 onSwitchChosen,
-                true // immediate switching
+                false // immediate switching
             );
         }
 

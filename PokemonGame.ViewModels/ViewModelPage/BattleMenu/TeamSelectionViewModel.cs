@@ -129,7 +129,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private readonly Action<int> _onSwitchChosen;
 
         public ObservableCollection<PokemonSlotViewModel> Slots { get; } = new();
+        private bool _isActionMenuOpen;
 
+        public bool IsActionMenuOpen
+        {
+            get => _isActionMenuOpen;
+            set => SetProperty(ref _isActionMenuOpen, value);
+        }
+
+        public ICommand SwitchCommand { get; }
+        public ICommand MovePokemonCommand { get; }
+        public ICommand OpenSummaryCommand { get; }
+        public ICommand CloseActionMenuCommand { get; }
         public ICommand CancelCommand { get; }
 
         public TeamSelectionViewModel(
@@ -153,6 +164,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             ConfirmSelectionCommand = new RelayCommand(
                 ConfirmSelection,
                 CanConfirmSelection);
+            SwitchCommand = new RelayCommand<PokemonSlotViewModel>(OnSwitch);
+            MovePokemonCommand = new RelayCommand<PokemonSlotViewModel>(OnMovePokemon);
+            OpenSummaryCommand = new RelayCommand<PokemonSlotViewModel>(OnSummary);
+            CloseActionMenuCommand = new RelayCommand(CloseActionMenu);
 
             LoadTeam();
         }
@@ -214,24 +229,48 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
         private void OnSlotSelected(PokemonSlotViewModel selected)
         {
-            if (selected.IsEmpty)
-                return;
-
             foreach (var slot in Slots)
                 slot.IsSelected = false;
 
             selected.IsSelected = true;
 
-            if (_switchImmediately)
-            {
-                _onSwitchChosen?.Invoke(selected.SlotIndex);
+            IsActionMenuOpen = true;
+        }
+        private void OnSwitch(PokemonSlotViewModel? slot)
+        {
+            if (slot == null)
+                return;
 
-                _navigationStore.CurrentViewModel =
-                    _createCancelViewModel();
-            }
+            _onSwitchChosen?.Invoke(slot.SlotIndex);
 
-            ((RelayCommand)ConfirmSelectionCommand)
-                .NotifyCanExecuteChanged();
+            IsActionMenuOpen = false;
+
+            _navigationStore.CurrentViewModel =
+                _createCancelViewModel();
+        }
+
+        private void OnMovePokemon(PokemonSlotViewModel? slot)
+        {
+            if (slot == null)
+                return;
+
+            // future move logic
+        }
+
+        private void OnSummary(PokemonSlotViewModel? slot)
+        {
+            if (slot == null)
+                return;
+
+            // future summary navigation
+        }
+
+        private void CloseActionMenu()
+        {
+            IsActionMenuOpen = false;
+
+            foreach (var slot in Slots)
+                slot.IsSelected = false;
         }
     }
 }
