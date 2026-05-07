@@ -25,16 +25,19 @@
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <Rectangle
-                x:Name="HPBarFiller"
                 Grid.Row="2"
                 Grid.Column="2"
                 Width="134.4"
                 Height="8.275"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Fill="{Binding HPColor}">
+                Fill="{Binding HPColor}"
+                RadiusX="4"
+                RadiusY="4"
+                RenderTransformOrigin="0,0.5">
+
                 <Rectangle.RenderTransform>
-                    <ScaleTransform x:Name="HPScale" ScaleX="{Binding HpPercentage}" />
+                    <ScaleTransform ScaleX="{Binding AnimatedHpPercentage}" ScaleY="1" />
                 </Rectangle.RenderTransform>
             </Rectangle>
             <Grid
