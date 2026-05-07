@@ -78,7 +78,7 @@ public class BattleMenuViewModel : ViewModelBase
 
         OpenMovesetCommand = new RelayCommand(
             () => IsMovesetVisible = true,
-            () => _logger.AreActionsUnlocked);
+            () => AreInputsEnabled);
 
         CloseMovesetCommand = new RelayCommand(() =>
         {
@@ -88,11 +88,11 @@ public class BattleMenuViewModel : ViewModelBase
 
         ForfeitCommand = new RelayCommand(
             () => _onForfeit(),
-            () => _logger.AreActionsUnlocked);
+            () => AreInputsEnabled);
 
         OpenSwitchCommand = new RelayCommand(
         () => onSwitch(),
-        () => _logger.AreActionsUnlocked);
+        () => AreInputsEnabled);
 
         _logger.PropertyChanged += (_, e) =>
         {
@@ -109,7 +109,27 @@ public class BattleMenuViewModel : ViewModelBase
         };
     }
 
-    
+    private bool _isInputLocked;
+
+    public bool IsInputLocked
+    {
+        get => _isInputLocked;
+        set
+        {
+            if (SetProperty(ref _isInputLocked, value))
+            {
+                OnPropertyChanged(nameof(AreInputsEnabled));
+
+                ((RelayCommand)OpenMovesetCommand).NotifyCanExecuteChanged();
+                ((RelayCommand)ForfeitCommand).NotifyCanExecuteChanged();
+                ((RelayCommand)OpenSwitchCommand).NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool AreInputsEnabled =>
+        !_isInputLocked &&
+        _logger.AreActionsUnlocked;
 
     public void RefreshMoves(IReadOnlyList<IMove> moves) => MovesetChooser.LoadMoves(moves);
 

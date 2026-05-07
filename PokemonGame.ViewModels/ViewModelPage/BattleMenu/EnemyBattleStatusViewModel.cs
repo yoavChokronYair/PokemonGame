@@ -7,6 +7,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class EnemyBattleStatusViewModel : ViewModelBase
     {
+        private TaskCompletionSource<bool>? _animationTcs;
         private string _pokemonName = "";
         private int _level;
         private int _currentHp;
@@ -48,7 +49,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 }
             }
         }
-
+        public Task WaitForHpAnimation()
+        {
+            return _animationTcs?.Task ?? Task.CompletedTask;
+        }
         public int Level
         {
             get => _level;
@@ -210,12 +214,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             CancellationToken token = _hpAnimationToken.Token;
 
+            _animationTcs = new TaskCompletionSource<bool>();
+
             try
             {
                 while (Math.Abs(AnimatedHpPercentage - _targetHpPercentage) > 0.001)
                 {
                     if (token.IsCancellationRequested)
                     {
+                        _animationTcs.TrySetResult(true);
                         return;
                     }
 
@@ -248,6 +255,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             catch
             {
             }
+
+            _animationTcs.TrySetResult(true);
         }
     }
 }

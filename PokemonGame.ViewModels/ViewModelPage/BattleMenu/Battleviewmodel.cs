@@ -21,7 +21,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private readonly NavigationStore _navigationStore;
         private readonly IDialogService _dialogService;
         private readonly Func<ViewModelBase> _createGameModeChooserViewModel;
-        private readonly Func<ViewModelBase> _createTeamSelectionViewModel;
+
+        private readonly UserStore _playerUserStore;
 
         private const int STARTING_ELO = 1525;
 
@@ -116,13 +117,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             UserStore playerUserStore,
             NavigationStore navigationStore,
             IDialogService dialogService,
-            Func<ViewModelBase> createGameModeChooserViewModel,
-            Func<ViewModelBase> createTeamSelectionViewModel)   // ← add this
+            Func<ViewModelBase> createGameModeChooserViewModel)   // ← add this
         {
             _navigationStore = navigationStore;
             _dialogService = dialogService;
             _createGameModeChooserViewModel = createGameModeChooserViewModel;
-            _createTeamSelectionViewModel = createTeamSelectionViewModel;
+            _playerUserStore = playerUserStore;
 
             var session = playerUserStore.BattleSesion;
             var playerTeam = session.ResolvedPlayerTeam ?? throw new InvalidOperationException("Team not set.");
@@ -149,11 +149,108 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
         private void OnOpenSwitch()
         {
-            _navigationStore.CurrentViewModel = _createTeamSelectionViewModel();
+            _navigationStore.CurrentViewModel =
+                new TeamSelectionViewModel(
+                    _playerUserStore,
+                    _navigationStore,
+                    () => this, // IMPORTANT
+                    OnSwitchChosen,
+                    true);
         }
         private void OnForfeit() { _manager.ForceWinner(_manager.BotTeam); SyncAll(); }
-        private void OnMoveChosen(int moveIndex) { _manager.RunTurn(moveIndex); SyncAll(); }
-        private void OnSwitchChosen(int slotIndex) { _manager.RunTurn(slotIndex, BattleAction.Switch); SyncAll(); }
+        private async void OnMoveChosen(int moveIndex)
+        {
+            int oldEnemyHp = EnemyStatus.CurrentHP;
+            int oldPlayerHp = PlayerStatus.CurrentHP;
+
+            _manager.RunTurn(moveIndex);
+
+            var newEnemy = _manager.BotActive;
+            var newPlayer = _manager.PlayerActive;
+
+            Logger.EnqueueEntries(
+                _manager.logger.Entries.Skip(_logCursor).ToList());
+
+            _logCursor = _manager.logger.Entries.Count;
+
+            await Logger.WaitUntilQueueEmpty();
+
+            EnemyStatus.CurrentHP = newEnemy.CurrentHP;
+
+            await EnemyStatus.WaitForHpAnimation();
+
+            if (newEnemy.IsFainted)
+            {
+                SyncEnemyPokemon();
+            }
+
+            PlayerStatus.CurrentHP = newPlayer.CurrentHP;
+
+            await PlayerStatus.WaitForHpAnimation();
+
+            if (newPlayer.IsFainted)
+            {
+                SyncPlayerPokemon();
+            }
+
+            SyncAll();
+        }
+        private void SyncPlayerPokemon()
+        {
+            var p = _manager.PlayerActive;
+
+            PlayerStatus.PokedexId = p.PokedexId;
+            PlayerStatus.PokemonName = p.Name;
+            PlayerStatus.Level = p.Level;
+            PlayerStatus.MaxHP = p.MaxHP;
+            PlayerStatus.CurrentHP = p.CurrentHP;
+            PlayerStatus.StatusCondition = p.Status.ToString();
+
+            BattleMenu.RefreshMoves(_manager.PlayerActive.Moves);
+        }
+        private void SyncEnemyPokemon()
+        {
+            var e = _manager.BotActive;
+
+            EnemyStatus.PokedexId = e.PokedexId;
+            EnemyStatus.PokemonName = e.Name;
+            EnemyStatus.Level = e.Level;
+            EnemyStatus.MaxHP = e.MaxHP;
+            EnemyStatus.CurrentHP = e.CurrentHP;
+            EnemyStatus.StatusCondition = e.Status.ToString();
+        }
+        private async void OnSwitchChosen(int slotIndex)
+        {
+            _manager.RunTurn(slotIndex, BattleAction.Switch);
+
+            var newEntries =
+                _manager.logger.Entries
+                    .Skip(_logCursor)
+                    .ToList();
+
+            _logCursor = _manager.logger.Entries.Count;
+
+            Logger.EnqueueEntries(newEntries);
+
+            await Logger.WaitUntilQueueEmpty();
+
+            SyncPlayerPokemon();
+            SyncEnemyPokemon();
+
+            SyncBattleStateOnly();
+        }
+        private void SyncBattleStateOnly()
+        {
+            BattleMenu.RefreshMoves(_manager.PlayerActive.Moves);
+
+            OnPropertyChanged(nameof(WinnerName));
+
+            if (_manager.Winner != null && !_isBattleOverHandled)
+            {
+                _isBattleOverHandled = true;
+                _ = OnBattleEndedAsync();
+            }
+        }
 
         private void SyncAll(bool flushSetup = false)
         {

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using GalaSoft.MvvmLight.Views;
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
@@ -145,17 +146,19 @@ namespace PokemonGame
                 UserStore.Instance,
                 _navigationStore,
                 new DialogService(),
-                CreateGameModeChooserViewModel,
-                CreateTeamSelectionViewModel        // ← add this
+                CreateGameModeChooserViewModel
             );
         }
 
-        private TeamSelectionViewModel CreateTeamSelectionViewModel()
+        private TeamSelectionViewModel CreateTeamSelectionViewModel(
+            Action<int> onSwitchChosen)
         {
             return new TeamSelectionViewModel(
                 UserStore.Instance,
                 _navigationStore,
-                CreateBattleViewModel               // navigate back to battle on cancel/confirm
+                CreateBattleViewModel,
+                onSwitchChosen,
+                true // immediate switching
             );
         }
 

@@ -69,23 +69,60 @@ namespace PokemonGame.Model.Model.Managers
         public bool RunTurn(int playerIndex, BattleAction playerAction = BattleAction.Move)
         {
             BotAction botAction = _botManager.PickAction();
+
             IMove? pendingPlayerMove = null;
-            IMove? pendingBotMove = botAction.Type == BotAction.ActionType.Attack
-                                         ? botAction.Move
-                                         : null;
+            IMove? pendingBotMove =
+                botAction.Type == BotAction.ActionType.Attack
+                    ? botAction.Move
+                    : null;
 
+            // PLAYER SWITCH
             if (playerAction == BattleAction.Switch)
-                return PlayerSwitch(playerIndex);
+            {
+                if (!_playerTeam.SwitchTo(playerIndex))
+                    return false;
 
+                _state.UpdateActivePair(PlayerActive, BotActive);
+
+                new BeginTurn().Run(_state);
+
+                new SwitchIn(PlayerActive).Run(_state);
+
+                // enemy still attacks after switch
+                if (pendingBotMove != null && !BotActive.IsFainted)
+                {
+                    new MoveExecution(
+                        pendingBotMove,
+                        BotActive,
+                        PlayerActive).Run(_state);
+                }
+
+                new HandleFaints(PlayerActive, BotActive).Run(_state);
+                new EndTurn().Run(_state);
+
+                HandlePostTurnFaints();
+
+                return true;
+            }
+
+            // ITEM
             if (playerAction == BattleAction.Item)
                 return playerUseItem(playerIndex);
 
-            pendingPlayerMove = PlayerActive.Moves[MathHelper.Clamp(playerIndex, 0, PlayerActive.Moves.Count - 1)];
+            // NORMAL MOVE
+            pendingPlayerMove =
+                PlayerActive.Moves[
+                    MathHelper.Clamp(
+                        playerIndex,
+                        0,
+                        PlayerActive.Moves.Count - 1)];
 
             if (botAction.Type == BotAction.ActionType.Switch)
             {
                 _botTeam.SwitchTo(botAction.SwitchSlot!.Value);
+
                 new SwitchIn(BotActive).Run(_state);
+
                 _state.UpdateActivePair(PlayerActive, BotActive);
             }
 
@@ -95,11 +132,19 @@ namespace PokemonGame.Model.Model.Managers
             _state.UpdateActivePair(PlayerActive, BotActive);
 
             new BeginTurn().Run(_state);
-            new ResolveTurn(pendingPlayerMove, pendingBotMove, PlayerActive, BotActive).Run(_state);
+
+            new ResolveTurn(
+                pendingPlayerMove,
+                pendingBotMove,
+                PlayerActive,
+                BotActive).Run(_state);
+
             new HandleFaints(PlayerActive, BotActive).Run(_state);
+
             new EndTurn().Run(_state);
 
             HandlePostTurnFaints();
+
             return true;
         }
 
@@ -117,6 +162,10 @@ namespace PokemonGame.Model.Model.Managers
         {
             _state.Logger.LogSetup("Item usage not implemented yet.");
             return false;
+        }
+        public void BeginTurn()
+        {
+            new BeginTurn().Run(_state);
         }
 
         private void HandlePostTurnFaints()
