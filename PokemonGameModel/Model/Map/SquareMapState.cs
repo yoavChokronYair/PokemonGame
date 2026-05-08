@@ -71,8 +71,8 @@ namespace PokemonGame.Model.Model.Map
         public CollisionType GetCollision(int row, int col)
         {
             var square = GetSquare(row, col);
-            if (square == null) return CollisionType.Unwalkable;
-            if (HasStationaryBlockerAt(row, col)) return CollisionType.Unwalkable;
+            if (square == null) return CollisionType.Blocked;
+            if (HasStationaryBlockerAt(row, col)) return CollisionType.Blocked;
             return square.SquareType;
         }
 
@@ -274,16 +274,16 @@ namespace PokemonGame.Model.Model.Map
         // ── Private — NPC collision helpers ──────────────────────────────────
 
         private bool HasStationaryBlockerAt(int row, int col)
-            => _map.Npc.Any(n =>
+            => _map.Npc.Any((Func<NpcObjectDomain, bool>)(n =>
                 n.MovementType != MovementType.Walking &&
-                n.CollisionType == CollisionType.Unwalkable &&
-                NpcSquare(n) == (row, col));
+                n.CollisionType == CollisionType.Blocked &&
+                NpcSquare(n) == (row, col)));
 
         private bool HasWalkingNpcAt(int row, int col)
-            => _map.Npc.Any(n =>
+            => _map.Npc.Any((Func<NpcObjectDomain, bool>)(n =>
                 n.MovementType == MovementType.Walking &&
-                n.CollisionType == CollisionType.Unwalkable &&
-                NpcSquare(n) == (row, col));
+                n.CollisionType == CollisionType.Blocked &&
+                NpcSquare(n) == (row, col)));
 
         // ── Private — grid construction ───────────────────────────────────────
 
