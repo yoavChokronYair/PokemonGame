@@ -124,7 +124,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.Map
         // Text colour on top of each tile (tile-type indicator)
         public Brush TileForeground => _collision switch
         {
-            CollisionType.Unwalkable or CollisionType.Blocked
+            CollisionType.Blocked or CollisionType.Blocked
                 => Rgb(0x55, 0x20, 0x20),
             CollisionType.WildGrass
                 => Rgb(0x3A, 0x7A, 0x3F),
@@ -157,14 +157,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.Map
                             => Rgb(0x10, 0x22, 0x0E), // vision-in-grass: darker teal-green
                         CollisionType.HM
                             => Rgb(0x0A, 0x10, 0x28), // vision-in-water: darker navy
-                        CollisionType.Unwalkable or CollisionType.Blocked
+                        CollisionType.Blocked or CollisionType.Blocked
                             => Rgb(0x20, 0x08, 0x08), // shouldn't usually be seen through walls
                         _ => Rgb(0x18, 0x18, 0x2E),   // vision on walkable: soft purple tint
                     };
 
                 return _collision switch              // plain terrain colours
                 {
-                    CollisionType.Unwalkable or CollisionType.Blocked
+                    CollisionType.Blocked or CollisionType.Blocked
                         => Rgb(0x18, 0x08, 0x08),
                     CollisionType.WildGrass
                         => Rgb(0x08, 0x12, 0x08),

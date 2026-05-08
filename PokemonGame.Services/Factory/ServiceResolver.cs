@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Services.ApiClients;
 using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
+using PokemonGame.Services.Services;
 
 namespace PokemonGame.Services.Factory
 {
@@ -44,6 +45,10 @@ namespace PokemonGame.Services.Factory
         public IBattleHistoryService GetBattleHistoryService() => IsOnline
             ? new OnlineBattleHistoryService(new BattleHistoryApiClient(_serverUrl!))
             : new LocalBattleHistoryService();
+        public IMatchmakingService MatchmakingService =>
+            IsOnline
+        ? new OnlineMatchmakingService(_serverUrl!)
+            : throw new InvalidOperationException("Matchmaking requires online mode.");
         public IPokedexService GetPokedexService() => new LocalPokedexService();    // read-only game data, likely always local
         public IAbilityService GetAbilityService() => new LocalAbilityService();   // pure game data — always local
         public IItemService GetItemService() => new LocalItemService();   // pure game data — always local

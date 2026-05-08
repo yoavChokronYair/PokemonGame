@@ -3,19 +3,18 @@ using PokemonGame.Model.Enums;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.Store
 {
     public class UserStore : ViewModelBase
     {
-        // 1. Thread-safe Lazy Singleton instance
         private static readonly Lazy<UserStore> _instance =
             new Lazy<UserStore>(() => new UserStore());
 
         public static UserStore Instance => _instance.Value;
 
-        // 2. Make the constructor private so nobody can use "new UserStore()" anymore
         private UserStore()
         {
             BattleSesion = new BattleSession();
@@ -34,7 +33,17 @@ namespace PokemonGame.ViewModels.Store
 
         // ── Pre-battle session ────────────────────────────────────────────────
         public BattleSession BattleSesion { get; set; }
-        public ServiceResolver Resolver { get; set; } = new ServiceResolver(false);
+
+        // ── Online infrastructure ─────────────────────────────────────────────
+        public string ServerBaseUrl { get; set; } = string.Empty;
+        public ServiceResolver Resolver { get; set; } = new ServiceResolver(false, string.Empty);
+
+        // ── Active matchmaking — null when not searching ──────────────────────
+        public IMatchmakingService? Matchmaking =>
+            Resolver.IsOnline ? Resolver.MatchmakingService : null;
+
+        // ── Active battle session — set when match is found ───────────────────
+        public string? ActiveSessionId { get; set; }
     }
 
     public enum BattleMode

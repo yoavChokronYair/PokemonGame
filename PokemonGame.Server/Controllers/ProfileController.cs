@@ -3,39 +3,42 @@ using Microsoft.AspNetCore.Mvc;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Server.Controllers
 {
+    // ProfileController
+
     [ApiController]
-    [Route("api/profile")]
+    [Route("api")]
     public class ProfileController : ControllerBase
     {
-        private readonly ServiceFactory _factory;
+        private readonly IProfileService _profileService;
 
-        public ProfileController(ServiceFactory factory)
+        public ProfileController(IProfileService profileService)
         {
-            _factory = factory;
+            _profileService = profileService;
         }
 
-        [HttpGet("{battlePlayerId}")]
+        [HttpGet("profile/{battlePlayerId}")]
         public IActionResult GetFullProfile(int battlePlayerId)
         {
-            var data = _factory.ProfileService.GetFullProfileData(battlePlayerId);
-            if (data is null) return NotFound();
+            var data = _profileService.GetFullProfileData(battlePlayerId);
+            if (data.Player is null) return NotFound();
             return Ok(data);
         }
 
-        [HttpPost("{battlePlayerId}/setting")]
+        [HttpPost("profile/{battlePlayerId}/setting")]
         public IActionResult UpdateSetting(int battlePlayerId, [FromBody] UpdateSettingRequest req)
         {
-            _factory.ProfileService.UpdateSetting(battlePlayerId, req.ColumnName, req.Value);
+            _profileService.UpdateSetting(battlePlayerId, req.ColumnName, req.Value);
             return Ok();
         }
 
-        [HttpPost("{battlePlayerId}/favteam")]
+        [HttpPost("profile/{battlePlayerId}/favteam")]
         public IActionResult SetFavoriteTeam(int battlePlayerId, [FromBody] SetFavoriteTeamRequest req)
         {
-            _factory.ProfileService.SetFavoriteTeam(battlePlayerId, req.TeamId);
+            _profileService.SetFavoriteTeam(battlePlayerId, req.TeamId);
             return Ok();
         }
     }

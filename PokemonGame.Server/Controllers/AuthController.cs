@@ -1,42 +1,49 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Server.Controllers
 {
+    // AuthController
+
     [ApiController]
-    [Route("api/user")]
+    [Route("api")]
     public class AuthController : ControllerBase
     {
-        private readonly ServiceFactory _factory;
+        private readonly IUserService _userService;
 
-        public AuthController(ServiceFactory factory)
+        public AuthController(IUserService userService)
         {
-            _factory = factory;
+            _userService = userService;
         }
 
-        [HttpPost("login")]
+        [HttpPost("user/login")]
         public IActionResult Login([FromBody] LoginRequest req)
         {
-            if (string.IsNullOrWhiteSpace(req.Username)) return BadRequest();
-
-            var result = _factory.UserService.Login(req.Username, req.HashedPassword);
-            if (!result) return Unauthorized();
-
-            var user = _factory.UserService.GetUser(req.Username);
+            var user = _userService.GetUser(req.Username);
+            if (user is null) return NotFound();
+            if (user.Password.ToString() != req.HashedPassword) return Unauthorized();
             return Ok(new { Success = true, UserData = user });
         }
 
-        [HttpPost("create")]
+        [HttpPost("user/create")]
         public IActionResult CreateUser([FromBody] LoginRequest req)
         {
-            var success = _factory.UserService.CreateUser(req.Username, req.HashedPassword);
-            return success ? Ok() : Conflict("Username already taken.");
+            if (_userService.UserExists(req.Username)) return Conflict();
+            _userService.CreateUser(req.Username, req.HashedPassword.ToString());
+            return Ok();
         }
 
-        [HttpGet("exists/{username}")]
-        public IActionResult UserExists(string username)
+        [HttpGet("user/exists/{username}")]
+        public IActionResult UserExists(string username) =>
+            Ok(_userService.UserExists(username));
+
+        [HttpGet("user/{username}")]
+        public IActionResult GetUser(string username)
         {
-            return Ok(_factory.UserService.UserExists(username));
+            var user = _userService.GetUser(username);
+            if (user is null) return NotFound();
+            return Ok(user);
         }
     }
 

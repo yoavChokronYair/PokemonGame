@@ -1,58 +1,59 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Factory;
+using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Server.Controllers
 {
+    // TeamController
+
     [ApiController]
-    [Route("api/team")]
+    [Route("api")]
     public class TeamController : ControllerBase
     {
-        private readonly ServiceFactory _factory;
+        private readonly ITeamService _teamService;
 
-        public TeamController(ServiceFactory factory)
+        public TeamController(ITeamService teamService)
         {
-            _factory = factory;
+            _teamService = teamService;
         }
 
-        // ── GET: api/team/{battlePlayerId} ────────────────────────────────────
-        // Matches: GetTeamsByBattlePlayer(int battlePlayerId)
-        [HttpGet("{battlePlayerId}")]
+        [HttpGet("team/{battlePlayerId}")]
         public IActionResult GetTeams(int battlePlayerId) =>
-            Ok(_factory.TeamService.GetTeamsByBattlePlayer(battlePlayerId));
+            Ok(_teamService.GetTeamsByBattlePlayer(battlePlayerId));
 
-        [HttpDelete("{teamId}")]
+        [HttpDelete("team/{teamId}")]
         public IActionResult DeleteTeam(int teamId)
         {
-            _factory.TeamService.DeleteTeam(teamId);
+            _teamService.DeleteTeam(teamId);
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost("team")]
         public IActionResult SaveTeam([FromBody] SaveTeamRequest req)
         {
-            var team = _factory.TeamService.SaveTeam(req.TeamName, req.BattlePlayerId, req.Slots);
+            var team = _teamService.SaveTeam(req.TeamName, req.BattlePlayerId, req.Slots);
             return Ok(team);
         }
 
-        [HttpPut("{teamId}")]
+        [HttpPut("team/{teamId}")]
         public IActionResult UpdateTeam(int teamId, [FromBody] UpdateTeamRequest req)
         {
-            _factory.TeamService.UpdateTeam(teamId, req.TeamName, req.Slots);
+            _teamService.UpdateTeam(teamId, req.TeamName, req.Slots);
             return Ok();
         }
 
-        [HttpPut("{teamId}/slot")]
-        public IActionResult ReplaceTeamSlot(int teamId, [FromBody] ReplaceSlotRequest req)
+        [HttpPut("team/{teamId}/slot")]
+        public IActionResult ReplaceSlot(int teamId, [FromBody] ReplaceSlotRequest req)
         {
-            _factory.TeamService.ReplaceTeamSlot(teamId, req.SlotNumber, req.Pokemon);
+            _teamService.ReplaceTeamSlot(teamId, req.SlotNumber, req.Pokemon);
             return Ok();
         }
 
-        [HttpDelete("{teamId}/slot/{pokemonId}")]
-        public IActionResult RemoveTeamSlot(int teamId, int pokemonId)
+        [HttpDelete("team/{teamId}/slot/{pokemonId}")]
+        public IActionResult RemoveSlot(int teamId, int pokemonId)
         {
-            _factory.TeamService.RemoveTeamSlot(teamId, pokemonId);
+            _teamService.RemoveTeamSlot(teamId, pokemonId);
             return Ok();
         }
     }
