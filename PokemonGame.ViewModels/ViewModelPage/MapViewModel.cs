@@ -472,7 +472,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 Name = "Pallet Town",
                 Width = width,
                 Height = height,
-                BackgroundBlocks = Flatten(grid, width, height),
                 Blocks = new List<TileDomain>(),
                 ConnectedMaps = new List<ConnectedMapDomain>(),
                 Wraps = new List<WrapDomain>(),

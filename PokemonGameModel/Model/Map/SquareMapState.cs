@@ -1,4 +1,5 @@
 ﻿using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
@@ -56,10 +57,10 @@ namespace PokemonGame.Model.Model.Map
         // ── Coordinate conversion ─────────────────────────────────────────────
 
         public (int row, int col) TileToSquare(int tileRow, int tileCol)
-            => (tileRow / 2, tileCol / 2);
+    => (tileRow / MapConstants.TilesPerSquare, tileCol / MapConstants.TilesPerSquare);
 
         public (int tileRow, int tileCol) SquareToTile(int squareRow, int squareCol)
-            => (squareRow * 2, squareCol * 2);
+            => (squareRow * MapConstants.TilesPerSquare, squareCol * MapConstants.TilesPerSquare);
 
         // ── Square access ────────────────────────────────────────────────────
 
@@ -289,15 +290,15 @@ namespace PokemonGame.Model.Model.Map
 
         private static SquareDomain[,] BuildSquareGrid(MapDomain map)
         {
-            int rows = map.Height / 2;
-            int cols = map.Width / 2;
+            int rows = map.Height / MapConstants.TilesPerSquare;
+            int cols = map.Width / MapConstants.TilesPerSquare;
             var grid = new SquareDomain[rows, cols];
-            var tiles = BuildTileArray(map.BackgroundBlocks, map);
-
+            var tiles = BuildTileArray(map.Blocks, map);
             for (int sr = 0; sr < rows; sr++)
                 for (int sc = 0; sc < cols; sc++)
                 {
-                    int tr = sr * 2, tc = sc * 2;
+                    int tr = sr * MapConstants.TilesPerSquare;
+                    int tc = sc * MapConstants.TilesPerSquare;
                     int tl = tiles[tr, tc], t = tiles[tr, tc + 1];
                     int bl = tiles[tr + 1, tc], br = tiles[tr + 1, tc + 1];
 
