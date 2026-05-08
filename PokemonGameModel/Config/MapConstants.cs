@@ -4,7 +4,7 @@ namespace PokemonGame.Model.Config
 {
     public static class MapConstants
     {
-        public const int BlockSize = 2;
+        public const int BlockSize = 4;
         public const int ViewRowSize = 10;
         public const int ViewColSize = 10;
     }

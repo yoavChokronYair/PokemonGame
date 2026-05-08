@@ -11,12 +11,14 @@ using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 
 namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 {
-    public class BattleConnectorViewModel : ViewModelBase
+    public class BattleConnectorViewModel : ViewModelBase, IDisposable
     {
         private readonly UserStore _userStore;
         private readonly NavigationStore _rootNavigationStore;
         private readonly ITeamService _teamService;
         private readonly Func<BattleViewModel> _createBattleViewModel;
+        private readonly Func<OnlineServerBattleViewModel> _createOnlineBattleViewModel;
+        private readonly IMatchmakingService? _matchmaking;
 
         public int RequiredCount { get; }
         public string RequiredCountLabel => $"{SelectedCount} / {RequiredCount} selected";
@@ -77,16 +79,29 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public RelayCommand ConfirmCommand { get; }
         public RelayCommand BackCommand { get; }
 
+        public RelayCommand CancelSearchCommand { get; }
+
         public BattleConnectorViewModel(
             UserStore userStore,
             NavigationStore rootNavigationStore,
             Func<BattleViewModel> createBattleViewModel,
-            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel)
+            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel,
+            Func<OnlineServerBattleViewModel> createOnlineBattleViewModel)
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
             _teamService = userStore.Resolver.GetTeamService();
             _createBattleViewModel = createBattleViewModel;
+            _createOnlineBattleViewModel = createOnlineBattleViewModel;
+            _matchmaking = userStore.Matchmaking;
+
+            // ── Subscribe to matchmaking events ───────────────────────────────
+            if (_matchmaking is not null)
+            {
+                _matchmaking.OnMatchFound += OnMatchFound;
+                _matchmaking.OnQueued += OnQueued;
+                _matchmaking.OnCancelled += OnCancelled;
+            }
 
             var session = _userStore.BattleSesion;
 
@@ -98,6 +113,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 _ => 6
             };
 
+            // ── Load player team slots — identical to your existing code ──────
             if (session.SelectedTeamId.HasValue)
             {
                 var members = _teamService.GetTeamMembers(session.SelectedTeamId.Value);
@@ -115,8 +131,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 }
             }
 
-            var service = _userStore.Resolver.GetPokemonService();
-            var rivalResults = service.GenerateRandomTeam(count: RequiredCount, level: 50);
+            // ── Generate rival preview — identical to your existing code ──────
+            var pokemonService = _userStore.Resolver.GetPokemonService();
+            var rivalResults = pokemonService.GenerateRandomTeam(count: RequiredCount, level: 50);
 
             session.RivalPokemonIds = rivalResults.Select(r => r.Battler.PokedexID).ToList();
 
@@ -126,6 +143,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             for (int i = RivalSlots.Count; i < 6; i++)
                 RivalSlots.Add(new ConnectorSlotEntry());
 
+            // ── Toggle — identical to your existing code ──────────────────────
             ToggleCommand = new RelayCommand<ConnectorSlotEntry>(slot =>
             {
                 if (slot == null) return;
@@ -157,7 +175,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 _userStore.BattleSesion.SelectedPokemonIds = selectedIds;
                 _userStore.BattleSesion.BotDifficulty = BotDifficulty;
 
-                // ── Build and store player team ───────────────────────────────────
+                // ── Build player team — identical to your existing code ───────
                 var translator = new TeamTranslator(_userStore);
                 var fullTeam = translator.LoadTeamByID(_userStore.BattlePlayerID);
 
@@ -182,7 +200,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
                 _userStore.BattleSesion.ResolvedPlayerTeam = PokemonTeam.Create(playerRoster);
 
-                // ── Build and store bot team ──────────────────────────────────────
+                // ── Build bot/rival team — identical to your existing code ────
                 var rivalRoster = session.RivalPokemonIds
                     .Select(id => translator.TranslateToDomain(
                         rivalResults.First(r => r.Battler.PokedexID == id)))
@@ -193,15 +211,73 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
                 _userStore.BattleSesion.ResolvedBotTeam = PokemonTeam.Create(rivalRoster);
 
-                // ── Navigate ──────────────────────────────────────────────────────
-                _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+                // ── Branch on mode ────────────────────────────────────────────
+                if (_userStore.BattleSesion.IsOnlineMode)
+                {
+                    IsSearching = true;
+
+                    _ = _matchmaking!.FindMatchAsync(new MatchmakingRequest
+                    {
+                        PlayerId = _userStore.BattlePlayerID,
+                        PlayerName = _userStore.Username,
+                        BattleMode = _userStore.BattleSesion.BattleMode.ToString(),
+                        IsOneVOne = _userStore.BattleSesion.IsOneVOne,
+                        TeamId = _userStore.BattleSesion.SelectedTeamId ?? 0,
+                        SelectedPokemonIds = selectedIds
+                    });
+                }
+                else
+                {
+                    // offline — navigate immediately, same as before
+                    _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+                }
 
             }, () => CanConfirm);
+
+            CancelSearchCommand = new RelayCommand(async () =>
+            {
+                await _matchmaking!.CancelAsync(_userStore.BattlePlayerID);
+                IsSearching = false;
+            });
 
             BackCommand = new RelayCommand(() =>
             {
                 _rootNavigationStore.CurrentViewModel = createOnlineBattleShellViewModel();
             });
+        }
+
+        // ── Matchmaking callbacks — come in on thread pool ────────────────────
+        private void OnMatchFound(MatchFoundData data)
+        {
+            _userStore.ActiveSessionId = data.SessionId;
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsSearching = false;
+                _rootNavigationStore.CurrentViewModel = _createOnlineBattleViewModel();
+            });
+        }
+
+        private void OnQueued()
+        {
+            // IsSearching already true — nothing extra needed
+        }
+
+        private void OnCancelled()
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsSearching = false;
+            });
+        }
+
+        // ── Cleanup ───────────────────────────────────────────────────────────
+        public void Dispose()
+        {
+            if (_matchmaking is null) return;
+            _matchmaking.OnMatchFound -= OnMatchFound;
+            _matchmaking.OnQueued -= OnQueued;
+            _matchmaking.OnCancelled -= OnCancelled;
         }
     }
 
