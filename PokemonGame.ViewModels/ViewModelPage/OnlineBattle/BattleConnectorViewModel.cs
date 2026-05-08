@@ -17,7 +17,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private readonly NavigationStore _rootNavigationStore;
         private readonly ITeamService _teamService;
         private readonly Func<BattleViewModel> _createBattleViewModel;
-        private readonly Func<OnlineServerBattleViewModel> _createOnlineBattleViewModel;
         private readonly IMatchmakingService? _matchmaking;
 
         public int RequiredCount { get; }
@@ -85,14 +84,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             UserStore userStore,
             NavigationStore rootNavigationStore,
             Func<BattleViewModel> createBattleViewModel,
-            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel,
-            Func<OnlineServerBattleViewModel> createOnlineBattleViewModel)
+            Func<OnlineBattleShellViewModel> createOnlineBattleShellViewModel
+            )
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
             _teamService = userStore.Resolver.GetTeamService();
             _createBattleViewModel = createBattleViewModel;
-            _createOnlineBattleViewModel = createOnlineBattleViewModel;
             _matchmaking = userStore.Matchmaking;
 
             // ── Subscribe to matchmaking events ───────────────────────────────
@@ -254,7 +252,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 IsSearching = false;
-                _rootNavigationStore.CurrentViewModel = _createOnlineBattleViewModel();
+                _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
             });
         }
 

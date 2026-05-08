@@ -12,6 +12,7 @@ namespace PokemonGame.Services.Interfaces
         event Action<MatchFoundData>? OnMatchFound;
         event Action? OnQueued;
         event Action? OnCancelled;
+
     }
 
     public class MatchmakingRequest

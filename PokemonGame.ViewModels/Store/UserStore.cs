@@ -21,7 +21,7 @@ namespace PokemonGame.ViewModels.Store
         }
 
         // ── Identity ──────────────────────────────────────────────────────────
-        public string Username { get; set; }
+        public string Username { get; set; } = "Guest"; // Default for null checks
         public int BattlePlayerID { get; set; }
 
         private UserSettings _settings = new();
@@ -36,13 +36,22 @@ namespace PokemonGame.ViewModels.Store
 
         // ── Online infrastructure ─────────────────────────────────────────────
         public string ServerBaseUrl { get; set; } = string.Empty;
+
+        // Ensure ServiceResolver is accessible as it's checked in BattleViewModel
         public ServiceResolver Resolver { get; set; } = new ServiceResolver(false, string.Empty);
 
-        // ── Active matchmaking — null when not searching ──────────────────────
+        // ── Active matchmaking ────────────────────────────────────────────────
         public IMatchmakingService? Matchmaking =>
             Resolver.IsOnline ? Resolver.MatchmakingService : null;
 
-        // ── Active battle session — set when match is found ───────────────────
+        // ── ADDED: Active battle service — used by BattleViewModel ───────────
+        /// <summary>
+        /// This is retrieved from the Resolver when a match is found.
+        /// </summary>
+        public IBattleService? BattleService =>
+            Resolver.IsOnline ? Resolver.BattleService : null;
+
+        // ── Active battle session ID ───────────────────
         public string? ActiveSessionId { get; set; }
     }
 
@@ -81,7 +90,6 @@ namespace PokemonGame.ViewModels.Store
         public List<int> SelectedPokemonIds { get; set; } = new();
         public BotDifficulty BotDifficulty { get; set; } = BotDifficulty.Medium;
         public List<int> RivalPokemonIds { get; set; } = new();
-
 
         // ── NEW: resolved before BattleViewModel is created ──────────────────
         public PokemonTeam? ResolvedPlayerTeam { get; set; }

@@ -49,6 +49,7 @@ namespace PokemonGame.Services.Factory
             IsOnline
         ? new OnlineMatchmakingService(_serverUrl!)
             : throw new InvalidOperationException("Matchmaking requires online mode.");
+        public IBattleService BattleService;
         public IPokedexService GetPokedexService() => new LocalPokedexService();    // read-only game data, likely always local
         public IAbilityService GetAbilityService() => new LocalAbilityService();   // pure game data — always local
         public IItemService GetItemService() => new LocalItemService();   // pure game data — always local

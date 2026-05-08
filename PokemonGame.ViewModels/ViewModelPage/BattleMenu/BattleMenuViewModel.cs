@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
@@ -131,8 +132,9 @@ public class BattleMenuViewModel : ViewModelBase
         !_isInputLocked &&
         _logger.AreActionsUnlocked;
 
-    public void RefreshMoves(IReadOnlyList<IMove> moves) => MovesetChooser.LoadMoves(moves);
-
+    // Change IReadOnlyList<IMove> to IReadOnlyList<MoveSnapshot>
+    public void RefreshMoves(IReadOnlyList<MoveSnapshot> moves)
+        => MovesetChooser.LoadMoves(moves);
     private void OnMoveButtonClicked(int index)
     {
         IsMovesetVisible = false;
