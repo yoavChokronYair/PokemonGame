@@ -4,6 +4,7 @@ using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Model.Map
 {
@@ -82,6 +83,7 @@ namespace PokemonGame.Model.Model.Map
             {
                 CollisionType.None => true,
                 CollisionType.WildGrass => true,
+                CollisionType.HM => PlayerDomain.Instance.IsSurfing,
                 CollisionType.JumpLeft => direction == FacingDirection.Left,
                 CollisionType.JumpRight => direction == FacingDirection.Right,
                 CollisionType.JumpDown => direction == FacingDirection.Down,
@@ -96,15 +98,6 @@ namespace PokemonGame.Model.Model.Map
             return square?.SquareType == CollisionType.WildGrass
                 && RNGHelper.TryWildEncounter(10);
         }
-
-        public bool HmCheck(int row, int col)
-        {
-            if (GetCollision(row, col) != CollisionType.HM) return false;
-            var required = HmForSquare(GetSquare(row, col));
-            return required != HMMoves.None
-                && PlayerDomain.Instance.Team.AnyPokemonKnows(required.ToString());
-        }
-
         public void ClearTile(int row, int col)
         {
             var square = GetSquare(row, col);
@@ -122,7 +115,38 @@ namespace PokemonGame.Model.Model.Map
 
             RebuildVisionLayer();
             IsInNpcVision(toRow, toCol, out int spottedBy);
+            bool surfing =
+                PlayerDomain.Instance.IsSurfing &&
+                GetCollision(toRow, toCol) == CollisionType.HM;
+            if (surfing)
+            {
+                var (extraRow, extraCol) = Step(toRow, toCol, direction);
 
+                if (CanMoveTo(extraRow, extraCol, direction))
+                {
+                    toRow = extraRow;
+                    toCol = extraCol;
+                }
+            }
+            bool climbingWaterfall =
+                PlayerDomain.Instance.IsSurfing &&
+                GetCollision(toRow, toCol) == CollisionType.HM;
+            if (climbingWaterfall)
+            {
+                while (true)
+                {
+                    var (nextRow, nextCol) = Step(toRow, toCol, direction);
+
+                    if (GetCollision(nextRow, nextCol) != CollisionType.HM)
+                        break;
+
+                    if (!CanMoveTo(nextRow, nextCol, direction))
+                        break;
+
+                    toRow = nextRow;
+                    toCol = nextCol;
+                }
+            }
             return new MoveResult
             {
                 Success = true,
@@ -154,25 +178,27 @@ namespace PokemonGame.Model.Model.Map
             }
 
             var square = GetSquare(targetRow, targetCol);
+
             if (square?.SquareType == CollisionType.HM)
             {
-                var required = HmForSquare(square);
+                bool hasSurf =
+                    PlayerDomain.Instance.Team.AnyPokemonKnows(HMMoves.Surf.ToString());
 
-                if (required == HMMoves.None)
-                    return new InspectResult { Type = InspectResultType.Nothing };
-
-                if (!PlayerDomain.Instance.Team.AnyPokemonKnows(required.ToString()))
+                if (!hasSurf)
+                {
                     return new InspectResult
                     {
                         Type = InspectResultType.NeedHm,
-                        Message = $"You need {required} to get past this.",
+                        Message = "You need Surf to cross the water.",
                     };
+                }
 
-                ClearTile(targetRow, targetCol);
+                PlayerDomain.Instance.IsSurfing = true;
+
                 return new InspectResult
                 {
                     Type = InspectResultType.HmUsed,
-                    Message = $"Used {required}!",
+                    Message = "Used Surf!",
                     TargetRow = targetRow,
                     TargetCol = targetCol,
                 };
@@ -290,14 +316,23 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Private — HM resolution ───────────────────────────────────────────
 
-        private static HMMoves HmForSquare(SquareDomain? square)
+        private static HMMoves HmForSquare(
+            SquareDomain? square,
+            bool isSurfing)
         {
-            if (square == null) return HMMoves.None;
-            return square.TileType switch
-            {
-                TileType.Water => HMMoves.Surf,
-                _ => HMMoves.None,
-            };
+            if (square == null)
+                return HMMoves.None;
+
+            if (square.SquareType != CollisionType.HM)
+                return HMMoves.None;
+
+            // already surfing + trying to go upward
+            // means waterfall
+            if (isSurfing)
+                return HMMoves.Waterfall;
+
+            // otherwise regular water entry
+            return HMMoves.Surf;
         }
 
         // ── Private — TileType from CollisionType ─────────────────────────────
