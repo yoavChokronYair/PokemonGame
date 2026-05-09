@@ -1,6 +1,10 @@
 ﻿// PokemonGameModel/Model/Managers/BattleManager.cs
-// CHANGE: Added two public properties PlayerTeam and BotTeam (lines marked NEW).
-// Everything else is identical to your existing file.
+//
+// CHANGES vs the file you uploaded:
+//   1. Added RunTurnPvP(int playerIndex, int opponentIndex) — used by the
+//      server's ServerBattleSession.RunPvPTurn() so both human players'
+//      chosen move indices are used instead of running the bot AI.
+//      Everything else is identical to the file you already have.
 
 using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
@@ -21,7 +25,6 @@ namespace PokemonGame.Model.Model.Managers
         public PokemonState PlayerActive => _playerTeam.Active;
         public PokemonState BotActive => _botTeam.Active;
 
-        // ── NEW: lets BattleRoom call GetSwitchableIndices() on each team ────
         public PokemonTeam PlayerTeam => _playerTeam;
         public PokemonTeam BotTeam => _botTeam;
 
@@ -45,15 +48,12 @@ namespace PokemonGame.Model.Model.Managers
             _state.Logger.LogSetup($"Enemy sent out {_botTeam.Active.Name}!");
             _state.Logger.LogSetup($"Go! {_playerTeam.Active.Name}!");
         }
+
         public void ForceWinner(PokemonTeam winner)
         {
-            // Determine the loser based on who is being forced as the winner
             PokemonTeam loser = (winner == _playerTeam) ? _botTeam : _playerTeam;
-
             Winner = winner;
             Loser = loser;
-
-            // Log the end of the battle explicitly for the forfeit scenario
             _state.Logger.LogBattleEnd("The battle ended by declaration (Forfeit).");
             _state.Logger.LogBattleEnd($"Winner: {(Winner == _playerTeam ? "Player" : "Opponent")}");
         }
@@ -66,6 +66,7 @@ namespace PokemonGame.Model.Model.Managers
             _state.Logger.LogBattleEnd($"{Winner?.Active.Name} wins with {Winner?.GetAlivePokemonCount()} Pokémon left!");
         }
 
+        // ── Existing offline turn — bot AI picks the opponent move ────────────
         public bool RunTurn(int playerIndex, BattleAction playerAction = BattleAction.Move)
         {
             BotAction botAction = _botManager.PickAction();
@@ -83,12 +84,9 @@ namespace PokemonGame.Model.Model.Managers
                     return false;
 
                 _state.UpdateActivePair(PlayerActive, BotActive);
-
                 new BeginTurn().Run(_state);
-
                 new SwitchIn(PlayerActive).Run(_state);
 
-                // enemy still attacks after switch
                 if (pendingBotMove != null && !BotActive.IsFainted)
                 {
                     new MoveExecution(
@@ -99,9 +97,7 @@ namespace PokemonGame.Model.Model.Managers
 
                 new HandleFaints(PlayerActive, BotActive).Run(_state);
                 new EndTurn().Run(_state);
-
                 HandlePostTurnFaints();
-
                 return true;
             }
 
@@ -112,17 +108,12 @@ namespace PokemonGame.Model.Model.Managers
             // NORMAL MOVE
             pendingPlayerMove =
                 PlayerActive.Moves[
-                    MathHelper.Clamp(
-                        playerIndex,
-                        0,
-                        PlayerActive.Moves.Count - 1)];
+                    MathHelper.Clamp(playerIndex, 0, PlayerActive.Moves.Count - 1)];
 
             if (botAction.Type == BotAction.ActionType.Switch)
             {
                 _botTeam.SwitchTo(botAction.SwitchSlot!.Value);
-
                 new SwitchIn(BotActive).Run(_state);
-
                 _state.UpdateActivePair(PlayerActive, BotActive);
             }
 
@@ -130,7 +121,6 @@ namespace PokemonGame.Model.Model.Managers
                 BotActive.UseHealItem();
 
             _state.UpdateActivePair(PlayerActive, BotActive);
-
             new BeginTurn().Run(_state);
 
             new ResolveTurn(
@@ -140,11 +130,102 @@ namespace PokemonGame.Model.Model.Managers
                 BotActive).Run(_state);
 
             new HandleFaints(PlayerActive, BotActive).Run(_state);
-
             new EndTurn().Run(_state);
-
             HandlePostTurnFaints();
+            return true;
+        }
 
+        // ── NEW: PvP turn — both move indices come from human players ─────────
+        // Used by ServerBattleSession.RunPvPTurn() so the server never consults
+        // the bot AI during an online match.  The "player" side maps to Player 1
+        // and the "bot/opponent" side maps to Player 2 (same team layout as
+        // the existing BattleManager; only the source of the move index differs).
+        public bool RunTurnPvP(int playerIndex, int opponentIndex,
+                               BattleAction playerAction = BattleAction.Move,
+                               BattleAction opponentAction = BattleAction.Move)
+        {
+            IMove? pendingPlayerMove = null;
+            IMove? pendingOpponentMove = null;
+
+            // ── PLAYER SWITCH ─────────────────────────────────────────────────
+            if (playerAction == BattleAction.Switch)
+            {
+                if (!_playerTeam.SwitchTo(playerIndex))
+                    return false;
+
+                _state.UpdateActivePair(PlayerActive, BotActive);
+                new BeginTurn().Run(_state);
+                new SwitchIn(PlayerActive).Run(_state);
+
+                // Opponent still attacks after player switches
+                if (opponentAction == BattleAction.Move)
+                {
+                    pendingOpponentMove = BotActive.Moves[
+                        MathHelper.Clamp(opponentIndex, 0, BotActive.Moves.Count - 1)];
+
+                    if (pendingOpponentMove != null && !BotActive.IsFainted)
+                    {
+                        new MoveExecution(
+                            pendingOpponentMove,
+                            BotActive,
+                            PlayerActive).Run(_state);
+                    }
+                }
+
+                new HandleFaints(PlayerActive, BotActive).Run(_state);
+                new EndTurn().Run(_state);
+                HandlePostTurnFaints();
+                return true;
+            }
+
+            // ── OPPONENT SWITCH ───────────────────────────────────────────────
+            if (opponentAction == BattleAction.Switch)
+            {
+                if (!_botTeam.SwitchTo(opponentIndex))
+                    return false;
+
+                _state.UpdateActivePair(PlayerActive, BotActive);
+                new SwitchIn(BotActive).Run(_state);
+
+                // Player still attacks after opponent switches
+                if (playerAction == BattleAction.Move)
+                {
+                    pendingPlayerMove = PlayerActive.Moves[
+                        MathHelper.Clamp(playerIndex, 0, PlayerActive.Moves.Count - 1)];
+
+                    if (pendingPlayerMove != null && !PlayerActive.IsFainted)
+                    {
+                        new MoveExecution(
+                            pendingPlayerMove,
+                            PlayerActive,
+                            BotActive).Run(_state);
+                    }
+                }
+
+                new HandleFaints(PlayerActive, BotActive).Run(_state);
+                new EndTurn().Run(_state);
+                HandlePostTurnFaints();
+                return true;
+            }
+
+            // ── BOTH USE MOVES ────────────────────────────────────────────────
+            pendingPlayerMove = PlayerActive.Moves[
+                MathHelper.Clamp(playerIndex, 0, PlayerActive.Moves.Count - 1)];
+            pendingOpponentMove = BotActive.Moves[
+                MathHelper.Clamp(opponentIndex, 0, BotActive.Moves.Count - 1)];
+
+            _state.UpdateActivePair(PlayerActive, BotActive);
+            new BeginTurn().Run(_state);
+
+            new ResolveTurn(
+                pendingPlayerMove,
+                pendingOpponentMove,
+                PlayerActive,
+                BotActive).Run(_state);
+
+            new HandleFaints(PlayerActive, BotActive).Run(_state);
+            new EndTurn().Run(_state);
+            HandlePostTurnFaints();
             return true;
         }
 
@@ -163,6 +244,7 @@ namespace PokemonGame.Model.Model.Managers
             _state.Logger.LogSetup("Item usage not implemented yet.");
             return false;
         }
+
         public void BeginTurn()
         {
             new BeginTurn().Run(_state);

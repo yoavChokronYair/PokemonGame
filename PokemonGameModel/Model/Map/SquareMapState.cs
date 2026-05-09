@@ -1,4 +1,5 @@
-﻿using PokemonGame.Core.Model.Helper.MathHelper;
+﻿using System.ComponentModel.Design;
+using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
@@ -181,30 +182,61 @@ namespace PokemonGame.Model.Model.Map
 
             if (square?.SquareType == CollisionType.HM)
             {
-                bool hasSurf =
-                    PlayerDomain.Instance.Team.AnyPokemonKnows(HMMoves.Surf.ToString());
+                var futureSquare = GetSquare(
+                    Step(targetRow, targetCol, facing).row,
+                    Step(targetRow, targetCol, facing).col);
 
-                if (!hasSurf)
+                HMMoves requiredHm = HMMoves.None;
+
+                // entering water
+                if (!PlayerDomain.Instance.IsSurfing &&
+                    futureSquare?.TileType == TileType.Water)
+                {
+                    requiredHm = HMMoves.Surf;
+                }
+                // waterfall while surfing
+                else if (PlayerDomain.Instance.IsSurfing)
+                {
+                    requiredHm = HMMoves.Waterfall;
+                }
+                // cave interaction
+                else if (GetSquare(fromRow, fromCol)?.TileType == TileType.Cave)
+                {
+                    requiredHm = HMMoves.Strength;
+                }
+                // fallback
+                else
+                {
+                    requiredHm = HMMoves.Cut;
+                }
+
+                bool hasHm =
+                    PlayerDomain.Instance.Team.AnyPokemonKnows(requiredHm.ToString());
+
+                if (!hasHm)
                 {
                     return new InspectResult
                     {
                         Type = InspectResultType.NeedHm,
-                        Message = "You need Surf to cross the water.",
+                        Message = $"You need {requiredHm} here.",
                     };
                 }
 
-                PlayerDomain.Instance.IsSurfing = true;
+                if (requiredHm == HMMoves.Surf)
+                    PlayerDomain.Instance.IsSurfing = true;
 
                 return new InspectResult
                 {
                     Type = InspectResultType.HmUsed,
-                    Message = "Used Surf!",
+                    Message = $"Used {requiredHm}!",
                     TargetRow = targetRow,
                     TargetCol = targetCol,
                 };
             }
-
-            return new InspectResult { Type = InspectResultType.Nothing };
+            return new InspectResult
+            {
+                Type = InspectResultType.Nothing
+            };
         }
 
         // ── NPC queries ──────────────────────────────────────────────────────
@@ -314,26 +346,7 @@ namespace PokemonGame.Model.Model.Map
             return grid;
         }
 
-        // ── Private — HM resolution ───────────────────────────────────────────
-
-        private static HMMoves HmForSquare(
-            SquareDomain? square,
-            bool isSurfing)
-        {
-            if (square == null)
-                return HMMoves.None;
-
-            if (square.SquareType != CollisionType.HM)
-                return HMMoves.None;
-
-            // already surfing + trying to go upward
-            // means waterfall
-            if (isSurfing)
-                return HMMoves.Waterfall;
-
-            // otherwise regular water entry
-            return HMMoves.Surf;
-        }
+   
 
         // ── Private — TileType from CollisionType ─────────────────────────────
 
@@ -406,7 +419,7 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Private — shared helpers ──────────────────────────────────────────
 
-        private (int row, int col) NpcSquare(NpcObjectDomain npc)
+        private (int row, int col) NpcSquare(NpcObjectDomain npc)   
             => TileToSquare(npc.Location.x, npc.Location.y);
 
         private bool InBounds(int row, int col)
