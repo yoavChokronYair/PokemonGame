@@ -7,15 +7,11 @@ namespace PokemonGame.Model.Model.Map
 {
     public class MapState
     {
-        // ── Fields ───────────────────────────────────────────────────────────
-
         private MapDomain _activeMap;
         private int[,] _backgroundTiles;
         private int[,] _foregroundTiles;
 
-        private readonly Dictionary<MapDomain, (int[,] bg, int[,] fg)> _mapCache = new();
-
-        // ── Construction ─────────────────────────────────────────────────────
+        private readonly Dictionary<MapDomain, (int[,] bg, int[,] fg)> _mapCache = new Dictionary<MapDomain, (int[,], int[,])>();
 
         public MapState(MapDomain startMap)
         {
@@ -37,8 +33,7 @@ namespace PokemonGame.Model.Model.Map
             PlayerDomain player, SquareMapState squareMap)
         {
             var bg = BuildLayerViewport(player.playerLoc, isForeground: false);
-            var fg = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize]; // always empty, only stamps
-
+            var fg = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
             var vision = BuildVisionViewport(player.playerLoc, squareMap);
 
             StampNpcs(fg, player.playerLoc);
@@ -77,7 +72,6 @@ namespace PokemonGame.Model.Model.Map
                 {
                     int srcRow = psr - halfRows + r;
                     int srcCol = psc - halfCols + c;
-
                     if ((uint)srcRow < (uint)squareMap.SquareRows &&
                         (uint)srcCol < (uint)squareMap.SquareCols)
                         view[r, c] = squareMap.VisionLayer[srcRow, srcCol];
@@ -108,7 +102,6 @@ namespace PokemonGame.Model.Model.Map
             foreach (var npc in _activeMap.Npc)
             {
                 if (npc.Sprite == null) continue;
-
                 var sprite = npc.Sprite.GetSprite(npc.direction);
                 if (sprite == null) continue;
 
@@ -133,13 +126,13 @@ namespace PokemonGame.Model.Model.Map
             int mapCols = _backgroundTiles.GetLength(1);
 
             if ((uint)row < (uint)mapRows && (uint)col < (uint)mapCols)
-                return _backgroundTiles[row, col]; // always sample from bg
+                return _backgroundTiles[row, col];
 
             var neighbor = FindNeighbor(row, col, mapRows, mapCols);
             if (neighbor == null) return 0;
 
             var (neighborMap, nRow, nCol) = neighbor.Value;
-            var (nbg, _) = GetCachedTiles(neighborMap); // only bg matters now
+            var (nbg, _) = GetCachedTiles(neighborMap);
 
             return (uint)nRow < (uint)nbg.GetLength(0) &&
                    (uint)nCol < (uint)nbg.GetLength(1)
@@ -187,8 +180,8 @@ namespace PokemonGame.Model.Model.Map
         {
             if (_mapCache.TryGetValue(map, out var cached)) return cached;
             var built = (
-                BuildTileArray(map.Blocks, map),        // bg = all tiles
-                new int[map.Height, map.Width]          // fg = empty, stamps only
+                BuildTileArray(map.Blocks, map),
+                new int[map.Height, map.Width]
             );
             _mapCache[map] = built;
             return built;
@@ -200,12 +193,20 @@ namespace PokemonGame.Model.Model.Map
                 GetCachedTiles(connection.ConnectedMap);
         }
 
+        /// <summary>
+        /// Builds a dense [height, width] tile grid from a sparse tile list.
+        /// Uses each tile's X/Y coordinates to place it correctly —
+        /// DO NOT use list index, tiles are sparse (empty cells are absent).
+        /// </summary>
         private static int[,] BuildTileArray(List<TileDomain> blocks, MapDomain map)
         {
             var tiles = new int[map.Height, map.Width];
-            for (int b = 0; b < blocks.Count; b++)
-                if (blocks[b] is { } tile)
-                    tiles[b / map.Width, b % map.Width] = tile.Tileid;
+            foreach (var tile in blocks)
+            {
+                if ((uint)tile.Y < (uint)map.Height &&
+                    (uint)tile.X < (uint)map.Width)
+                    tiles[tile.Y, tile.X] = tile.Tileid;
+            }
             return tiles;
         }
     }

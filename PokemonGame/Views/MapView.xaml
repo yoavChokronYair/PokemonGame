@@ -182,7 +182,7 @@
                 </StackPanel>
             </Grid>
         </Border>
-        
+
         <!--  ── Body ──  -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -435,7 +435,7 @@
                                 Text="player" />
                         </StackPanel>
                     </StackPanel>
-                    
+
                 </StackPanel>
             </Border>
         </Grid>

@@ -7,8 +7,6 @@ namespace PokemonGame.Model.Domain.Map
     public class MapDomain
     {
         public string Name { get; set; }
-        public List<TileDomain> BackgroundBlocks { get; set; }
-        public List<TileDomain> Blocks { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public string Song { get; set; }
@@ -16,22 +14,21 @@ namespace PokemonGame.Model.Domain.Map
         public (int x, int y) FlyWrapLoc { get; set; }
         public (int x, int y) TownMapLoc { get; set; }
 
+        /// <summary>Visual background tiles — sparse, use X/Y to place.</summary>
+        public List<TileDomain> BackgroundBlocks { get; set; } = new List<TileDomain>();
+
+        /// <summary>Visual object/foreground tiles — sparse, use X/Y to place.</summary>
+        public List<TileDomain> Blocks { get; set; } = new List<TileDomain>();
+
+        /// <summary>Collision rectangles from Tiled object layers.</summary>
+        public List<CollisionObjectDomain> CollisionObjects { get; set; } = new List<CollisionObjectDomain>();
+
         public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new List<ConnectedMapDomain>();
         public List<WrapDomain> Wraps { get; set; } = new List<WrapDomain>();
         public List<EncounterDomain> Encounters { get; set; } = new List<EncounterDomain>();
         public List<NpcObjectDomain> Npc { get; set; } = new List<NpcObjectDomain>();
-
-        /// <summary>
-        /// Collision rectangles loaded from DB (replaces tile-ID magic numbers).
-        /// Each entry covers one or more tiles and carries a CollisionType.
-        /// </summary>
-        public List<CollisionObjectDomain> CollisionObjects { get; set; } = new List<CollisionObjectDomain>();
     }
 
-    /// <summary>
-    /// A rectangular region of tiles that share the same collision type.
-    /// Coordinates are in tile-space (not pixel-space).
-    /// </summary>
     public class CollisionObjectDomain
     {
         public int X { get; set; }
@@ -76,13 +73,11 @@ namespace PokemonGame.Model.Domain.Map
         public (int x, int y) Location { get; set; }
         public CollisionType CollisionType { get; set; } = CollisionType.Blocked;
         public MovementType MovementType { get; set; }
-
         public FacingDirection direction { get; set; }
         public FacingDirection DirectionA { get; set; }
         public FacingDirection DirectionB { get; set; }
         public int StepsPerLeg { get; set; }
         public int StepsWalked { get; set; }
-
         public bool DefaultState { get; set; }
         public bool IsDisappearing { get; set; }
         public int visionRange { get; set; } = 0;

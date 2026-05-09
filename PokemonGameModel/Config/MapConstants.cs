@@ -8,8 +8,8 @@ namespace PokemonGame.Model.Config
         public const int SquareSize = 16;    // one square = 16x16 pixels = 2x2 tiles
         public const int TilesPerSquare = SquareSize / TileSize; // = 2
 
-        public const int ViewRowSize = 11;   // viewport height in tiles
-        public const int ViewColSize = 11;   // viewport width in tiles
+        public const int ViewRowSize = 35;   // viewport height in tiles
+        public const int ViewColSize = 24;   // viewport width in tiles
     }
 
     public static class PlayerSprites
@@ -20,6 +20,6 @@ namespace PokemonGame.Model.Config
             { FacingDirection.Up,    (TL: 14, TR: 15, BL: 16, BR: 17) },
             { FacingDirection.Left,  (TL: 18, TR: 19, BL: 20, BR: 21) },
             { FacingDirection.Right, (TL: 22, TR: 23, BL: 24, BR: 25) },
-        };
+        };  
     }
 }
