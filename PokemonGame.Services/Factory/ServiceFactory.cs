@@ -50,6 +50,15 @@ namespace PokemonGame.Services.Factory
         internal PokedexEntryRepository PokedexEntryRepository { get; }
         internal MoveLearnsetRepository MoveLearnsetRepository { get; }
         internal BattleTeamSnapshotRepository BattleTeamSnapshotRepository { get; }
+        internal MapRepository MapRepository { get; }
+        internal TilesetRepository TilesetRepository { get; }
+        internal TileMetadataRepository TileMetadataRepository { get; }
+        internal MapTileRepository MapTileRepository { get; }
+        internal MapCollisionRepository MapCollisionRepository { get; }
+        internal ConnectedMapRepository ConnectedMapRepository { get; }
+        internal WrapRepository WrapRepository { get; }
+        internal EncounterRepository EncounterRepository { get; }
+        internal NpcSpawnRepository NpcSpawnRepository { get; }
         // ── Public services for server use ────────────────────────────────────
         public IUserService UserService { get; }
         public IProfileService ProfileService { get; }
@@ -88,7 +97,15 @@ namespace PokemonGame.Services.Factory
             PokedexEntryRepository = new PokedexEntryRepository(db);
             MoveLearnsetRepository = new MoveLearnsetRepository(db);
             BattleTeamSnapshotRepository = new BattleTeamSnapshotRepository(db);
-
+            MapRepository = new MapRepository(db);
+            TilesetRepository = new TilesetRepository(db);
+            TileMetadataRepository = new TileMetadataRepository(db);
+            MapTileRepository = new MapTileRepository(db);
+            MapCollisionRepository = new MapCollisionRepository(db);
+            ConnectedMapRepository = new ConnectedMapRepository(db);
+            WrapRepository = new WrapRepository(db);
+            EncounterRepository = new EncounterRepository(db);
+            NpcSpawnRepository = new NpcSpawnRepository(db);
 
             UserService = new LocalUserService(UserRepository);
             ProfileService = new LocalProfileService(OnlinePlayerRepository, BattlePlayerSettingsRepository,

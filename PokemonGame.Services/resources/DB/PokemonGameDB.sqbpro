@@ -1,11 +1,273 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="PokemonGameDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="6926"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="attempts" custom_title="0" dock_id="11" table="4,8:mainattempts"/><table title="moves" custom_title="0" dock_id="4" table="4,5:mainmoves"/><table title="sequence_steps" custom_title="0" dock_id="5" table="4,14:mainsequence_steps"/><table title="teams" custom_title="0" dock_id="7" table="4,5:mainteams"/><table title="effects" custom_title="0" dock_id="6" table="4,7:maineffects"/><dock_state state="000000ff00000000fd0000000100000002000005bb00000398fc0100000004fc000000000000046c0000000000fffffffa000000000100000004fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fc00000000000005bb0000000000fffffffa000000000100000001fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fc00000000000005bb0000013100fffffffa000000040100000005fb000000180064006f0063006b00420072006f007700730065003100310100000000ffffffff0000012900fffffffb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000013100fffffffb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000013100fffffffb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000013100fffffffb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000011e00fffffffb000000160064006f0063006b00420072006f00770073006500340000000000ffffffff0000000000000000000005bb0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Battle" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="1" mode="0"/></sort><column_widths><column index="1" value="55"/><column index="2" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleParticipants" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="56"/><column index="2" value="92"/><column index="3" value="54"/><column index="4" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="91"/><column index="2" value="47"/><column index="3" value="71"/><column index="4" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayerSettings" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="92"/><column index="2" value="116"/><column index="3" value="82"/><column index="4" value="88"/><column index="5" value="141"/><column index="6" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleTeamSnapshot" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="56"/><column index="2" value="92"/><column index="3" value="35"/><column index="4" value="75"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="71"/><column index="3" value="87"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="attempts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="59"/><column index="3" value="63"/><column index="4" value="97"/><column index="5" value="103"/><column index="6" value="114"/><column index="7" value="95"/><column index="8" value="87"/><column index="9" value="99"/><column index="10" value="106"/><column index="11" value="123"/><column index="12" value="124"/><column index="13" value="128"/><column index="14" value="153"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="battler_pokemon" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="74"/><column index="2" value="71"/><column index="3" value="57"/><column index="4" value="48"/><column index="5" value="38"/><column index="6" value="55"/><column index="7" value="35"/><column index="8" value="61"/><column index="9" value="61"/><column index="10" value="61"/><column index="11" value="61"/><column index="12" value="39"/><column index="13" value="44"/><column index="14" value="43"/><column index="15" value="58"/><column index="16" value="57"/><column index="17" value="59"/><column index="18" value="43"/><column index="19" value="48"/><column index="20" value="47"/><column index="21" value="62"/><column index="22" value="61"/><column index="23" value="63"/><column index="24" value="63"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="cascade_steps" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="127"/><column index="2" value="71"/><column index="3" value="107"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="effects" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="191"/><column index="3" value="71"/><column index="4" value="71"/><column index="5" value="75"/><column index="6" value="116"/><column index="7" value="93"/><column index="8" value="79"/><column index="9" value="114"/><column index="10" value="105"/><column index="11" value="119"/><column index="12" value="76"/><column index="13" value="103"/><column index="14" value="107"/><column index="15" value="117"/><column index="16" value="121"/><column index="17" value="52"/><column index="18" value="79"/><column index="19" value="92"/><column index="20" value="46"/><column index="21" value="83"/><column index="22" value="72"/><column index="23" value="47"/><column index="24" value="84"/><column index="25" value="62"/><column index="26" value="95"/><column index="27" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter><filter value="189"/></global_filter></table><table schema="main" name="machine_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="69"/><column index="2" value="54"/><column index="3" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="119"/><column index="3" value="71"/><column index="4" value="71"/><column index="5" value="71"/><column index="6" value="35"/><column index="7" value="50"/><column index="8" value="66"/><column index="9" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter><filter value="thunder"/></global_filter></table><table schema="main" name="numbers" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="127"/><column index="3" value="78"/><column index="4" value="69"/><column index="5" value="73"/><column index="6" value="97"/><column index="7" value="105"/><column index="8" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sequence_steps" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="0" mode="0"/></sort><column_widths><column index="1" value="121"/><column index="2" value="71"/><column index="3" value="93"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter><filter value="192"/></global_filter></table><table schema="main" name="team_members" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="57"/><column index="2" value="75"/><column index="3" value="80"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="teams" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="127"/><column index="3" value="104"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="tiles" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="45"/><column index="2" value="70"/><column index="3" value="59"/><column index="4" value="35"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="PokemonGameDB.db.sql" filename="C:/Users/yoav/Downloads/PokemonGameDB.db.sql">-- Reference to file &quot;C:/Users/yoav/Downloads/PokemonGameDB.db.sql&quot; (not supported by this version) --</sql><sql name="SQL 2">CREATE TABLE IF NOT EXISTS &quot;BattleTeamSnapshot&quot; (
-    &quot;BattleID&quot;        INTEGER NOT NULL,
-    &quot;BattlePlayerID&quot;  INTEGER NOT NULL,
-    &quot;Slot&quot;            INTEGER NOT NULL CHECK(&quot;Slot&quot; BETWEEN 1 AND 6),
-    &quot;PokemonID&quot;       INTEGER NOT NULL,
-    PRIMARY KEY (&quot;BattleID&quot;, &quot;BattlePlayerID&quot;, &quot;Slot&quot;),
-    FOREIGN KEY (&quot;BattleID&quot;) REFERENCES &quot;Battle&quot;(&quot;BattleID&quot;),
-    FOREIGN KEY (&quot;BattlePlayerID&quot;) REFERENCES &quot;BattlePlayer&quot;(&quot;BattlePlayerID&quot;),
-    FOREIGN KEY (&quot;PokemonID&quot;) REFERENCES &quot;battler_pokemon&quot;(&quot;pokemonID&quot;)
-);
-</sql><current_tab id="0"/></tab_sql></sqlb_project>
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="PokemonGameDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="6926"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="attempts" custom_title="0" dock_id="11" table="4,8:mainattempts"/><table title="effects" custom_title="0" dock_id="6" table="4,7:maineffects"/><table title="Maps" custom_title="0" dock_id="7" table="4,4:mainMaps"/><table title="sequence_steps" custom_title="0" dock_id="5" table="4,14:mainsequence_steps"/><table title="moves" custom_title="0" dock_id="4" table="4,5:mainmoves"/><dock_state state="000000ff00000000fd0000000100000002000005bb00000398fc0100000004fc000000000000046c0000000000fffffffa000000000100000004fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fc00000000000005bb0000000000fffffffa000000000100000001fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fc00000000000005bb0000013100fffffffa000000040100000005fb000000180064006f0063006b00420072006f007700730065003100310100000000ffffffff0000012900fffffffb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000013100fffffffb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000013100fffffffb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000013100fffffffb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000011e00fffffffb000000160064006f0063006b00420072006f00770073006500340000000000ffffffff0000000000000000000005bb0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Battle" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="1" mode="0"/></sort><column_widths><column index="1" value="55"/><column index="2" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleParticipants" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="56"/><column index="2" value="92"/><column index="3" value="54"/><column index="4" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="91"/><column index="2" value="47"/><column index="3" value="71"/><column index="4" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattlePlayerSettings" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="92"/><column index="2" value="116"/><column index="3" value="82"/><column index="4" value="88"/><column index="5" value="141"/><column index="6" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="BattleTeamSnapshot" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="56"/><column index="2" value="92"/><column index="3" value="35"/><column index="4" value="75"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="LevelUpMove" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="52"/><column index="2" value="38"/><column index="3" value="75"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="MapCollisionObjects" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="46"/><column index="3" value="35"/><column index="4" value="35"/><column index="5" value="41"/><column index="6" value="45"/><column index="7" value="82"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="MapTiles" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="39"/><column index="2" value="46"/><column index="3" value="68"/><column index="4" value="35"/><column index="5" value="35"/><column index="6" value="60"/><column index="7" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Maps" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="95"/><column index="3" value="41"/><column index="4" value="45"/><column index="5" value="39"/><column index="6" value="61"/><column index="7" value="61"/><column index="8" value="69"/><column index="9" value="69"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="NpcSpawns" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="46"/><column index="3" value="40"/><column index="4" value="35"/><column index="5" value="35"/><column index="6" value="82"/><column index="7" value="97"/><column index="8" value="95"/><column index="9" value="67"/><column index="10" value="66"/><column index="11" value="79"/><column index="12" value="80"/><column index="13" value="93"/><column index="14" value="77"/><column index="15" value="69"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="71"/><column index="3" value="87"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="attempts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="59"/><column index="3" value="63"/><column index="4" value="97"/><column index="5" value="103"/><column index="6" value="114"/><column index="7" value="95"/><column index="8" value="87"/><column index="9" value="99"/><column index="10" value="106"/><column index="11" value="123"/><column index="12" value="124"/><column index="13" value="128"/><column index="14" value="153"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="battler_pokemon" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="74"/><column index="2" value="71"/><column index="3" value="57"/><column index="4" value="48"/><column index="5" value="38"/><column index="6" value="55"/><column index="7" value="35"/><column index="8" value="61"/><column index="9" value="61"/><column index="10" value="61"/><column index="11" value="61"/><column index="12" value="39"/><column index="13" value="44"/><column index="14" value="43"/><column index="15" value="58"/><column index="16" value="57"/><column index="17" value="59"/><column index="18" value="43"/><column index="19" value="48"/><column index="20" value="47"/><column index="21" value="62"/><column index="22" value="61"/><column index="23" value="63"/><column index="24" value="63"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="cascade_steps" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="127"/><column index="2" value="71"/><column index="3" value="107"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="effects" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="191"/><column index="3" value="71"/><column index="4" value="71"/><column index="5" value="75"/><column index="6" value="116"/><column index="7" value="93"/><column index="8" value="79"/><column index="9" value="114"/><column index="10" value="105"/><column index="11" value="119"/><column index="12" value="76"/><column index="13" value="103"/><column index="14" value="107"/><column index="15" value="117"/><column index="16" value="121"/><column index="17" value="52"/><column index="18" value="79"/><column index="19" value="92"/><column index="20" value="46"/><column index="21" value="83"/><column index="22" value="72"/><column index="23" value="47"/><column index="24" value="84"/><column index="25" value="62"/><column index="26" value="95"/><column index="27" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter><filter value="189"/></global_filter></table><table schema="main" name="machine_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="69"/><column index="2" value="54"/><column index="3" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="119"/><column index="3" value="71"/><column index="4" value="71"/><column index="5" value="71"/><column index="6" value="35"/><column index="7" value="50"/><column index="8" value="66"/><column index="9" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter><filter value="thunder"/></global_filter></table><table schema="main" name="numbers" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="127"/><column index="3" value="78"/><column index="4" value="69"/><column index="5" value="73"/><column index="6" value="97"/><column index="7" value="105"/><column index="8" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sequence_steps" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="0" mode="0"/></sort><column_widths><column index="1" value="121"/><column index="2" value="71"/><column index="3" value="93"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter><filter value="192"/></global_filter></table><table schema="main" name="team_members" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="57"/><column index="2" value="75"/><column index="3" value="80"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="teams" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="127"/><column index="3" value="104"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="PokemonGameDB.db.sql" filename="C:/Users/yoav/Downloads/PokemonGameDB.db.sql">-- Reference to file &quot;C:/Users/yoav/Downloads/PokemonGameDB.db.sql&quot; (not supported by this version) --</sql><sql name="SQL 2">-- =========================================================
+-- TILESETS
+-- =========================================================
+
+CREATE TABLE Tilesets
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    Name TEXT NOT NULL UNIQUE,
+
+    ImagePath TEXT NOT NULL,
+
+    TileWidth INTEGER NOT NULL,
+    TileHeight INTEGER NOT NULL,
+
+    Margin INTEGER NOT NULL DEFAULT 0,
+    Spacing INTEGER NOT NULL DEFAULT 0
+);
+
+-- =========================================================
+-- TILE METADATA
+-- =========================================================
+
+CREATE TABLE TileMetadata
+(
+    TilesetId INTEGER NOT NULL,
+    TileId INTEGER NOT NULL,
+
+    CollisionType INTEGER NOT NULL DEFAULT 0,
+    TileType INTEGER NOT NULL DEFAULT 0,
+
+    IsAnimated INTEGER NOT NULL DEFAULT 0,
+    AnimationFrames INTEGER DEFAULT 0,
+
+    TilesetX INTEGER NOT NULL,
+    TilesetY INTEGER NOT NULL,
+
+    PRIMARY KEY(TilesetId, TileId),
+
+    FOREIGN KEY(TilesetId)
+        REFERENCES Tilesets(Id)
+);
+
+-- =========================================================
+-- MAPS
+-- =========================================================
+
+CREATE TABLE Maps
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    Name TEXT NOT NULL UNIQUE,
+
+    Width INTEGER NOT NULL,
+    Height INTEGER NOT NULL,
+
+    Song TEXT,
+
+    FlyWrapX INTEGER,
+    FlyWrapY INTEGER,
+
+    TownMapX INTEGER,
+    TownMapY INTEGER
+);
+
+-- =========================================================
+-- MAP VISUAL TILES
+-- =========================================================
+
+CREATE TABLE MapTiles
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    MapId INTEGER NOT NULL,
+
+    LayerType INTEGER NOT NULL,
+    -- 0 = Ground
+    -- 1 = Water
+    -- 2 = Objects
+    -- 3 = Above
+
+    X INTEGER NOT NULL,
+    Y INTEGER NOT NULL,
+
+    TilesetId INTEGER NOT NULL,
+    TileId INTEGER NOT NULL,
+
+    FOREIGN KEY(MapId)
+        REFERENCES Maps(Id),
+
+    FOREIGN KEY(TilesetId)
+        REFERENCES Tilesets(Id)
+);
+
+-- =========================================================
+-- COLLISION / GAMEPLAY OBJECTS
+-- =========================================================
+
+CREATE TABLE MapCollisionObjects
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    MapId INTEGER NOT NULL,
+
+    X INTEGER NOT NULL,
+    Y INTEGER NOT NULL,
+
+    Width INTEGER NOT NULL DEFAULT 1,
+    Height INTEGER NOT NULL DEFAULT 1,
+
+    CollisionType INTEGER NOT NULL,
+    -- HM
+    -- WildGrass
+    -- Blocked
+    -- JumpLeft
+    -- JumpRight
+    -- JumpUp
+    -- JumpDown
+
+    FOREIGN KEY(MapId)
+        REFERENCES Maps(Id)
+);
+
+-- =========================================================
+-- MAP CONNECTIONS
+-- =========================================================
+
+CREATE TABLE ConnectedMaps
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    MapId INTEGER NOT NULL,
+    ConnectedMapId INTEGER NOT NULL,
+
+    Direction INTEGER NOT NULL,
+    Margin INTEGER NOT NULL,
+
+    FOREIGN KEY(MapId)
+        REFERENCES Maps(Id),
+
+    FOREIGN KEY(ConnectedMapId)
+        REFERENCES Maps(Id)
+);
+
+-- =========================================================
+-- WRAPS / WARPS
+-- =========================================================
+
+CREATE TABLE Wraps
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    MapId INTEGER NOT NULL,
+    TargetMapId INTEGER NOT NULL,
+
+    WrapX INTEGER NOT NULL,
+    WrapY INTEGER NOT NULL,
+
+    SpawnRow INTEGER NOT NULL,
+    SpawnCol INTEGER NOT NULL,
+
+    FOREIGN KEY(MapId)
+        REFERENCES Maps(Id),
+
+    FOREIGN KEY(TargetMapId)
+        REFERENCES Maps(Id)
+);
+
+-- =========================================================
+-- ENCOUNTERS
+-- =========================================================
+
+CREATE TABLE Encounters
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    MapId INTEGER NOT NULL,
+
+    PokemonId INTEGER NOT NULL,
+
+    MinLevel INTEGER NOT NULL,
+    MaxLevel INTEGER NOT NULL,
+
+    CatchChance INTEGER NOT NULL,
+    Rate INTEGER NOT NULL,
+
+    EvYieldStat INTEGER,
+    EvYieldAmount INTEGER,
+
+    BaseExpYield INTEGER,
+    BaseFriendshipYield INTEGER,
+
+    CatchRate INTEGER,
+    FemaleRatio INTEGER,
+
+    FOREIGN KEY(MapId)
+        REFERENCES Maps(Id)
+);
+
+-- =========================================================
+-- NPC SPAWNS
+-- =========================================================
+
+CREATE TABLE NpcSpawns
+(
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    MapId INTEGER NOT NULL,
+
+    NpcId INTEGER NOT NULL,
+
+    X INTEGER NOT NULL,
+    Y INTEGER NOT NULL,
+
+    CollisionType INTEGER NOT NULL,
+
+    MovementType INTEGER NOT NULL,
+
+    FacingDirection INTEGER NOT NULL,
+
+    DirectionA INTEGER,
+    DirectionB INTEGER,
+
+    StepsPerLeg INTEGER,
+
+    DefaultState INTEGER NOT NULL DEFAULT 1,
+
+    IsDisappearing INTEGER NOT NULL DEFAULT 0,
+
+    VisionRange INTEGER NOT NULL DEFAULT 0,
+
+    VisionType INTEGER NOT NULL DEFAULT 0,
+
+    FOREIGN KEY(MapId)
+        REFERENCES Maps(Id)
+);
+
+-- =========================================================
+-- INDEXES
+-- =========================================================
+
+CREATE INDEX idx_maptiles_map
+ON MapTiles(MapId);
+
+CREATE INDEX idx_maptiles_position
+ON MapTiles(MapId, X, Y);
+
+CREATE INDEX idx_collision_map
+ON MapCollisionObjects(MapId);
+
+CREATE INDEX idx_collision_position
+ON MapCollisionObjects(MapId, X, Y);
+
+CREATE INDEX idx_npc_map
+ON NpcSpawns(MapId);
+
+CREATE INDEX idx_wrap_map
+ON Wraps(MapId);
+
+CREATE INDEX idx_encounter_map
+ON Encounters(MapId);</sql><sql name="SQL 3">-- =========================================================
+-- DROP TABLES (Ordered to respect Foreign Key constraints)
+-- =========================================================
+
+DROP TABLE IF EXISTS NpcSpawns;
+DROP TABLE IF EXISTS Encounters;
+DROP TABLE IF EXISTS Wraps;
+DROP TABLE IF EXISTS ConnectedMaps;
+DROP TABLE IF EXISTS MapCollisionObjects;
+DROP TABLE IF EXISTS MapTiles;
+DROP TABLE IF EXISTS Maps;
+DROP TABLE IF EXISTS TileMetadata;
+DROP TABLE IF EXISTS Tilesets;</sql><current_tab id="1"/></tab_sql></sqlb_project>

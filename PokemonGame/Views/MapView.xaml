@@ -182,7 +182,7 @@
                 </StackPanel>
             </Grid>
         </Border>
-
+        
         <!--  ── Body ──  -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -198,8 +198,8 @@
                 behaviors:FocusBehavior.RegisterFocusTarget="True"
                 Background="#0A0A0A"
                 Focusable="True"
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto">
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Disabled">
 
                 <ScrollViewer.InputBindings>
                     <KeyBinding Key="W" Command="{Binding MoveUpCommand}" />
@@ -222,7 +222,10 @@
                     <KeyBinding Key="NumPad3" Command="{Binding PickChoice3Command}" />
                 </ScrollViewer.InputBindings>
 
-                <ItemsControl ItemsSource="{Binding TileRows}">
+                <ItemsControl
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding TileRows}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Vertical" />
@@ -432,6 +435,7 @@
                                 Text="player" />
                         </StackPanel>
                     </StackPanel>
+                    
                 </StackPanel>
             </Border>
         </Grid>

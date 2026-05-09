@@ -6,35 +6,55 @@ namespace PokemonGame.Model.Domain.Map
 {
     public class MapDomain
     {
-        
         public string Name { get; set; }
         public List<TileDomain> BackgroundBlocks { get; set; }
         public List<TileDomain> Blocks { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public TileDomain DefultBlockID { get; set; }
         public string Song { get; set; }
 
         public (int x, int y) FlyWrapLoc { get; set; }
         public (int x, int y) TownMapLoc { get; set; }
-        public MapTilesType TilesType { get; set; }
-        public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new();//one per side 
-        public List<WrapDomain> Wraps { get; set; } = new(); // for fly/town map/etc
-        public List<EncounterDomain> Encounters { get; set; } = new();
-        public List<NpcObjectDomain> Npc { get; set; } = new();
+
+        public List<ConnectedMapDomain> ConnectedMaps { get; set; } = new List<ConnectedMapDomain>();
+        public List<WrapDomain> Wraps { get; set; } = new List<WrapDomain>();
+        public List<EncounterDomain> Encounters { get; set; } = new List<EncounterDomain>();
+        public List<NpcObjectDomain> Npc { get; set; } = new List<NpcObjectDomain>();
+
+        /// <summary>
+        /// Collision rectangles loaded from DB (replaces tile-ID magic numbers).
+        /// Each entry covers one or more tiles and carries a CollisionType.
+        /// </summary>
+        public List<CollisionObjectDomain> CollisionObjects { get; set; } = new List<CollisionObjectDomain>();
     }
+
+    /// <summary>
+    /// A rectangular region of tiles that share the same collision type.
+    /// Coordinates are in tile-space (not pixel-space).
+    /// </summary>
+    public class CollisionObjectDomain
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public CollisionType CollisionType { get; set; }
+    }
+
     public class WrapDomain
     {
         public MapDomain TargetMap { get; set; }
-        public (int x,int y) WrapLoc { get; set; }
-        public (int row, int col) SpawnLoc { get; set; } 
+        public (int x, int y) WrapLoc { get; set; }
+        public (int row, int col) SpawnLoc { get; set; }
     }
+
     public class ConnectedMapDomain
     {
         public MapDomain ConnectedMap { get; set; }
         public ConnectionDirection ConnectionDirection { get; set; }
         public int Margin { get; set; }
     }
+
     public class EncounterDomain
     {
         public PokemonState Pokemon { get; set; }
@@ -52,21 +72,17 @@ namespace PokemonGame.Model.Domain.Map
     public class NpcObjectDomain
     {
         public NpcDomain NpcInfo { get; set; }
-        public NpcSpriteDomain? Sprite { get; set; }  // ← add
+        public NpcSpriteDomain? Sprite { get; set; }
         public (int x, int y) Location { get; set; }
         public CollisionType CollisionType { get; set; } = CollisionType.Blocked;
         public MovementType MovementType { get; set; }
 
-        // ── Facing ──────────────────────────────────────────────────────────────
-        public FacingDirection direction { get; set; }      // current facing (also used for vision)
+        public FacingDirection direction { get; set; }
+        public FacingDirection DirectionA { get; set; }
+        public FacingDirection DirectionB { get; set; }
+        public int StepsPerLeg { get; set; }
+        public int StepsWalked { get; set; }
 
-        // ── Walking ─────────────────────────────────────────────────────────────
-        public FacingDirection DirectionA { get; set; }     // first leg  e.g. Up
-        public FacingDirection DirectionB { get; set; }     // second leg e.g. Down
-        public int StepsPerLeg { get; set; }                // steps before flipping
-        public int StepsWalked { get; set; }                // internal counter — don't set manually
-
-        // ── Other ────────────────────────────────────────────────────────────────
         public bool DefaultState { get; set; }
         public bool IsDisappearing { get; set; }
         public int visionRange { get; set; } = 0;
