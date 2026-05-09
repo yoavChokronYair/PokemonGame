@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Interfaces;
-using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 
@@ -16,12 +12,13 @@ public class BattleMenuViewModel : ViewModelBase
     private readonly Action<int> _onMoveChosen;
     private readonly Action<int> _onSwitchChosen;
     private readonly Action _onForfeit;
-    private readonly BattleManager _manager;
+    private readonly BattleManager? _manager;
     private readonly BattleLoggerViewModel _logger;
 
     private bool _isWaitingForLog = false;
+    private bool _waitingForOpponent = false;
 
-    public bool IsMainMenuVisible => !IsMovesetVisible && !_isWaitingForLog;
+    public bool IsMainMenuVisible => !IsMovesetVisible && !_isWaitingForLog && !_waitingForOpponent;
 
     private bool _isMovesetVisible;
     public bool IsMovesetVisible
@@ -53,18 +50,32 @@ public class BattleMenuViewModel : ViewModelBase
     public string SelectedMovePP => SelectedMove is MoveState ms ? $"PP {ms.PP}/{ms.MaxPP}" : "PP --/--";
     public string SelectedMoveType => SelectedMove is MoveState ms2 ? $"TYPE/ {ms2.Element}" : "TYPE/ --";
 
+    public bool ActionsLocked => _waitingForOpponent || !_logger.AreActionsUnlocked;
+    public bool AreInputsEnabled => !_isInputLocked && _logger.AreActionsUnlocked && !_waitingForOpponent;
+
+    private bool _isInputLocked;
+    public bool IsInputLocked
+    {
+        get => _isInputLocked;
+        set
+        {
+            if (SetProperty(ref _isInputLocked, value))
+                NotifyInputChanged();
+        }
+    }
+
     public ICommand OpenMovesetCommand { get; }
     public ICommand CloseMovesetCommand { get; }
     public ICommand ForfeitCommand { get; }
     public ICommand OpenSwitchCommand { get; }
 
     public BattleMenuViewModel(
-    Action<int> onMoveChosen,
-    Action<int> onSwitchChosen,
-    Action onForfeit,
-    Action onSwitch,          // ← add this
-    BattleManager manager,
-    BattleLoggerViewModel logger)
+        Action<int> onMoveChosen,
+        Action<int> onSwitchChosen,
+        Action onForfeit,
+        Action onSwitch,
+        BattleManager? manager,
+        BattleLoggerViewModel logger)
     {
         _onMoveChosen = onMoveChosen;
         _onSwitchChosen = onSwitchChosen;
@@ -92,8 +103,8 @@ public class BattleMenuViewModel : ViewModelBase
             () => AreInputsEnabled);
 
         OpenSwitchCommand = new RelayCommand(
-        () => onSwitch(),
-        () => AreInputsEnabled);
+            () => onSwitch(),
+            () => AreInputsEnabled);
 
         _logger.PropertyChanged += (_, e) =>
         {
@@ -103,38 +114,22 @@ public class BattleMenuViewModel : ViewModelBase
                     _isWaitingForLog = false;
 
                 OnPropertyChanged(nameof(IsMainMenuVisible));
-                ((RelayCommand)OpenMovesetCommand).NotifyCanExecuteChanged();
-                ((RelayCommand)ForfeitCommand).NotifyCanExecuteChanged();
-                ((RelayCommand)OpenSwitchCommand).NotifyCanExecuteChanged();  // ← add this
+                NotifyInputChanged();
             }
         };
     }
 
-    private bool _isInputLocked;
-
-    public bool IsInputLocked
+    public void SetWaitingForOpponent(bool waiting)
     {
-        get => _isInputLocked;
-        set
-        {
-            if (SetProperty(ref _isInputLocked, value))
-            {
-                OnPropertyChanged(nameof(AreInputsEnabled));
-
-                ((RelayCommand)OpenMovesetCommand).NotifyCanExecuteChanged();
-                ((RelayCommand)ForfeitCommand).NotifyCanExecuteChanged();
-                ((RelayCommand)OpenSwitchCommand).NotifyCanExecuteChanged();
-            }
-        }
+        _waitingForOpponent = waiting;
+        OnPropertyChanged(nameof(ActionsLocked));
+        OnPropertyChanged(nameof(IsMainMenuVisible));
+        NotifyInputChanged();
     }
 
-    public bool AreInputsEnabled =>
-        !_isInputLocked &&
-        _logger.AreActionsUnlocked;
-
-    // Change IReadOnlyList<IMove> to IReadOnlyList<MoveSnapshot>
     public void RefreshMoves(IReadOnlyList<MoveSnapshot> moves)
         => MovesetChooser.LoadMoves(moves);
+
     private void OnMoveButtonClicked(int index)
     {
         IsMovesetVisible = false;
@@ -145,4 +140,13 @@ public class BattleMenuViewModel : ViewModelBase
     }
 
     private void OnMoveHovered(IMove? move) => SelectedMove = move;
+
+    private void NotifyInputChanged()
+    {
+        OnPropertyChanged(nameof(AreInputsEnabled));
+        OnPropertyChanged(nameof(ActionsLocked));
+        ((RelayCommand)OpenMovesetCommand).NotifyCanExecuteChanged();
+        ((RelayCommand)ForfeitCommand).NotifyCanExecuteChanged();
+        ((RelayCommand)OpenSwitchCommand).NotifyCanExecuteChanged();
+    }
 }

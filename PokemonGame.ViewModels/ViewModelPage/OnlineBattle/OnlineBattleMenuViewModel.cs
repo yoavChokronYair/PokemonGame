@@ -103,9 +103,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         public ICommand PlayCommand { get; }
 
         public OnlineBattleMenuViewModel(
-    UserStore userStore,
-    NavigationStore rootNavigationStore,
-    Func<BattleConnectorViewModel> createBattleConnectorViewModel)
+            UserStore userStore,
+            NavigationStore rootNavigationStore,
+            Func<BattleConnectorViewModel> createBattleConnectorViewModel)
         {
             _userStore = userStore;
             _rootNavigationStore = rootNavigationStore;
@@ -119,6 +119,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
             PlayCommand = new RelayCommand(() =>
             {
+                if (IsOnline && !userStore.IsOnline)
+                {
+                    System.Windows.MessageBox.Show(
+                        "You are not connected to the server.\nPlease check your connection and try again.",
+                        "Connection Error",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Warning);
+                    return;
+
+                }
                 userStore.BattleSesion.IsOnlineMode = IsOnline;
                 userStore.BattleSesion.IsOneVOne = Is1v1;
                 userStore.BattleSesion.BattleMode = IsRandom ? BattleMode.halfTeam

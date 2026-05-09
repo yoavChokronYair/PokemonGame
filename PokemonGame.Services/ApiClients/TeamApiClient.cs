@@ -25,16 +25,18 @@ namespace PokemonGame.Services.ApiClients
 
         public List<TeamData>? GetTeamsByBattlePlayer(int battlePlayerId)
         {
-            var response = _http.GetAsync($"api/team/{battlePlayerId}").Result;
+          
+            var response = _http.GetAsync($"api/team/{battlePlayerId}").GetAwaiter().GetResult();
             if (!response.IsSuccessStatusCode) return null;
-
-            var json = response.Content.ReadAsStringAsync().Result;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             return JsonSerializer.Deserialize<List<TeamData>>(json);
+            
+          
         }
 
         public bool DeleteTeam(int teamId)
         {
-            var response = _http.DeleteAsync($"api/team/{teamId}").Result;
+            var response = _http.DeleteAsync($"api/team/{teamId}").GetAwaiter().GetResult();
             return response.IsSuccessStatusCode;
         }
 
@@ -42,11 +44,11 @@ namespace PokemonGame.Services.ApiClients
         {
             var body = JsonSerializer.Serialize(new { TeamName = teamName, BattlePlayerId = battlePlayerId, Slots = slots });
             var response = _http.PostAsync("api/team",
-                new StringContent(body, Encoding.UTF8, "application/json")).Result;
+                new StringContent(body, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
 
             if (!response.IsSuccessStatusCode) return null;
 
-            var json = response.Content.ReadAsStringAsync().Result;
+            var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             return JsonSerializer.Deserialize<TeamData>(json);
         }
 
@@ -54,8 +56,7 @@ namespace PokemonGame.Services.ApiClients
         {
             var body = JsonSerializer.Serialize(new { TeamName = teamName, Slots = slots });
             var response = _http.PutAsync($"api/team/{teamId}",
-                new StringContent(body, Encoding.UTF8, "application/json")).Result;
-
+                new StringContent(body, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
             return response.IsSuccessStatusCode;
         }
 
@@ -63,14 +64,13 @@ namespace PokemonGame.Services.ApiClients
         {
             var body = JsonSerializer.Serialize(new { SlotNumber = slotNumber, Pokemon = pokemon });
             var response = _http.PutAsync($"api/team/{teamId}/slot",
-                new StringContent(body, Encoding.UTF8, "application/json")).Result;
-
+                new StringContent(body, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
             return response.IsSuccessStatusCode;
         }
 
         public bool RemoveTeamSlot(int teamId, int pokemonId)
         {
-            var response = _http.DeleteAsync($"api/team/{teamId}/slot/{pokemonId}").Result;
+            var response = _http.DeleteAsync($"api/team/{teamId}/slot/{pokemonId}").GetAwaiter().GetResult();
             return response.IsSuccessStatusCode;
         }
     }

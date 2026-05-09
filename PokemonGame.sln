@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokemonGame.Views", "Pokemo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokemonGame.Model", "PokemonGameModel\PokemonGame.Model.csproj", "{827CCD97-AFC0-4247-A345-DD427D8ADBE7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokemonGame.Tests", "PokemonGameUnitTests\PokemonGame.Tests.csproj", "{B87D31D7-6AE4-4489-8A90-FF1F08B3FEAA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokemonGame.Services", "PokemonGame.Services\PokemonGame.Services.csproj", "{936B9C1C-F508-46EC-97DB-18974F63BC85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokemonGame.ViewModels", "PokemonGame.ViewModels\PokemonGame.ViewModels.csproj", "{F4538679-B07E-46F3-A9F3-44AA9A79E52D}"
@@ -29,10 +27,6 @@ Global
 		{827CCD97-AFC0-4247-A345-DD427D8ADBE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{827CCD97-AFC0-4247-A345-DD427D8ADBE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{827CCD97-AFC0-4247-A345-DD427D8ADBE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B87D31D7-6AE4-4489-8A90-FF1F08B3FEAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B87D31D7-6AE4-4489-8A90-FF1F08B3FEAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B87D31D7-6AE4-4489-8A90-FF1F08B3FEAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B87D31D7-6AE4-4489-8A90-FF1F08B3FEAA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{936B9C1C-F508-46EC-97DB-18974F63BC85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{936B9C1C-F508-46EC-97DB-18974F63BC85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{936B9C1C-F508-46EC-97DB-18974F63BC85}.Release|Any CPU.ActiveCfg = Release|Any CPU

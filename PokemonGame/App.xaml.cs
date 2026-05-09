@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using GalaSoft.MvvmLight.Views;
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -15,6 +14,9 @@ namespace PokemonGame
 {
     public partial class App : Application
     {
+        // Must match applicationUrl in server's launchSettings.json
+        public const string ServerBaseUrl = "http://localhost:5000";
+
         private readonly NavigationStore _navigationStore;
 
         public App()
@@ -22,12 +24,16 @@ namespace PokemonGame
             _navigationStore = new NavigationStore();
             UserStore.Instance.BattleSesion = new BattleSession();
             UserStore.Instance.Settings = new UserSettings();
+
+            // Store the URL now so GameModeChooserViewModel can read it when
+            // the player logs in — no other online wiring happens at startup.
+            UserStore.Instance.ServerBaseUrl = ServerBaseUrl;
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _navigationStore.CurrentViewModel = CreateMapViewModel();
+            _navigationStore.CurrentViewModel = CreateLogInViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
@@ -35,7 +41,7 @@ namespace PokemonGame
             MainWindow.Show();
         }
 
-        // ---------------- ROOT NAVIGATION ----------------
+        // ---------------- ROOT NAVIGATION ----------------------------------------
 
         private LogInViewModel CreateLogInViewModel()
         {
@@ -67,13 +73,12 @@ namespace PokemonGame
             );
         }
 
-        // ---------------- ONLINE BATTLE SHELL ----------------
+        // ---------------- ONLINE BATTLE SHELL ------------------------------------
 
         private OnlineBattleShellViewModel _onlineBattleShellViewModel;
         private NavigationStore _contentNavigationStore;
 
-        // cached content VMs
-        private ViewModels.ViewModelPage.OnlineBattle.OnlineBattleMenuViewModel _battleMenuViewModel;
+        private OnlineBattleMenuViewModel _battleMenuViewModel;
         private HistoryBattleViewModel _historyBattleViewModel;
         private TeamBuilderViewModel _teamBuilderViewModel;
         private ProfileViewModel _profileViewModel;
@@ -107,12 +112,16 @@ namespace PokemonGame
             );
         }
 
-        // ---------------- CACHED CONTENT VIEWMODELS ----------------
+        // ---------------- CACHED CONTENT VIEWMODELS ------------------------------
 
         private OnlineBattleMenuViewModel GetOnlineBattleMenuViewModel()
         {
             if (_battleMenuViewModel == null)
-                _battleMenuViewModel = new OnlineBattleMenuViewModel(UserStore.Instance, _navigationStore, CreateBattleConnectorViewModel);
+                _battleMenuViewModel = new OnlineBattleMenuViewModel(
+                    UserStore.Instance,
+                    _navigationStore,
+                    CreateBattleConnectorViewModel);
+
             return _battleMenuViewModel;
         }
 
@@ -120,6 +129,7 @@ namespace PokemonGame
         {
             if (_historyBattleViewModel == null)
                 _historyBattleViewModel = new HistoryBattleViewModel(UserStore.Instance);
+
             return _historyBattleViewModel;
         }
 
@@ -127,6 +137,7 @@ namespace PokemonGame
         {
             if (_teamBuilderViewModel == null)
                 _teamBuilderViewModel = new TeamBuilderViewModel(UserStore.Instance);
+
             return _teamBuilderViewModel;
         }
 
@@ -134,34 +145,24 @@ namespace PokemonGame
         {
             if (_profileViewModel == null)
                 _profileViewModel = new ProfileViewModel(UserStore.Instance);
+
             return _profileViewModel;
         }
-        private MoveSummaryViewModel CreateMoveSummaryViewModel()
-        {
-            return new MoveSummaryViewModel(UserStore.Instance);
-        }
+
+        // ---------------- BATTLE -------------------------------------------------
+
         private BattleViewModel CreateBattleViewModel()
         {
             return new BattleViewModel(
                 UserStore.Instance,
                 _navigationStore,
                 new DialogService(),
-                CreateGameModeChooserViewModel
+                CreateOnlineBattleShellViewModel
             );
         }
 
-        private TeamSelectionViewModel CreateTeamSelectionViewModel(
-            Action<int> onSwitchChosen)
-        {
-            return new TeamSelectionViewModel(
-                UserStore.Instance,
-                _navigationStore,
-                CreateBattleViewModel,
-                onSwitchChosen,
-                false // immediate switching
-            );
-        }
-
+        // ServerBaseUrl passed so OnMatchFound inside BattleConnectorViewModel
+        // can create OnlineBattleService pointing at the correct hub URL.
         private BattleConnectorViewModel CreateBattleConnectorViewModel()
         {
             return new BattleConnectorViewModel(
@@ -171,11 +172,7 @@ namespace PokemonGame
                 CreateOnlineBattleShellViewModel
             );
         }
-        private MapViewModel CreateMapViewModel()
-        {
-            return new MapViewModel();
 
-        }
-  
+        private MapViewModel CreateMapViewModel() => new MapViewModel();
     }
 }

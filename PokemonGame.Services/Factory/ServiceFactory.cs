@@ -65,6 +65,11 @@ namespace PokemonGame.Services.Factory
         public IGameModeChooserService GameModeService { get; }
         public ITeamService TeamService { get; }
         public IBattleHistoryService BattleHistoryService { get; }
+        // In ServiceFactory.cs — add this public property alongside the other public services
+        public IPokemonService PokemonService { get; }
+        public IMoveService MoveService { get; }
+        public IAbilityService AbilityService { get; }
+        public IItemService ItemService { get; }
 
         // ── Constructor ───────────────────────────────────────────────────────
         public ServiceFactory(IDbConnectionService db)
@@ -124,7 +129,25 @@ namespace PokemonGame.Services.Factory
                                                                   TeamMemberRepository, BattlerPokemonRepository,
                                                                   PokemonRepository, ItemRepository,
                                                                   OnlinePlayerRepository, BattleTeamSnapshotRepository);
+            PokemonService = new LocalPokemonService(
+                 BattlerPokemonRepository,
+                 PokemonRepository,
+                 TeamRepository,
+                 TeamMemberRepository,
+                 MoveLearnsetRepository,
+                 PokemonStatsRepository,
+                 MoveRepository
+             );
+            MoveService = new LocalMoveService(
+                MoveRepository, AttemptRepository, CascadeStepRepository, EffectRepository,
+                SequenceStepRepository, MultiStatChangeRepository, NumberRepository,
+                WeightedEntryRepository, ConditionRepository);
 
+            AbilityService = new LocalAbilityService(
+                AbilityRepository, ConditionRepository, EffectRepository, NumberRepository);
+
+            ItemService = new LocalItemService(
+                ItemRepository, ConditionRepository, EffectRepository, NumberRepository);
         }
 
         // ── Factory methods ───────────────────────────────────────────────────
