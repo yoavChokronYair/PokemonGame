@@ -169,5 +169,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             };
             return phase;
         }
+        public void EnqueueStringEntries(IEnumerable<string> newStringEntries, BattleLogPhase phase = BattleLogPhase.Action, int turn = 0)
+        {
+            // Create the concrete objects using the constructor
+            var entries = newStringEntries.Select(msg => new BattleLogEntry(phase, turn, msg));
+
+            // Pass the collection to the existing logic to handle the queue and UI state
+            EnqueueEntries(entries);
+        }
     }
 }

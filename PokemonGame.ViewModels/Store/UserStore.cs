@@ -1,8 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Model.Enums;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Factory;
-using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -40,16 +38,28 @@ namespace PokemonGame.ViewModels.Store
         // Ensure ServiceResolver is accessible as it's checked in BattleViewModel
         public ServiceResolver Resolver { get; set; } = new ServiceResolver(false, string.Empty);
 
-        // ── Active matchmaking ────────────────────────────────────────────────
-        public IMatchmakingService? Matchmaking =>
-            Resolver.IsOnline ? Resolver.MatchmakingService : null;
+
 
         // ── ADDED: Active battle service — used by BattleViewModel ───────────
         /// <summary>
         /// This is retrieved from the Resolver when a match is found.
         /// </summary>
-        public IBattleService? BattleService =>
-            Resolver.IsOnline ? Resolver.BattleService : null;
+        private IBattleService? _battleService;
+
+        /// <summary>
+        /// This is retrieved from the Resolver when a match is found, 
+        /// or manually set during online initialization.
+        /// </summary>
+        public IBattleService? BattleService
+        {
+            get
+            {
+                return _battleService ?? (Resolver.IsOnline ? Resolver.BattleService : null);
+            }
+            set
+            {
+            }
+        }
 
         // ── Active battle session ID ───────────────────
         public string? ActiveSessionId { get; set; }

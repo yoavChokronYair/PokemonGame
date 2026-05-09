@@ -8,21 +8,24 @@ namespace PokemonGame.Server.Hubs
 {
     public class MatchmakingHub : Hub
     {
-        private readonly IMatchmakingService _matchmaking;
+        private readonly IServerMatchmakingService _matchmaking;
+        private readonly IMatchRegistry _matchRegistry;   // FIX #5: inject registry
 
-        // ── Maps playerId → connectionId for pushing to specific players ─────
+        // Maps playerId → connectionId so we can push to waiting players
         private static readonly Dictionary<int, string> _connections = new();
         private static readonly object _connLock = new();
 
-        public MatchmakingHub(IMatchmakingService matchmaking)
+        public MatchmakingHub(
+            IServerMatchmakingService matchmaking,
+            IMatchRegistry matchRegistry)
         {
             _matchmaking = matchmaking;
+            _matchRegistry = matchRegistry;
         }
 
-        // ── Called by client when they enter the matchmaking queue ────────────
+        // Called by client when they enter the queue
         public async Task FindMatch(MatchmakingEntry entry)
         {
-            // Track this player's connection
             lock (_connLock)
                 _connections[entry.PlayerId] = Context.ConnectionId;
 
@@ -30,7 +33,10 @@ namespace PokemonGame.Server.Hubs
 
             if (sessionId is not null && opponent is not null)
             {
-                // ── Match found — notify both players ─────────────────────────
+                // FIX #5: Store match in registry BEFORE notifying clients so
+                // BattleHub.JoinSession can retrieve the entries immediately.
+                _matchRegistry.StoreMatch(sessionId, entry, opponent);
+
                 var matchData = new MatchFoundMessage
                 {
                     SessionId = sessionId,
@@ -38,14 +44,14 @@ namespace PokemonGame.Server.Hubs
                     IsOneVOne = entry.IsOneVOne
                 };
 
-                // Push to the player who just joined
+                // Notify the player who just triggered the match
                 await Clients.Caller.SendAsync("MatchFound", matchData with
                 {
                     OpponentId = opponent.PlayerId,
                     OpponentName = opponent.PlayerName
                 });
 
-                // Push to the opponent who was already waiting
+                // Notify the opponent who was already waiting
                 string? opponentConnectionId;
                 lock (_connLock)
                     _connections.TryGetValue(opponent.PlayerId, out opponentConnectionId);
@@ -61,12 +67,10 @@ namespace PokemonGame.Server.Hubs
             }
             else
             {
-                // ── Queued — tell client to show waiting screen ───────────────
                 await Clients.Caller.SendAsync("Queued");
             }
         }
 
-        // ── Called by client when they cancel the search ──────────────────────
         public async Task CancelSearch(int playerId)
         {
             _matchmaking.Dequeue(playerId);
@@ -77,7 +81,6 @@ namespace PokemonGame.Server.Hubs
             await Clients.Caller.SendAsync("SearchCancelled");
         }
 
-        // ── Clean up if connection drops ──────────────────────────────────────
         public override Task OnDisconnectedAsync(Exception? exception)
         {
             lock (_connLock)
@@ -93,6 +96,7 @@ namespace PokemonGame.Server.Hubs
         }
     }
 
+    // FIX #4: same shape as client-side MatchFoundData
     public record MatchFoundMessage
     {
         public string SessionId { get; init; } = string.Empty;
@@ -102,3 +106,5 @@ namespace PokemonGame.Server.Hubs
         public bool IsOneVOne { get; init; }
     }
 }
+
+   

@@ -19,7 +19,9 @@ namespace PokemonGame.Services.Services
                 .WithAutomaticReconnect()
                 .Build();
 
-            // ── Wire up server → client events ────────────────────────────────
+            // FIX #4: MatchFoundData must have the same property names as
+            // MatchFoundMessage sent by the hub (SessionId, OpponentId,
+            // OpponentName, BattleMode, IsOneVOne).  See MatchFoundData below.
             _connection.On<MatchFoundData>("MatchFound", data =>
                 OnMatchFound?.Invoke(data));
 
@@ -32,27 +34,53 @@ namespace PokemonGame.Services.Services
 
         public async Task ConnectAsync()
         {
-            if (_connection.State == HubConnectionState.Disconnected)
-                await _connection.StartAsync();
+            try
+            {
+                if (_connection.State == HubConnectionState.Disconnected)
+                    await _connection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[OnlineMatchmakingService] ConnectAsync failed: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task FindMatchAsync(MatchmakingRequest request)
         {
             await ConnectAsync();
-            await _connection.InvokeAsync("FindMatch", new
+
+            try
             {
-                request.PlayerId,
-                request.PlayerName,
-                request.BattleMode,
-                request.IsOneVOne,
-                request.TeamId,
-                request.SelectedPokemonIds
-            });
+                // Pass the whole request; the hub receives it as MatchmakingEntry
+                await _connection.InvokeAsync("FindMatch", new
+                {
+                    request.PlayerId,
+                    request.PlayerName,
+                    request.BattleMode,
+                    request.IsOneVOne,
+                    request.TeamId,
+                    request.SelectedPokemonIds
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[OnlineMatchmakingService] FindMatchAsync failed: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task CancelAsync(int playerId)
         {
-            await _connection.InvokeAsync("CancelSearch", playerId);
+            try
+            {
+                await _connection.InvokeAsync("CancelSearch", playerId);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[OnlineMatchmakingService] CancelAsync failed: {ex.Message}");
+                throw;
+            }
         }
 
         public void Disconnect()
@@ -60,4 +88,6 @@ namespace PokemonGame.Services.Services
             _ = _connection.DisposeAsync();
         }
     }
+
+   
 }

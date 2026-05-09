@@ -8,50 +8,50 @@ namespace PokemonGame.Server.Services
     {
         public int PlayerId { get; set; }
         public string PlayerName { get; set; } = string.Empty;
-        public string SessionId { get; set; } = string.Empty;
         public string BattleMode { get; set; } = string.Empty;
         public bool IsOneVOne { get; set; }
         public int TeamId { get; set; }
         public List<int> SelectedPokemonIds { get; set; } = new();
     }
 
-    public interface IMatchmakingService
+    public interface IServerMatchmakingService
     {
-        // ── Returns sessionId if a match was found, null if queued ───────────
+        /// <summary>
+        /// Attempt to match <paramref name="entry"/> with a waiting player.
+        /// Returns the new session ID when a match is made, or null if queued.
+        /// </summary>
         string? TryMatch(MatchmakingEntry entry, out MatchmakingEntry? opponent);
-        void Dequeue(int playerId);
-        bool IsQueued(int playerId);
-    }
 
-    public class MatchmakingService : IMatchmakingService
+        void Dequeue(int playerId);
+    }
+    public class ServerMatchmakingService : IServerMatchmakingService
     {
-        // ── Swap this list for an ELO-sorted structure later ─────────────────
-        private readonly List<MatchmakingEntry> _queue = new();
+        private readonly Queue<MatchmakingEntry> _queue = new();
         private readonly object _lock = new();
 
         public string? TryMatch(MatchmakingEntry entry, out MatchmakingEntry? opponent)
         {
             lock (_lock)
             {
-                // ── Find first eligible opponent ──────────────────────────────
-                // Right now: just first in queue
-                // Later: replace this predicate with ELO range check
-                opponent = _queue.FirstOrDefault(e =>
-                    e.PlayerId != entry.PlayerId &&
-                    e.BattleMode == entry.BattleMode &&
-                    e.IsOneVOne == entry.IsOneVOne);
-
-                if (opponent is not null)
+                // Remove self if already in queue (reconnect / double-click guard)
+                var existing = _queue.FirstOrDefault(e => e.PlayerId == entry.PlayerId);
+                if (existing is not null)
                 {
-                    _queue.Remove(opponent);
-                    var sessionId = Guid.NewGuid().ToString();
+                    var temp = _queue.ToList();
+                    temp.Remove(existing);
+                    _queue.Clear();
+                    foreach (var e in temp) _queue.Enqueue(e);
+                }
+
+                if (_queue.Count > 0)
+                {
+                    opponent = _queue.Dequeue();
+                    var sessionId = Guid.NewGuid().ToString("N");
                     return sessionId;
                 }
 
-                // ── No match — add to queue ───────────────────────────────────
-                if (!_queue.Any(e => e.PlayerId == entry.PlayerId))
-                    _queue.Add(entry);
-
+                _queue.Enqueue(entry);
+                opponent = null;
                 return null;
             }
         }
@@ -59,13 +59,12 @@ namespace PokemonGame.Server.Services
         public void Dequeue(int playerId)
         {
             lock (_lock)
-                _queue.RemoveAll(e => e.PlayerId == playerId);
-        }
-
-        public bool IsQueued(int playerId)
-        {
-            lock (_lock)
-                return _queue.Any(e => e.PlayerId == playerId);
+            {
+                var list = _queue.ToList();
+                list.RemoveAll(e => e.PlayerId == playerId);
+                _queue.Clear();
+                foreach (var e in list) _queue.Enqueue(e);
+            }
         }
     }
 }

@@ -35,8 +35,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public BattleMenuViewModel BattleMenu { get; }
         public BattleLoggerViewModel Logger { get; }
 
+        // ── Online log cursor: tracks how many snapshot log entries we've consumed ──
         private int _logCursor = 0;
         private bool _isBattleOverHandled = false;
+
+        // ── Online log: we accumulate string entries here so we never touch _manager ──
+        private readonly List<string> _onlineLogAccumulator = new();
 
         public double ProgressBarWidth =>
            RatingMax > 0 ? MathHelper.Clamp((double)RatingCurrent / RatingMax * 200.0, 0, 200) : 0;
@@ -116,7 +120,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public event EventHandler<BattleResultAction> CloseRequested;
 
         public string? WinnerName => _isOnline
-            ? (_service!.GetState().IsOver ? _service.WinnerName : null)
+            ? (_service!.GetState().IsOver ? _service.GetState().WinnerName : null)
             : _manager!.Winner?.Active.Name;
 
         public BattleViewModel(
@@ -172,11 +176,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         // ── Move chosen ───────────────────────────────────────────────────────
-        // ── Move chosen ───────────────────────────────────────────────────────────
         private async void OnMoveChosen(int moveIndex)
         {
             if (_isOnline)
             {
+                // Fire-and-forget; state update arrives via OnStateUpdated event
                 _service!.RunTurn(moveIndex);
             }
             else
@@ -184,11 +188,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 _manager!.RunTurn(moveIndex);
 
                 Logger.EnqueueEntries(
-                    _manager.logger.Entries   // Changed from .BattleLog to .Entries
+                    _manager.logger.Entries
                         .Skip(_logCursor)
                         .ToList());
 
-                _logCursor = _manager.logger.Entries.Count; // Sync cursor with the object count
+                _logCursor = _manager.logger.Entries.Count;
 
                 await Logger.WaitUntilQueueEmpty();
 
@@ -205,12 +209,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         // ── Switch chosen ─────────────────────────────────────────────────────
-        // ── Switch chosen ─────────────────────────────────────────────────────────
         private async void OnSwitchChosen(int slotIndex)
         {
             if (_isOnline)
             {
-                _service!.RunTurn(slotIndex, "Switch");  // string, not BattleAction
+                _service!.RunTurn(slotIndex, "Switch");
             }
             else
             {
@@ -223,14 +226,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 Logger.EnqueueEntries(newEntries);
                 _logCursor = _manager.logger.Entries.Count;
 
-                Logger.EnqueueEntries(newEntries);
                 await Logger.WaitUntilQueueEmpty();
 
                 SyncPlayerPokemon();
                 SyncEnemyPokemon();
                 SyncBattleStateOnly();
             }
-
         }
 
         // ── Forfeit ───────────────────────────────────────────────────────────
@@ -250,7 +251,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         // ── Open switch screen ────────────────────────────────────────────────
         private void OnOpenSwitch()
         {
-            // identical in both modes — navigates to team selection
             _navigationStore.CurrentViewModel = new TeamSelectionViewModel(
                 _playerUserStore,
                 _navigationStore,
@@ -259,8 +259,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 true);
         }
 
-       
-        // ── SyncAll offline branch — fix RefreshMoves and logger ─────────────────
+        // ── SyncAll ───────────────────────────────────────────────────────────
         private void SyncAll(bool flushSetup = false)
         {
             if (_isOnline)
@@ -281,18 +280,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 EnemyStatus.MaxHP = snap.Enemy.MaxHP;
                 EnemyStatus.StatusCondition = snap.Enemy.StatusCondition;
 
-                BattleMenu.RefreshMoves(snap.PlayerMoves);  // List<MoveSnapshot>
+                BattleMenu.RefreshMoves(snap.PlayerMoves);
 
-                var allEntries = snap.LogEntries;            // IReadOnlyList<string>
+                // ── Use snapshot log entries directly — never touch _manager ──
+                var allEntries = snap.LogEntries;
                 if (allEntries.Count > _logCursor)
                 {
-                    // Use .Entries (the objects) instead of .BattleLog (the strings)
-                    var newEntries = _manager.logger.Entries
+                    var newStringEntries = allEntries
                         .Skip(_logCursor)
                         .ToList();
 
-                    Logger.EnqueueEntries(newEntries);
-                    _logCursor = _manager.logger.Entries.Count;
+                    Logger.EnqueueStringEntries(newStringEntries);
+                    _logCursor = allEntries.Count;
+
                     if (flushSetup) Logger.FlushSetupMessages();
                 }
 
@@ -322,7 +322,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 EnemyStatus.MaxHP = e.MaxHP;
                 EnemyStatus.StatusCondition = e.Status.ToString();
 
-                // ── translate IMove → MoveSnapshot at the VM boundary ────────────
                 BattleMenu.RefreshMoves(_manager.PlayerActive.Moves
                     .Select((m, i) => new MoveSnapshot
                     {
@@ -333,18 +332,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                     })
                     .ToList());
 
-                var allEntries = _manager.logger.BattleLog;  // IReadOnlyList<string>
+                var allEntries = _manager.logger.BattleLog;
                 if (allEntries.Count > _logCursor)
                 {
-                    // Use .Entries (the objects) instead of .BattleLog (the strings)
                     var newEntries = _manager.logger.Entries
                         .Skip(_logCursor)
                         .ToList();
 
                     Logger.EnqueueEntries(newEntries);
                     _logCursor = _manager.logger.Entries.Count;
-                    _logCursor = allEntries.Count;
-                    Logger.EnqueueEntries(newEntries);
+
                     if (flushSetup) Logger.FlushSetupMessages();
                 }
 
@@ -365,7 +362,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             var p = _manager!.PlayerActive;
 
-            // 1. Sync the Status Bars
             PlayerStatus.PokedexId = p.PokedexId;
             PlayerStatus.PokemonName = p.Name;
             PlayerStatus.Level = p.Level;
@@ -373,26 +369,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             PlayerStatus.CurrentHP = p.CurrentHP;
             PlayerStatus.StatusCondition = p.Status.ToString();
 
-            // 2. Map IMove/MoveState to MoveSnapshot
             var snapshots = p.Moves.Select((m, i) =>
             {
-                // Cast to MoveState to access specific properties
                 var moveBase = m as MoveState;
-
                 return new MoveSnapshot
                 {
                     Index = i,
                     Name = moveBase?.Name ?? "???",
-                    // Use .Element from MoveState and convert to string for the Snapshot
                     Type = moveBase?.Element.ToString() ?? "Normal",
                     PP = moveBase?.PP ?? 0,
-                    // Power and Accuracy might be null for status moves, which fits your int? properties
-                    Power = moveBase?.Category == MoveCategory.Status ? null : 0, // Update if MoveState adds Power
-                    Accuracy = 100 // Update if MoveState adds Accuracy
+                    Power = moveBase?.Category == MoveCategory.Status ? null : 0,
+                    Accuracy = 100
                 };
             }).ToList();
 
-            // 3. Refresh the UI
             BattleMenu.RefreshMoves(snapshots);
         }
 
@@ -409,7 +399,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             EnemyStatus.StatusCondition = e.Status.ToString();
         }
 
-        // ── SyncBattleStateOnly — fix RefreshMoves ────────────────────────────────
+        // ── SyncBattleStateOnly — offline only ────────────────────────────────
         private void SyncBattleStateOnly()
         {
             if (_isOnline) return;
@@ -433,12 +423,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
         }
 
-        // ── OnBattleEndedAsync — identical for both modes ─────────────────────
+        // ── OnBattleEndedAsync ────────────────────────────────────────────────
         private async Task OnBattleEndedAsync()
         {
-            bool playerWon = _isOnline
-                ? _service!.GetState().WinnerName == _playerUserStore.Username
-                : _manager!.Winner == _manager.PlayerTeam;
+            bool playerWon;
+
+            if (_isOnline)
+            {
+                // FIX #8: Compare winner player ID, not Pokémon name vs username
+                var snap = _service!.GetState();
+                playerWon = snap.WinnerName == _playerUserStore.Username;
+            }
+            else
+            {
+                playerWon = _manager!.Winner == _manager.PlayerTeam;
+            }
 
             RankDelta = playerWon ? 22 : -18;
             int newTotalElo = Math.Max(0, STARTING_ELO + RankDelta);
@@ -498,44 +497,29 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             Move3 = new MoveSlotViewModel(3, onMoveClicked, onMoveHovered, logger);
         }
 
-        // 1. Change the parameter type to MoveSnapshot
         public void LoadMoves(IReadOnlyList<MoveSnapshot> moves)
         {
             var slots = new[] { Move0, Move1, Move2, Move3 };
             for (int i = 0; i < 4; i++)
             {
                 if (i < moves.Count)
-                {
-                    // 2. Call a new method to set data from the snapshot
                     slots[i].SetMoveFromSnapshot(moves[i]);
-                }
                 else
-                {
                     slots[i].Clear();
-                }
             }
         }
-
     }
 
     // ── MoveSlotViewModel ─────────────────────────────────────────────────────
     public class MoveSlotViewModel : ViewModelBase
     {
-        public void SetMoveFromSnapshot(MoveSnapshot snap)
-        {
-            _move = null; // We don't have the domain object in online mode
-            MoveName = snap.Name;
-            _hasMove = true;
-            OnPropertyChanged(nameof(IsEnabled));
-            ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
-        }
         private readonly int _index;
         private readonly Action<int> _onClick;
         private readonly Action<IMove?> _onHover;
         private readonly BattleLoggerViewModel _logger;
 
         private string _moveName = "-";
-        private bool _hasMove = false;   // true when a real move is loaded
+        private bool _hasMove = false;
         private IMove? _move;
 
         public string MoveName
@@ -544,10 +528,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             private set => SetProperty(ref _moveName, value);
         }
 
-        /// <summary>
-        /// IsEnabled = move slot has a move AND the log queue is empty.
-        /// Bound to IsEnabled on the button in XAML.
-        /// </summary>
         public bool IsEnabled => _hasMove && _logger.AreActionsUnlocked;
 
         public ICommand ClickCommand { get; }
@@ -572,7 +552,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             HoverCommand = new RelayCommand(() => _onHover(_move));
             LeaveCommand = new RelayCommand(() => _onHover(null));
 
-            // Re-evaluate CanExecute whenever the queue drains or refills
             _logger.PropertyChanged += (_, e) =>
             {
                 if (e.PropertyName == nameof(BattleLoggerViewModel.AreActionsUnlocked))
@@ -581,6 +560,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                     ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
                 }
             };
+        }
+
+        public void SetMoveFromSnapshot(MoveSnapshot snap)
+        {
+            _move = null;
+            MoveName = snap.Name;
+            _hasMove = true;
+            OnPropertyChanged(nameof(IsEnabled));
+            ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
         }
 
         public void SetMove(IMove move)
@@ -601,5 +589,4 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
         }
     }
-
 }
