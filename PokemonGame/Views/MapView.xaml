@@ -14,17 +14,7 @@
 
     <Page.Resources>
 
-        <Style x:Key="TileCellStyle" TargetType="TextBlock">
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Height" Value="36" />
-            <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="FontSize" Value="10" />
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="Padding" Value="0,10,0,0" />
-        </Style>
-
+        <!--  ── Layer button style ──  -->
         <Style x:Key="LayerButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="#777" />
             <Setter Property="Background" Value="Transparent" />
@@ -63,6 +53,7 @@
             </Style.Triggers>
         </Style>
 
+        <!--  ── D-pad button style ──  -->
         <Style x:Key="DpadButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="40" />
             <Setter Property="Height" Value="40" />
@@ -190,7 +181,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!--  Map ScrollViewer  -->
+            <!--  Map viewport  -->
             <ScrollViewer
                 Grid.Column="0"
                 Padding="20"
@@ -198,8 +189,8 @@
                 behaviors:FocusBehavior.RegisterFocusTarget="True"
                 Background="#0A0A0A"
                 Focusable="True"
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto">
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Disabled">
 
                 <ScrollViewer.InputBindings>
                     <KeyBinding Key="W" Command="{Binding MoveUpCommand}" />
@@ -212,8 +203,6 @@
                     <KeyBinding Key="Right" Command="{Binding MoveRightCommand}" />
                     <KeyBinding Key="Z" Command="{Binding InspectCommand}" />
                     <KeyBinding Key="Enter" Command="{Binding InspectCommand}" />
-
-                    <!--  Dialogue choices  -->
                     <KeyBinding Key="D1" Command="{Binding PickChoice1Command}" />
                     <KeyBinding Key="D2" Command="{Binding PickChoice2Command}" />
                     <KeyBinding Key="D3" Command="{Binding PickChoice3Command}" />
@@ -222,55 +211,104 @@
                     <KeyBinding Key="NumPad3" Command="{Binding PickChoice3Command}" />
                 </ScrollViewer.InputBindings>
 
-                <ItemsControl ItemsSource="{Binding TileRows}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ItemsControl ItemsSource="{Binding Cells}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border
-                                            Width="36"
-                                            Height="36"
-                                            Background="{Binding CellBackground}"
-                                            BorderBrush="#1A1A1A"
-                                            BorderThickness="0.5"
-                                            ToolTip="{Binding Tooltip}">
-                                            <Grid>
-                                                <TextBlock
-                                                    Foreground="{Binding TileForeground}"
-                                                    Style="{StaticResource TileCellStyle}"
-                                                    Text="{Binding TileId}" />
-                                                <Ellipse
-                                                    Width="10"
-                                                    Height="10"
-                                                    Margin="0,3,3,0"
-                                                    HorizontalAlignment="Right"
-                                                    VerticalAlignment="Top"
-                                                    Fill="#FF3333"
-                                                    Stroke="#FF8888"
-                                                    StrokeThickness="1"
-                                                    Visibility="{Binding PlayerDotVisibility}" />
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <!--
+                    THE MAP CANVAS
+                    ══════════════
+                    Two ItemsControls share one Canvas:
+                    1. Tiles    — Image elements, one per viewport cell, positioned via Canvas.Left/Top
+                    2. Overlays — player dot, NPC symbols, vision tint, positioned the same way
+                    
+                    Using Canvas instead of nested StackPanels means WPF does zero
+                    layout passes for tile positioning — it reads Left/Top and places directly.
+                    NearestNeighbor scaling keeps pixel art crisp.
+                -->
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Canvas
+                        Width="{Binding ViewportWidthPx}"
+                        Height="{Binding ViewportHeightPx}"
+                        Background="#0A0A0A">
+
+                        <!--  Layer 1: Tile images  -->
+                        <ItemsControl ItemsSource="{Binding Tiles}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas IsItemsHost="True" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="Canvas.Left" Value="{Binding CanvasLeft}" />
+                                    <Setter Property="Canvas.Top" Value="{Binding CanvasTop}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Image
+                                        Width="36"
+                                        Height="36"
+                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                        Source="{Binding TileImage}"
+                                        ToolTip="{Binding Tooltip}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!--  Layer 2: Overlays (player, NPCs, vision)  -->
+                        <ItemsControl ItemsSource="{Binding Overlays}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas IsItemsHost="True" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="Canvas.Left" Value="{Binding Left}" />
+                                    <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid
+                                        Width="36"
+                                        Height="36"
+                                        ToolTip="{Binding Tooltip}">
+
+                                        <!--  Vision tint  -->
+                                        <Rectangle Fill="#330D0D3A" Visibility="{Binding IsVision, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                        <!--  Player dot  -->
+                                        <Ellipse
+                                            Width="10"
+                                            Height="10"
+                                            Margin="0,3,3,0"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Fill="#FF3333"
+                                            Stroke="#FF8888"
+                                            StrokeThickness="1"
+                                            Visibility="{Binding IsPlayer, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                        <!--  NPC symbol  -->
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Consolas"
+                                            FontSize="13"
+                                            FontWeight="Bold"
+                                            Foreground="#FF9900"
+                                            Text="{Binding NpcSymbol}"
+                                            Visibility="{Binding IsNpc, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </Canvas>
+                </Grid>
             </ScrollViewer>
 
-            <!--  Dialogue overlay — floats above the map at the bottom  -->
+            <!--  Dialogue overlay  -->
             <uc:DialogueBoxControl
                 Grid.Column="0"
                 Margin="20,0,20,12"
@@ -362,62 +400,6 @@
 
                     <StackPanel>
                         <StackPanel Margin="0,3" Orientation="Horizontal">
-                            <Border
-                                Width="14"
-                                Height="14"
-                                Margin="0,0,8,0"
-                                Background="#101010"
-                                BorderBrush="#1A1A1A"
-                                BorderThickness="1" />
-                            <TextBlock
-                                FontFamily="Consolas"
-                                FontSize="10"
-                                Foreground="#555"
-                                Text="walkable" />
-                        </StackPanel>
-                        <StackPanel Margin="0,3" Orientation="Horizontal">
-                            <Border
-                                Width="14"
-                                Height="14"
-                                Margin="0,0,8,0"
-                                Background="#080808"
-                                BorderBrush="#1A1A1A"
-                                BorderThickness="1" />
-                            <TextBlock
-                                FontFamily="Consolas"
-                                FontSize="10"
-                                Foreground="#555"
-                                Text="blocked" />
-                        </StackPanel>
-                        <StackPanel Margin="0,3" Orientation="Horizontal">
-                            <Border
-                                Width="14"
-                                Height="14"
-                                Margin="0,0,8,0"
-                                Background="#081208"
-                                BorderBrush="#1A1A1A"
-                                BorderThickness="1" />
-                            <TextBlock
-                                FontFamily="Consolas"
-                                FontSize="10"
-                                Foreground="#555"
-                                Text="grass" />
-                        </StackPanel>
-                        <StackPanel Margin="0,3" Orientation="Horizontal">
-                            <Border
-                                Width="14"
-                                Height="14"
-                                Margin="0,0,8,0"
-                                Background="#080C18"
-                                BorderBrush="#1A1A1A"
-                                BorderThickness="1" />
-                            <TextBlock
-                                FontFamily="Consolas"
-                                FontSize="10"
-                                Foreground="#555"
-                                Text="water" />
-                        </StackPanel>
-                        <StackPanel Margin="0,3" Orientation="Horizontal">
                             <Ellipse
                                 Width="10"
                                 Height="10"
@@ -431,7 +413,48 @@
                                 Foreground="#555"
                                 Text="player" />
                         </StackPanel>
+                        <StackPanel Margin="0,3" Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,0,8,0"
+                                FontFamily="Consolas"
+                                FontSize="10"
+                                FontWeight="Bold"
+                                Foreground="#FF9900"
+                                Text="T" />
+                            <TextBlock
+                                FontFamily="Consolas"
+                                FontSize="10"
+                                Foreground="#555"
+                                Text="trainer NPC" />
+                        </StackPanel>
+                        <StackPanel Margin="0,3" Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,0,8,0"
+                                FontFamily="Consolas"
+                                FontSize="10"
+                                FontWeight="Bold"
+                                Foreground="#FF9900"
+                                Text="N" />
+                            <TextBlock
+                                FontFamily="Consolas"
+                                FontSize="10"
+                                Foreground="#555"
+                                Text="NPC" />
+                        </StackPanel>
+                        <StackPanel Margin="0,3" Orientation="Horizontal">
+                            <Rectangle
+                                Width="10"
+                                Height="10"
+                                Margin="0,0,8,0"
+                                Fill="#330D0D3A" />
+                            <TextBlock
+                                FontFamily="Consolas"
+                                FontSize="10"
+                                Foreground="#555"
+                                Text="NPC vision" />
+                        </StackPanel>
                     </StackPanel>
+
                 </StackPanel>
             </Border>
         </Grid>
@@ -486,5 +509,6 @@
                 </TextBlock>
             </Grid>
         </Border>
+
     </Grid>
 </Page>

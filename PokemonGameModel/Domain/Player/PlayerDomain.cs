@@ -44,9 +44,11 @@ namespace PokemonGame.Model.Domain.Player
         // ── Key items / abilities ─────────────────────────────────────────────
         public KeyItemState RegisterKey { get; set; }
         public bool HasRunningShoes { get; set; }
+        public bool IsSurfing { get; set; }
 
         // ── Badge count (derived) ─────────────────────────────────────────────
         public int BadgeCount => Badges.Count;
+
 
         // ── Convenience methods ───────────────────────────────────────────────
 

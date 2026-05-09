@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using GalaSoft.MvvmLight.Views;
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
@@ -26,7 +27,7 @@ namespace PokemonGame
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _navigationStore.CurrentViewModel = CreateLogInViewModel();
+            _navigationStore.CurrentViewModel = CreateMapViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
@@ -145,17 +146,19 @@ namespace PokemonGame
                 UserStore.Instance,
                 _navigationStore,
                 new DialogService(),
-                CreateGameModeChooserViewModel,
-                CreateTeamSelectionViewModel        // ← add this
+                CreateGameModeChooserViewModel
             );
         }
 
-        private TeamSelectionViewModel CreateTeamSelectionViewModel()
+        private TeamSelectionViewModel CreateTeamSelectionViewModel(
+            Action<int> onSwitchChosen)
         {
             return new TeamSelectionViewModel(
                 UserStore.Instance,
                 _navigationStore,
-                CreateBattleViewModel               // navigate back to battle on cancel/confirm
+                CreateBattleViewModel,
+                onSwitchChosen,
+                false // immediate switching
             );
         }
 

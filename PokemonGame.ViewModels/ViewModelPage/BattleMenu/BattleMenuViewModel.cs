@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
@@ -78,7 +79,7 @@ public class BattleMenuViewModel : ViewModelBase
 
         OpenMovesetCommand = new RelayCommand(
             () => IsMovesetVisible = true,
-            () => _logger.AreActionsUnlocked);
+            () => AreInputsEnabled);
 
         CloseMovesetCommand = new RelayCommand(() =>
         {
@@ -88,11 +89,11 @@ public class BattleMenuViewModel : ViewModelBase
 
         ForfeitCommand = new RelayCommand(
             () => _onForfeit(),
-            () => _logger.AreActionsUnlocked);
+            () => AreInputsEnabled);
 
         OpenSwitchCommand = new RelayCommand(
         () => onSwitch(),
-        () => _logger.AreActionsUnlocked);
+        () => AreInputsEnabled);
 
         _logger.PropertyChanged += (_, e) =>
         {
@@ -109,10 +110,31 @@ public class BattleMenuViewModel : ViewModelBase
         };
     }
 
-    
+    private bool _isInputLocked;
 
-    public void RefreshMoves(IReadOnlyList<IMove> moves) => MovesetChooser.LoadMoves(moves);
+    public bool IsInputLocked
+    {
+        get => _isInputLocked;
+        set
+        {
+            if (SetProperty(ref _isInputLocked, value))
+            {
+                OnPropertyChanged(nameof(AreInputsEnabled));
 
+                ((RelayCommand)OpenMovesetCommand).NotifyCanExecuteChanged();
+                ((RelayCommand)ForfeitCommand).NotifyCanExecuteChanged();
+                ((RelayCommand)OpenSwitchCommand).NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool AreInputsEnabled =>
+        !_isInputLocked &&
+        _logger.AreActionsUnlocked;
+
+    // Change IReadOnlyList<IMove> to IReadOnlyList<MoveSnapshot>
+    public void RefreshMoves(IReadOnlyList<MoveSnapshot> moves)
+        => MovesetChooser.LoadMoves(moves);
     private void OnMoveButtonClicked(int index)
     {
         IsMovesetVisible = false;

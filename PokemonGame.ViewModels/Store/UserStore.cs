@@ -1,28 +1,25 @@
 ﻿using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Model.Enums;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Factory;
-using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.Store
 {
     public class UserStore : ViewModelBase
     {
-        // 1. Thread-safe Lazy Singleton instance
         private static readonly Lazy<UserStore> _instance =
             new Lazy<UserStore>(() => new UserStore());
 
         public static UserStore Instance => _instance.Value;
 
-        // 2. Make the constructor private so nobody can use "new UserStore()" anymore
         private UserStore()
         {
             BattleSesion = new BattleSession();
         }
 
         // ── Identity ──────────────────────────────────────────────────────────
-        public string Username { get; set; }
+        public string Username { get; set; } = "Guest"; // Default for null checks
         public int BattlePlayerID { get; set; }
 
         private UserSettings _settings = new();
@@ -34,7 +31,38 @@ namespace PokemonGame.ViewModels.Store
 
         // ── Pre-battle session ────────────────────────────────────────────────
         public BattleSession BattleSesion { get; set; }
-        public ServiceResolver Resolver { get; set; } = new ServiceResolver(false);
+
+        // ── Online infrastructure ─────────────────────────────────────────────
+        public string ServerBaseUrl { get; set; } = string.Empty;
+
+        // Ensure ServiceResolver is accessible as it's checked in BattleViewModel
+        public ServiceResolver Resolver { get; set; } = new ServiceResolver(false, string.Empty);
+
+
+
+        // ── ADDED: Active battle service — used by BattleViewModel ───────────
+        /// <summary>
+        /// This is retrieved from the Resolver when a match is found.
+        /// </summary>
+        private IBattleService? _battleService;
+
+        /// <summary>
+        /// This is retrieved from the Resolver when a match is found, 
+        /// or manually set during online initialization.
+        /// </summary>
+        public IBattleService? BattleService
+        {
+            get
+            {
+                return _battleService ?? (Resolver.IsOnline ? Resolver.BattleService : null);
+            }
+            set
+            {
+            }
+        }
+
+        // ── Active battle session ID ───────────────────
+        public string? ActiveSessionId { get; set; }
     }
 
     public enum BattleMode
@@ -72,7 +100,6 @@ namespace PokemonGame.ViewModels.Store
         public List<int> SelectedPokemonIds { get; set; } = new();
         public BotDifficulty BotDifficulty { get; set; } = BotDifficulty.Medium;
         public List<int> RivalPokemonIds { get; set; } = new();
-
 
         // ── NEW: resolved before BattleViewModel is created ──────────────────
         public PokemonTeam? ResolvedPlayerTeam { get; set; }

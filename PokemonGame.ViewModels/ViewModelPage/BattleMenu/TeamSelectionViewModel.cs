@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
@@ -11,6 +13,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 {
     public class PokemonSlotViewModel : ViewModelBase
     {
+
         private string _pokemonName = "";
         public string PokemonName
         {
@@ -101,7 +104,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             set => SetProperty(ref _gender, value);
         }
 
-        // slot index within the team — set by TeamSelectionViewModel on construction
         public int SlotIndex { get; set; }
 
         public ICommand SelectCommand { get; }
@@ -110,58 +112,98 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             SelectCommand = new RelayCommand(() =>
             {
-                if (!IsEmpty) onSelected(this);
+                if (!IsEmpty)
+                    onSelected(this);
             });
         }
     }
+
     public class TeamSelectionViewModel : ViewModelBase
     {
         private readonly UserStore _userStore;
         private readonly NavigationStore _navigationStore;
         private readonly Func<ViewModelBase> _createCancelViewModel;
+        private readonly bool _switchImmediately;
+        public ICommand ConfirmSelectionCommand { get; }
+        // NEW
+        private readonly Action<int> _onSwitchChosen;
 
         public ObservableCollection<PokemonSlotViewModel> Slots { get; } = new();
+        private bool _isActionMenuOpen;
 
+        public bool IsActionMenuOpen
+        {
+            get => _isActionMenuOpen;
+            set => SetProperty(ref _isActionMenuOpen, value);
+        }
+
+        public ICommand SwitchCommand { get; }
+        public ICommand MovePokemonCommand { get; }
+        public ICommand OpenSummaryCommand { get; }
+        public ICommand CloseActionMenuCommand { get; }
         public ICommand CancelCommand { get; }
-        public ICommand ConfirmSelectionCommand { get; }
 
         public TeamSelectionViewModel(
             UserStore userStore,
             NavigationStore navigationStore,
-            Func<ViewModelBase> createCancelViewModel)
+            Func<ViewModelBase> createCancelViewModel,
+            Action<int>? onSwitchChosen = null,
+            bool switchImmediately = false)
         {
             _userStore = userStore;
             _navigationStore = navigationStore;
             _createCancelViewModel = createCancelViewModel;
 
-            CancelCommand = new NavigateCommand(navigationStore, createCancelViewModel);
-            ConfirmSelectionCommand = new RelayCommand(ConfirmSelection, CanConfirmSelection);
+            _onSwitchChosen = onSwitchChosen;
+            _switchImmediately = switchImmediately;
+
+            CancelCommand = new NavigateCommand(
+                navigationStore,
+                createCancelViewModel);
+
+            ConfirmSelectionCommand = new RelayCommand(
+                ConfirmSelection,
+                CanConfirmSelection);
+            SwitchCommand = new RelayCommand<PokemonSlotViewModel>(OnSwitch);
+            MovePokemonCommand = new RelayCommand<PokemonSlotViewModel>(OnMovePokemon);
+            OpenSummaryCommand = new RelayCommand<PokemonSlotViewModel>(OnSummary);
+            CloseActionMenuCommand = new RelayCommand(CloseActionMenu);
 
             LoadTeam();
         }
-
+        private bool CanConfirmSelection()
+        {
+            return Slots.Any(s =>
+                s.IsSelected &&
+                !s.IsEmpty);
+        }
         private void LoadTeam()
         {
             Slots.Clear();
 
-            PokemonTeam? team = _userStore.BattleSesion.ResolvedPlayerTeam;
+            PokemonTeam? team =
+                _userStore.BattleSesion.ResolvedPlayerTeam;
+
             int capacity = team?.getAllPokemonCount() ?? 0;
 
             for (int i = 0; i < 6; i++)
             {
-                var slot = new PokemonSlotViewModel(OnSlotSelected) { SlotIndex = i };
+                var slot =
+                    new PokemonSlotViewModel(OnSlotSelected)
+                    {
+                        SlotIndex = i
+                    };
 
                 if (team != null && i < capacity)
                     MapPokemonToSlot(team.GetPokemonAt(i), slot);
 
                 Slots.Add(slot);
             }
-
-            if (Slots.Count > 0 && !Slots[0].IsEmpty)
-                Slots[0].IsSelected = true;
         }
 
-        private static void MapPokemonToSlot(PokemonState pokemon, PokemonSlotViewModel slot)
+        private static void MapPokemonToSlot(
+            PokemonState pokemon,
+            PokemonSlotViewModel slot)
         {
             slot.PokedexId = pokemon.PokedexId;
             slot.PokemonName = pokemon.Name;
@@ -171,7 +213,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             slot.Gender = pokemon.gender.ToString() ?? "";
             slot.IsEmpty = false;
         }
+        private void ConfirmSelection()
+        {
+            var selected =
+                Slots.FirstOrDefault(s =>
+                    s.IsSelected && !s.IsEmpty);
 
+            if (selected == null)
+                return;
+
+            _onSwitchChosen?.Invoke(selected.SlotIndex);
+
+            _navigationStore.CurrentViewModel =
+                _createCancelViewModel();
+        }
         private void OnSlotSelected(PokemonSlotViewModel selected)
         {
             foreach (var slot in Slots)
@@ -179,34 +234,43 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             selected.IsSelected = true;
 
-            // Switch immediately on selection
-            PokemonTeam? team = _userStore.BattleSesion.ResolvedPlayerTeam;
-            if (team == null) return;
+            IsActionMenuOpen = true;
+        }
+        private void OnSwitch(PokemonSlotViewModel? slot)
+        {
+            if (slot == null)
+                return;
 
-            team.SwitchTo(selected.SlotIndex);
+            _onSwitchChosen?.Invoke(slot.SlotIndex);
 
-            // Navigate back
-            _navigationStore.CurrentViewModel = _createCancelViewModel();
+            IsActionMenuOpen = false;
+
+            _navigationStore.CurrentViewModel =
+                _createCancelViewModel();
         }
 
-        private bool CanConfirmSelection()
+        private void OnMovePokemon(PokemonSlotViewModel? slot)
         {
-            return Slots.Any(s => s.IsSelected && !s.IsEmpty);
+            if (slot == null)
+                return;
+
+            // future move logic
         }
 
-        private void ConfirmSelection()
+        private void OnSummary(PokemonSlotViewModel? slot)
         {
-            var selected = Slots.FirstOrDefault(s => s.IsSelected && !s.IsEmpty);
-            if (selected == null) return;
+            if (slot == null)
+                return;
 
-            PokemonTeam? team = _userStore.BattleSesion.ResolvedPlayerTeam;
-            if (team == null) return;
+            // future summary navigation
+        }
 
-            // Switch the active pokemon to the selected slot
-            team.SwitchTo(selected.SlotIndex);
+        private void CloseActionMenu()
+        {
+            IsActionMenuOpen = false;
 
-            // Navigate back the same way cancel does
-            _navigationStore.CurrentViewModel = _createCancelViewModel();
+            foreach (var slot in Slots)
+                slot.IsSelected = false;
         }
     }
 }

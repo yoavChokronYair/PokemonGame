@@ -7,15 +7,11 @@ namespace PokemonGame.Model.Model.Map
 {
     public class MapState
     {
-        // ── Fields ───────────────────────────────────────────────────────────
-
         private MapDomain _activeMap;
         private int[,] _backgroundTiles;
         private int[,] _foregroundTiles;
 
-        private readonly Dictionary<MapDomain, (int[,] bg, int[,] fg)> _mapCache = new();
-
-        // ── Construction ─────────────────────────────────────────────────────
+        private readonly Dictionary<MapDomain, (int[,] bg, int[,] fg)> _mapCache = new Dictionary<MapDomain, (int[,], int[,])>();
 
         public MapState(MapDomain startMap)
         {
@@ -37,11 +33,11 @@ namespace PokemonGame.Model.Model.Map
             PlayerDomain player, SquareMapState squareMap)
         {
             var bg = BuildLayerViewport(player.playerLoc, isForeground: false);
-            var fg = BuildLayerViewport(player.playerLoc, isForeground: true);
+            var fg = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
             var vision = BuildVisionViewport(player.playerLoc, squareMap);
 
-            StampNpcs(fg, player.playerLoc);    // ← NPCs first (under player)
-            StampPlayer(fg, player.FacingDirection); // ← player always on top
+            StampNpcs(fg, player.playerLoc);
+            StampPlayer(fg, player.FacingDirection);
 
             return (bg, fg, vision);
         }
@@ -64,8 +60,8 @@ namespace PokemonGame.Model.Model.Map
 
         private int[,] BuildVisionViewport((int playerRow, int playerCol) pos, SquareMapState squareMap)
         {
-            int vRows = MapConstants.ViewRowSize / 2;
-            int vCols = MapConstants.ViewColSize / 2;
+            int vRows = MapConstants.ViewRowSize / MapConstants.TilesPerSquare;
+            int vCols = MapConstants.ViewColSize / MapConstants.TilesPerSquare;
             var view = new int[vRows, vCols];
             var (psr, psc) = squareMap.TileToSquare(pos.playerRow, pos.playerCol);
             int halfRows = vRows / 2;
@@ -76,7 +72,6 @@ namespace PokemonGame.Model.Model.Map
                 {
                     int srcRow = psr - halfRows + r;
                     int srcCol = psc - halfCols + c;
-
                     if ((uint)srcRow < (uint)squareMap.SquareRows &&
                         (uint)srcCol < (uint)squareMap.SquareCols)
                         view[r, c] = squareMap.VisionLayer[srcRow, srcCol];
@@ -98,6 +93,7 @@ namespace PokemonGame.Model.Model.Map
             fg[midRow, midCol - 1] = sprite.BL;
             fg[midRow, midCol] = sprite.BR;
         }
+
         private void StampNpcs(int[,] fg, (int playerRow, int playerCol) pos)
         {
             int halfRows = MapConstants.ViewRowSize / 2;
@@ -106,7 +102,6 @@ namespace PokemonGame.Model.Model.Map
             foreach (var npc in _activeMap.Npc)
             {
                 if (npc.Sprite == null) continue;
-
                 var sprite = npc.Sprite.GetSprite(npc.direction);
                 if (sprite == null) continue;
 
@@ -131,18 +126,17 @@ namespace PokemonGame.Model.Model.Map
             int mapCols = _backgroundTiles.GetLength(1);
 
             if ((uint)row < (uint)mapRows && (uint)col < (uint)mapCols)
-                return GetActiveLayer(isForeground)[row, col];
+                return _backgroundTiles[row, col];
 
             var neighbor = FindNeighbor(row, col, mapRows, mapCols);
             if (neighbor == null) return 0;
 
             var (neighborMap, nRow, nCol) = neighbor.Value;
-            var (nbg, nfg) = GetCachedTiles(neighborMap);
-            var layer = isForeground ? nfg : nbg;
+            var (nbg, _) = GetCachedTiles(neighborMap);
 
-            return (uint)nRow < (uint)layer.GetLength(0) &&
-                   (uint)nCol < (uint)layer.GetLength(1)
-                ? layer[nRow, nCol]
+            return (uint)nRow < (uint)nbg.GetLength(0) &&
+                   (uint)nCol < (uint)nbg.GetLength(1)
+                ? nbg[nRow, nCol]
                 : 0;
         }
 
@@ -182,13 +176,13 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Private — cache helpers ───────────────────────────────────────────
 
-        private int[,] GetActiveLayer(bool isForeground)
-            => isForeground ? _foregroundTiles : _backgroundTiles;
-
         private (int[,] bg, int[,] fg) GetCachedTiles(MapDomain map)
         {
             if (_mapCache.TryGetValue(map, out var cached)) return cached;
-            var built = (BuildTileArray(map.BackgroundBlocks, map), BuildTileArray(map.Blocks, map));
+            var built = (
+                BuildTileArray(map.Blocks, map),
+                new int[map.Height, map.Width]
+            );
             _mapCache[map] = built;
             return built;
         }
@@ -199,12 +193,20 @@ namespace PokemonGame.Model.Model.Map
                 GetCachedTiles(connection.ConnectedMap);
         }
 
+        /// <summary>
+        /// Builds a dense [height, width] tile grid from a sparse tile list.
+        /// Uses each tile's X/Y coordinates to place it correctly —
+        /// DO NOT use list index, tiles are sparse (empty cells are absent).
+        /// </summary>
         private static int[,] BuildTileArray(List<TileDomain> blocks, MapDomain map)
         {
             var tiles = new int[map.Height, map.Width];
-            for (int b = 0; b < blocks.Count; b++)
-                if (blocks[b] is { } tile)
-                    tiles[b / map.Width, b % map.Width] = tile.Tileid;
+            foreach (var tile in blocks)
+            {
+                if ((uint)tile.Y < (uint)map.Height &&
+                    (uint)tile.X < (uint)map.Width)
+                    tiles[tile.Y, tile.X] = tile.Tileid;
+            }
             return tiles;
         }
     }

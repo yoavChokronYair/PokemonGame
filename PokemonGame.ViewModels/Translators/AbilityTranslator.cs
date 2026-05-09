@@ -1,7 +1,9 @@
 ﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.DesignPatterns;
+using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
 
@@ -50,4 +52,5 @@ namespace PokemonGame.ViewModels.Translators
             return new AbilityState(tree.Name, effect, tree.Description);
         }
     }
+    
 }

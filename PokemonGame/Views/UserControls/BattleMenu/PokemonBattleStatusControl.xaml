@@ -39,7 +39,7 @@
                 VerticalAlignment="Top"
                 Fill="{Binding HPColor}">
                 <Rectangle.RenderTransform>
-                    <ScaleTransform x:Name="HPScale" ScaleX="{Binding HpPercentage}" />
+                    <ScaleTransform x:Name="HPScale" ScaleX="{Binding AnimatedHpPercentage}" />
                 </Rectangle.RenderTransform>
             </Rectangle>
             <Grid

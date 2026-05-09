@@ -180,6 +180,7 @@ public class MapManager
         // ── Commit normal move ───────────────────────────────────────
         var (ntileRow, ntileCol) = _squareMapState.SquareToTile(result.Row, result.Col);
         _player.playerLoc = (ntileRow, ntileCol);
+
         return result;
     }
 

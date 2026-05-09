@@ -50,6 +50,7 @@ namespace PokemonGame.Model.Model.Battle
 
         public IReadOnlyList<BattleLogEntry> Entries => _entries;
 
+
         // Keeps backward compatibility — existing code calling BattleLog still works
         public IReadOnlyList<string> BattleLog =>
             _entries.Select(e => e.Message).ToList();

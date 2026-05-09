@@ -108,6 +108,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             HasMore = _queue.Count > 0;
         }
 
+        private TaskCompletionSource<bool>? _waitTcs;
+
+        public Task WaitUntilQueueEmpty()
+        {
+            if (!HasMore)
+            {
+                return Task.CompletedTask;
+            }
+
+            _waitTcs = new TaskCompletionSource<bool>();
+
+            return _waitTcs.Task;
+        }
+
         // ── Private ───────────────────────────────────────────────────────────
 
         private void ShowNext()
@@ -115,12 +129,22 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             if (_queue.Count == 0)
             {
                 HasMore = false;
+
+                _waitTcs?.TrySetResult(true);
+
                 return;
             }
 
             var entry = _queue.Dequeue();
+
             ApplyEntry(entry);
+
             HasMore = _queue.Count > 0;
+
+            if (!HasMore)
+            {
+                _waitTcs?.TrySetResult(true);
+            }
         }
 
         private void ApplyEntry(BattleLogEntry entry)
@@ -144,6 +168,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 _ => string.Empty,
             };
             return phase;
+        }
+        public void EnqueueStringEntries(IEnumerable<string> newStringEntries, BattleLogPhase phase = BattleLogPhase.Action, int turn = 0)
+        {
+            // Create the concrete objects using the constructor
+            var entries = newStringEntries.Select(msg => new BattleLogEntry(phase, turn, msg));
+
+            // Pass the collection to the existing logic to handle the queue and UI state
+            EnqueueEntries(entries);
         }
     }
 }
