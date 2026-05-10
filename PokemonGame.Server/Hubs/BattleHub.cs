@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Server.Services;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.Services.Services;
 
@@ -17,44 +18,54 @@ namespace PokemonGame.Server.Hubs
 
     public class MatchRegistry : IMatchRegistry
     {
-        // Key: SessionId, Value: List of entries in that match
         private readonly Dictionary<string, List<MatchmakingEntry>> _pendingMatches = new();
+
+        // FIX #5: every public method locks _pendingMatches so StoreMatch
+        // (called from MatchmakingHub) and GetEntry (called from BattleHub)
+        // cannot race on different SignalR thread-pool threads.
+        private readonly object _lock = new();
 
         public void StoreMatch(string sessionId, MatchmakingEntry p1, MatchmakingEntry p2)
         {
-            _pendingMatches[sessionId] = new List<MatchmakingEntry> { p1, p2 };
+            lock (_lock)
+                _pendingMatches[sessionId] = new List<MatchmakingEntry> { p1, p2 };
         }
 
         public MatchmakingEntry? GetEntry(string sessionId, int playerId)
         {
-            if (_pendingMatches.TryGetValue(sessionId, out var entries))
+            lock (_lock)
             {
-                return entries.FirstOrDefault(e => e.PlayerId == playerId);
+                if (_pendingMatches.TryGetValue(sessionId, out var entries))
+                    return entries.FirstOrDefault(e => e.PlayerId == playerId);
+                return null;
             }
-            return null;
         }
     }
+
+    // ── BattleHub ─────────────────────────────────────────────────────────────
 
     public class BattleHub : Hub
     {
         private static readonly Dictionary<string, ServerBattleSession> _sessions = new();
         private static readonly object _lock = new();
         private readonly IMatchRegistry _matchRegistry;
-        public BattleHub(IMatchRegistry matchRegistry)
+
+        private readonly ServiceFactory _serviceFactory;
+
+        public BattleHub(IMatchRegistry matchRegistry, ServiceFactory serviceFactory)
         {
             _matchRegistry = matchRegistry;
+            _serviceFactory = serviceFactory;
         }
 
         public async Task JoinSession(string sessionId, int playerId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, sessionId);
 
-            // FIX: Retrieve the data from the server-side registry, not the client-service
             var entry = _matchRegistry.GetEntry(sessionId, playerId);
-
             if (entry == null)
             {
-                // Handle error: Player tried to join a session they aren't part of
+                await Clients.Caller.SendAsync("Error", "Session not found or you are not a participant.");
                 return;
             }
 
@@ -62,16 +73,18 @@ namespace PokemonGame.Server.Hubs
             {
                 if (!_sessions.TryGetValue(sessionId, out var session))
                 {
-                    session = new ServerBattleSession(sessionId);
+                    session = new ServerBattleSession(sessionId, _serviceFactory); // pass it in
                     _sessions[sessionId] = session;
                 }
-
                 session.RegisterPlayer(playerId, Context.ConnectionId, entry);
             }
 
             ServerBattleSession? ready;
             lock (_lock)
-                ready = _sessions.TryGetValue(sessionId, out var s) && s.BothPlayersReady ? s : null;
+                ready = _sessions.TryGetValue(sessionId, out var s)
+                        && s.BothPlayersReady
+                        && s.Manager != null  // ← add this guard
+                    ? s : null;
 
             if (ready is not null)
                 await PushStateAsync(sessionId, ready);
@@ -88,8 +101,9 @@ namespace PokemonGame.Server.Hubs
 
             lock (_lock)
             {
-                var (_, playerIdx) = session.GetAction(session.Player1Id);
-                session.Manager.RunTurn(playerIdx);
+                // FIX #3: RunPvPTurn injects both players' chosen indices so
+                // the bot AI is never consulted during an online match.
+                session.RunPvPTurn();
                 session.ClearActions();
             }
 
@@ -137,7 +151,21 @@ namespace PokemonGame.Server.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        private async Task PushStateAsync(string sessionId, ServerBattleSession session) =>
-            await Clients.Group(sessionId).SendAsync("StateUpdated", session.BuildSnapshot());
+        private async Task PushStateAsync(string sessionId, ServerBattleSession session)
+        {
+            await Clients.Client(session.P1ConnectionId)
+                .SendAsync("StateUpdated", session.BuildSnapshot(session.Player1Id));
+            await Clients.Client(session.P2ConnectionId)
+                .SendAsync("StateUpdated", session.BuildSnapshot(session.Player2Id));
+        }
+    }
+
+    // ── BattleActionMessage ───────────────────────────────────────────────────
+    public class BattleActionMessage
+    {
+        public string SessionId { get; set; } = string.Empty;
+        public int PlayerId { get; set; }
+        public string ActionType { get; set; } = string.Empty;
+        public int Index { get; set; }
     }
 }

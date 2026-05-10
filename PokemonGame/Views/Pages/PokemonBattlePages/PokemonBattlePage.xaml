@@ -8,101 +8,122 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uc="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
     Title="PokemonBattlePage"
-    d:DesignHeight="533"
-    d:DesignWidth="800"
     mc:Ignorable="d">
 
     <Page.Resources>
         <converters:PokemonIdToImageConverter x:Key="IdToSprite" />
         <converters:PokemonIdToBackImageConverter x:Key="IdToBackSprite" />
+        <converters:PokemonSpriteConverter x:Key="IdToSpriteTrimmed" />
+        <converters:PokemonSpriteConverterBack x:Key="IdToBackSpriteTrimmed" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibility" />
     </Page.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
-            <RowDefinition Height="199" />
-            <RowDefinition />
-            <RowDefinition Height="150" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="43" />
-            <ColumnDefinition Width="744*" />
-            <ColumnDefinition Width="13*" />
-        </Grid.ColumnDefinitions>
+    <Viewbox Stretch="Fill" StretchDirection="Both">
+        <Grid Width="800" Height="533">
 
-        <!--  Background  -->
-        <Image
-            Grid.RowSpan="3"
-            Grid.ColumnSpan="3"
-            RenderOptions.BitmapScalingMode="NearestNeighbor"
-            Source="/Assets/Images/BattleBackground.png"
-            Stretch="Fill" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="199" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="150" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="43" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="13" />
+            </Grid.ColumnDefinitions>
 
-        <!--  Bottom battle menu — DataContext = BattleMenuViewModel  -->
-        <uc:BattleSelectionMenuUserControl
-            Grid.Row="3"
-            Grid.ColumnSpan="3"
-            DataContext="{Binding BattleMenu}" />
-
-        <!--  Enemy status bar  -->
-        <uc:EnemyBattleStatusControl
-            Grid.Row="1"
-            Grid.Column="1"
-            Width="280"
-            Height="80"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            DataContext="{Binding EnemyStatus}" />
-
-        <!--  Enemy sprite — bound to EnemyStatus.PokedexId  -->
-        <Grid
-            Grid.Row="1"
-            Grid.Column="1"
-            Width="200"
-            Height="200"
-            Margin="0,0,90,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Center">
-            <Ellipse
-                Width="80"
-                Height="20"
-                Margin="0,0,0,5"
-                VerticalAlignment="Bottom"
-                Fill="Black"
-                Opacity="0.2">
-                <Ellipse.Effect>
-                    <BlurEffect Radius="10" />
-                </Ellipse.Effect>
-            </Ellipse>
+            <!--  Background  -->
             <Image
-                HorizontalAlignment="Center"
+                Grid.RowSpan="3"
+                Grid.ColumnSpan="3"
+                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                Source="/Assets/Images/BattleBackground.png"
+                Stretch="Fill" />
+
+            <!--  Waiting for opponent overlay  -->
+            <Border
+                Grid.Row="3"
+                Grid.ColumnSpan="3"
+                Background="#CC000000"
+                Visibility="{Binding BattleMenu.ActionsLocked, Converter={StaticResource BoolToVisibility}}">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Waiting for opponent..." />
+            </Border>
+
+            <!--  Bottom battle menu  -->
+            <uc:BattleSelectionMenuUserControl
+                Grid.Row="3"
+                Grid.ColumnSpan="3"
+                DataContext="{Binding BattleMenu}" />
+
+            <!--  Enemy status bar  -->
+            <uc:EnemyBattleStatusControl
+                Grid.Row="1"
+                Grid.Column="1"
+                Width="280"
+                Height="80"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                DataContext="{Binding EnemyStatus}" />
+
+            <!--  Enemy sprite  -->
+            <Grid
+                Grid.Row="1"
+                Grid.Column="1"
+                Width="200"
+                Height="200"
+                Margin="0,0,90,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center">
+                <Ellipse
+                    Width="80"
+                    Height="20"
+                    Margin="0,0,0,5"
+                    VerticalAlignment="Bottom"
+                    Fill="Black"
+                    Opacity="0.2">
+                    <Ellipse.Effect>
+                        <BlurEffect Radius="10" />
+                    </Ellipse.Effect>
+                </Ellipse>
+                <Image
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    RenderTransformOrigin="0.5,1"
+                    Source="{Binding EnemyStatus.PokedexId, Converter={StaticResource IdToSpriteTrimmed}}"
+                    Stretch="Uniform" />
+            </Grid>
+
+            <!--  Player status bar  -->
+            <uc:PokemonBattleStatusControl
+                Grid.Row="2"
+                Grid.Column="1"
+                Width="300"
+                Height="100"
+                Margin="10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                DataContext="{Binding PlayerStatus}" />
+
+            <Image
+                Grid.Row="2"
+                Grid.Column="1"
+                Width="128"
+                Height="128"
+                Margin="100,0,0,0"
+                HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 RenderOptions.BitmapScalingMode="NearestNeighbor"
-                RenderTransformOrigin="0.5,1"
-                Source="{Binding EnemyStatus.PokedexId, Converter={StaticResource IdToSprite}}"
-                Stretch="Uniform" />
+                Source="{Binding PlayerStatus.PokedexId, Converter={StaticResource IdToBackSpriteTrimmed}}"
+                Stretch="Fill" />
+
         </Grid>
-
-        <!--  Player status bar  -->
-        <uc:PokemonBattleStatusControl
-            Grid.Row="2"
-            Grid.Column="1"
-            Width="300"
-            Height="100"
-            Margin="10"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            DataContext="{Binding PlayerStatus}" />
-
-        <!--  Player sprite — bound to PlayerStatus.PokedexId  -->
-        <Image
-            Grid.Row="2"
-            Grid.Column="1"
-            Margin="100,0,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            RenderOptions.BitmapScalingMode="NearestNeighbor"
-            Source="{Binding PlayerStatus.PokedexId, Converter={StaticResource IdToBackSprite}}"
-            Stretch="Uniform" />
-    </Grid>
+    </Viewbox>
 </Page>

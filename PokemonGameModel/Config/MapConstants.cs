@@ -14,12 +14,24 @@ namespace PokemonGame.Model.Config
 
     public static class PlayerSprites
     {
-        public static readonly Dictionary<FacingDirection, (int TL, int TR, int BL, int BR)> Tiles = new()
+        // 3 frames per direction: [0] left leg, [1] standing, [2] right leg
+        public static readonly Dictionary<FacingDirection, string[]> Frames = new()
         {
-            { FacingDirection.Down,  (TL: 10, TR: 11, BL: 12, BR: 13) },
-            { FacingDirection.Up,    (TL: 14, TR: 15, BL: 16, BR: 17) },
-            { FacingDirection.Left,  (TL: 18, TR: 19, BL: 20, BR: 21) },
-            { FacingDirection.Right, (TL: 22, TR: 23, BL: 24, BR: 25) },
-        };  
+            [FacingDirection.Down] = new[] { "sprite_0.png", "sprite_1.png", "sprite_2.png" },
+            [FacingDirection.Up] = new[] { "sprite_3.png", "sprite_4.png", "sprite_5.png" },
+            [FacingDirection.Left] = new[] { "sprite_6.png", "sprite_7.png", "sprite_8.png" },
+            [FacingDirection.Right] = new[] { "sprite_9.png", "sprite_10.png", "sprite_11.png" },
+        };
+
+        private static readonly int[] WalkCycle = { 0, 1, 2, 1 };
+
+        public static string GetFrame(FacingDirection dir, int tick, bool isMoving)
+        {
+            if (!Frames.TryGetValue(dir, out var frames))
+                frames = Frames[FacingDirection.Down];
+
+            int frame = isMoving ? WalkCycle[tick % WalkCycle.Length] : 1;
+            return frames[frame];
+        }
     }
 }

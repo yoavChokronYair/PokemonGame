@@ -31,6 +31,7 @@ namespace PokemonGame.Server.Services
 
         public string? TryMatch(MatchmakingEntry entry, out MatchmakingEntry? opponent)
         {
+            Console.WriteLine($"[TryMatch] PlayerId={entry.PlayerId} Queue={string.Join(",", _queue.Select(e => e.PlayerId))}");
             lock (_lock)
             {
                 // Remove self if already in queue (reconnect / double-click guard)

@@ -578,20 +578,47 @@ namespace PokemonGame.Services.Handler
 
         public List<TeamData> GetTeamsByBattlePlayer(int battlePlayerId)
         {
-            var result = _api.GetTeamsByBattlePlayer(battlePlayerId);
-            if (result is null) return _local.GetTeamsByBattlePlayer(battlePlayerId);
+            try
+            {
+                var result = _api.GetTeamsByBattlePlayer(battlePlayerId);
+                if (result is null) return _local.GetTeamsByBattlePlayer(battlePlayerId);
 
-            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
-            return _local.GetTeamsByBattlePlayer(battlePlayerId);
+                ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+                return _local.GetTeamsByBattlePlayer(battlePlayerId);
+            }
+            catch (Exception ex)
+            {
+                var full = ex;
+                while (full != null)
+                {
+                    Console.WriteLine($"[{full.GetType().Name}] {full.Message}");
+                    full = full.InnerException;
+                }
+                throw;
+            }
+
         }
 
         public TeamData? GetTeamByBattlePlayer(int battlePlayerId)
         {
-            var result = _api.GetTeamsByBattlePlayer(battlePlayerId);
-            if (result is null) return _local.GetTeamByBattlePlayer(battlePlayerId);
+            try
+            {
+                var result = _api.GetTeamsByBattlePlayer(battlePlayerId);
+                if (result is null) return _local.GetTeamByBattlePlayer(battlePlayerId);
 
-            ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
-            return _local.GetTeamByBattlePlayer(battlePlayerId);
+                ServiceFactory.Instance.Sync?.SyncPlayerAsync(battlePlayerId).Wait();
+                return _local.GetTeamByBattlePlayer(battlePlayerId);
+            }
+            catch (Exception ex)
+            {
+                var full = ex;
+                while (full != null)
+                {
+                    Console.WriteLine($"[{full.GetType().Name}] {full.Message}");
+                    full = full.InnerException;
+                }
+                throw;
+            }
         }
 
         public bool CanCreateTeam(int battlePlayerId)

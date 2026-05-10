@@ -35,12 +35,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public BattleMenuViewModel BattleMenu { get; }
         public BattleLoggerViewModel Logger { get; }
 
-        // ── Online log cursor: tracks how many snapshot log entries we've consumed ──
         private int _logCursor = 0;
         private bool _isBattleOverHandled = false;
-
-        // ── Online log: we accumulate string entries here so we never touch _manager ──
-        private readonly List<string> _onlineLogAccumulator = new();
 
         public double ProgressBarWidth =>
            RatingMax > 0 ? MathHelper.Clamp((double)RatingCurrent / RatingMax * 200.0, 0, 200) : 0;
@@ -139,22 +135,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             if (_isOnline)
             {
-                // ── Online path ───────────────────────────────────────────────
                 _service = playerUserStore.BattleService!;
                 _service.OnStateUpdated += () =>
                     System.Windows.Application.Current.Dispatcher.Invoke(() => SyncAll());
             }
             else
             {
-                // ── Offline path ──────────────────────────────────────────────
                 var session = playerUserStore.BattleSesion;
                 var playerTeam = session.ResolvedPlayerTeam
-                    ?? throw new InvalidOperationException("Team not set.");
+                    ?? throw new InvalidOperationException("Player team not set.");
                 var botTeam = session.ResolvedBotTeam
                     ?? throw new InvalidOperationException("Bot team not set.");
-                var botLevel = ResolveBotLevel(session.BotDifficulty);
 
-                _manager = new BattleManager(playerTeam, botTeam, botLevel);
+                _manager = new BattleManager(playerTeam, botTeam, ResolveBotLevel(session.BotDifficulty));
             }
 
             Logger = new BattleLoggerViewModel();
@@ -180,18 +173,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             if (_isOnline)
             {
-                // Fire-and-forget; state update arrives via OnStateUpdated event
+                // Lock buttons immediately so player can't change their mind
+                BattleMenu.SetWaitingForOpponent(true);
                 _service!.RunTurn(moveIndex);
+                // UI will update when OnStateUpdated fires from server
             }
             else
             {
                 _manager!.RunTurn(moveIndex);
 
-                Logger.EnqueueEntries(
-                    _manager.logger.Entries
-                        .Skip(_logCursor)
-                        .ToList());
+                // Replace your two lines with this:
+                var newMessages = _manager.logger.Entries
+                    .Skip(_logCursor)
+                    .Select(e => e.Message); // Extract just the string
 
+                Logger.EnqueueStringEntries(newMessages);
                 _logCursor = _manager.logger.Entries.Count;
 
                 await Logger.WaitUntilQueueEmpty();
@@ -219,11 +215,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             {
                 _manager!.RunTurn(slotIndex, BattleAction.Switch);
 
-                var newEntries = _manager.logger.Entries
+                var newMessages = _manager.logger.Entries
                     .Skip(_logCursor)
-                    .ToList();
+                    .Select(e => e.Message); // Extract just the string
 
-                Logger.EnqueueEntries(newEntries);
+                Logger.EnqueueStringEntries(newMessages);
                 _logCursor = _manager.logger.Entries.Count;
 
                 await Logger.WaitUntilQueueEmpty();
@@ -238,9 +234,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private void OnForfeit()
         {
             if (_isOnline)
-            {
                 _service!.Forfeit();
-            }
             else
             {
                 _manager!.ForceWinner(_manager.BotTeam);
@@ -279,20 +273,17 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 EnemyStatus.CurrentHP = snap.Enemy.CurrentHP;
                 EnemyStatus.MaxHP = snap.Enemy.MaxHP;
                 EnemyStatus.StatusCondition = snap.Enemy.StatusCondition;
+                BattleMenu.SetWaitingForOpponent(false);
 
                 BattleMenu.RefreshMoves(snap.PlayerMoves);
 
-                // ── Use snapshot log entries directly — never touch _manager ──
+                // FIX #6: use EnqueueStringEntries — online log arrives as List<string>
+                // from the snapshot, never from _manager (which is null in online mode).
                 var allEntries = snap.LogEntries;
                 if (allEntries.Count > _logCursor)
                 {
-                    var newStringEntries = allEntries
-                        .Skip(_logCursor)
-                        .ToList();
-
-                    Logger.EnqueueStringEntries(newStringEntries);
+                    Logger.EnqueueStringEntries(allEntries.Skip(_logCursor).ToList());
                     _logCursor = allEntries.Count;
-
                     if (flushSetup) Logger.FlushSetupMessages();
                 }
 
@@ -329,19 +320,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                         Name = (m as MoveState)?.Name ?? "-",
                         Type = (m as MoveState)?.Element.ToString() ?? string.Empty,
                         PP = (m as MoveState)?.PP ?? 0
-                    })
-                    .ToList());
+                    }).ToList());
 
                 var allEntries = _manager.logger.BattleLog;
                 if (allEntries.Count > _logCursor)
                 {
-                    var newEntries = _manager.logger.Entries
+                    // Replace your two lines with this:
+                    var newMessages = _manager.logger.Entries
                         .Skip(_logCursor)
-                        .ToList();
+                        .Select(e => e.Message); // Extract just the string
 
-                    Logger.EnqueueEntries(newEntries);
+                    Logger.EnqueueStringEntries(newMessages);
                     _logCursor = _manager.logger.Entries.Count;
-
                     if (flushSetup) Logger.FlushSetupMessages();
                 }
 
@@ -355,13 +345,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
         }
 
-        // ── SyncPlayerPokemon / SyncEnemyPokemon — offline only ──────────────
+        // ── SyncPlayerPokemon — offline only ──────────────────────────────────
         private void SyncPlayerPokemon()
         {
             if (_isOnline) return;
-
             var p = _manager!.PlayerActive;
-
             PlayerStatus.PokedexId = p.PokedexId;
             PlayerStatus.PokemonName = p.Name;
             PlayerStatus.Level = p.Level;
@@ -369,27 +357,25 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             PlayerStatus.CurrentHP = p.CurrentHP;
             PlayerStatus.StatusCondition = p.Status.ToString();
 
-            var snapshots = p.Moves.Select((m, i) =>
+            BattleMenu.RefreshMoves(p.Moves.Select((m, i) =>
             {
-                var moveBase = m as MoveState;
+                var ms = m as MoveState;
                 return new MoveSnapshot
                 {
                     Index = i,
-                    Name = moveBase?.Name ?? "???",
-                    Type = moveBase?.Element.ToString() ?? "Normal",
-                    PP = moveBase?.PP ?? 0,
-                    Power = moveBase?.Category == MoveCategory.Status ? null : 0,
+                    Name = ms?.Name ?? "???",
+                    Type = ms?.Element.ToString() ?? "Normal",
+                    PP = ms?.PP ?? 0,
+                    Power = ms?.Category == MoveCategory.Status ? null : 0,
                     Accuracy = 100
                 };
-            }).ToList();
-
-            BattleMenu.RefreshMoves(snapshots);
+            }).ToList());
         }
 
+        // ── SyncEnemyPokemon — offline only ───────────────────────────────────
         private void SyncEnemyPokemon()
         {
             if (_isOnline) return;
-
             var e = _manager!.BotActive;
             EnemyStatus.PokedexId = e.PokedexId;
             EnemyStatus.PokemonName = e.Name;
@@ -411,8 +397,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                     Name = (m as MoveState)?.Name ?? "-",
                     Type = (m as MoveState)?.Element.ToString() ?? string.Empty,
                     PP = (m as MoveState)?.PP ?? 0
-                })
-                .ToList());
+                }).ToList());
 
             OnPropertyChanged(nameof(WinnerName));
 
@@ -430,9 +415,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             if (_isOnline)
             {
-                // FIX #8: Compare winner player ID, not Pokémon name vs username
                 var snap = _service!.GetState();
-                playerWon = snap.WinnerName == _playerUserStore.Username;
+
+                // FIX #2: compare WinnerPlayerId (int) to BattlePlayerID (int).
+                // The old code compared WinnerName (a display string, e.g. "Alice")
+                // to Username, which is fragile and was set to a Pokémon's name
+                // in ServerBattleSession before fix #4 was applied.
+                playerWon = snap.WinnerPlayerId.HasValue
+                            && snap.WinnerPlayerId.Value == _playerUserStore.BattlePlayerID;
             }
             else
             {
@@ -502,10 +492,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             var slots = new[] { Move0, Move1, Move2, Move3 };
             for (int i = 0; i < 4; i++)
             {
-                if (i < moves.Count)
-                    slots[i].SetMoveFromSnapshot(moves[i]);
-                else
-                    slots[i].Clear();
+                if (i < moves.Count) slots[i].SetMoveFromSnapshot(moves[i]);
+                else slots[i].Clear();
             }
         }
     }
@@ -545,10 +533,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             _onHover = onHover;
             _logger = logger;
 
-            ClickCommand = new RelayCommand(
-                () => _onClick(_index),
-                () => IsEnabled);
-
+            ClickCommand = new RelayCommand(() => _onClick(_index), () => IsEnabled);
             HoverCommand = new RelayCommand(() => _onHover(_move));
             LeaveCommand = new RelayCommand(() => _onHover(null));
 
@@ -574,7 +559,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public void SetMove(IMove move)
         {
             _move = move;
-            MoveName = (((_move as MoveState)))?.Name ?? "-";
+            MoveName = (_move as MoveState)?.Name ?? "-";
             _hasMove = true;
             OnPropertyChanged(nameof(IsEnabled));
             ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();

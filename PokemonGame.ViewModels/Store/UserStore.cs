@@ -19,7 +19,7 @@ namespace PokemonGame.ViewModels.Store
         }
 
         // ── Identity ──────────────────────────────────────────────────────────
-        public string Username { get; set; } = "Guest"; // Default for null checks
+        public string Username { get; set; } = "Guest";
         public int BattlePlayerID { get; set; }
 
         private UserSettings _settings = new();
@@ -33,63 +33,42 @@ namespace PokemonGame.ViewModels.Store
         public BattleSession BattleSesion { get; set; }
 
         // ── Online infrastructure ─────────────────────────────────────────────
+        public bool IsOnline = false;
         public string ServerBaseUrl { get; set; } = string.Empty;
 
-        // Ensure ServiceResolver is accessible as it's checked in BattleViewModel
         public ServiceResolver Resolver { get; set; } = new ServiceResolver(false, string.Empty);
 
+        // ── Matchmaking service ───────────────────────────────────────────────
+        // Stored directly here so BattleConnectorViewModel doesn't depend on
+        // Resolver having a MatchmakingService property (which varies by impl).
+        public IMatchmakingService? Matchmaking { get; set; }
 
+        private volatile IBattleService? _battleService;
 
-        // ── ADDED: Active battle service — used by BattleViewModel ───────────
-        /// <summary>
-        /// This is retrieved from the Resolver when a match is found.
-        /// </summary>
-        private IBattleService? _battleService;
-
-        /// <summary>
-        /// This is retrieved from the Resolver when a match is found, 
-        /// or manually set during online initialization.
-        /// </summary>
         public IBattleService? BattleService
         {
-            get
-            {
-                return _battleService ?? (Resolver.IsOnline ? Resolver.BattleService : null);
-            }
-            set
-            {
-            }
+            get => _battleService ?? (Resolver.IsOnline ? Resolver.BattleService : null);
+            set => _battleService = value;  // FIX #1
         }
 
-        // ── Active battle session ID ───────────────────
-        public string? ActiveSessionId { get; set; }
+        // ── Active session ID ─────────────────────────────────────────────────
+        // volatile for the same cross-thread visibility reason as BattleService.
+        private volatile string? _activeSessionId;
+
+        public string? ActiveSessionId
+        {
+            get => _activeSessionId;
+            set => _activeSessionId = value;
+        }
     }
 
-    public enum BattleMode
-    {
-        halfTeam,
-        TwoThirdsTeam,
-        fullTeam
-    }
+    // ─────────────────────────────────────────────────────────────────────────
 
-    public enum BotDifficulty
-    {
-        Easy,
-        Medium,
-        Hard
-    }
-    public enum TextSpeed
-    {
-        Slow,
-        Mid,
-        Fast
-    }
-    public enum Background
-    {
-        White,
-        Red,
-        Blue
-    }
+    public enum BattleMode { halfTeam, TwoThirdsTeam, fullTeam }
+    public enum BotDifficulty { Easy, Medium, Hard }
+    public enum TextSpeed { Slow, Mid, Fast }
+    public enum Background { White, Red, Blue }
+
     public class BattleSession
     {
         public int? RivalTeamId { get; set; }
@@ -101,37 +80,34 @@ namespace PokemonGame.ViewModels.Store
         public BotDifficulty BotDifficulty { get; set; } = BotDifficulty.Medium;
         public List<int> RivalPokemonIds { get; set; } = new();
 
-        // ── NEW: resolved before BattleViewModel is created ──────────────────
+        // Resolved by BattleConnectorViewModel before BattleViewModel is created
         public PokemonTeam? ResolvedPlayerTeam { get; set; }
         public PokemonTeam? ResolvedBotTeam { get; set; }
     }
-    public class UserSettings:ViewModelBase
+
+    public class UserSettings : ViewModelBase
     {
         public TextSpeed textSpeed { get; set; } = TextSpeed.Mid;
         public bool AnimationOn { get; set; } = false;
+
         private Background _background = Background.White;
         public Background background
         {
             get => _background;
             set => SetProperty(ref _background, value);
         }
+
         public bool ShowTypeEffect { get; set; } = false;
     }
+
     public static class SettingsMapper
     {
         public static void ApplyToUserSettings(BattlePlayerSettingsData data, UserSettings target)
         {
             target.AnimationOn = data.AnimationsEnabled == 1;
             target.ShowTypeEffect = data.ShowTypeEffectiveness == 1;
-
-            // Safely convert 1-based database integers to 0-based Enums
-            target.textSpeed = data.TextSpeedID > 0
-                ? (TextSpeed)(data.TextSpeedID - 1)
-                : TextSpeed.Slow;
-
-            target.background = data.BackgroundID > 0
-                ? (Background)(data.BackgroundID - 1)
-                : Background.White;
+            target.textSpeed = data.TextSpeedID > 0 ? (TextSpeed)(data.TextSpeedID - 1) : TextSpeed.Slow;
+            target.background = data.BackgroundID > 0 ? (Background)(data.BackgroundID - 1) : Background.White;
         }
     }
 }

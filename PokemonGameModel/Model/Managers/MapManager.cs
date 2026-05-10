@@ -170,8 +170,16 @@ public class MapManager
         return result;
     }
 
+<<<<<<< HEAD
     public (int[,] background, int[,] foreground, int[,] vision) GetViewport()
         => _mapState.BuildViewPort(_player, _squareMapState);
+=======
+    // ---------------------------------------------------------------
+    // Viewport / collision / HM
+    // ---------------------------------------------------------------
+    public (int[,] background, int[,] foreground, int[,] vision, SpriteOverlay player) GetViewport()
+            => _mapState.BuildViewPort(_player, _squareMapState);
+>>>>>>> ffedec0895c70be5f6563ca012858e64cb30befe
 
     public CollisionType GetCollisionAt(int squareRow, int squareCol)
         => _squareMapState.GetCollision(squareRow, squareCol);

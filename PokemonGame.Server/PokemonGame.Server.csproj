@@ -18,5 +18,10 @@
 		<ProjectReference Include="..\PokemonGame.Services\PokemonGame.Services.csproj" />
 		<ProjectReference Include="..\PokemonGameModel\PokemonGame.Model.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+		<None Update="PokemonGameDB.db">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

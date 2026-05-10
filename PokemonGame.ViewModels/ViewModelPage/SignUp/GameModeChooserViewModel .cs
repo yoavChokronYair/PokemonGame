@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Interfaces;
+using PokemonGame.Services.Services;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelHelper.Service;
@@ -37,10 +38,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand NavigateToSideMenuCommand { get; }
 
         public GameModeChooserViewModel(
-        UserStore? user,
-        NavigationStore navigationStore,
-        IDialogService dialogService,
-        Func<OnlineBattleShellViewModel> createSideMenuViewModel)                               // replaces new LogInService()
+            UserStore? user,
+            NavigationStore navigationStore,
+            IDialogService dialogService,
+            Func<OnlineBattleShellViewModel> createSideMenuViewModel)
         {
             _dialogService = dialogService;
             _navigationStore = navigationStore;
@@ -56,7 +57,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             NavigateToSideMenuCommand = new NavigateCommand(_navigationStore, createSideMenuViewModel);
         }
 
-
         private void OnStoryMode()
         {
             // TODO: navigate to story mode
@@ -64,6 +64,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         private async Task OnOnlineModeAsync()
         {
+            // Capture once at the top using the local game username
             var currentUser = _loginService.GetUser(Username);
             if (currentUser == null)
             {
@@ -90,16 +91,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                     "Create Account",
                     "No account selected. Do you want to create a new account?");
 
-                if (!createNew)
-                {
-                    return;
-                }
+                if (!createNew) return;
 
                 selectedUser = await _dialogService.ShowInputAsync("Create Account", "Enter a username:");
-                if (string.IsNullOrWhiteSpace(selectedUser))
-                {
-                    return;
-                }
+                if (string.IsNullOrWhiteSpace(selectedUser)) return;
 
                 bool created = _handler.AddOnlineModePlayer(selectedUser, currentUser);
                 if (!created)
@@ -113,34 +108,74 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
             if (_handler.OnlinePlayerLogIn(selectedUser, currentUser))
             {
-                var onlinePlayer = _handler.GetOnlinePlayer(selectedUser, _loginService.GetUser(this.Username));
+                // ✅ Reuse currentUser — never call GetUser again after Username may have mutated
+                var onlinePlayer = _handler.GetOnlinePlayer(selectedUser, currentUser);
+
 
                 if (onlinePlayer != null)
                 {
                     _userStore.BattlePlayerID = onlinePlayer.BattlePlayerID;
+                    _userStore.Username = selectedUser;
 
                     var settings = _handler.GetSettings(onlinePlayer.BattlePlayerID);
                     if (settings != null)
                         SettingsMapper.ApplyToUserSettings(settings, _userStore.Settings);
+
+                    await InitialiseOnlineServicesAsync();
 
                     await _dialogService.ShowSuccessAsync("Success", $"Logged in successfully as '{selectedUser}'!");
                     NavigateToSideMenuCommand.Execute(null);
                 }
                 else
                 {
-                    // Handle the edge case where login was valid but the record failed to fetch
                     await _dialogService.ShowErrorAsync("Error", "Account verified, but profile data could not be retrieved.");
                 }
             }
         }
 
+        /// <summary>
+        /// Called once after BattlePlayerID and Username are set.
+        /// Switches the resolver to online mode and creates the single
+        /// shared matchmaking connection on UserStore so that
+        /// BattleConnectorViewModel can subscribe to its events.
+        /// </summary>
+
+        private async Task InitialiseOnlineServicesAsync()
+        {
+            // Already connected — nothing to do
+            if (_userStore!.IsOnline && _userStore.Matchmaking is not null)
+                return;
+
+            var serverUrl = _userStore!.ServerBaseUrl;
+
+            bool serverReachable = false;
+            try
+            {
+                using var http = new System.Net.Http.HttpClient();
+                http.Timeout = TimeSpan.FromSeconds(1);
+                var response = await http.GetAsync($"{serverUrl}/health");
+                serverReachable = response.IsSuccessStatusCode;
+            }
+            catch { }
+
+            if (serverReachable)
+            {
+                _userStore.IsOnline = true;
+                _userStore.BattleSesion.IsOnlineMode = true;
+                _userStore.Resolver.SetOnline(serverUrl);
+                if (_userStore.Matchmaking is null)
+                    _userStore.Matchmaking = new OnlineMatchmakingService(serverUrl);
+            }
+            else
+            {
+                _userStore.IsOnline = false;
+                _userStore.BattleSesion.IsOnlineMode = false;
+            }
+        }
         private async Task OnQuickLoginAsync()
         {
             var currentUser = _loginService.GetUser(Username);
-            if (currentUser == null)
-            {
-                return;
-            }
+            if (currentUser == null) return;
 
             var users = _handler.GetAllOnlinePlayers(currentUser)
                                 .Select(u => u.Name)
@@ -151,10 +186,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 "Choose your username:",
                 users);
 
-            if (string.IsNullOrWhiteSpace(selectedUser))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(selectedUser)) return;
 
             await OnOnlineModeAsync();
         }
@@ -162,16 +194,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         private async Task OnCreateAccountAsync()
         {
             string? newUser = await _dialogService.ShowInputAsync("Create Account", "Choose a username:");
-            if (string.IsNullOrWhiteSpace(newUser))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(newUser)) return;
 
             var currentUser = _loginService.GetUser(Username);
-            if (currentUser == null)
-            {
-                return;
-            }
+            if (currentUser == null) return;
 
             if (_handler.AddOnlineModePlayer(newUser, currentUser))
             {

@@ -5,12 +5,15 @@
 		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	  <PackageReference Include="Microsoft.VisualStudio.Utilities" Version="17.14.40264" />
 	  <PackageReference Include="System.Data.OleDb" Version="10.0.5" />
+	  <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.14" />
 	</ItemGroup>
 
 	<ItemGroup>

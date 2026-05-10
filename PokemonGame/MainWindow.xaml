@@ -15,6 +15,8 @@
     xmlns:signinvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.SignUp;assembly=PokemonGame.ViewModels"
     xmlns:summeryview="clr-namespace:PokemonGame.Views.Pages.Summery"
     xmlns:summeryvm="clr-namespace:PokemonGame.ViewModels.ViewModelPage.Summery;assembly=PokemonGame.ViewModels"
+    xmlns:trainerview="clr-namespace:PokemonGame.Views.Pages.Trainer"
+    xmlns:trainerviewmodel="clr-namespace:PokemonGame.ViewModels.ViewModelPage.Trainer;assembly=PokemonGame.ViewModels"
     xmlns:viewmodel="clr-namespace:PokemonGame.ViewModels.ViewModelPage;assembly=PokemonGame.ViewModels"
     xmlns:viewpage="clr-namespace:PokemonGame.Views"
     Title="MainWindow"
@@ -23,6 +25,7 @@
     mc:Ignorable="d">
 
     <Grid>
+
         <Grid.Resources>
 
             <!--  Sign In / Sign Up  -->
@@ -65,10 +68,13 @@
             <DataTemplate DataType="{x:Type viewmodel:MapViewModel}">
                 <viewpage:MapView />
             </DataTemplate>
-
+            <DataTemplate DataType="{x:Type trainerviewmodel:TrainerCardViewModel}">
+                <trainerview:TrainerCard />
+            </DataTemplate>
         </Grid.Resources>
-
-        <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />
+        <Viewbox Stretch="Uniform">
+            <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />
+        </Viewbox>
 
     </Grid>
 </Window>

@@ -18,10 +18,24 @@ namespace PokemonGame.Services.Interfaces
     {
         public PokemonSideSnapshot Player { get; set; } = new();
         public PokemonSideSnapshot Enemy { get; set; } = new();
-        public IReadOnlyList<MoveSnapshot> PlayerMoves { get; set; } = Array.Empty<MoveSnapshot>();
+
+        public List<MoveSnapshot> PlayerMoves { get; set; } = new();
+
+        /// <summary>Log lines produced since the last snapshot.</summary>
         public IReadOnlyList<string> LogEntries { get; set; } = Array.Empty<string>();
+
         public bool IsOver { get; set; }
+
+        /// <summary>Human-readable winner name (for display only).</summary>
         public string? WinnerName { get; set; }
+
+        /// <summary>
+        /// FIX #4 / FIX #2: the winning player's numeric ID.
+        /// BattleViewModel compares this to BattlePlayerID to decide
+        /// "YOU WON" vs "YOU LOST" reliably, without relying on string equality.
+        /// Null while the battle is in progress.
+        /// </summary>
+        public int? WinnerPlayerId { get; set; }
     }
 
     public class PokemonSideSnapshot
@@ -34,14 +48,13 @@ namespace PokemonGame.Services.Interfaces
         public string StatusCondition { get; set; } = string.Empty;
     }
 
-    // ── Primitive representation of a move — no IMove dependency ─────────
     public class MoveSnapshot
     {
-        public int Index { get; set; }   // 0-3, matches the slot
+        public int Index { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public int PP { get; set; }
         public int? Power { get; set; }
         public int? Accuracy { get; set; }
-        public int PP { get; set; }
     }
 }
