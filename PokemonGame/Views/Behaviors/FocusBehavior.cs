@@ -53,7 +53,7 @@ namespace PokemonGame.View.Behaviors
 
             element.DataContextChanged += (sender, args) =>
             {
-                if (args.NewValue is MapViewModel vm)
+                if (args.NewValue is IFocusTarget vm)
                     vm.RegisterFocusCallback(() => element.Focus());
             };
 

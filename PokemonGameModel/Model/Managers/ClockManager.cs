@@ -5,8 +5,10 @@ namespace PokemonGame.Model.Model.Managers
 {
     public sealed class ClockManager: IDisposable
     {
-        public static ClockManager Instance { get; } = new ClockManager();
+        private static readonly Lazy<ClockManager> _instance =
+            new Lazy<ClockManager>(() => new ClockManager());
 
+        public static ClockManager Instance => _instance.Value;
         // ── Events ────────────────────────────────────────────────────────────
         /// Fired every NpcTickInterval. Subscribers: MapManager NPC logic.
         public event EventHandler? NpcTick;
@@ -16,9 +18,13 @@ namespace PokemonGame.Model.Model.Managers
 
         /// Fired every NpcTickInterval with updated play time.
         public event EventHandler<TimeSpan>? TimePlayedUpdated;
+        private readonly System.Timers.Timer _playerTimer;
 
-        // ── State ─────────────────────────────────────────────────────────────
-        public TimeSpan TimePlayed { get; private set; }
+        // In constructor, after _timer setup:
+
+
+    // ── State ─────────────────────────────────────────────────────────────
+    public TimeSpan TimePlayed { get; private set; }
         public bool IsRunning { get; private set; }
 
         // ── Internals ─────────────────────────────────────────────────────────
@@ -34,8 +40,17 @@ namespace PokemonGame.Model.Model.Managers
                 AutoReset = true
             };
             _timer.Elapsed += OnElapsed;
+            _playerTimer = new System.Timers.Timer(150) { AutoReset = true };
+            _playerTimer.Elapsed += OnPlayerElapsed;
+
         }
 
+        public event EventHandler? PlayerTick;
+
+        private void OnPlayerElapsed(object sender, ElapsedEventArgs e)
+        {
+            PlayerTick?.Invoke(this, EventArgs.Empty);
+        }
         // ── Control ───────────────────────────────────────────────────────────
         public void Start()
         {
@@ -43,6 +58,7 @@ namespace PokemonGame.Model.Model.Managers
             _lastAutoSave = DateTime.UtcNow;
             IsRunning = true;
             _timer.Start();
+
         }
 
         public void Stop()

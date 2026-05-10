@@ -110,25 +110,8 @@ namespace PokemonGame.Model.Model.Map
             return view;
         }
 
-<<<<<<< HEAD
-        private static void StampPlayer(int[,] fg, FacingDirection direction)
-        {
-            if (direction == FacingDirection.None) return;
-            if (!PlayerSprites.Tiles.TryGetValue(direction, out var sprite)) return;
 
-            int midRow = MapConstants.ViewRowSize / 2;
-            int midCol = MapConstants.ViewColSize / 2;
-
-            fg[midRow - 1, midCol - 1] = sprite.TL;
-            fg[midRow - 1, midCol] = sprite.TR;
-            fg[midRow, midCol - 1] = sprite.BL;
-            fg[midRow, midCol] = sprite.BR;
-        }
-
-        private void StampNpcs(int[,] fg, (int x, int y) pos)
-=======
         private void StampNpcs(int[,] fg, (int playerRow, int playerCol) pos)
->>>>>>> ffedec0895c70be5f6563ca012858e64cb30befe
         {
             // pos.x = tileCol, pos.y = tileRow
             int halfRows = MapConstants.ViewRowSize / 2;
@@ -141,8 +124,8 @@ namespace PokemonGame.Model.Model.Map
                 if (sprite == null) continue;
 
                 // npc.Location.y = tileRow, npc.Location.x = tileCol
-                int r = npc.Location.y - pos.y + halfRows - 1;
-                int c = npc.Location.x - pos.x + halfCols - 1;
+                int r = npc.Location.y - pos.playerRow + halfRows - 1;
+                int c = npc.Location.x - pos.playerCol + halfCols - 1;
 
                 if (r < 0 || r + 1 >= fg.GetLength(0) ||
                     c < 0 || c + 1 >= fg.GetLength(1)) continue;
