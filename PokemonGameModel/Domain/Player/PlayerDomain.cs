@@ -17,6 +17,7 @@ namespace PokemonGame.Model.Domain.Player
         public int Money { get; set; }
         public int TimePlayed { get; set; }
         public FacingDirection FacingDirection { get; set; }
+        public Gender Gender { get; set; }
 
         // ── Location ─────────────────────────────────────────────────────────
         public MapDomain LastMapVisited { get; set; }
@@ -88,6 +89,18 @@ namespace PokemonGame.Model.Domain.Player
             return Badges.Any(b =>
                 b.Id == badgeId &&
                 b.IsObtained);
+        }
+        public int AnimationTick { get; private set; } = 0;
+        public bool IsMoving { get; set; } = false;
+
+        private static readonly int[] WalkCycle = { 0, 1, 2, 1 };
+
+        public void AdvanceAnimation()
+        {
+            if (IsMoving)
+                AnimationTick = (AnimationTick + 1) % WalkCycle.Length;
+            else
+                AnimationTick = 1; // standing frame
         }
     }
     public class BadgeDomain

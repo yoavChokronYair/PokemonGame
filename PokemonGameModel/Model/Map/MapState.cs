@@ -5,6 +5,22 @@ using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Model.Map
 {
+    public class SpriteOverlay
+    {
+        public string ImagePath { get; set; }
+        public int PixelX { get; set; }
+        public int PixelY { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public SpriteOverlay(string imagePath, int pixelX, int pixelY, int width, int height)
+        {
+            ImagePath = imagePath;
+            PixelX = pixelX;
+            PixelY = pixelY;
+            Width = width;
+            Height = height;
+        }
+    }
     public class MapState
     {
         private MapDomain _activeMap;
@@ -29,17 +45,29 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Viewport ─────────────────────────────────────────────────────────
 
-        public (int[,] background, int[,] foreground, int[,] vision) BuildViewPort(
-            PlayerDomain player, SquareMapState squareMap)
+        public (int[,] background, int[,] foreground, int[,] vision, SpriteOverlay player) BuildViewPort(
+    PlayerDomain player, SquareMapState squareMap)
         {
             var bg = BuildLayerViewport(player.playerLoc, isForeground: false);
             var fg = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
             var vision = BuildVisionViewport(player.playerLoc, squareMap);
 
             StampNpcs(fg, player.playerLoc);
-            StampPlayer(fg, player.FacingDirection);
 
-            return (bg, fg, vision);
+            // Player is always dead center of the viewport, but 24px tall instead of 16px
+            // so we shift it up by 8px (one extra row) so feet align with collision square
+            int tileSize = MapConstants.TileSize;          // e.g. 16
+            int centerX = (MapConstants.ViewColSize / 2) * tileSize;
+            int centerY = (MapConstants.ViewRowSize / 2) * tileSize;
+            var playerSprite = new SpriteOverlay(
+                imagePath: PlayerSprites.GetFrame(player.FacingDirection, player.AnimationTick, player.IsMoving),
+                pixelX: centerX,
+                pixelY: centerY - (24 - tileSize),   // shift up so feet sit on collision row
+                width: 16,
+                height: 24
+            );
+
+            return (bg, fg, vision, playerSprite);
         }
 
         // ── Private — viewport building ───────────────────────────────────────
@@ -78,20 +106,6 @@ namespace PokemonGame.Model.Model.Map
                 }
 
             return view;
-        }
-
-        private static void StampPlayer(int[,] fg, FacingDirection direction)
-        {
-            if (direction == FacingDirection.None) return;
-            if (!PlayerSprites.Tiles.TryGetValue(direction, out var sprite)) return;
-
-            int midRow = MapConstants.ViewRowSize / 2;
-            int midCol = MapConstants.ViewColSize / 2;
-
-            fg[midRow - 1, midCol - 1] = sprite.TL;
-            fg[midRow - 1, midCol] = sprite.TR;
-            fg[midRow, midCol - 1] = sprite.BL;
-            fg[midRow, midCol] = sprite.BR;
         }
 
         private void StampNpcs(int[,] fg, (int playerRow, int playerCol) pos)

@@ -273,7 +273,15 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-
+            <Canvas Grid.Column="0" IsHitTestVisible="False">
+                <Image
+                    Canvas.Left="{Binding PlayerPixelX}"
+                    Canvas.Top="{Binding PlayerPixelY}"
+                    Width="48"
+                    Height="72"
+                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                    Source="{Binding PlayerImage}" />
+            </Canvas>
             <!--  Dialogue overlay — floats above the map at the bottom  -->
             <uc:DialogueBoxControl
                 Grid.Column="0"

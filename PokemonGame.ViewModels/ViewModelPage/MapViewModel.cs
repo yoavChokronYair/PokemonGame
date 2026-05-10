@@ -1,7 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Microsoft;
+using Microsoft.ServiceHub.Resources;
 using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
@@ -189,7 +192,16 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public string InspectResult { get => _inspectResult; private set => SetProperty(ref _inspectResult, value); }
         public bool IsShowingBackground { get => _isShowingBackground; private set => SetProperty(ref _isShowingBackground, value); }
         public bool IsShowingForeground { get => _isShowingForeground; private set => SetProperty(ref _isShowingForeground, value); }
+        // In MapViewModel.cs
+        private ImageSource? _playerImage;
+        public ImageSource? PlayerImage
+        {
+            get => _playerImage;
+            private set => SetProperty(ref _playerImage, value);
+        }
 
+        public double PlayerPixelX => 20 + (MapConstants.ViewColSize / 2) * 36.0 - 18; // 20=padding, 18=center of tile
+        public double PlayerPixelY => 20 + (MapConstants.ViewRowSize / 2) * 36.0 - 36; // shift up for 24px sprite (scaled to 72)
         // ── Commands ─────────────────────────────────────────────────────────────
         private Action? _focusCallback;
         public void RegisterFocusCallback(Action focus) => _focusCallback = focus;
@@ -326,10 +338,29 @@ namespace PokemonGame.ViewModels.ViewModelPage
         // ── RebuildGrid — called on move and map change ───────────────────────────
         // Does NOT allocate new cells. Does NOT clear the tile slice cache.
         // Just writes new values into the existing TileCellViewModel objects.
+        private static readonly string PlayerSpritePath =
+            @"C:\Users\yoav\source\repos\PokemonGame\PokemonGame\Assets\Images\Player\";
 
+        private ImageSource? LoadSprite(string filename)
+        {
+            PlayerDomain.Instance.Gender = Gender.Female;
+            string fullPath = PlayerSpritePath + PlayerDomain.Instance.Gender.ToString() + @"\" + filename;
+            try
+            {
+                var bmp = new BitmapImage();
+                bmp.BeginInit();
+                bmp.UriSource = new Uri(fullPath, UriKind.Absolute);
+                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                bmp.EndInit();
+                bmp.Freeze();
+                return bmp;
+            }
+            catch { return null; }
+        }
         public void RebuildGrid()
         {
-            var (bg, fg, _) = _mapManager.GetViewport();
+            var (bg, fg, _, playerSprite) = _mapManager.GetViewport();
+            PlayerImage = LoadSprite(playerSprite.ImagePath);
             var tileLayer = _isShowingBackground ? bg : fg;
 
             int viewportRows = tileLayer.GetLength(0); // Vertical
@@ -391,6 +422,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public void Move(FacingDirection direction)
         {
             if (Dialogue.IsOpen) return;
+            _player.IsMoving = true;
+            _player.AdvanceAnimation();          // advances the tick before building viewport
 
             var result = _mapManager.TryMove(direction);
             if (result.Success)
@@ -411,6 +444,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             }
             else
             {
+                _player.IsMoving = false;        // blocked — snap back to standing
                 LastMoveResult = $"Blocked ({direction})";
                 OnPropertyChanged(nameof(FacingText));
             }

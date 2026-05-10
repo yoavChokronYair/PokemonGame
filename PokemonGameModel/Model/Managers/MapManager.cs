@@ -187,8 +187,8 @@ public class MapManager
     // ---------------------------------------------------------------
     // Viewport / collision / HM
     // ---------------------------------------------------------------
-    public (int[,] background, int[,] foreground, int[,] vision) GetViewport()
-        => _mapState.BuildViewPort(_player, _squareMapState);
+    public (int[,] background, int[,] foreground, int[,] vision, SpriteOverlay player) GetViewport()
+            => _mapState.BuildViewPort(_player, _squareMapState);
 
     public CollisionType GetCollisionAt(int squareRow, int squareCol)
         => _squareMapState.GetCollision(squareRow, squareCol);

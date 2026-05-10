@@ -702,6 +702,30 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\Player\Female\sprite_0.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_1.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_10.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_11.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_2.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_3.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_4.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_5.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_6.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_7.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_8.png" />
+    <Resource Include="Assets\Images\Player\Female\sprite_9.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_0.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_1.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_10.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_11.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_2.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_3.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_4.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_5.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_6.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_7.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_8.png" />
+    <Resource Include="Assets\Images\Player\Male\sprite_9.png" />
     <Resource Include="Assets\Images\TrainerCard\TrainerCardLeafBack.png" />
     <Resource Include="Assets\Images\TrainerCard\TrainerCardLeafFront.png" />
     <Resource Include="Assets\Images\TrainerCard\TrainerCardRedBack.png" />

@@ -33,7 +33,7 @@ namespace PokemonGame
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _navigationStore.CurrentViewModel = CreateTrainerCardViewModel();
+            _navigationStore.CurrentViewModel = CreateMapViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
