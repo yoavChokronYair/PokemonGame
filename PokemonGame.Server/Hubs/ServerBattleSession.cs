@@ -3,13 +3,11 @@
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Server.Services;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
-using PokemonGame.Services.Services;
 
 namespace PokemonGame.Server.Hubs
 {

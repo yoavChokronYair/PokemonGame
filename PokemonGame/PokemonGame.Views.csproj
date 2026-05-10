@@ -258,6 +258,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\BackgroundToBackgroundTypeConverter.cs" />
+    <Compile Include="Converters\BadgeIdToImageConverter.cs" />
     <Compile Include="Converters\BoolToCloseNextConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\CategoryToImageConverter.cs" />
@@ -288,6 +289,9 @@
     <Compile Include="Views\Controls\BindablePasswordBox.cs" />
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\Trainer\TrainerCard.xaml.cs">
+      <DependentUpon>TrainerCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\OnlineBattlePages\BattleConnectorPage.xaml.cs">
       <DependentUpon>BattleConnectorPage.xaml</DependentUpon>
@@ -411,6 +415,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="Views\MapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\Trainer\TrainerCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -694,6 +702,10 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\TrainerCard\TrainerCardLeafBack.png" />
+    <Resource Include="Assets\Images\TrainerCard\TrainerCardLeafFront.png" />
+    <Resource Include="Assets\Images\TrainerCard\TrainerCardRedBack.png" />
+    <Resource Include="Assets\Images\TrainerCard\TrainerCardRedFront.png" />
     <Resource Include="Assets\Images\TeamSelection\BackgoundText.png" />
     <Resource Include="Assets\Images\TeamSelection\CancelSelected.png" />
     <Resource Include="Assets\Images\TeamSelection\CancelNotSelected.png" />

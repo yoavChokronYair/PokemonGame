@@ -121,7 +121,7 @@ namespace PokemonGame.Model.Model.Npc
         public override void OnBattleWon()
         {
             base.OnBattleWon();
-            PlayerDomain.Instance.Badges.Add(_badgeId);
+            PlayerDomain.Instance.AddBadge(_badgeId);
             GymCleared?.Invoke(_badgeId, _tm);
         }
     }

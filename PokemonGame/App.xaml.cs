@@ -8,7 +8,7 @@ using PokemonGame.ViewModels.ViewModelPage;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 using PokemonGame.ViewModels.ViewModelPage.OnlineBattle;
 using PokemonGame.ViewModels.ViewModelPage.SignUp;
-using PokemonGame.ViewModels.ViewModelPage.Summery;
+using PokemonGame.ViewModels.ViewModelPage.Trainer;
 
 namespace PokemonGame
 {
@@ -33,7 +33,7 @@ namespace PokemonGame
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _navigationStore.CurrentViewModel = CreateLogInViewModel();
+            _navigationStore.CurrentViewModel = CreateTrainerCardViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
@@ -172,7 +172,10 @@ namespace PokemonGame
                 CreateOnlineBattleShellViewModel
             );
         }
-
+        private TrainerCardViewModel CreateTrainerCardViewModel()
+        {
+            return new TrainerCardViewModel();
+        }
         private MapViewModel CreateMapViewModel() => new MapViewModel();
     }
 }
