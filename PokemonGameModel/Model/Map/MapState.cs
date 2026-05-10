@@ -11,7 +11,7 @@ namespace PokemonGame.Model.Model.Map
         private int[,] _backgroundTiles;
         private int[,] _foregroundTiles;
 
-        private readonly Dictionary<MapDomain, (int[,] bg, int[,] fg)> _mapCache = new Dictionary<MapDomain, (int[,], int[,])>();
+        private readonly Dictionary<MapDomain, (int[,] bg, int[,] fg)> _mapCache = new();
 
         public MapState(MapDomain startMap)
         {
@@ -27,7 +27,7 @@ namespace PokemonGame.Model.Model.Map
             PreloadNeighbors(newMap);
         }
 
-        // ── Viewport ─────────────────────────────────────────────────────────
+        // ── Viewport ──────────────────────────────────────────────────────────
 
         public (int[,] background, int[,] foreground, int[,] vision) BuildViewPort(
             PlayerDomain player, SquareMapState squareMap)
@@ -44,26 +44,28 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Private — viewport building ───────────────────────────────────────
 
-        private int[,] BuildLayerViewport((int playerRow, int playerCol) pos, bool isForeground)
+        private int[,] BuildLayerViewport((int x, int y) pos, bool isForeground)
         {
+            // pos.x = tileCol, pos.y = tileRow
             int halfRows = MapConstants.ViewRowSize / 2;
             int halfCols = MapConstants.ViewColSize / 2;
             var view = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
 
             for (int r = 0; r < MapConstants.ViewRowSize; r++)
                 for (int c = 0; c < MapConstants.ViewColSize; c++)
-                    view[r, c] = SampleTile(pos.playerRow - halfRows + r,
-                                            pos.playerCol - halfCols + c,
+                    view[r, c] = SampleTile(pos.y - halfRows + r,   // tileRow
+                                            pos.x - halfCols + c,   // tileCol
                                             isForeground);
             return view;
         }
 
-        private int[,] BuildVisionViewport((int playerRow, int playerCol) pos, SquareMapState squareMap)
+        private int[,] BuildVisionViewport((int x, int y) pos, SquareMapState squareMap)
         {
+            // pos.x = tileCol, pos.y = tileRow
             int vRows = MapConstants.ViewRowSize / MapConstants.TilesPerSquare;
             int vCols = MapConstants.ViewColSize / MapConstants.TilesPerSquare;
             var view = new int[vRows, vCols];
-            var (psr, psc) = squareMap.TileToSquare(pos.playerRow, pos.playerCol);
+            var (psr, psc) = squareMap.TileToSquare(pos.y, pos.x);   // (tileRow, tileCol)
             int halfRows = vRows / 2;
             int halfCols = vCols / 2;
 
@@ -94,8 +96,9 @@ namespace PokemonGame.Model.Model.Map
             fg[midRow, midCol] = sprite.BR;
         }
 
-        private void StampNpcs(int[,] fg, (int playerRow, int playerCol) pos)
+        private void StampNpcs(int[,] fg, (int x, int y) pos)
         {
+            // pos.x = tileCol, pos.y = tileRow
             int halfRows = MapConstants.ViewRowSize / 2;
             int halfCols = MapConstants.ViewColSize / 2;
 
@@ -105,8 +108,9 @@ namespace PokemonGame.Model.Model.Map
                 var sprite = npc.Sprite.GetSprite(npc.direction);
                 if (sprite == null) continue;
 
-                int r = npc.Location.x - pos.playerRow + halfRows - 1;
-                int c = npc.Location.y - pos.playerCol + halfCols - 1;
+                // npc.Location.y = tileRow, npc.Location.x = tileCol
+                int r = npc.Location.y - pos.y + halfRows - 1;
+                int c = npc.Location.x - pos.x + halfCols - 1;
 
                 if (r < 0 || r + 1 >= fg.GetLength(0) ||
                     c < 0 || c + 1 >= fg.GetLength(1)) continue;
@@ -120,15 +124,15 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Private — neighbor-aware tile sampling ────────────────────────────
 
-        private int SampleTile(int row, int col, bool isForeground)
+        private int SampleTile(int tileRow, int tileCol, bool isForeground)
         {
             int mapRows = _backgroundTiles.GetLength(0);
             int mapCols = _backgroundTiles.GetLength(1);
 
-            if ((uint)row < (uint)mapRows && (uint)col < (uint)mapCols)
-                return _backgroundTiles[row, col];
+            if ((uint)tileRow < (uint)mapRows && (uint)tileCol < (uint)mapCols)
+                return _backgroundTiles[tileRow, tileCol];
 
-            var neighbor = FindNeighbor(row, col, mapRows, mapCols);
+            var neighbor = FindNeighbor(tileRow, tileCol, mapRows, mapCols);
             if (neighbor == null) return 0;
 
             var (neighborMap, nRow, nCol) = neighbor.Value;
@@ -140,33 +144,39 @@ namespace PokemonGame.Model.Model.Map
                 : 0;
         }
 
-        private (MapDomain map, int row, int col)? FindNeighbor(int row, int col, int mapRows, int mapCols)
+        // ── Bug #7 fix: Margin applied to tile coords but Margin is square units
+        //
+        // FindNeighbor was adding Margin (square units) directly to tileRow/tileCol
+        // (tile units). Must convert: tileMargin = Margin * TilesPerSquare.
+        private (MapDomain map, int row, int col)? FindNeighbor(int tileRow, int tileCol, int mapRows, int mapCols)
         {
-            if (row < 0)
+            int tps = MapConstants.TilesPerSquare;
+
+            if (tileRow < 0)
             {
                 var conn = GetNeighbor(ConnectionDirection.North);
                 if (conn == null) return null;
                 int nRows = GetCachedTiles(conn.ConnectedMap).bg.GetLength(0);
-                return (conn.ConnectedMap, nRows + row, col + conn.Margin);
+                return (conn.ConnectedMap, nRows + tileRow, tileCol + conn.Margin * tps);
             }
-            if (row >= mapRows)
+            if (tileRow >= mapRows)
             {
                 var conn = GetNeighbor(ConnectionDirection.South);
                 if (conn == null) return null;
-                return (conn.ConnectedMap, row - mapRows, col + conn.Margin);
+                return (conn.ConnectedMap, tileRow - mapRows, tileCol + conn.Margin * tps);
             }
-            if (col < 0)
+            if (tileCol < 0)
             {
                 var conn = GetNeighbor(ConnectionDirection.West);
                 if (conn == null) return null;
                 int nCols = GetCachedTiles(conn.ConnectedMap).bg.GetLength(1);
-                return (conn.ConnectedMap, row + conn.Margin, nCols + col);
+                return (conn.ConnectedMap, tileRow + conn.Margin * tps, nCols + tileCol);
             }
-            if (col >= mapCols)
+            if (tileCol >= mapCols)
             {
                 var conn = GetNeighbor(ConnectionDirection.East);
                 if (conn == null) return null;
-                return (conn.ConnectedMap, row + conn.Margin, col - mapCols);
+                return (conn.ConnectedMap, tileRow + conn.Margin * tps, tileCol - mapCols);
             }
             return null;
         }
@@ -180,7 +190,7 @@ namespace PokemonGame.Model.Model.Map
         {
             if (_mapCache.TryGetValue(map, out var cached)) return cached;
             var built = (
-                BuildTileArray(map.Blocks, map),
+                BuildTileArray(map.BackgroundBlocks, map),
                 new int[map.Height, map.Width]
             );
             _mapCache[map] = built;
@@ -193,16 +203,12 @@ namespace PokemonGame.Model.Model.Map
                 GetCachedTiles(connection.ConnectedMap);
         }
 
-        /// <summary>
-        /// Builds a dense [height, width] tile grid from a sparse tile list.
-        /// Uses each tile's X/Y coordinates to place it correctly —
-        /// DO NOT use list index, tiles are sparse (empty cells are absent).
-        /// </summary>
         private static int[,] BuildTileArray(List<TileDomain> blocks, MapDomain map)
         {
             var tiles = new int[map.Height, map.Width];
             foreach (var tile in blocks)
             {
+                // tile.Y = tileRow, tile.X = tileCol
                 if ((uint)tile.Y < (uint)map.Height &&
                     (uint)tile.X < (uint)map.Width)
                     tiles[tile.Y, tile.X] = tile.Tileid;

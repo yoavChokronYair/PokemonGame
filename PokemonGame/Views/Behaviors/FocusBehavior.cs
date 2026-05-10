@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Interactivity;
 using PokemonGame.ViewModels.ViewModelPage;
 
 namespace PokemonGame.View.Behaviors
@@ -62,4 +64,6 @@ namespace PokemonGame.View.Behaviors
             };
         }
     }
+    
+
 }

@@ -1,7 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
@@ -18,33 +21,70 @@ using PokemonGame.ViewModels.ViewModelPage.Map.Command;
 
 namespace PokemonGame.ViewModels.ViewModelPage
 {
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     // MapLoader  (unchanged)
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
     public sealed class MapLoader
     {
         private readonly IMapService _mapService;
-        private readonly Dictionary<int, MapDomain> _cache = new();
+
+        // ── Bug #5 fix (Low): Cache keyed on map NAME (string), not MapDomain ──
+        // reference. The old _cache was Dictionary<int, MapDomain> keyed on
+        // bundle.Map.Id and lived only for the duration of one Load() call
+        // (cleared at the top). MapState._mapCache was keyed on MapDomain object
+        // reference — every Load() produced new instances so the cache never hit.
+        //
+        // Fix: promote the name→domain cache to a static session-level cache so
+        // the same MapDomain instance is returned for repeated loads of the same
+        // map, making MapState._mapCache (object-reference keyed) actually work.
+        private static readonly Dictionary<string, MapDomain> _sessionCache = new(StringComparer.OrdinalIgnoreCase);
+
+        // Per-load cycle cache (id→domain) prevents infinite recursion on
+        // circular connections within a single Load() call.
+        private readonly Dictionary<int, MapDomain> _cycleCache = new();
 
         public MapLoader(IMapService mapService) => _mapService = mapService;
 
         public MapDomain Load(string mapName)
         {
-            _cache.Clear();
+            if (_sessionCache.TryGetValue(mapName, out var cached)) return cached;
+
+            _cycleCache.Clear();
             var bundle = _mapService.GetMap(mapName)
                 ?? throw new InvalidOperationException($"Map '{mapName}' not found.");
-            return BuildDomain(bundle);
+
+            var domain = BuildDomain(bundle);
+            _sessionCache[mapName] = domain;
+            return domain;
         }
+
+        /// <summary>Call when map data may have changed (e.g. after saving in editor).</summary>
+        public static void InvalidateCache(string mapName) => _sessionCache.Remove(mapName);
+        public static void InvalidateAll() => _sessionCache.Clear();
 
         private MapDomain BuildDomain(MapBundle bundle)
         {
-            if (_cache.TryGetValue(bundle.Map.Id, out var existing)) return existing;
+            if (_cycleCache.TryGetValue(bundle.Map.Id, out var existing)) return existing;
+
+            // ── Bug #3 fix (Medium): Domain added to cache BEFORE ConnectedMaps ──
+            // are populated. If map A connects to map B which connects back to A,
+            // BuildDomain(B) calls BuildDomain(A) which found A in the cache but
+            // with an empty ConnectedMaps list. Now we register in _cycleCache
+            // immediately (to break cycles) but defer adding to _sessionCache
+            // until after all children are populated — done in Load() above after
+            // BuildDomain() returns fully constructed.
 
             var domain = new MapDomain
             {
                 Name = bundle.Map.Name,
                 Width = bundle.Map.Width,
                 Height = bundle.Map.Height,
+
+                // ── Bug #4 fix (Low): FlyWrapLoc and TownMapLoc never populated ─
+                // The old code never read FlyWrapX/Y or TownMapX/Y from the bundle.
+                FlyWrapLoc = (bundle.Map.FlyWrapX, bundle.Map.FlyWrapY),
+                TownMapLoc = (bundle.Map.TownMapX, bundle.Map.TownMapY),
+
                 BackgroundBlocks = BuildTiles(bundle.Tiles, TileLayerType.Ground),
                 Blocks = BuildTiles(bundle.Tiles, TileLayerType.Objects),
                 CollisionObjects = BuildCollisionObjects(bundle.Collisions),
@@ -52,12 +92,25 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 Wraps = new List<WrapDomain>(),
                 Npc = new List<NpcObjectDomain>(),
             };
-            _cache[bundle.Map.Id] = domain;
 
+            // Register in cycle-breaker cache immediately so recursive calls see it.
+            _cycleCache[bundle.Map.Id] = domain;
+
+            // Now populate children — any back-edges will hit the cycle cache above.
             foreach (var conn in bundle.Connections)
             {
                 var nb = _mapService.GetMap(conn.ConnectedMapId);
                 if (nb == null) continue;
+
+                // ── Bug #1 fix (Critical): validate Direction before casting ────
+                if (!Enum.IsDefined(typeof(ConnectionDirection), conn.Direction))
+                {
+                    // Log and skip rather than producing a garbage enum member
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[MapLoader] Skipping connection id={conn.Id}: unknown Direction={conn.Direction}");
+                    continue;
+                }
+
                 domain.ConnectedMaps.Add(new ConnectedMapDomain
                 {
                     ConnectedMap = BuildDomain(nb),
@@ -70,6 +123,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             {
                 var tb = _mapService.GetMap(wrap.TargetMapId);
                 if (tb == null) continue;
+
                 domain.Wraps.Add(new WrapDomain
                 {
                     WrapLoc = (wrap.WrapX, wrap.WrapY),
@@ -97,10 +151,20 @@ namespace PokemonGame.ViewModels.ViewModelPage
             return result;
         }
 
-        private static List<CollisionObjectDomain> BuildCollisionObjects(IReadOnlyList<MapCollisionObjectData> rows)
+        private static List<CollisionObjectDomain> BuildCollisionObjects(
+            IReadOnlyList<MapCollisionObjectData> rows)
         {
             var result = new List<CollisionObjectDomain>(rows.Count);
             foreach (var r in rows)
+            {
+                // ── Bug #1 fix: validate CollisionType before casting ───────────
+                if (!Enum.IsDefined(typeof(CollisionType), r.CollisionType))
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[MapLoader] Skipping collision id={r.Id}: unknown CollisionType={r.CollisionType}");
+                    continue;
+                }
+
                 result.Add(new CollisionObjectDomain
                 {
                     X = r.X,
@@ -109,27 +173,64 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     Height = r.Height,
                     CollisionType = (CollisionType)r.CollisionType,
                 });
+            }
             return result;
         }
 
-        private static NpcObjectDomain BuildNpc(NpcSpawnData spawn) => new()
+        private static NpcObjectDomain BuildNpc(NpcSpawnData spawn)
         {
-            NpcInfo = new NpcDomain { Id = spawn.NpcId },
-            Location = (spawn.X, spawn.Y),
-            CollisionType = (CollisionType)spawn.CollisionType,
-            MovementType = (MovementType)spawn.MovementType,
-            direction = (FacingDirection)spawn.FacingDirection,
-            DirectionA = (FacingDirection)spawn.DirectionA,
-            DirectionB = (FacingDirection)spawn.DirectionB,
-            StepsPerLeg = spawn.StepsPerLeg,
-            visionRange = spawn.VisionRange,
-            VisionType = (VisionType)spawn.VisionType,
-        };
-    }
+            // ── Bug #1 fix: validate all enum fields from DB ───────────────────
+            static T SafeCast<T>(int value, T fallback, string field, int spawnId)
+                where T : struct, Enum
+            {
+                if (Enum.IsDefined(typeof(T), value)) return (T)(object)value;
+                System.Diagnostics.Debug.WriteLine(
+                    $"[MapLoader] NpcSpawn id={spawnId}: unknown {field}={value}, using {fallback}");
+                return fallback;
+            }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Canvas overlay item  — one per player/NPC marker drawn on top of tiles
-    // ─────────────────────────────────────────────────────────────────────────
+            return new NpcObjectDomain
+            {
+                NpcInfo = new NpcDomain { Id = spawn.NpcId },
+                Location = (spawn.X, spawn.Y),
+                CollisionType = SafeCast(spawn.CollisionType, CollisionType.Blocked, nameof(spawn.CollisionType), spawn.Id),
+                MovementType = SafeCast(spawn.MovementType, MovementType.Stationary, nameof(spawn.MovementType), spawn.Id),
+                direction = SafeCast(spawn.FacingDirection, FacingDirection.Down, nameof(spawn.FacingDirection), spawn.Id),
+                DirectionA = SafeCast(spawn.DirectionA, FacingDirection.Down, nameof(spawn.DirectionA), spawn.Id),
+                DirectionB = SafeCast(spawn.DirectionB, FacingDirection.Up, nameof(spawn.DirectionB), spawn.Id),
+                StepsPerLeg = spawn.StepsPerLeg,
+                visionRange = spawn.VisionRange,
+                VisionType = SafeCast(spawn.VisionType, VisionType.Normal, nameof(spawn.VisionType), spawn.Id),
+            };
+        }
+    }
+        // =========================================================================
+        // RangeObservableCollection
+        // Replaces 1500 individual Add() notifications with a single Reset —
+        // one WPF layout pass per move instead of one per overlay item.
+        // =========================================================================
+        public class RangeObservableCollection<T> : ObservableCollection<T>
+        {
+            public void Reset(IEnumerable<T> newItems)
+            {
+                Items.Clear();
+                foreach (var item in newItems)
+                    Items.Add(item);
+
+                OnCollectionChanged(
+                    new NotifyCollectionChangedEventArgs(
+                        NotifyCollectionChangedAction.Reset));
+            }
+        }
+
+    // =========================================================================
+    // RelayCommand
+    // =========================================================================
+
+
+    // =========================================================================
+    // CanvasOverlayItem
+    // =========================================================================
     public class CanvasOverlayItem
     {
         public double Left { get; set; }
@@ -138,93 +239,118 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public bool IsNpc { get; set; }
         public bool IsTrainer { get; set; }
         public bool IsVision { get; set; }
+        public bool HasCollision { get; set; }
+        public string CollisionColor { get; set; } = "Transparent";
         public string? NpcSymbol { get; set; }
         public string? Tooltip { get; set; }
+        public bool IsDebug { get; set; }
+        public string? DebugText { get; set; }
+        public string DebugTintColor { get; set; } = "Transparent";
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // =========================================================================
     // MapViewModel
-    // ─────────────────────────────────────────────────────────────────────────
-    public class MapViewModel : ViewModelBase
-    {
-        // ── Constants ────────────────────────────────────────────────────────
-        public const double CellPx = 36.0;   // pixel size of each tile cell on screen
+    // =========================================================================
+    public class MapViewModel : ViewModelBase, IDisposable
+        {
+            public const double CellPx = 36.0;
+            private const int MapTilePx = 8;
 
-        // ── Core objects ─────────────────────────────────────────────────────
-        private readonly MapManager _mapManager;
-        private readonly PlayerDomain _player;
-        private readonly MapLoader _mapLoader;
+            // ── Fields ───────────────────────────────────────────────────────────
+            private readonly PlayerDomain _player;
+            private readonly MapLoader _mapLoader;
+            private MapManager? _mapManager;    // null until InitializeAsync completes
 
-        // ── Tileset image caches ──────────────────────────────────────────────
-        private readonly Dictionary<string, BitmapImage> _tilesetCache = new();
-        private readonly Dictionary<int, ImageSource> _tileSliceCache = new();
+            private readonly Dictionary<string, BitmapImage> _mapImageCache = new();
+            private Dictionary<(int row, int col), int> _npcSquareMap = new();
 
-        // ── State ─────────────────────────────────────────────────────────────
-        private string _collisionAtCursor = string.Empty;
-        private string _lastMoveResult = string.Empty;
-        private string _inspectResult = string.Empty;
-        private bool _isShowingBackground = true;
-        private bool _isShowingForeground;
-        private NpcObjectDomain? _activeNpc;
+            private bool _disposed;
+            private bool _pendingOverlayRebuild;
 
-        private Dictionary<(int row, int col), int> _npcSquareMap = new();
+            // Stored so we can unsubscribe (prevents memory leak / zombie ticks)
+            private EventHandler? _npcTickHandler;
+            private Action? _dialogueOpenedHandler;
+            private Action? _dialogueClosedHandler;
 
-        // ── Public data for the Canvas ────────────────────────────────────────
-        // Flat list of tile images — the Canvas binds to this and positions each
-        // Image at (Col * CellPx, Row * CellPx) within the viewport.
-        public ObservableCollection<TileCellData> Tiles { get; } = new();
+            // ── Observable state ─────────────────────────────────────────────────
+            private ImageSource? _mapImageSource;
+            public ImageSource? MapImageSource
+            {
+                get => _mapImageSource;
+                private set => SetProperty(ref _mapImageSource, value);
+            }
 
-        // Overlay markers (player dot, NPC symbols, vision tint rectangles)
-        public ObservableCollection<CanvasOverlayItem> Overlays { get; } = new();
+            private double _imageDisplayWidth;
+            private double _imageDisplayHeight;
+            public double ImageDisplayWidth { get => _imageDisplayWidth; private set => SetProperty(ref _imageDisplayWidth, value); }
+            public double ImageDisplayHeight { get => _imageDisplayHeight; private set => SetProperty(ref _imageDisplayHeight, value); }
 
-        // ── Dialogue ──────────────────────────────────────────────────────────
+            private bool _isReady;
+            public bool IsReady { get => _isReady; private set => SetProperty(ref _isReady, value); }
+
+            private bool _isDebugMode;
+            public bool IsDebugMode { get => _isDebugMode; set => SetProperty(ref _isDebugMode, value); }
+
+            private string _collisionAtCursor = string.Empty;
+            private string _lastMoveResult = string.Empty;
+            private string _inspectResult = string.Empty;
+            private bool _isShowingBackground = true;
+            private bool _isShowingForeground;
+            private NpcObjectDomain? _activeNpc;
+
+            public string CollisionAtCursor { get => _collisionAtCursor; private set => SetProperty(ref _collisionAtCursor, value); }
+            public string LastMoveResult { get => _lastMoveResult; private set => SetProperty(ref _lastMoveResult, value); }
+            public string InspectResult { get => _inspectResult; private set => SetProperty(ref _inspectResult, value); }
+            public bool IsShowingBackground { get => _isShowingBackground; private set => SetProperty(ref _isShowingBackground, value); }
+            public bool IsShowingForeground { get => _isShowingForeground; private set => SetProperty(ref _isShowingForeground, value); }
+
+            // ── Computed header properties ────────────────────────────────────────
+            private SquareMapState SquareMap => _mapManager!.SquareMap;
+            public string MapName => _mapManager?.ActiveMap.Name ?? string.Empty;
+            public int MapWidth => _mapManager?.ActiveMap.Width ?? 0;
+            public int MapHeight => _mapManager?.ActiveMap.Height ?? 0;
+            public int SquareRows => _mapManager != null ? SquareMap.SquareRows : 0;
+            public int SquareCols => _mapManager != null ? SquareMap.SquareCols : 0;
+            public string FacingText => _player.FacingDirection.ToString();
+            public int PlayerSquareRow => _mapManager != null
+                ? SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x).row : 0;
+            public int PlayerSquareCol => _mapManager != null
+                ? SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x).col : 0;
+
+            private IReadOnlyList<CanvasOverlayItem> _overlaySnapshot = Array.Empty<CanvasOverlayItem>();
+            public IReadOnlyList<CanvasOverlayItem> OverlaySnapshot
+            {
+                get => _overlaySnapshot;
+                private set => SetProperty(ref _overlaySnapshot, value);
+            }
+        // ── Dialogue ─────────────────────────────────────────────────────────
         public DialogueViewModel Dialogue { get; } = new();
 
-        // ── Viewport pixel size (for Canvas Width/Height binding) ─────────────
-        public double ViewportWidthPx => MapConstants.ViewColSize * CellPx;
-        public double ViewportHeightPx => MapConstants.ViewRowSize * CellPx;
+            // ── Viewport dimensions ───────────────────────────────────────────────
+            public double ViewportWidthPx => MapConstants.ViewColSize * CellPx;
+            public double ViewportHeightPx => MapConstants.ViewRowSize * CellPx;
 
-        // ── Header properties ─────────────────────────────────────────────────
-        private SquareMapState SquareMap => _mapManager.SquareMap;
-        public string MapName => _mapManager.ActiveMap.Name;
-        public int MapWidth => _mapManager.ActiveMap.Width;
-        public int MapHeight => _mapManager.ActiveMap.Height;
-        public int SquareRows => SquareMap.SquareRows;
-        public int SquareCols => SquareMap.SquareCols;
-        public string FacingText => _player.FacingDirection.ToString();
-        public int PlayerSquareRow => SquareMap.TileToSquare(_player.playerLoc.x, _player.playerLoc.y).row;
-        public int PlayerSquareCol => SquareMap.TileToSquare(_player.playerLoc.x, _player.playerLoc.y).col;
+            // ── Commands ─────────────────────────────────────────────────────────
+            public ShowLayerCommand ShowBackgroundCommand { get; }
+            public ShowLayerCommand ShowForegroundCommand { get; }
+            public MoveCommand MoveUpCommand { get; }
+            public MoveCommand MoveDownCommand { get; }
+            public MoveCommand MoveLeftCommand { get; }
+            public MoveCommand MoveRightCommand { get; }
+            public InspectCommand InspectCommand { get; }
+            public ICommand ToggleDebugCommand { get; }
+            public ICommand PickChoice1Command { get; }
+            public ICommand PickChoice2Command { get; }
+            public ICommand PickChoice3Command { get; }
 
-        public string CollisionAtCursor { get => _collisionAtCursor; private set => SetProperty(ref _collisionAtCursor, value); }
-        public string LastMoveResult { get => _lastMoveResult; private set => SetProperty(ref _lastMoveResult, value); }
-        public string InspectResult { get => _inspectResult; private set => SetProperty(ref _inspectResult, value); }
-        public bool IsShowingBackground { get => _isShowingBackground; private set => SetProperty(ref _isShowingBackground, value); }
-        public bool IsShowingForeground { get => _isShowingForeground; private set => SetProperty(ref _isShowingForeground, value); }
+            private Action? _focusCallback;
+            public void RegisterFocusCallback(Action focus) => _focusCallback = focus;
 
-        // ── Commands ──────────────────────────────────────────────────────────
-        private Action? _focusCallback;
-        public void RegisterFocusCallback(Action focus) => _focusCallback = focus;
-
-        public ShowLayerCommand ShowBackgroundCommand { get; }
-        public ShowLayerCommand ShowForegroundCommand { get; }
-        public MoveCommand MoveUpCommand { get; }
-        public MoveCommand MoveDownCommand { get; }
-        public MoveCommand MoveLeftCommand { get; }
-        public MoveCommand MoveRightCommand { get; }
-        public InspectCommand InspectCommand { get; }
-
-        // ── Constructor ───────────────────────────────────────────────────────
+        // ── Constructor — cheap shell only, no DB calls ───────────────────────
         public MapViewModel()
         {
             _player = PlayerDomain.Instance;
             _mapLoader = new MapLoader(new MapService());
-
-            _player.CurrentMap = _mapLoader.Load("Pallet Town");
-            if (_player.playerLoc == default) _player.playerLoc = (14, 12);
-
-            _mapManager = new MapManager(_player);
-            _mapManager.TrainerSpotted += OnPlayerSpotted;
-            _mapManager.NpcInteracted += OnNpcInteracted;
 
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
             ShowForegroundCommand = new ShowLayerCommand(this, background: false);
@@ -233,46 +359,107 @@ namespace PokemonGame.ViewModels.ViewModelPage
             MoveDownCommand = new MoveCommand(this, FacingDirection.Down);
             MoveLeftCommand = new MoveCommand(this, FacingDirection.Left);
             MoveRightCommand = new MoveCommand(this, FacingDirection.Right);
+            ToggleDebugCommand = new RelayCommand(() => ToggleDebug());
+            PickChoice1Command = new RelayCommand(() => Dialogue.PickChoice(0));
+            PickChoice2Command = new RelayCommand(() => Dialogue.PickChoice(1));
+            PickChoice3Command = new RelayCommand(() => Dialogue.PickChoice(2));
 
             Dialogue.FocusRequested += () => _focusCallback?.Invoke();
 
-            ClockManager.Instance.NpcTick += (_, _) =>
+            // Kick off async load immediately — Task.Run moves the DB work off the
+            // UI thread, so the constructor returns fast and the window stays responsive.
+            _ = InitializeAsync().ContinueWith(t =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    _mapManager.TickNpcs();
-                    RebuildNpcMap();
-                    RefreshOverlays();
-                });
-            };
-
-            Dialogue.DialogueOpened += () => ClockManager.Instance.Pause();
-            Dialogue.DialogueClosed += () =>
-            {
-                ClockManager.Instance.Resume();
-                if (_activeNpc != null)
-                {
-                    _mapManager.OnNpcDialogueFinished(_activeNpc);
-                    _activeNpc = null;
-                    RebuildNpcMap();
-                    RefreshOverlays();
-                }
-            };
-
-            ClockManager.Instance.Start();
-            RebuildGrid();
+                if (t.IsFaulted)
+                    System.Diagnostics.Debug.WriteLine("InitializeAsync failed: " + t.Exception);
+            });
         }
 
-        // ── Image slicing ─────────────────────────────────────────────────────
+        // ── Async init — called by InitializeBehavior on Page Loaded ─────────
+        public void Initialize() => _ = InitializeAsync();
 
-        private ImageSource? GetImageSource(int tileId)
-        {
-            if (tileId <= 0) return null;
-            if (_tileSliceCache.TryGetValue(tileId, out var cached)) return cached;
-
-            string path = $"pack://application:,,,/Assets/Tilesets/{_mapManager.ActiveMap.Name}.png";
-            if (!_tilesetCache.TryGetValue(path, out var masterSheet))
+            private async Task InitializeAsync()
             {
+                // DB load off UI thread so window never freezes
+                MapDomain startMap = await Task.Run(() => _mapLoader.Load("Pallet Town"));
+
+                // Back on UI thread for all WPF/state work
+                _player.CurrentMap = startMap;
+                if (_player.playerLoc == default)
+                    _player.playerLoc = (12, 14);  // x=tileCol, y=tileRow
+
+                _mapManager = new MapManager(_player);
+                _mapManager.TrainerSpotted += OnPlayerSpotted;
+                _mapManager.NpcInteracted += OnNpcInteracted;
+
+                // Store handlers so we can unsubscribe in Dispose()
+                _npcTickHandler = (_, _) =>
+                {
+                    // BeginInvoke (async) avoids deadlock if ClockManager uses DispatcherTimer
+                    Application.Current?.Dispatcher.BeginInvoke(() =>
+                    {
+                        if (_disposed) return;
+                        _mapManager.TickNpcs();
+                        RebuildNpcMap();
+                        // Skip if DialogueClosed is already doing a rebuild this frame
+                        if (!_pendingOverlayRebuild)
+                            RefreshOverlays();
+                    });
+                };
+
+                _dialogueOpenedHandler = () => ClockManager.Instance.Pause();
+
+                _dialogueClosedHandler = () =>
+                {
+                    ClockManager.Instance.Resume();
+                    if (_activeNpc != null)
+                    {
+                        _mapManager.OnNpcDialogueFinished(_activeNpc);
+                        _activeNpc = null;
+                        RebuildNpcMap();
+                    }
+                    // Single authoritative rebuild; flag prevents tick from doubling it
+                    _pendingOverlayRebuild = true;
+                    RefreshOverlays();
+                    _pendingOverlayRebuild = false;
+                };
+
+                ClockManager.Instance.NpcTick += _npcTickHandler;
+                Dialogue.DialogueOpened += _dialogueOpenedHandler;
+                Dialogue.DialogueClosed += _dialogueClosedHandler;
+
+                ClockManager.Instance.Start();
+                RebuildGrid();
+                IsReady = true;
+            }
+
+            // ── IDisposable ───────────────────────────────────────────────────────
+            public void Dispose()
+            {
+                if (_disposed) return;
+                _disposed = true;
+
+                if (_npcTickHandler != null)
+                    ClockManager.Instance.NpcTick -= _npcTickHandler;
+                if (_dialogueOpenedHandler != null)
+                    Dialogue.DialogueOpened -= _dialogueOpenedHandler;
+                if (_dialogueClosedHandler != null)
+                    Dialogue.DialogueClosed -= _dialogueClosedHandler;
+
+                if (_mapManager != null)
+                {
+                    _mapManager.TrainerSpotted -= OnPlayerSpotted;
+                    _mapManager.NpcInteracted -= OnNpcInteracted;
+                }
+
+                ClockManager.Instance.Stop();
+            }
+
+            // ── Bitmap ───────────────────────────────────────────────────────────
+            private BitmapImage? GetMapBitmap()
+            {
+                string path = @"file:///C:/Users/yoav/source/repos/PokemonGame/PokemonGame.ViewModels/ViewModelPage/PalletTown.png";
+                if (_mapImageCache.TryGetValue(path, out var cached)) return cached;
                 try
                 {
                     var bmp = new BitmapImage();
@@ -281,279 +468,330 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     bmp.CacheOption = BitmapCacheOption.OnLoad;
                     bmp.EndInit();
                     bmp.Freeze();
-                    _tilesetCache[path] = masterSheet = bmp;
+                    _mapImageCache[path] = bmp;
+                    return bmp;
                 }
                 catch { return null; }
             }
 
-            int tilePixelSize = 8;
-            int tilesPerRow = masterSheet.PixelWidth / tilePixelSize;
-            int x = (tileId % tilesPerRow) * tilePixelSize;
-            int y = (tileId / tilesPerRow) * tilePixelSize;
-
-            try
+            private void UpdateMapImageSource()
             {
-                var slice = new CroppedBitmap(masterSheet, new Int32Rect(x, y, tilePixelSize, tilePixelSize));
-                slice.Freeze();
-                _tileSliceCache[tileId] = slice;
-                return slice;
-            }
-            catch { return null; }
-        }
+                var sheet = GetMapBitmap();
+                if (sheet == null) { MapImageSource = null; return; }
 
-        // ── NPC square map ────────────────────────────────────────────────────
+                int viewCols = MapConstants.ViewColSize;
+                int viewRows = MapConstants.ViewRowSize;
 
-        private void RebuildNpcMap()
-        {
-            _npcSquareMap.Clear();
-            foreach (var npc in _mapManager.ActiveMap.Npc)
-            {
-                var (r, c) = SquareMap.TileToSquare(npc.Location.x, npc.Location.y);
-                _npcSquareMap[(r, c)] = npc.NpcInfo.Id;
-            }
-        }
+                // playerLoc: x=tileCol, y=tileRow
+                int startTileRow = _player.playerLoc.y - viewRows / 2;
+                int startTileCol = _player.playerLoc.x - viewCols / 2;
 
-        // ── RebuildGrid — replaces InitGrid + RebuildGrid from old code ────────
-        // Writes into Tiles (flat list) and then rebuilds Overlays.
-        // Called on every move and on map change.
+                int px = startTileCol * MapTilePx;
+                int py = startTileRow * MapTilePx;
+                int pw = viewCols * MapTilePx;
+                int ph = viewRows * MapTilePx;
 
-        public void RebuildGrid()
-        {
-            var (bg, fg, _) = _mapManager.GetViewport();
-            var tileLayer = _isShowingBackground ? bg : fg;
+                int imgW = sheet.PixelWidth;
+                int imgH = sheet.PixelHeight;
+                px = Math.Max(0, Math.Min(px, imgW - 1));
+                py = Math.Max(0, Math.Min(py, imgH - 1));
+                pw = Math.Min(pw, imgW - px);
+                ph = Math.Min(ph, imgH - py);
 
-            int viewRows = tileLayer.GetLength(0);
-            int viewCols = tileLayer.GetLength(1);
-            int tps = MapConstants.TilesPerSquare;
-            int halfRows = viewRows / 2;
-            int halfCols = viewCols / 2;
+                if (pw <= 0 || ph <= 0) { MapImageSource = null; return; }
 
-            RebuildNpcMap();
-            var vl = SquareMap.VisionLayer;
-
-            // Resize Tiles collection to match viewport without reallocating everything
-            int needed = viewRows * viewCols;
-            while (Tiles.Count < needed) Tiles.Add(new TileCellData());
-            while (Tiles.Count > needed) Tiles.RemoveAt(Tiles.Count - 1);
-
-            for (int r = 0; r < viewRows; r++)
-            {
-                for (int c = 0; c < viewCols; c++)
+                try
                 {
-                    var cell = Tiles[r * viewCols + c];
-                    int tileId = tileLayer[r, c];
+                    var crop = new CroppedBitmap(sheet, new Int32Rect(px, py, pw, ph));
+                    crop.Freeze();
+                    MapImageSource = crop;
+                    double scale = CellPx / MapTilePx;
+                    ImageDisplayWidth = pw * scale;
+                    ImageDisplayHeight = ph * scale;
+                }
+                catch { MapImageSource = null; ImageDisplayWidth = 0; ImageDisplayHeight = 0; }
+            }
 
-                    int mapTileCol = _player.playerLoc.x - halfCols + c;
-                    int mapTileRow = _player.playerLoc.y - halfRows + r;
-                    int mapSqRow = mapTileRow / tps;
-                    int mapSqCol = mapTileCol / tps;
-
-                    cell.Row = mapSqRow;
-                    cell.Col = mapSqCol;
-                    cell.TileId = tileId;
-                    cell.TileImage = GetImageSource(tileId);
-                    cell.IsPlayerHere = (r == halfRows && c == halfCols);
-                    cell.Collision = SquareMap.GetSquare(mapSqRow, mapSqCol)?.SquareType ?? CollisionType.None;
-
-                    _npcSquareMap.TryGetValue((mapSqRow, mapSqCol), out int npcId);
-                    cell.NpcId = npcId;
-
-                    int vr = r / tps, vc = c / tps;
-                    cell.NpcVisionId = (vr < vl.GetLength(0) && vc < vl.GetLength(1)) ? vl[vr, vc] : 0;
-
-                    // Canvas position in pixels
-                    cell.CanvasLeft = c * CellPx;
-                    cell.CanvasTop = r * CellPx;
+            // ── NPC square map ────────────────────────────────────────────────────
+            private void RebuildNpcMap()
+            {
+                _npcSquareMap.Clear();
+                foreach (var npc in _mapManager!.ActiveMap.Npc)
+                {
+                    // Location: x=tileCol, y=tileRow
+                    var (r, c) = SquareMap.TileToSquare(npc.Location.y, npc.Location.x);
+                    _npcSquareMap[(r, c)] = npc.NpcInfo.Id;
                 }
             }
 
-            // Notify canvas to re-render tile images
-            OnPropertyChanged(nameof(Tiles));
-
-            // Rebuild overlay markers (player + NPCs)
-            RebuildOverlays(viewRows, viewCols);
-
-            // Update status bar
-            var (psr, psc) = SquareMap.TileToSquare(_player.playerLoc.x, _player.playerLoc.y);
-            CollisionAtCursor = SquareMap.GetCollision(psr, psc).ToString();
-            NotifyHeaderProperties();
-        }
-
-        // ── Overlays — player dot + NPC symbols ───────────────────────────────
-
-        private void RebuildOverlays(int viewRows, int viewCols)
-        {
-            Overlays.Clear();
-
-            int tps = MapConstants.TilesPerSquare;
-            int halfRows = viewRows / 2;
-            int halfCols = viewCols / 2;
-            var vl = SquareMap.VisionLayer;
-
-            for (int r = 0; r < viewRows; r++)
+            // ── Grid rebuild ──────────────────────────────────────────────────────
+            public void RebuildGrid()
             {
-                for (int c = 0; c < viewCols; c++)
+                var (bg, fg, _) = _mapManager!.GetViewport();
+                var tileLayer = _isShowingBackground ? bg : fg;
+
+                int viewRows = tileLayer.GetLength(0);
+                int viewCols = tileLayer.GetLength(1);
+                int tps = MapConstants.TilesPerSquare;
+                int halfRows = viewRows / 2;
+                int halfCols = viewCols / 2;
+
+                RebuildNpcMap();
+                UpdateMapImageSource();
+
+                var vl = SquareMap.VisionLayer;
+                var cellData = new List<(int sqRow, int sqCol, bool isPlayer, int npcId, int visionId, CollisionType col)>(viewRows * viewCols);
+
+                for (int r = 0; r < viewRows; r++)
                 {
-                    var cell = Tiles[r * viewCols + c];
-
-                    // Vision tint rectangle
-                    if (cell.IsInNpcVision && !cell.IsPlayerHere && !cell.IsNpcHere)
+                    for (int c = 0; c < viewCols; c++)
                     {
-                        Overlays.Add(new CanvasOverlayItem
-                        {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
-                            IsVision = true,
-                            Tooltip = cell.Tooltip,
-                        });
-                    }
+                        // playerLoc: x=tileCol, y=tileRow
+                        int mapTileRow = _player.playerLoc.y - halfRows + r;
+                        int mapTileCol = _player.playerLoc.x - halfCols + c;
+                        int mapSqRow = mapTileRow / tps;
+                        int mapSqCol = mapTileCol / tps;
 
-                    // Player dot
-                    if (cell.IsPlayerHere)
-                    {
-                        Overlays.Add(new CanvasOverlayItem
-                        {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
-                            IsPlayer = true,
-                        });
-                    }
+                        _npcSquareMap.TryGetValue((mapSqRow, mapSqCol), out int npcId);
 
-                    // NPC symbol
-                    if (cell.IsNpcHere)
-                    {
-                        Overlays.Add(new CanvasOverlayItem
-                        {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
-                            IsNpc = true,
-                            IsTrainer = cell.NpcId % 2 != 0,
-                            NpcSymbol = cell.NpcSymbol,
-                            Tooltip = cell.Tooltip,
-                        });
+                        int vr = r / tps;
+                        int vc = c / tps;
+                        int visionId = (vr < vl.GetLength(0) && vc < vl.GetLength(1)) ? vl[vr, vc] : 0;
+
+                        cellData.Add((
+                            mapSqRow, mapSqCol,
+                            r == halfRows && c == halfCols,
+                            npcId,
+                            visionId,
+                            SquareMap.GetSquare(mapSqRow, mapSqCol)?.SquareType ?? CollisionType.None
+                        ));
                     }
                 }
-            }
-        }
 
-        // NPC-only overlay refresh (called on NPC tick — skips tile rebuild)
+                RebuildOverlaysFromData(cellData, viewRows, viewCols);
+
+                var (psr, psc) = SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x);
+                CollisionAtCursor = SquareMap.GetCollision(psr, psc).ToString();
+                NotifyHeaderProperties();
+            }
+
+            // ── Overlays ──────────────────────────────────────────────────────────
+            private void RebuildOverlaysFromData(
+                List<(int sqRow, int sqCol, bool isPlayer, int npcId, int visionId, CollisionType col)> cellData,
+                int viewRows, int viewCols)
+            {
+                var newItems = new List<CanvasOverlayItem>(viewRows * viewCols * 2);
+
+                for (int r = 0; r < viewRows; r++)
+                {
+                    for (int c = 0; c < viewCols; c++)
+                    {
+                        var (sqRow, sqCol, isPlayer, npcId, visionId, collision) = cellData[r * viewCols + c];
+                        bool isNpc = npcId != 0;
+                        bool isVision = visionId != 0;
+
+                        string tooltip = $"[{sqRow},{sqCol}]  {collision}" +
+                                         (isNpc ? $"  NPC:{npcId}" : string.Empty) +
+                                         (isVision ? $"  seen-by:{visionId}" : string.Empty);
+
+                        var (colColor, showCol) = CollisionDebugColor(collision);
+                        if (showCol)
+                            newItems.Add(new CanvasOverlayItem
+                            {
+                                Left = c * CellPx,
+                                Top = r * CellPx,
+                                HasCollision = true,
+                                CollisionColor = colColor,
+                                Tooltip = tooltip,
+                            });
+
+                        if (isVision && !isPlayer && !isNpc)
+                            newItems.Add(new CanvasOverlayItem
+                            {
+                                Left = c * CellPx,
+                                Top = r * CellPx,
+                                IsVision = true,
+                                Tooltip = tooltip,
+                            });
+
+                        if (isPlayer)
+                            newItems.Add(new CanvasOverlayItem
+                            {
+                                Left = c * CellPx,
+                                Top = r * CellPx,
+                                IsPlayer = true,
+                            });
+
+                        if (isNpc)
+                            newItems.Add(new CanvasOverlayItem
+                            {
+                                Left = c * CellPx,
+                                Top = r * CellPx,
+                                IsNpc = true,
+                                IsTrainer = npcId % 2 != 0,
+                                NpcSymbol = npcId % 2 != 0 ? "T" : "N",
+                                Tooltip = tooltip,
+                            });
+
+                        if (_isDebugMode)
+                            newItems.Add(new CanvasOverlayItem
+                            {
+                                Left = c * CellPx,
+                                Top = r * CellPx,
+                                IsDebug = true,
+                                DebugText = $"{sqRow},{sqCol}",
+                                DebugTintColor = CollisionToDebugColor(collision),
+                            });
+                    }
+                }
+
+                // Single Reset notification — one layout pass regardless of item count
+                OverlaySnapshot = newItems;
+            }
+
         public void RefreshOverlays()
-        {
-            var vl = SquareMap.VisionLayer;
-            int viewRows = MapConstants.ViewRowSize;
-            int viewCols = MapConstants.ViewColSize;
-            int tps = MapConstants.TilesPerSquare;
-            int halfRows = viewRows / 2;
-            int halfCols = viewCols / 2;
-
-            // Update NpcId / NpcVisionId on existing Tiles so Tooltip stays correct
-            for (int r = 0; r < viewRows; r++)
             {
-                for (int c = 0; c < viewCols; c++)
+                var vl = SquareMap.VisionLayer;
+                int viewRows = MapConstants.ViewRowSize;
+                int viewCols = MapConstants.ViewColSize;
+                int tps = MapConstants.TilesPerSquare;
+                int halfRows = viewRows / 2;
+                int halfCols = viewCols / 2;
+
+                var cellData = new List<(int sqRow, int sqCol, bool isPlayer, int npcId, int visionId, CollisionType col)>(viewRows * viewCols);
+
+                for (int r = 0; r < viewRows; r++)
                 {
-                    if (r * viewCols + c >= Tiles.Count) continue;
-                    var cell = Tiles[r * viewCols + c];
+                    for (int c = 0; c < viewCols; c++)
+                    {
+                        int mapTileRow = _player.playerLoc.y - halfRows + r;
+                        int mapTileCol = _player.playerLoc.x - halfCols + c;
+                        int mapSqRow = mapTileRow / tps;
+                        int mapSqCol = mapTileCol / tps;
 
-                    int mapTileCol = _player.playerLoc.x - halfCols + c;
-                    int mapTileRow = _player.playerLoc.y - halfRows + r;
-                    int mapSqRow = mapTileRow / tps;
-                    int mapSqCol = mapTileCol / tps;
+                        _npcSquareMap.TryGetValue((mapSqRow, mapSqCol), out int npcId);
 
-                    _npcSquareMap.TryGetValue((mapSqRow, mapSqCol), out int npcId);
-                    cell.NpcId = npcId;
+                        int vr = r / tps;
+                        int vc = c / tps;
+                        int visionId = (vr < vl.GetLength(0) && vc < vl.GetLength(1)) ? vl[vr, vc] : 0;
 
-                    int vr = r / tps, vc = c / tps;
-                    cell.NpcVisionId = (vr < vl.GetLength(0) && vc < vl.GetLength(1)) ? vl[vr, vc] : 0;
+                        cellData.Add((
+                            mapSqRow, mapSqCol,
+                            r == halfRows && c == halfCols,
+                            npcId,
+                            visionId,
+                            SquareMap.GetSquare(mapSqRow, mapSqCol)?.SquareType ?? CollisionType.None
+                        ));
+                    }
+                }
+
+                RebuildOverlaysFromData(cellData, viewRows, viewCols);
+            }
+
+            // ── Actions ───────────────────────────────────────────────────────────
+            public void ToggleDebug()
+            {
+                IsDebugMode = !IsDebugMode;
+                RebuildGrid();
+            }
+
+            public void Move(FacingDirection direction)
+            {
+                if (Dialogue.IsOpen) return;
+
+                var result = _mapManager!.TryMove(direction);
+                if (result.Success)
+                {
+                    LastMoveResult = $"Moved {direction}";
+                    RebuildGrid();
+                    if (result.WildEncounterTriggered) LastMoveResult += " + Wild Encounter!";
+                    if (result.SpottedByNpcId != 0) LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
+                }
+                else
+                {
+                    LastMoveResult = $"Blocked ({direction})";
+                    OnPropertyChanged(nameof(FacingText));
                 }
             }
 
-            RebuildOverlays(viewRows, viewCols);
-        }
-
-        // ── Move ──────────────────────────────────────────────────────────────
-
-        public void Move(FacingDirection direction)
-        {
-            if (Dialogue.IsOpen) return;
-
-            var result = _mapManager.TryMove(direction);
-            if (result.Success)
+            public void Inspect()
             {
-                LastMoveResult = $"Moved {direction}";
+                if (Dialogue.IsOpen) { Dialogue.Advance(); return; }
 
-                bool mapChanged = _tilesetCache.Count > 0 &&
-                                  !_tilesetCache.ContainsKey(
-                                      $"pack://application:,,,/Assets/Tilesets/{_mapManager.ActiveMap.Name}.png");
-                if (mapChanged)
-                    _tileSliceCache.Clear();
+                _mapManager!.TryInteractWithNpc();
+                if (Dialogue.IsOpen) return;
 
+                var result = _mapManager.TryInspect();
+                InspectResult = result.Message;
+
+                if (result.Type == InspectResultType.ItemPickup ||
+                    result.Type == InspectResultType.HmUsed)
+                    RebuildGrid();
+
+                if (result.Type == InspectResultType.NpcDialogue && result.DialogueSet != null)
+                    Dialogue.Open(result.DialogueSet, result.NpcName);
+            }
+
+            internal void SwitchLayer(bool background)
+            {
+                IsShowingBackground = background;
+                IsShowingForeground = !background;
                 RebuildGrid();
-
-                if (result.WildEncounterTriggered) LastMoveResult += " + Wild Encounter!";
-                if (result.SpottedByNpcId != 0) LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
             }
-            else
+
+            // ── Helpers ───────────────────────────────────────────────────────────
+            private void NotifyHeaderProperties()
             {
-                LastMoveResult = $"Blocked ({direction})";
+                OnPropertyChanged(nameof(MapName));
+                OnPropertyChanged(nameof(MapWidth));
+                OnPropertyChanged(nameof(MapHeight));
+                OnPropertyChanged(nameof(SquareRows));
+                OnPropertyChanged(nameof(SquareCols));
                 OnPropertyChanged(nameof(FacingText));
+                OnPropertyChanged(nameof(PlayerSquareRow));
+                OnPropertyChanged(nameof(PlayerSquareCol));
             }
-        }
 
-        // ── Inspect ───────────────────────────────────────────────────────────
-
-        public void Inspect()
-        {
-            if (Dialogue.IsOpen) { Dialogue.Advance(); return; }
-
-            _mapManager.TryInteractWithNpc();
-            if (Dialogue.IsOpen) return;
-
-            var result = _mapManager.TryInspect();
-            InspectResult = result.Message;
-
-            if (result.Type == InspectResultType.ItemPickup ||
-                result.Type == InspectResultType.HmUsed)
-                RebuildGrid();   // full rebuild — collision state changed
-
-            if (result.Type == InspectResultType.NpcDialogue && result.DialogueSet != null)
-                Dialogue.Open(result.DialogueSet, result.NpcName);
-        }
-
-        internal void SwitchLayer(bool background)
-        {
-            IsShowingBackground = background;
-            IsShowingForeground = !background;
-            RebuildGrid();
-        }
-
-        private void NotifyHeaderProperties()
-        {
-            OnPropertyChanged(nameof(MapName));
-            OnPropertyChanged(nameof(MapWidth));
-            OnPropertyChanged(nameof(MapHeight));
-            OnPropertyChanged(nameof(SquareRows));
-            OnPropertyChanged(nameof(SquareCols));
-            OnPropertyChanged(nameof(FacingText));
-            OnPropertyChanged(nameof(PlayerSquareRow));
-            OnPropertyChanged(nameof(PlayerSquareCol));
-        }
-
-        private void OnPlayerSpotted(NpcObjectDomain npc)
-        {
-            if (Dialogue.IsOpen) return;
-            var set = npc.NpcInfo.GetDialogue(TriggerType.Spotted);
-            if (set != null) Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
-        }
-
-        private void OnNpcInteracted(NpcObjectDomain npc)
-        {
-            if (Dialogue.IsOpen) return;
-            var set = npc.NpcInfo.GetDialogue(TriggerType.Interact);
-            if (set != null)
+            private void OnPlayerSpotted(NpcObjectDomain npc)
             {
-                _activeNpc = npc;
-                Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
+                if (Dialogue.IsOpen) return;
+                var set = npc.NpcInfo.GetDialogue(TriggerType.Spotted);
+                if (set != null) Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
             }
+
+            private void OnNpcInteracted(NpcObjectDomain npc)
+            {
+                if (Dialogue.IsOpen) return;
+                var set = npc.NpcInfo.GetDialogue(TriggerType.Interact);
+                if (set != null)
+                {
+                    _activeNpc = npc;
+                    Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
+                }
+            }
+
+            private static (string color, bool show) CollisionDebugColor(CollisionType c) => c switch
+            {
+                CollisionType.Blocked => ("#99FF2222", true),
+                CollisionType.WildGrass => ("#9922CC44", true),
+                CollisionType.HM => ("#992255FF", true),
+                CollisionType.JumpLeft => ("#99FFCC00", true),
+                CollisionType.JumpRight => ("#99FFCC00", true),
+                CollisionType.JumpUp => ("#99FFCC00", true),
+                CollisionType.JumpDown => ("#99FFCC00", true),
+                CollisionType.None => (string.Empty, false),
+                _ => ("#99FF00FF", true),
+            };
+
+            private static string CollisionToDebugColor(CollisionType c) => c switch
+            {
+                CollisionType.Blocked => "#55FF0000",
+                CollisionType.WildGrass => "#5500FF00",
+                CollisionType.HM => "#550000FF",
+                CollisionType.JumpLeft or CollisionType.JumpRight
+                    or CollisionType.JumpDown or CollisionType.JumpUp => "#55FFFF00",
+                _ => "#00000000",
+            };
         }
     }
-}
+

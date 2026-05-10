@@ -45,7 +45,7 @@ namespace PokemonGame.Model.Model.Map
                             TickWalking(npc, playerRow, playerCol);
                         break;
 
-                    case MovementType.Stationery:
+                    case MovementType.Stationary:
                         if (npc.DirectionA != FacingDirection.None &&
                             npc.DirectionB != FacingDirection.None)
                             TickTurning(npc);

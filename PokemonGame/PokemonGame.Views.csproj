@@ -258,6 +258,7 @@
     <Compile Include="Views\UserControls\ItemPickerUserControl.xaml.cs">
       <DependentUpon>ItemPickerUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UserControls\MapOverlayVisual.cs" />
     <Compile Include="Views\UserControls\MovePickerUserControl.xaml.cs">
       <DependentUpon>MovePickerUserControl.xaml</DependentUpon>
     </Compile>

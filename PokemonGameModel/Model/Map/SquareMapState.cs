@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.Design;
-using PokemonGame.Core.Model.Helper.MathHelper;
+﻿    using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Model.Map
 {
@@ -116,38 +114,57 @@ namespace PokemonGame.Model.Model.Map
 
             RebuildVisionLayer();
             IsInNpcVision(toRow, toCol, out int spottedBy);
+
+            // ── Bug #2 fix (Critical): Surfing double-step needs bounds guard ─
+            //
+            // OLD code called CanMoveTo(extraRow, extraCol) without first
+            // checking InBounds — CanMoveTo calls GetSquare which returns null
+            // out-of-bounds, but GetCollision then returns Blocked, so it
+            // "worked" accidentally. However HasWalkingNpcAt / HasStationaryBlockerAt
+            // also run and index _visionLayer without a bounds check, which
+            // could throw. Guard explicitly with InBounds.
             bool surfing =
                 PlayerDomain.Instance.IsSurfing &&
                 GetCollision(toRow, toCol) == CollisionType.HM;
+
             if (surfing)
             {
                 var (extraRow, extraCol) = Step(toRow, toCol, direction);
 
-                if (CanMoveTo(extraRow, extraCol, direction))
+                // ── Bug #2 fix: guard bounds before CanMoveTo ────────────────
+                if (InBounds(extraRow, extraCol) && CanMoveTo(extraRow, extraCol, direction))
                 {
                     toRow = extraRow;
                     toCol = extraCol;
                 }
             }
+
+            // ── Bug #3 fix (High): Waterfall while(true) loop — add iteration cap
+            //
+            // OLD code: unbounded while(true) — if the map data has a run of HM
+            // tiles with no non-HM tile ahead, this loops forever.
+            // FIX: cap at SquareRows (the longest possible straight run on the map).
             bool climbingWaterfall =
                 PlayerDomain.Instance.IsSurfing &&
                 GetCollision(toRow, toCol) == CollisionType.HM;
+
             if (climbingWaterfall)
             {
-                while (true)
+                int maxSteps = SquareRows; // can never need more steps than map height
+                for (int step = 0; step < maxSteps; step++)
                 {
                     var (nextRow, nextCol) = Step(toRow, toCol, direction);
 
-                    if (GetCollision(nextRow, nextCol) != CollisionType.HM)
-                        break;
-
-                    if (!CanMoveTo(nextRow, nextCol, direction))
-                        break;
+                    // ── Also guard bounds here (same class of bug as #2) ─────
+                    if (!InBounds(nextRow, nextCol)) break;
+                    if (GetCollision(nextRow, nextCol) != CollisionType.HM) break;
+                    if (!CanMoveTo(nextRow, nextCol, direction)) break;
 
                     toRow = nextRow;
                     toCol = nextCol;
                 }
             }
+
             return new MoveResult
             {
                 Success = true,
@@ -285,30 +302,42 @@ namespace PokemonGame.Model.Model.Map
             int rows = map.Height / tps;
             int cols = map.Width / tps;
 
-            // Build a flat tile-space collision lookup first (tile coords → type)
             var tileCollision = BuildTileCollisionGrid(map, map.Height, map.Width);
-
             var grid = new SquareDomain[rows, cols];
 
             for (int sr = 0; sr < rows; sr++)
             {
                 for (int sc = 0; sc < cols; sc++)
                 {
-                    // Collect collision types for every tile in this square
                     var squareType = CollisionType.None;
 
-                    for (int tr = 0; tr < tps && squareType != CollisionType.Blocked; tr++)
+                    for (int tr = 0; tr < tps; tr++)
                     {
-                        for (int tc = 0; tc < tps && squareType != CollisionType.Blocked; tc++)
+                        for (int tc = 0; tc < tps; tc++)
                         {
                             int tileRow = sr * tps + tr;
                             int tileCol = sc * tps + tc;
                             var t = tileCollision[tileRow, tileCol];
-                            if (t != CollisionType.None)
-                                squareType = t; // last non-None wins; Blocked short-circuits
+
+                            if (t == CollisionType.None) continue;
+
+                            // ── Bug #4 fix ───────────────────────────────────
+                            // Blocked always wins — short-circuit immediately.
+                            // For all other types, take the FIRST non-None value
+                            // found (not the last), so iteration order cannot
+                            // silently overwrite a higher-priority type.
+                            if (t == CollisionType.Blocked)
+                            {
+                                squareType = CollisionType.Blocked;
+                                goto nextSquare; // break both inner loops
+                            }
+
+                            if (squareType == CollisionType.None)
+                                squareType = t; // first non-None, non-Blocked wins
                         }
                     }
 
+                nextSquare:
                     grid[sr, sc] = new SquareDomain
                     {
                         Row = sr,
@@ -419,8 +448,8 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Private — shared helpers ──────────────────────────────────────────
 
-        private (int row, int col) NpcSquare(NpcObjectDomain npc)   
-            => TileToSquare(npc.Location.x, npc.Location.y);
+        private (int row, int col) NpcSquare(NpcObjectDomain npc)
+            => TileToSquare(npc.Location.y, npc.Location.x);
 
         private bool InBounds(int row, int col)
             => (uint)row < (uint)SquareRows && (uint)col < (uint)SquareCols;
