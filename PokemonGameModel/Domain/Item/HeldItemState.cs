@@ -11,6 +11,7 @@ namespace PokemonGame.Model.Domain.Item
     }
     public class itemsDomain
     {
+        public int Id { get; set; }  // add this
         public string Name { get; set; }
         public ItemType Type { get; set; }
         public IEffect Effect { get; set; }

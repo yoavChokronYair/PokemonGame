@@ -70,6 +70,18 @@ namespace PokemonGame.Services.Factory
         public IMoveService MoveService { get; }
         public IAbilityService AbilityService { get; }
         public IItemService ItemService { get; }
+        public IStoryPlayerService StoryPlayerService { get; }
+
+        internal TrainerInfoRepository TrainerInfoRepository { get; }
+        internal BadgeRepository BadgeRepository { get; }
+        internal StoryFlagRepository StoryFlagRepository { get; }
+        internal DefeatedTrainerRepository DefeatedTrainerRepository { get; }
+        internal ItemTakenRepository ItemTakenRepository { get; }
+        internal TradedPokemonRepository TradedPokemonRepository { get; }
+        internal BagInventoryRepository BagInventoryRepository { get; }
+        internal PokedexRepository PokedexRepository { get; }
+        internal PartyRepository PartyRepository { get; }
+        internal StoryPlayerRepository StoryPlayerRepository { get; }
 
         // ── Constructor ───────────────────────────────────────────────────────
         public ServiceFactory(IDbConnectionService db)
@@ -111,6 +123,16 @@ namespace PokemonGame.Services.Factory
             WrapRepository = new WrapRepository(db);
             EncounterRepository = new EncounterRepository(db);
             NpcSpawnRepository = new NpcSpawnRepository(db);
+            TrainerInfoRepository = new TrainerInfoRepository(db);
+            BadgeRepository = new BadgeRepository(db);
+            StoryFlagRepository = new StoryFlagRepository(db);
+            DefeatedTrainerRepository = new DefeatedTrainerRepository(db);
+            ItemTakenRepository = new ItemTakenRepository(db);
+            TradedPokemonRepository = new TradedPokemonRepository(db);
+            BagInventoryRepository = new BagInventoryRepository(db);
+            PokedexRepository = new PokedexRepository(db);
+            PartyRepository = new PartyRepository(db);
+            StoryPlayerRepository = new StoryPlayerRepository(db);
 
             UserService = new LocalUserService(UserRepository);
             ProfileService = new LocalProfileService(OnlinePlayerRepository, BattlePlayerSettingsRepository,
@@ -148,6 +170,10 @@ namespace PokemonGame.Services.Factory
 
             ItemService = new LocalItemService(
                 ItemRepository, ConditionRepository, EffectRepository, NumberRepository);
+            StoryPlayerService = new LocalStoryPlayerService(
+                TrainerInfoRepository, BadgeRepository, StoryFlagRepository,
+                DefeatedTrainerRepository, ItemTakenRepository, TradedPokemonRepository,
+                BagInventoryRepository, PokedexRepository, PartyRepository, StoryPlayerRepository);
         }
 
         // ── Factory methods ───────────────────────────────────────────────────
