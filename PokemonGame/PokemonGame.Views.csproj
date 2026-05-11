@@ -291,6 +291,9 @@
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\SignIn\StoryLogIn.xaml.cs">
+      <DependentUpon>StoryLogIn.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\Trainer\TrainerCard.xaml.cs">
       <DependentUpon>TrainerCard.xaml</DependentUpon>
     </Compile>
@@ -417,6 +420,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="Views\MapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\SignIn\StoryLogIn.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

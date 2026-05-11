@@ -21,6 +21,8 @@ namespace PokemonGame.ViewModels.Store
         // ── Identity ──────────────────────────────────────────────────────────
         public string Username { get; set; } = "Guest";
         public int BattlePlayerID { get; set; }
+        public int UserID { get; set; }
+        public int PlayerID { get; set; }
 
         private UserSettings _settings = new();
         public UserSettings Settings

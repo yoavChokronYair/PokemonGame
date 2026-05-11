@@ -216,5 +216,11 @@ namespace PokemonGame.Services.Data.Repositories
             foreach (var player in players)
                 Save(player);
         }
+        public StoryPlayerData? GetPlayerUserId(int userId) =>
+            _db.QuerySingle<StoryPlayerData>("SELECT * FROM StoryPlayer WHERE UserID = @UserID",
+            new { UserID = userId });
+        public List<StoryPlayerData> GetPlayersUserId(int userId) =>
+            _db.Query<StoryPlayerData>("SELECT * FROM StoryPlayer WHERE UserID = @UserID",
+        new { UserID = userId });
     }
 }

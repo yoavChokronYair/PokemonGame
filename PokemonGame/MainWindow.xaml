@@ -71,6 +71,9 @@
             <DataTemplate DataType="{x:Type trainerviewmodel:TrainerCardViewModel}">
                 <trainerview:TrainerCard />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type signinvm:StoryLogInViewModel}">
+                <local2:StoryLogIn />
+            </DataTemplate>
         </Grid.Resources>
         <Viewbox Stretch="Uniform">
             <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />

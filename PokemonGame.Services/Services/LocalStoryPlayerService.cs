@@ -7,9 +7,11 @@ namespace PokemonGame.Services.Handler
 {
     public interface IStoryPlayerService
     {
-        StorySaveTree LoadAll();
+        StorySaveTree LoadAll(int userId);
         void SaveAll(StorySaveTree save);
         void SetStoryPlayer(int userId);
+        List<StoryPlayerSummary> GetSummaries(int userId);
+
     }
 
     public class LocalStoryPlayerService : IStoryPlayerService
@@ -71,20 +73,40 @@ namespace PokemonGame.Services.Handler
             _storyPlayerRepo.Save(player);
         }
 
-        public StorySaveTree LoadAll() => new StorySaveTree
+        public StorySaveTree LoadAll(int userId)
         {
-            TrainerInfo = _trainerInfoRepo.Load(),
-            Badges = _badgeRepo.LoadAll(),
-            StoryFlags = _storyFlagRepo.LoadAll(),
-            DefeatedTrainers = _defeatedTrainerRepo.LoadAll(),
-            ItemsTaken = _itemTakenRepo.LoadAll(),
-            TradedPokemon = _tradedPokemonRepo.LoadAll(),
-            BagInventory = _bagInventoryRepo.LoadAll(),
-            Pokedex = _pokedexRepo.LoadAll(),
-            Party = _partyRepo.LoadAll(),
-            Players = _storyPlayerRepo.LoadAll(),
-        };
+            var player = _storyPlayerRepo.GetPlayerUserId(userId)
+                ?? throw new InvalidOperationException($"No story player found for user {userId}.");
 
+            return new StorySaveTree
+            {
+                CurrentPlayer = player,
+                TrainerInfo = _trainerInfoRepo.Load(),
+                Badges = _badgeRepo.LoadAll(),
+                StoryFlags = _storyFlagRepo.LoadAll(),
+                DefeatedTrainers = _defeatedTrainerRepo.LoadAll(),
+                ItemsTaken = _itemTakenRepo.LoadAll(),
+                TradedPokemon = _tradedPokemonRepo.LoadAll(),
+                BagInventory = _bagInventoryRepo.LoadAll(),
+                Pokedex = _pokedexRepo.LoadAll(),
+                Party = _partyRepo.LoadAll(),
+            };
+        }
+        public List<StoryPlayerSummary> GetSummaries(int userId)
+        {
+            var players = _storyPlayerRepo.GetPlayersUserId(userId);
+            var trainerInfo = _trainerInfoRepo.Load();
+            var badgeCount = _badgeRepo.LoadAll().Count(b => b.IsObtained == 1);
+
+            return players.Select(p => new StoryPlayerSummary
+            {
+                PlayerID = p.PlayerID,
+                UserID = p.UserID,
+                Name = trainerInfo.Name,
+                TimePlayed = trainerInfo.TimePlayed,
+                BadgeCount = badgeCount,
+            }).ToList();
+        }
         // ── Save (called on start and on every button press) ──────────────────
 
         public void SaveAll(StorySaveTree save)
@@ -94,17 +116,13 @@ namespace PokemonGame.Services.Handler
             _bagInventoryRepo.SaveAll(save.BagInventory);
             _pokedexRepo.SaveAll(save.Pokedex);
             _partyRepo.SaveAll(save.Party);
-            _storyPlayerRepo.SaveAll(save.Players);
 
             foreach (var flagId in save.StoryFlags)
                 _storyFlagRepo.Add(flagId);
-
             foreach (var trainerId in save.DefeatedTrainers)
                 _defeatedTrainerRepo.Add(trainerId);
-
             foreach (var npcId in save.ItemsTaken)
                 _itemTakenRepo.Add(npcId);
-
             foreach (var pokedexId in save.TradedPokemon)
                 _tradedPokemonRepo.Add(pokedexId);
         }
@@ -123,6 +141,14 @@ namespace PokemonGame.Services.Handler
         public List<BagInventoryData> BagInventory { get; set; } = new();
         public List<PokedexData> Pokedex { get; set; } = new();
         public List<PartyData> Party { get; set; } = new();
-        public List<StoryPlayerData> Players { get; set; } = new();
+        public StoryPlayerData CurrentPlayer { get; set; } = new();
+    }
+    public class StoryPlayerSummary
+    {
+        public int PlayerID { get; set; }
+        public int UserID { get; set; }
+        public string Name { get; set; } = "";
+        public string TimePlayed { get; set; } = "00:00:00";
+        public int BadgeCount { get; set; }
     }
 }

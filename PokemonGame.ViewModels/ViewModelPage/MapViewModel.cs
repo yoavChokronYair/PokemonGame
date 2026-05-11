@@ -10,6 +10,7 @@ using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Model.Model.Map;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Services;
 using PokemonGame.ViewModels.Translators;
 using PokemonGame.ViewModels.ViewModelHelper;
@@ -165,12 +166,19 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         private async Task InitializeAsync()
         {
-            MapDomain startMap = await Task.Run(() => _mapLoader.Load("PalletTown"));
 
-            _player.trainerMapLocDomain.CurrentMap = startMap;
-            if (_player.trainerMapLocDomain.playerLoc == default)
-                _player.trainerMapLocDomain.playerLoc = (12, 14);
-
+            await Task.Run(() =>
+            {
+                var currentMapName = _player.trainerMapLocDomain?.CurrentMap?.Name;
+                if (string.IsNullOrEmpty(currentMapName))
+                {
+                    // fallback — player wasn't loaded yet (e.g. dev startup)
+                    var loader = new PlayerLoader(
+                        ServiceFactory.Instance.StoryPlayerService,
+                        _mapLoader);
+                    loader.Load();
+                }
+            });
             _mapManager = new MapManager(_player);
             _mapManager.TrainerSpotted += OnPlayerSpotted;
             _mapManager.NpcInteracted += OnNpcInteracted;

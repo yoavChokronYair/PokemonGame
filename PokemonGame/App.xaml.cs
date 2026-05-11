@@ -33,7 +33,7 @@ namespace PokemonGame
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            _navigationStore.CurrentViewModel = CreateMapViewModel();
+            _navigationStore.CurrentViewModel = CreateLogInViewModel();
             MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel(_navigationStore)
@@ -69,7 +69,8 @@ namespace PokemonGame
                 UserStore.Instance,
                 _navigationStore,
                 new DialogService(),
-                CreateOnlineBattleShellViewModel
+                CreateOnlineBattleShellViewModel,
+                CreateStoryLogInViewModel
             );
         }
 
@@ -170,6 +171,13 @@ namespace PokemonGame
                 _navigationStore,
                 CreateBattleViewModel,
                 CreateOnlineBattleShellViewModel
+            );
+        }
+        private StoryLogInViewModel CreateStoryLogInViewModel()
+        {
+            return new StoryLogInViewModel(
+                _navigationStore,
+                CreateMapViewModel
             );
         }
         private TrainerCardViewModel CreateTrainerCardViewModel()

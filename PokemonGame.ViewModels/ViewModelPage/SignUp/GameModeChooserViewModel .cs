@@ -37,11 +37,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
         public ICommand CreateAccountCommand { get; }
         public ICommand NavigateToSideMenuCommand { get; }
 
+        private readonly Func<StoryLogInViewModel> _createStoryLogInViewModel;
+
         public GameModeChooserViewModel(
             UserStore? user,
             NavigationStore navigationStore,
             IDialogService dialogService,
-            Func<OnlineBattleShellViewModel> createSideMenuViewModel)
+            Func<OnlineBattleShellViewModel> createSideMenuViewModel,
+            Func<StoryLogInViewModel> createStoryLogInViewModel)  // add
         {
             _dialogService = dialogService;
             _navigationStore = navigationStore;
@@ -49,6 +52,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             _loginService = user.Resolver.GetUserService();
             _userStore = user;
             Username = user?.Username ?? string.Empty;
+            _createStoryLogInViewModel = createStoryLogInViewModel;
 
             StoryModeCommand = new RelayCommand(OnStoryMode);
             OnlineModeCommand = new AsyncRelayCommand(OnOnlineModeAsync);
@@ -59,7 +63,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
 
         private void OnStoryMode()
         {
-            // TODO: navigate to story mode
+            _navigationStore.CurrentViewModel = _createStoryLogInViewModel();
         }
 
         private async Task OnOnlineModeAsync()

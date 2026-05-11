@@ -2,6 +2,7 @@
 using PokemonGame.Model.Enums;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Handler;
+using PokemonGame.ViewModels.Store;
 
 namespace PokemonGame.ViewModels.Translators
 {
@@ -20,7 +21,7 @@ namespace PokemonGame.ViewModels.Translators
 
         public PlayerDomain Load()
         {
-            var save = _playerService.LoadAll();
+            var save = _playerService.LoadAll(UserStore.Instance.UserID);
             var player = PlayerDomain.Instance;
 
             ApplyTrainerInfo(save.TrainerInfo, player);
@@ -39,6 +40,7 @@ namespace PokemonGame.ViewModels.Translators
         {
             var save = new StorySaveTree
             {
+                CurrentPlayer = ExtractCurrentPlayer(),
                 TrainerInfo = ExtractTrainerInfo(player),
                 Badges = ExtractBadges(player),
                 StoryFlags = player.ProgressFlags.StoryFlags.ToList(),
@@ -51,6 +53,11 @@ namespace PokemonGame.ViewModels.Translators
 
             _playerService.SaveAll(save);
         }
+        private static StoryPlayerData ExtractCurrentPlayer() => new()
+        {
+            PlayerID = UserStore.Instance.PlayerID,
+            UserID = UserStore.Instance.UserID,
+        };
 
         // ── Apply helpers (data → domain) ─────────────────────────────────────
 

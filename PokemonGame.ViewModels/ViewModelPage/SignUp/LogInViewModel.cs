@@ -77,14 +77,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
                 StatusMessage = "All fields are required";
                 return;
             }
+
             if (_handler.Login(Username, Password))
             {
-                // Login successful, you can navigate to a different ViewModel here
-                Console.WriteLine("Login success");
+                var user = _handler.GetUser(Username);
+                if (user is null)
+                {
+                    StatusMessage = "User data could not be loaded.";
+                    return;
+                }
+
                 _userStore.Username = Username;
+                _userStore.UserID = user.UserID;
+
                 NavigateToGameModeChooserCommand.Execute(null);
-
-
             }
             else
             {
