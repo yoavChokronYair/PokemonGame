@@ -20,7 +20,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int CatchRate { get; set; }
         public WildPokemonState(EncounterDomain encounter)
         {
-            RNGHelper rNGHelper = RNGHelper.GenerateRandomPokemonIdentity(PlayerDomain.Instance.TrainerID);
+            RNGHelper rNGHelper = RNGHelper.GenerateRandomPokemonIdentity(PlayerDomain.Instance.trainerInfo.TrainerID);
             this.pokemonState = encounter.Pokemon;
             EvYield = encounter.evYield;
             pokemonState.Level = RandomHelper.Next(encounter.MinLevel, encounter.MaxLevel + 1);

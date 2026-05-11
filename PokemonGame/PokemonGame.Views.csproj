@@ -267,6 +267,7 @@
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Converters\IsNegativeConverter.cs" />
+    <Compile Include="Converters\MenuHighlightConverter.cs" />
     <Compile Include="Converters\NameToImageConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter .cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
@@ -703,6 +704,9 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\Map\RedHouseFOne.png" />
+    <Resource Include="Assets\Images\Map\PalletTown.png" />
+    <Resource Include="Assets\Images\Map\RouteOne.png" />
     <Resource Include="Assets\Images\Player\Female\sprite_0.png" />
     <Resource Include="Assets\Images\Player\Female\sprite_1.png" />
     <Resource Include="Assets\Images\Player\Female\sprite_10.png" />

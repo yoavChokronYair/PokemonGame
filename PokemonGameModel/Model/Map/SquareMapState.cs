@@ -27,6 +27,7 @@ namespace PokemonGame.Model.Model.Map
         public CollisionType SquareType { get; set; }
         public bool WildEncounterTriggered { get; set; }
         public int SpottedByNpcId { get; set; }
+        public FacingDirection Direction { get; set; } // ← add this
     }
 
     // ── SquareMapState ───────────────────────────────────────────────────────
@@ -82,7 +83,7 @@ namespace PokemonGame.Model.Model.Map
             {
                 CollisionType.None => true,
                 CollisionType.WildGrass => true,
-                CollisionType.HM => PlayerDomain.Instance.IsSurfing,
+                CollisionType.HM => PlayerDomain.Instance.trainerMapLocDomain.IsSurfing,
                 CollisionType.JumpLeft => direction == FacingDirection.Left,
                 CollisionType.JumpRight => direction == FacingDirection.Right,
                 CollisionType.JumpDown => direction == FacingDirection.Down,
@@ -110,7 +111,7 @@ namespace PokemonGame.Model.Model.Map
             var (toRow, toCol) = Step(fromRow, fromCol, direction);
 
             if (!CanMoveTo(toRow, toCol, direction))
-                return new MoveResult { Success = false, Row = fromRow, Col = fromCol };
+                return new MoveResult { Success = false, Row = fromRow, Col = fromCol, Direction = direction };
 
             RebuildVisionLayer();
             IsInNpcVision(toRow, toCol, out int spottedBy);
@@ -124,7 +125,7 @@ namespace PokemonGame.Model.Model.Map
             // also run and index _visionLayer without a bounds check, which
             // could throw. Guard explicitly with InBounds.
             bool surfing =
-                PlayerDomain.Instance.IsSurfing &&
+                PlayerDomain.Instance.trainerMapLocDomain.IsSurfing &&
                 GetCollision(toRow, toCol) == CollisionType.HM;
 
             if (surfing)
@@ -145,7 +146,7 @@ namespace PokemonGame.Model.Model.Map
             // tiles with no non-HM tile ahead, this loops forever.
             // FIX: cap at SquareRows (the longest possible straight run on the map).
             bool climbingWaterfall =
-                PlayerDomain.Instance.IsSurfing &&
+                PlayerDomain.Instance.trainerMapLocDomain.IsSurfing &&
                 GetCollision(toRow, toCol) == CollisionType.HM;
 
             if (climbingWaterfall)
@@ -173,6 +174,7 @@ namespace PokemonGame.Model.Model.Map
                 SquareType = GetSquare(toRow, toCol)!.SquareType,
                 WildEncounterTriggered = WildCheck(toRow, toCol),
                 SpottedByNpcId = spottedBy,
+                Direction = direction, // ← add this
             };
         }
 
@@ -206,13 +208,13 @@ namespace PokemonGame.Model.Model.Map
                 HMMoves requiredHm = HMMoves.None;
 
                 // entering water
-                if (!PlayerDomain.Instance.IsSurfing &&
+                if (!PlayerDomain.Instance.trainerMapLocDomain.IsSurfing &&
                     futureSquare?.TileType == TileType.Water)
                 {
                     requiredHm = HMMoves.Surf;
                 }
                 // waterfall while surfing
-                else if (PlayerDomain.Instance.IsSurfing)
+                else if (PlayerDomain.Instance.trainerMapLocDomain.IsSurfing)
                 {
                     requiredHm = HMMoves.Waterfall;
                 }
@@ -240,7 +242,7 @@ namespace PokemonGame.Model.Model.Map
                 }
 
                 if (requiredHm == HMMoves.Surf)
-                    PlayerDomain.Instance.IsSurfing = true;
+                    PlayerDomain.Instance.trainerMapLocDomain.IsSurfing = true;
 
                 return new InspectResult
                 {
@@ -302,27 +304,45 @@ namespace PokemonGame.Model.Model.Map
             int rows = map.Height / tps;
             int cols = map.Width / tps;
 
-            var tileCollision = BuildTileCollisionGrid(map, map.Height, map.Width);
             var grid = new SquareDomain[rows, cols];
 
+            // initialise all squares to None
             for (int sr = 0; sr < rows; sr++)
-            {
                 for (int sc = 0; sc < cols; sc++)
-                {
-                    // Sample only top-right tile of each square
-                    int tileRow = sr * tps;
-                    int tileCol = sc * tps + 1;
-                    var t = (tileRow < map.Height && tileCol < map.Width)
-                        ? tileCollision[tileRow, tileCol]
-                        : CollisionType.None;
-
                     grid[sr, sc] = new SquareDomain
                     {
                         Row = sr,
                         Col = sc,
-                        SquareType = t,
-                        TileType = CollisionToTileType(t),
+                        SquareType = CollisionType.None,
+                        TileType = TileType.Ground,
                     };
+
+            // paint collision objects — DB stores tile coords, convert to square coords
+            foreach (var obj in map.CollisionObjects)
+            {
+                int startRow = obj.Y / tps;
+                int startCol = obj.X / tps;
+                int endRow = (obj.Y + obj.Height - 1) / tps;
+                int endCol = (obj.X + obj.Width - 1) / tps;
+
+                for (int sr = startRow; sr <= endRow; sr++)
+                {
+                    for (int sc = startCol; sc <= endCol; sc++)
+                    {
+                        if ((uint)sr >= (uint)rows || (uint)sc >= (uint)cols)
+                            continue;
+
+                        // Blocked always wins
+                        if (grid[sr, sc].SquareType == CollisionType.Blocked)
+                            continue;
+
+                        if (obj.CollisionType == CollisionType.Blocked ||
+                            grid[sr, sc].SquareType == CollisionType.None)
+                        {
+                            grid[sr, sc].SquareType = obj.CollisionType;
+                            grid[sr, sc].TileType = CollisionToTileType(obj.CollisionType);
+                        }
+                    }
                 }
             }
 
@@ -332,27 +352,7 @@ namespace PokemonGame.Model.Model.Map
         /// <summary>
         /// Expands every CollisionObject rectangle into a per-tile lookup array.
         /// </summary>
-        private static CollisionType[,] BuildTileCollisionGrid(MapDomain map, int tileRows, int tileCols)
-        {
-            var grid = new CollisionType[tileRows, tileCols]; // default = None (0)
-
-            foreach (var obj in map.CollisionObjects)
-            {
-                for (int dy = 0; dy < obj.Height; dy++)
-                {
-                    for (int dx = 0; dx < obj.Width; dx++)
-                    {
-                        int r = obj.Y + dy;
-                        int c = obj.X + dx;
-                        if ((uint)r < (uint)tileRows && (uint)c < (uint)tileCols)
-                            grid[r, c] = obj.CollisionType;
-                    }
-                }
-            }
-
-            return grid;
-        }
-
+      
    
 
         // ── Private — TileType from CollisionType ─────────────────────────────

@@ -48,11 +48,11 @@ namespace PokemonGame.Model.Model.Map
         public (int[,] background, int[,] foreground, int[,] vision, SpriteOverlay player) BuildViewPort(
     PlayerDomain player, SquareMapState squareMap)
         {
-            var bg = BuildLayerViewport(player.playerLoc, isForeground: false);
+            var bg = BuildLayerViewport(player.trainerMapLocDomain.playerLoc, isForeground: false);
             var fg = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
-            var vision = BuildVisionViewport(player.playerLoc, squareMap);
+            var vision = BuildVisionViewport(player.trainerMapLocDomain.playerLoc, squareMap);
 
-            StampNpcs(fg, player.playerLoc);
+            StampNpcs(fg, player.trainerMapLocDomain.playerLoc);
 
             // Player is always dead center of the viewport, but 24px tall instead of 16px
             // so we shift it up by 8px (one extra row) so feet align with collision square
@@ -60,7 +60,7 @@ namespace PokemonGame.Model.Model.Map
             int centerX = (MapConstants.ViewColSize / 2) * tileSize;
             int centerY = (MapConstants.ViewRowSize / 2) * tileSize;
             var playerSprite = new SpriteOverlay(
-                imagePath: PlayerSprites.GetFrame(player.FacingDirection, player.AnimationTick, player.IsMoving),
+                imagePath: PlayerSprites.GetFrame(player.trainerMapLocDomain.FacingDirection, player.AnimationTick, player.IsMoving),
                 pixelX: centerX,
                 pixelY: centerY - (24 - tileSize),   // shift up so feet sit on collision row
                 width: 16,
@@ -141,21 +141,23 @@ namespace PokemonGame.Model.Model.Map
 
         private int SampleTile(int tileRow, int tileCol, bool isForeground)
         {
-            int mapRows = _backgroundTiles.GetLength(0);
-            int mapCols = _backgroundTiles.GetLength(1);
+            var tiles = isForeground ? _foregroundTiles : _backgroundTiles;
+            int mapRows = tiles.GetLength(0);
+            int mapCols = tiles.GetLength(1);
 
             if ((uint)tileRow < (uint)mapRows && (uint)tileCol < (uint)mapCols)
-                return _backgroundTiles[tileRow, tileCol];
+                return tiles[tileRow, tileCol];
 
             var neighbor = FindNeighbor(tileRow, tileCol, mapRows, mapCols);
             if (neighbor == null) return 0;
 
             var (neighborMap, nRow, nCol) = neighbor.Value;
-            var (nbg, _) = GetCachedTiles(neighborMap);
+            var (nbg, nfg) = GetCachedTiles(neighborMap);
+            var ntiles = isForeground ? nfg : nbg;
 
-            return (uint)nRow < (uint)nbg.GetLength(0) &&
-                   (uint)nCol < (uint)nbg.GetLength(1)
-                ? nbg[nRow, nCol]
+            return (uint)nRow < (uint)ntiles.GetLength(0) &&
+                   (uint)nCol < (uint)ntiles.GetLength(1)
+                ? ntiles[nRow, nCol]
                 : 0;
         }
 

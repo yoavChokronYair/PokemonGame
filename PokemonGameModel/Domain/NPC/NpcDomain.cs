@@ -51,11 +51,11 @@ namespace PokemonGame.Model.Domain.Npc
                     "Item has already been given.");
 
             _hasBeenGiven = true;
-            if(!PlayerDomain.Instance.BagInventory.TryGetValue(_item, out int currentCount))
+            if(!PlayerDomain.Instance.trainerItemDomain.BagInventory.TryGetValue(_item, out int currentCount))
             {
-                PlayerDomain.Instance.BagInventory[_item] = 0;
+                PlayerDomain.Instance.trainerItemDomain.BagInventory[_item] = 0;
             }
-            PlayerDomain.Instance.BagInventory[_item]++;
+            PlayerDomain.Instance.trainerItemDomain.BagInventory[_item]++;
         }
     }
 

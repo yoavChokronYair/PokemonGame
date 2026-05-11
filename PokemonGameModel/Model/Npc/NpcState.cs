@@ -44,7 +44,7 @@ namespace PokemonGame.Model.Model.Npc
         }
 
         public bool IsDefeated() =>
-            PlayerDomain.Instance.DefeatedTrainers.Contains(_trainerInfo.id);
+            PlayerDomain.Instance.ProgressFlags.DefeatedTrainers.Contains(_trainerInfo.id);
 
         public virtual void OnBattleWon()
         {
@@ -55,15 +55,15 @@ namespace PokemonGame.Model.Model.Npc
 
         public void OnBattleLost()
         {
-            PlayerDomain.Instance.Money = Math.Max(0, PlayerDomain.Instance.Money - CalculateReward(Team) / 2);
+            PlayerDomain.Instance.trainerInfo.Money = Math.Max(0, PlayerDomain.Instance.trainerInfo.Money - CalculateReward(Team) / 2);
             PlayerDomain.Instance.Team.HealAll();
-            PlayerDomain.Instance.CurrentMap = PlayerDomain.Instance.LastMapVisited;
-            PlayerDomain.Instance.playerLoc = PlayerDomain.Instance.CurrentMap.FlyWrapLoc;
+            PlayerDomain.Instance.trainerMapLocDomain.CurrentMap = PlayerDomain.Instance.trainerMapLocDomain.LastMapVisited;
+            PlayerDomain.Instance.trainerMapLocDomain.playerLoc = PlayerDomain.Instance.trainerMapLocDomain.CurrentMap.FlyWrapLoc;
             BattleLost?.Invoke();
         }
 
         protected void MarkDefeated() =>
-            PlayerDomain.Instance.DefeatedTrainers.Add(_trainerInfo.id);
+            PlayerDomain.Instance.ProgressFlags.DefeatedTrainers.Add(_trainerInfo.id);
 
         public int CalculateReward(PokemonTeam team)
         {
@@ -143,7 +143,7 @@ namespace PokemonGame.Model.Model.Npc
         public override void OnBattleWon()
         {
             base.OnBattleWon();
-            PlayerDomain.Instance.StoryFlags.Add(_progressionFlagId);
+            PlayerDomain.Instance.ProgressFlags.StoryFlags.Add(_progressionFlagId);
             GauntletProgressionReached?.Invoke(_progressionFlagId);
         }
     }
@@ -189,7 +189,7 @@ namespace PokemonGame.Model.Model.Npc
         public override void OnBattleWon()
         {
             base.OnBattleWon();
-            PlayerDomain.Instance.StoryFlags.Add(_storyFlagId);
+            PlayerDomain.Instance.ProgressFlags.StoryFlags.Add(_storyFlagId);
             RocketBossDefeated?.Invoke(_storyFlagId);
         }
     }
@@ -206,7 +206,7 @@ namespace PokemonGame.Model.Model.Npc
         public override void OnDialogueFinishedTrue()
         {
             
-            if (!_item.IsAvailable() && PlayerDomain.Instance.ItemTaken.Contains(Id))
+            if (!_item.IsAvailable() && PlayerDomain.Instance.ProgressFlags.ItemTaken.Contains(Id))
                 return;
 
             ItemGiven?.Invoke(_item);
@@ -240,7 +240,7 @@ namespace PokemonGame.Model.Model.Npc
         {
 
             PlayerDomain.Instance.Team.HealAll();
-            PlayerDomain.Instance.LastMapVisited = PlayerDomain.Instance.CurrentMap;
+            PlayerDomain.Instance.trainerMapLocDomain.LastMapVisited = PlayerDomain.Instance.trainerMapLocDomain.CurrentMap;
             PokecenterUsed?.Invoke();
         }
         public event Action? PokecenterUsed;

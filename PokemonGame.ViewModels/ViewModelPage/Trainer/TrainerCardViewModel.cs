@@ -1,71 +1,66 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Player;
+using PokemonGame.Model.Domain.Pokemon;
+using PokemonGame.Model.Enums;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.Trainer
 {
     public class TrainerCardViewModel : ViewModelBase
     {
-        private string _trainerId;
-        private string _trainerName;
-        private string _playTime;
+        public string TrainerId { get; } = PlayerDomain.Instance.trainerInfo.TrainerID.ToString();
+        public string TrainerName { get; } = PlayerDomain.Instance.trainerInfo.Name;
+        public string PlayTime { get; } = PlayerDomain.Instance.trainerInfo.TimePlayed.ToString(@"hh\:mm\:ss");
+        public string Money { get; } = PlayerDomain.Instance.trainerInfo.Money.ToString();
+        public int HallOfFameDebut { get; } = PlayerDomain.Instance.trainerInfo.HallOfFameDebut;
+        public ObservableCollection<PokemonState> Team { get; }
+
+
+        public ObservableCollection<BadgeDomain> Badges { get; }
+        public ICommand FlipCommand { get; }
+
+        private bool _isFront = true;
         private string _trainerCardImage;
-        private string _money;
-
-        public string TrainerId
-        {
-            get => _trainerId;
-            set => SetProperty(ref _trainerId, value);
-        }
-
-        public string TrainerName
-        {
-            get => _trainerName;
-            set => SetProperty(ref _trainerName, value);
-        }
-
-        public string PlayTime
-        {
-            get => _playTime;
-            set => SetProperty(ref _playTime, value);
-        }
-
         public string TrainerCardImage
         {
             get => _trainerCardImage;
-            set => SetProperty(ref _trainerCardImage, value);
-        }
-        public string Money
-        {
-            get => _money;
-            set => SetProperty(ref _money, value);
+            private set => SetProperty(ref _trainerCardImage, value);
         }
 
-        public ObservableCollection<BadgeDomain> Badges { get; set; }
+        public bool IsFront
+        {
+            get => _isFront;
+            private set
+            {
+                SetProperty(ref _isFront, value);
+                TrainerCardImage = ResolveCardImage(_isFront, PlayerDomain.Instance.trainerInfo.Gender);
+            }
+        }
 
         public TrainerCardViewModel()
         {
-            TrainerId = "5555555";
-            TrainerName = "Leaf";
-            PlayTime = "12:45";
-            Money = "1444";
-            TrainerCardImage = "/Assets/Images/TrainerCard/TrainerCardLeafFront.png";
+            TrainerCardImage = ResolveCardImage(_isFront, PlayerDomain.Instance.trainerInfo.Gender);
+            Badges = InitBadges();
+            Team = new ObservableCollection<PokemonState>(
+                PlayerDomain.Instance.Team?.Members ?? Enumerable.Empty<PokemonState>()); FlipCommand = new RelayCommand(() => IsFront = !IsFront);
+        }
 
-            PlayerDomain.Instance.Badges = new()
-            {
-                new BadgeDomain { Id = 1, IsObtained = false },
-                new BadgeDomain { Id = 2, IsObtained = false },
-                new BadgeDomain { Id = 3, IsObtained = false },
-                new BadgeDomain { Id = 4, IsObtained = false },
-                new BadgeDomain { Id = 5, IsObtained = false },
-                new BadgeDomain { Id = 6, IsObtained = false },
-                new BadgeDomain { Id = 7, IsObtained = false },
-                new BadgeDomain { Id = 8, IsObtained = false }
-            };
-            Badges = new ObservableCollection<BadgeDomain>
-            (
-                PlayerDomain.Instance.Badges
-            );
+        private static string ResolveCardImage(bool isFront, Gender gender)
+        {
+            string side = isFront ? "Front" : "Back";
+            string name = gender == Gender.Male ? "Red" : "Leaf";
+            return $"/Assets/Images/TrainerCard/TrainerCard{name}{side}.png";
+        }
+
+        private static ObservableCollection<BadgeDomain> InitBadges()
+        {
+            PlayerDomain.Instance.Badges = Enumerable
+                .Range(1, 8)
+                .Select(i => new BadgeDomain { Id = i, IsObtained = false })
+                .ToList();
+            return new ObservableCollection<BadgeDomain>(PlayerDomain.Instance.Badges);
         }
     }
 }

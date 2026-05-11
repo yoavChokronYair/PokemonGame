@@ -17,7 +17,7 @@ public class MapManager
     private MapNpc _npcState;
     private readonly PlayerDomain _player;
 
-    public MapDomain ActiveMap => _player.CurrentMap;
+    public MapDomain ActiveMap => _player.trainerMapLocDomain.CurrentMap;
     public SquareMapState SquareMap => _squareMapState;
 
     public event Action<NpcObjectDomain>? TrainerSpotted;
@@ -26,13 +26,13 @@ public class MapManager
     public MapManager(PlayerDomain player)
     {
         _player = player;
-        LoadMap(player.CurrentMap);
+        LoadMap(player.trainerMapLocDomain.CurrentMap);
     }
 
     public void LoadMap(MapDomain map)
     {
-        _player.LastMapVisited = _player.CurrentMap;
-        _player.CurrentMap = map;
+        _player.trainerMapLocDomain.LastMapVisited = _player.trainerMapLocDomain.CurrentMap;
+        _player.trainerMapLocDomain.CurrentMap = map;
         _mapState = new MapState(map);
         _squareMapState = new SquareMapState(map);
 
@@ -51,17 +51,17 @@ public class MapManager
     public void TickNpcs()
     {
         var (playerRow, playerCol) = _squareMapState.TileToSquare(
-            _player.playerLoc.y, _player.playerLoc.x);   // y=tileRow, x=tileCol
-
+            _player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
+        
         _npcState.Tick(playerRow, playerCol);
     }
 
     public void TryInteractWithNpc()
     {
         var (squareRow, squareCol) = _squareMapState.TileToSquare(
-            _player.playerLoc.y, _player.playerLoc.x);   // y=tileRow, x=tileCol
+            _player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
 
-        _npcState.TryInteract(squareRow, squareCol, _player.FacingDirection);
+        _npcState.TryInteract(squareRow, squareCol, _player.trainerMapLocDomain.FacingDirection);
     }
 
     public void OnNpcDialogueFinished(NpcObjectDomain npc)
@@ -72,18 +72,17 @@ public class MapManager
     public InspectResult TryInspect()
     {
         var (squareRow, squareCol) = _squareMapState.TileToSquare(
-            _player.playerLoc.y, _player.playerLoc.x);   // y=tileRow, x=tileCol
+            _player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
 
-        return _squareMapState.TryInspect(squareRow, squareCol, _player.FacingDirection);
+        return _squareMapState.TryInspect(squareRow, squareCol, _player.trainerMapLocDomain.FacingDirection);
     }
 
     public MoveResult TryMove(FacingDirection direction)
     {
-        _player.FacingDirection = direction;
+        _player.trainerMapLocDomain.FacingDirection = direction;
 
-        // playerLoc: x=tileCol, y=tileRow
         var (squareRow, squareCol) = _squareMapState.TileToSquare(
-            _player.playerLoc.y, _player.playerLoc.x);
+            _player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
 
         int toRow = squareRow, toCol = squareCol;
         switch (direction)
@@ -94,7 +93,7 @@ public class MapManager
             case FacingDirection.Right: toCol++; break;
         }
 
-        // ── Out of bounds → connection check ─────────────────────────────────
+        // ── Out of bounds → connection check ──────────────────────────────────
         bool outOfBounds =
             toRow < 0 || toRow >= _squareMapState.SquareRows ||
             toCol < 0 || toCol >= _squareMapState.SquareCols;
@@ -102,11 +101,10 @@ public class MapManager
         if (outOfBounds)
         {
             var connection = TryGetConnection(direction);
-            if (connection != null)
+            if (connection != null && HandleConnection(connection, squareRow, squareCol, direction))
             {
-                HandleConnection(connection, squareRow, squareCol);
                 var (sr, sc) = _squareMapState.TileToSquare(
-                    _player.playerLoc.y, _player.playerLoc.x);
+                    _player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
                 return new MoveResult { Success = true, Row = sr, Col = sc, SquareType = CollisionType.None };
             }
             return new MoveResult { Success = false, Row = squareRow, Col = squareCol };
@@ -118,7 +116,7 @@ public class MapManager
         {
             HandleWarp(warp);
             var (sr, sc) = _squareMapState.TileToSquare(
-                _player.playerLoc.y, _player.playerLoc.x);
+                _player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
             return new MoveResult { Success = true, Row = sr, Col = sc, SquareType = CollisionType.None };
         }
 
@@ -142,14 +140,10 @@ public class MapManager
 
             var landing = _squareMapState.GetSquare(landRow, landCol);
 
-            // ── Bug #1 fix ───────────────────────────────────────────────────
-            // Only commit the jump if the landing square exists AND is walkable.
-            // Old code committed to result.Row/Col (the ledge) when blocked,
-            // putting the player inside the wall.
             if (landing != null && _squareMapState.CanMoveTo(landRow, landCol, direction))
             {
                 var (tileRow, tileCol) = _squareMapState.SquareToTile(landRow, landCol);
-                _player.playerLoc = (tileCol, tileRow);   // x=tileCol, y=tileRow
+                _player.trainerMapLocDomain.playerLoc = (tileCol, tileRow);
                 return new MoveResult
                 {
                     Success = true,
@@ -165,16 +159,14 @@ public class MapManager
 
         // ── Commit normal move ────────────────────────────────────────────────
         var (ntileRow, ntileCol) = _squareMapState.SquareToTile(result.Row, result.Col);
-        _player.playerLoc = (ntileCol, ntileRow);   // x=tileCol, y=tileRow
+        _player.trainerMapLocDomain.playerLoc = (ntileCol, ntileRow);
 
         return result;
     }
 
-    // ---------------------------------------------------------------
-    // Viewport / collision / HM
-    // ---------------------------------------------------------------
+    // ── Viewport / collision / HM ─────────────────────────────────────────────
     public (int[,] background, int[,] foreground, int[,] vision, SpriteOverlay player) GetViewport()
-            => _mapState.BuildViewPort(_player, _squareMapState);
+        => _mapState.BuildViewPort(_player, _squareMapState);
 
     public CollisionType GetCollisionAt(int squareRow, int squareCol)
         => _squareMapState.GetCollision(squareRow, squareCol);
@@ -189,32 +181,24 @@ public class MapManager
     {
         _squareMapState.ClearTile(squareRow, squareCol);
         var (tileRow, tileCol) = _squareMapState.SquareToTile(squareRow, squareCol);
-        _player.playerLoc = (tileCol, tileRow);   // x=tileCol, y=tileRow
-        _player.FacingDirection = direction;
+        _player.trainerMapLocDomain.playerLoc = (tileCol, tileRow);
+        _player.trainerMapLocDomain.FacingDirection = direction;
     }
 
     // ── Warp helpers ──────────────────────────────────────────────────────────
-
-    // ── Bug #1 fix: WrapLoc.x = squareCol, WrapLoc.y = squareRow ────────────
-    // Previously compared WrapLoc.x to squareRow (transposed).
     private WrapDomain TryGetWarp(int squareRow, int squareCol)
         => ActiveMap.Wraps.FirstOrDefault(w =>
             w.WrapLoc.y == squareRow && w.WrapLoc.x == squareCol);
 
-    // ── Bug #2 fix: SpawnLoc is already in square coords; SquareToTile ────────
-    // converts it. Previously there was risk of double-conversion if callers
-    // passed tile coords into SpawnLoc. Contract is now enforced in WrapDomain.
     private void HandleWarp(WrapDomain warp)
     {
         LoadMap(warp.TargetMap);
-        // SpawnLoc is square-space → SquareToTile gives us tile coords
         var (tileRow, tileCol) = _squareMapState.SquareToTile(
             warp.SpawnLoc.row, warp.SpawnLoc.col);
-        _player.playerLoc = (tileCol, tileRow);   // x=tileCol, y=tileRow
+        _player.trainerMapLocDomain.playerLoc = (tileCol, tileRow);
     }
 
     // ── Connection helpers ────────────────────────────────────────────────────
-
     private ConnectedMapDomain TryGetConnection(FacingDirection direction)
     {
         var connDir = direction switch
@@ -230,49 +214,29 @@ public class MapManager
             .FirstOrDefault(c => c.ConnectionDirection == connDir.Value);
     }
 
-    // ── Bug #3 fix: Connection margin math wrong — off-by-2× and wrong sign ──
-    //
-    // Old code divided map.Height / 2 (tile units) to get a square index, and
-    // divided Margin by 2 (but Margin is already in square units). Corrected:
-    //   • Use SquareRows / SquareCols (not Height/Width) for the map dimensions
-    //     in square space — fixes Bug #4 (Height/Width were tile units).
-    //   • Margin is in square units; subtract directly without dividing by 2
-    //     for the column/row offset. The /2 divide was wrong — the margin is an
-    //     absolute alignment offset, not a half-offset to center. Removed.
-    //
-    // ── Bug #4 fix: ConnectedMap Height/Width used instead of square count ────
-    // HandleConnection used `connection.ConnectedMap.Height / 2` to find the
-    // "last square row of the neighbor". Corrected to use SquareCols/SquareRows
-    // via a temporary SquareMapState, or simply derive from map dimensions:
-    //   squareRows = map.Height / TilesPerSquare
-    //   squareCols = map.Width  / TilesPerSquare
-    private void HandleConnection(ConnectedMapDomain connection, int squareRow, int squareCol)
+    private bool HandleConnection(ConnectedMapDomain connection, int squareRow, int squareCol, FacingDirection direction)
     {
         int tps = MapConstants.TilesPerSquare;
         int connSquareRows = connection.ConnectedMap.Height / tps;
         int connSquareCols = connection.ConnectedMap.Width / tps;
-        int margin = connection.Margin; // already in square units
+        int margin = connection.Margin;
 
         int newSquareRow, newSquareCol;
         switch (connection.ConnectionDirection)
         {
             case ConnectionDirection.North:
-                // Entering from the south edge of the connected (northern) map
                 newSquareRow = connSquareRows - 1;
                 newSquareCol = squareCol - margin;
                 break;
             case ConnectionDirection.South:
-                // Entering from the north edge of the connected (southern) map
                 newSquareRow = 0;
                 newSquareCol = squareCol - margin;
                 break;
             case ConnectionDirection.West:
-                // Entering from the east edge of the connected (western) map
                 newSquareRow = squareRow - margin;
                 newSquareCol = connSquareCols - 1;
                 break;
             case ConnectionDirection.East:
-                // Entering from the west edge of the connected (eastern) map
                 newSquareRow = squareRow - margin;
                 newSquareCol = 0;
                 break;
@@ -282,11 +246,17 @@ public class MapManager
                 break;
         }
 
+        // Check walkable BEFORE loading the new map
+        var tempSquareMap = new SquareMapState(connection.ConnectedMap);
+        if (!tempSquareMap.CanMoveTo(newSquareRow, newSquareCol, direction))
+            return false;
+
         LoadMap(connection.ConnectedMap);
         var (tileRow, tileCol) = _squareMapState.SquareToTile(newSquareRow, newSquareCol);
-        _player.playerLoc = (tileCol, tileRow);   // x=tileCol, y=tileRow
+        _player.trainerMapLocDomain.playerLoc = (tileCol, tileRow);
+        return true;
     }
 
     private (int row, int col) CurrentSquare()
-        => _squareMapState.TileToSquare(_player.playerLoc.y, _player.playerLoc.x);
+        => _squareMapState.TileToSquare(_player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
 }

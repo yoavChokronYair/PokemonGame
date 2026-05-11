@@ -287,14 +287,14 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         private readonly itemsDomain _item;
         public HasItem(itemsDomain item) { _item = item; }
-        public bool Check(PlayerDomain player) => player.BagInventory.ContainsKey(_item);
+        public bool Check(PlayerDomain player) => player.trainerItemDomain.BagInventory.ContainsKey(_item);
     }
 
     public class HasEnoughMoney : ICondition<PlayerDomain>
     {
         private readonly int _amount;
         public HasEnoughMoney(int amount) { _amount = amount; }
-        public bool Check(PlayerDomain player) => player.Money >= _amount;
+        public bool Check(PlayerDomain player) => player.trainerInfo.Money >= _amount;
     }
 
     // ── Progress conditions ───────────────────────────────────────────────────────

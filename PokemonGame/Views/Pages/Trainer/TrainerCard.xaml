@@ -8,19 +8,21 @@
     Title="TrainerCard"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Focusable="True"
     mc:Ignorable="d">
+
     <Page.Resources>
-
         <converters:BadgeIdToImageConverter x:Key="BadgeIdToImageConverter" />
-
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
     </Page.Resources>
 
+    <Page.InputBindings>
+        <KeyBinding Key="A" Command="{Binding FlipCommand}" />
+    </Page.InputBindings>
+
     <Grid>
-
         <Viewbox Stretch="Uniform">
-
             <Grid Width="600" Height="400">
 
                 <Grid.RowDefinitions>
@@ -32,7 +34,6 @@
                     <RowDefinition Height="41*" />
                     <RowDefinition Height="29*" />
                 </Grid.RowDefinitions>
-
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="70" />
                     <ColumnDefinition Width="65" />
@@ -41,76 +42,137 @@
                     <ColumnDefinition Width="47*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Trainer Card Background  -->
+                <!--  Background image (always visible, changes with flip)  -->
                 <Image
                     Grid.RowSpan="7"
                     Grid.ColumnSpan="5"
                     RenderOptions.BitmapScalingMode="NearestNeighbor"
                     Source="{Binding TrainerCardImage}" />
 
-                <!--  Trainer ID  -->
-                <TextBlock
-                    Grid.Column="3"
-                    Height="20"
-                    Margin="0,50,0,0"
-                    VerticalAlignment="Top"
-                    Text="{Binding TrainerId}" />
+                <!--  ── FRONT CONTENT ──  -->
+                <Grid
+                    Grid.RowSpan="7"
+                    Grid.ColumnSpan="5"
+                    Visibility="{Binding IsFront, Converter={StaticResource BoolToVisibilityConverter}}">
 
-                <!--  Trainer Name  -->
-                <TextBlock
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Height="39"
-                    VerticalAlignment="Bottom"
-                    FontSize="24"
-                    Text="{Binding TrainerName}" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70" />
+                        <RowDefinition Height="56" />
+                        <RowDefinition Height="67" />
+                        <RowDefinition Height="85" />
+                        <RowDefinition Height="52*" />
+                        <RowDefinition Height="41*" />
+                        <RowDefinition Height="29*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70" />
+                        <ColumnDefinition Width="65" />
+                        <ColumnDefinition Width="326" />
+                        <ColumnDefinition Width="95*" />
+                        <ColumnDefinition Width="47*" />
+                    </Grid.ColumnDefinitions>
 
-                <!--  Play Time  -->
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    VerticalAlignment="Bottom"
-                    FontSize="24"
-                    Text="{Binding Money}" />
-                <TextBlock
-                    Grid.Row="3"
-                    Grid.Column="2"
-                    VerticalAlignment="Bottom"
-                    FontSize="24"
-                    Text="{Binding PlayTime}" />
+                    <!--  Trainer ID  -->
+                    <TextBlock
+                        Grid.Column="3"
+                        Height="20"
+                        Margin="0,50,0,0"
+                        VerticalAlignment="Top"
+                        FontFamily="Consolas"
+                        FontSize="13"
+                        Text="{Binding TrainerId}" />
 
-                <!--  Pokemon Team  -->
-                <ItemsControl
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="3"
-                    ItemsSource="{Binding Badges}">
+                    <!--  Trainer Name  -->
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Height="39"
+                        VerticalAlignment="Bottom"
+                        FontFamily="Consolas"
+                        FontSize="20"
+                        Text="{Binding TrainerName}" />
 
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                    <!--  Money  -->
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        VerticalAlignment="Bottom"
+                        FontFamily="Consolas"
+                        FontSize="20"
+                        Text="{Binding Money}" />
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
+                    <!--  Play Time  -->
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="2"
+                        VerticalAlignment="Bottom"
+                        FontFamily="Consolas"
+                        FontSize="20"
+                        Text="{Binding PlayTime}" />
 
-                            <Image
-                                Width="40"
-                                Height="40"
-                                Margin="5"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding BadgeId, Converter={StaticResource BadgeIdToImageConverter}}"
-                                Visibility="{Binding IsUnlocked, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <!--  Badges  -->
+                    <ItemsControl
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        ItemsSource="{Binding Badges}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Image
+                                    Width="40"
+                                    Height="40"
+                                    Margin="5"
+                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                    Source="{Binding Id, Converter={StaticResource BadgeIdToImageConverter}}"
+                                    Visibility="{Binding IsObtained, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
 
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
+                <!--  ── BACK CONTENT ──  -->
+                <Grid
+                    Grid.RowSpan="7"
+                    Grid.ColumnSpan="5"
+                    Margin="160,40,20,20"
+                    Visibility="{Binding IsFront, Converter={StaticResource InverseBoolToVisibilityConverter}}">
 
-                </ItemsControl>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Hall of Fame  -->
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,8"
+                        FontFamily="Consolas"
+                        FontSize="12"
+                        Text="HALL OF FAME DEBUT" />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="16,8,0,8"
+                        FontFamily="Consolas"
+                        FontSize="12"
+                        Foreground="#FF6600"
+                        Text="{Binding HallOfFameDebut}" />
+                </Grid>
 
             </Grid>
-
         </Viewbox>
-
     </Grid>
 </Page>

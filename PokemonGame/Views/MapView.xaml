@@ -5,98 +5,18 @@
     xmlns:behaviors="clr-namespace:PokemonGame.View.Behaviors"
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:converters="clr-namespace:PokemonGame.Converters"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uc="clr-namespace:PokemonGame.Views.UserControls"
-    Title="MapView"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    mc:Ignorable="d">
+    Title="MapView">
 
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
-
-        <!--  ── Layer button style ──  -->
-        <Style x:Key="LayerButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="#777" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="#333" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="12,5" />
-            <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="3">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" Value="#555" />
-                                <Setter Property="Foreground" Value="#BBB" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Foreground" Value="#DDD" />
-                    <Setter Property="BorderBrush" Value="#4A7C4E" />
-                    <Setter Property="Background" Value="#1A2E1C" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!--  ── D-pad button style ──  -->
-        <Style x:Key="DpadButtonStyle" TargetType="Button">
-            <Setter Property="Width" Value="40" />
-            <Setter Property="Height" Value="40" />
-            <Setter Property="Foreground" Value="#AAA" />
-            <Setter Property="Background" Value="#1C1C1C" />
-            <Setter Property="BorderBrush" Value="#333" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border
-                            Padding="2"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#2A2A2A" />
-                                <Setter Property="BorderBrush" Value="#4A7C4E" />
-                                <Setter Property="Foreground" Value="#EEE" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#1A2E1C" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <converters:MenuHighlightConverter x:Key="MenuHighlightConverter" />
     </Page.Resources>
 
     <Grid Background="#111">
 
-        <!--  Loading overlay — visible until IsReady=true  -->
+        <!--  Loading overlay  -->
         <Grid
             Panel.ZIndex="99"
             Background="#111"
@@ -110,266 +30,164 @@
                 Text="Loading map..." />
         </Grid>
 
-        <!--  Main content — hidden until IsReady=true  -->
-        <Grid Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <!--  Main content  -->
+        <ScrollViewer
+            behaviors:FocusBehavior.FocusOnLoad="True"
+            behaviors:FocusBehavior.RegisterFocusTarget="True"
+            Background="#0A0A0A"
+            Focusable="True"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Disabled"
+            Visibility="{Binding IsReady, Converter={StaticResource BoolToVisibilityConverter}}">
 
-            <!--  ── Header ──  -->
-            <Border
-                Grid.Row="0"
-                Padding="16,10"
-                Background="#111"
-                BorderBrush="#1E1E1E"
-                BorderThickness="0,0,0,1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+            <ScrollViewer.InputBindings>
+                <KeyBinding Key="W" Command="{Binding MoveUpCommand}" />
+                <KeyBinding Key="S" Command="{Binding MoveDownCommand}" />
+                <KeyBinding Key="A" Command="{Binding MoveLeftCommand}" />
+                <KeyBinding Key="D" Command="{Binding MoveRightCommand}" />
+                <KeyBinding Key="Up" Command="{Binding MoveUpCommand}" />
+                <KeyBinding Key="Down" Command="{Binding MoveDownCommand}" />
+                <KeyBinding Key="Left" Command="{Binding MoveLeftCommand}" />
+                <KeyBinding Key="Right" Command="{Binding MoveRightCommand}" />
+                <KeyBinding Key="Z" Command="{Binding InspectCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding MenuConfirmCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding InspectCommand}" />
+                <KeyBinding Key="F3" Command="{Binding ToggleDebugCommand}" />
+                <KeyBinding Key="D1" Command="{Binding PickChoice1Command}" />
+                <KeyBinding Key="D2" Command="{Binding PickChoice2Command}" />
+                <KeyBinding Key="D3" Command="{Binding PickChoice3Command}" />
+                <KeyBinding Key="NumPad1" Command="{Binding PickChoice1Command}" />
+                <KeyBinding Key="NumPad2" Command="{Binding PickChoice2Command}" />
+                <KeyBinding Key="NumPad3" Command="{Binding PickChoice3Command}" />
+                <KeyBinding Key="Escape" Command="{Binding ToggleMenuCommand}" />
+            </ScrollViewer.InputBindings>
 
-                    <StackPanel
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Orientation="Horizontal">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="Consolas"
-                            FontSize="14"
-                            FontWeight="Bold"
-                            Foreground="#E0E0E0"
-                            Text="{Binding MapName}" />
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="Consolas"
-                            FontSize="14"
-                            Foreground="#333"
-                            Text="  ·  " />
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="Consolas"
-                            FontSize="11"
-                            Foreground="#555">
-                            <Run Text="sq " />
-                            <Run Foreground="#4A7C4E" Text="{Binding PlayerSquareRow, Mode=OneWay}" />
-                            <Run Text="," />
-                            <Run Foreground="#4A7C4E" Text="{Binding PlayerSquareCol, Mode=OneWay}" />
-                        </TextBlock>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="Consolas"
-                            FontSize="14"
-                            Foreground="#333"
-                            Text="  ·  " />
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="Consolas"
-                            FontSize="11"
-                            Foreground="#555">
-                            <Run Text="facing " />
-                            <Run Foreground="#7A9A7A" Text="{Binding FacingText, Mode=OneWay}" />
-                        </TextBlock>
-                    </StackPanel>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Canvas
+                    Width="{Binding ViewportWidthPx}"
+                    Height="{Binding ViewportHeightPx}"
+                    Background="#0A0A0A">
 
-                    <StackPanel
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        Orientation="Horizontal">
-                        <Button
-                            Margin="0,0,6,0"
-                            Command="{Binding ShowBackgroundCommand}"
-                            Content="BG"
-                            IsEnabled="{Binding IsShowingBackground}"
-                            Style="{StaticResource LayerButtonStyle}" />
-                        <Button
-                            Command="{Binding ShowForegroundCommand}"
-                            Content="FG"
-                            IsEnabled="{Binding IsShowingForeground}"
-                            Style="{StaticResource LayerButtonStyle}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
+                    <!--  Map image  -->
+                    <Image
+                        Canvas.Left="{Binding ImageOffsetX}"
+                        Canvas.Top="{Binding ImageOffsetY}"
+                        Width="{Binding ImageDisplayWidth}"
+                        Height="{Binding ImageDisplayHeight}"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                        Source="{Binding MapImageSource}"
+                        Stretch="Fill" />
 
-            <!--  ── Body ──  -->
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+                    <!--  Overlays  -->
+                    <uc:MapOverlayVisual
+                        Canvas.Left="0"
+                        Canvas.Top="0"
+                        Width="{Binding ViewportWidthPx}"
+                        Height="{Binding ViewportHeightPx}"
+                        Items="{Binding OverlaySnapshot}" />
 
-                <!--  Map viewport  -->
-                <ScrollViewer
-                    Grid.Column="0"
-                    Padding="20"
-                    behaviors:FocusBehavior.FocusOnLoad="True"
-                    behaviors:FocusBehavior.RegisterFocusTarget="True"
-                    Background="#0A0A0A"
-                    Focusable="True"
-                    HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Disabled">
+                    <!--  Player sprite  -->
+                    <Image
+                        Canvas.Left="{Binding PlayerPixelX}"
+                        Canvas.Top="{Binding PlayerPixelY}"
+                        Width="48"
+                        Height="72"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                        Source="{Binding PlayerImage}" />
 
-                    <ScrollViewer.InputBindings>
-                        <KeyBinding Key="W" Command="{Binding MoveUpCommand}" />
-                        <KeyBinding Key="S" Command="{Binding MoveDownCommand}" />
-                        <KeyBinding Key="A" Command="{Binding MoveLeftCommand}" />
-                        <KeyBinding Key="D" Command="{Binding MoveRightCommand}" />
-                        <KeyBinding Key="Up" Command="{Binding MoveUpCommand}" />
-                        <KeyBinding Key="Down" Command="{Binding MoveDownCommand}" />
-                        <KeyBinding Key="Left" Command="{Binding MoveLeftCommand}" />
-                        <KeyBinding Key="Right" Command="{Binding MoveRightCommand}" />
-                        <KeyBinding Key="Z" Command="{Binding InspectCommand}" />
-                        <KeyBinding Key="Enter" Command="{Binding InspectCommand}" />
-                        <KeyBinding Key="F3" Command="{Binding ToggleDebugCommand}" />
-                        <KeyBinding Key="D1" Command="{Binding PickChoice1Command}" />
-                        <KeyBinding Key="D2" Command="{Binding PickChoice2Command}" />
-                        <KeyBinding Key="D3" Command="{Binding PickChoice3Command}" />
-                        <KeyBinding Key="NumPad1" Command="{Binding PickChoice1Command}" />
-                        <KeyBinding Key="NumPad2" Command="{Binding PickChoice2Command}" />
-                        <KeyBinding Key="NumPad3" Command="{Binding PickChoice3Command}" />
-                    </ScrollViewer.InputBindings>
+                    <!--  Menu  -->
+                    <controls:BoardBackground
+                        Canvas.Left="8"
+                        Canvas.Top="8"
+                        Width="160"
+                        Padding="8"
+                        BackgroundType="White"
+                        Visibility="{Binding IsMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <Style x:Key="MenuItemStyle" TargetType="Border">
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="CornerRadius" Value="3" />
+                                    <Setter Property="Padding" Value="4,2" />
+                                    <Setter Property="Margin" Value="0,0,0,6" />
+                                </Style>
+                            </StackPanel.Resources>
 
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Canvas
-                            Width="{Binding ViewportWidthPx}"
-                            Height="{Binding ViewportHeightPx}"
-                            Background="#0A0A0A">
+                            <Border
+                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=0}"
+                                BorderThickness="2"
+                                Style="{StaticResource MenuItemStyle}">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333"
+                                    Text="Pokedex" />
+                            </Border>
+                            <Border
+                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=1}"
+                                BorderThickness="2"
+                                Style="{StaticResource MenuItemStyle}">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333"
+                                    Text="Bag" />
+                            </Border>
+                            <Border
+                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=2}"
+                                BorderThickness="2"
+                                Style="{StaticResource MenuItemStyle}">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333"
+                                    Text="Pokemon" />
+                            </Border>
+                            <Border
+                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=3}"
+                                BorderThickness="2"
+                                Style="{StaticResource MenuItemStyle}">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333"
+                                    Text="Player" />
+                            </Border>
+                            <Border
+                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=4}"
+                                BorderThickness="2"
+                                Style="{StaticResource MenuItemStyle}">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333"
+                                    Text="Save" />
+                            </Border>
+                            <Border
+                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=5}"
+                                BorderThickness="2"
+                                Style="{StaticResource MenuItemStyle}">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333"
+                                    Text="Options" />
+                            </Border>
+                            <Border
+                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=6}"
+                                BorderThickness="2"
+                                Style="{StaticResource MenuItemStyle}">
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="#333"
+                                    Text="Exit" />
+                            </Border>
+                        </StackPanel>
+                    </controls:BoardBackground>
 
-                            <!--  Layer 1: cropped map image  -->
-                            <Image
-                                Canvas.Left="{Binding ImageOffsetX}"
-                                Canvas.Top="{Binding ImageOffsetY}"
-                                Width="{Binding ImageDisplayWidth}"
-                                Height="{Binding ImageDisplayHeight}"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding MapImageSource}"
-                                Stretch="Fill" />
+                    <!--  Dialogue  -->
+                    <uc:DialogueBoxControl
+                        Canvas.Left="20"
+                        Canvas.Bottom="12"
+                        Width="{Binding ViewportWidthPx}"
+                        Panel.ZIndex="10" />
 
-                            <!--  Layer 2: collision / NPC / debug overlays  -->
-                            <uc:MapOverlayVisual
-                                Canvas.Left="0"
-                                Canvas.Top="0"
-                                Width="{Binding ViewportWidthPx}"
-                                Height="{Binding ViewportHeightPx}"
-                                Items="{Binding OverlaySnapshot}" />
-
-                            <!--  Layer 3: player sprite  -->
-                            <Image
-                                Canvas.Left="{Binding PlayerPixelX}"
-                                Canvas.Top="{Binding PlayerPixelY}"
-                                Width="48"
-                                Height="72"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                Source="{Binding PlayerImage}" />
-                        </Canvas>
-                    </Grid>
-                </ScrollViewer>
-
-                <!--  Dialogue overlay  -->
-                <uc:DialogueBoxControl
-                    Grid.Column="0"
-                    Margin="20,0,20,12"
-                    VerticalAlignment="Bottom"
-                    Panel.ZIndex="10" />
-
-                <!--  Sidebar menu  -->
-                <controls:BoardBackground
-                    Grid.Column="1"
-                    Width="160"
-                    Padding="0"
-                    BackgroundType="White">
-                    <StackPanel>
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="11"
-                            Foreground="#777"
-                            Text="Pokedex" />
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="11"
-                            Foreground="#777"
-                            Text="Bag" />
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="11"
-                            Foreground="#777"
-                            Text="Pokemon" />
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="11"
-                            Foreground="#777"
-                            Text="Player" />
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="11"
-                            Foreground="#777"
-                            Text="Save" />
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="11"
-                            Foreground="#777"
-                            Text="Options" />
-                        <TextBlock
-                            Margin="0,0,0,10"
-                            FontSize="11"
-                            Foreground="#777"
-                            Text="Exit" />
-                    </StackPanel>
-                </controls:BoardBackground>
+                </Canvas>
             </Grid>
-
-            <!--  ── Status bar ──  -->
-            <Border
-                Grid.Row="2"
-                Padding="16,6"
-                Background="#111"
-                BorderBrush="#1E1E1E"
-                BorderThickness="0,1,0,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        FontFamily="Consolas"
-                        FontSize="10"
-                        Foreground="#444">
-                        <Run Text="{Binding MapWidth, Mode=OneWay}" />
-                        <Run Text="×" />
-                        <Run Text="{Binding MapHeight, Mode=OneWay}" />
-                        <Run Text=" tiles  ·  " />
-                        <Run Text="{Binding SquareCols, Mode=OneWay}" />
-                        <Run Text="×" />
-                        <Run Text="{Binding SquareRows, Mode=OneWay}" />
-                        <Run Text=" squares" />
-                    </TextBlock>
-
-                    <TextBlock
-                        Grid.Column="1"
-                        Margin="0,0,20,0"
-                        VerticalAlignment="Center"
-                        FontFamily="Consolas"
-                        FontSize="10"
-                        Foreground="#555"
-                        Text="{Binding LastMoveResult}" />
-
-                    <TextBlock
-                        Grid.Column="2"
-                        VerticalAlignment="Center"
-                        FontFamily="Consolas"
-                        FontSize="10"
-                        Foreground="#4A7C4E">
-                        <Run Text="tile: " />
-                        <Run Text="{Binding CollisionAtCursor, Mode=OneWay}" />
-                    </TextBlock>
-                </Grid>
-            </Border>
-        </Grid>
+        </ScrollViewer>
     </Grid>
 </Page>

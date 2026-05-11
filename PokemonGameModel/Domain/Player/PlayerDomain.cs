@@ -11,69 +11,43 @@ namespace PokemonGame.Model.Domain.Player
                     new Lazy<PlayerDomain>(() => new PlayerDomain());
         public static PlayerDomain Instance => _instance.Value;
 
-        // ── Identity ─────────────────────────────────────────────────────────
-        public int TrainerID { get; set; }
-        public string Name { get; set; }
-        public int Money { get; set; }
-        public int TimePlayed { get; set; }
-        public FacingDirection FacingDirection { get; set; }
-        public Gender Gender { get; set; }
-
-        // ── Location ─────────────────────────────────────────────────────────
-        public MapDomain LastMapVisited { get; set; }
-        public MapDomain CurrentMap { get; set; }
-        public (int x, int y) playerLoc { get; set; }
-
-        // ── Team ─────────────────────────────────────────────────────────────
+        public TrainerInfoDomain trainerInfo { get; set; } = new();
+        public TrainerMapLocDomain trainerMapLocDomain { get; set; } = new();
         public PokemonTeam Team { get; set; }
-
-        // ── Progress flags ───────────────────────────────────────────────────
-        public HashSet<int> DefeatedTrainers { get; set; } = new();  // trainer id
-        public HashSet<int> ItemTaken { get; set; } = new();          // item npc id
-        public HashSet<int> StoryFlags { get; set; } = new();         // elite four, giovanni, champion progression
-        public HashSet<int> TradedPokemon { get; set; } = new();      // pokedex id of pokemon given away
-
+        public ProggressFlagDomain ProgressFlags { get; set; } = new();
         // ── Inventory ────────────────────────────────────────────────────────
-        public Dictionary<itemsDomain, int> BagInventory { get; set; } = new();
-        public Dictionary<itemsDomain, int> StorageInventory { get; set; } = new();
-        public Dictionary<string, (List<PokemonState>, string)> BoxStorage { get; set; } = new(); // name - pokemon list - wallpaper
+        public TrainerItemDomain trainerItemDomain { get; set; } = new();
 
-        // ── Pokédex ──────────────────────────────────────────────────────────
         public Dictionary<int, (bool seen, bool caught)> Pokedex { get; set; } = new();
 
-        // ── Key items / abilities ─────────────────────────────────────────────
-        public KeyItemState RegisterKey { get; set; }
-        public bool HasRunningShoes { get; set; }
-        public bool IsSurfing { get; set; }
-
         // ── Badge count (derived) ─────────────────────────────────────────────
-        public List<BadgeDomain> Badges { get; set;  } = new();
+        public List<BadgeDomain> Badges { get; set; } = new();
 
         // ── Convenience methods ───────────────────────────────────────────────
 
         public void OnTrainerDefeated(int trainerId) =>
-            DefeatedTrainers.Add(trainerId);
+            ProgressFlags.DefeatedTrainers.Add(trainerId);
 
         public void OnItemTaken(int npcId) =>
-            ItemTaken.Add(npcId);
+            ProgressFlags.ItemTaken.Add(npcId);
 
         public void OnStoryFlagReached(int flagId) =>
-            StoryFlags.Add(flagId);
+            ProgressFlags.StoryFlags.Add(flagId);
 
         public void OnPokemonTraded(int pokedexId) =>
-            TradedPokemon.Add(pokedexId);
+            ProgressFlags.TradedPokemon.Add(pokedexId);
 
         public bool HasStoryFlag(int flagId) =>
-            StoryFlags.Contains(flagId);
+            ProgressFlags.StoryFlags.Contains(flagId);
 
         public bool HasDefeatedTrainer(int trainerId) =>
-            DefeatedTrainers.Contains(trainerId);
+            ProgressFlags.DefeatedTrainers.Contains(trainerId);
 
         public bool HasTakenItem(int npcId) =>
-            ItemTaken.Contains(npcId);
+            ProgressFlags.ItemTaken.Contains(npcId);
 
         public bool HasTradedPokemon(int pokedexId) =>
-            TradedPokemon.Contains(pokedexId);
+            ProgressFlags.TradedPokemon.Contains(pokedexId);
         public void AddBadge(int badgeId)
         {
             BadgeDomain? badge = Badges.FirstOrDefault(b => b.Id == badgeId);
@@ -108,5 +82,38 @@ namespace PokemonGame.Model.Domain.Player
         public int Id { get; set; } = 0;
         public bool IsObtained { get; set; } = false;
 
+    }
+    public class TrainerInfoDomain
+    {
+        public int TrainerID { get; set; }
+        public string Name { get; set; }
+        public int Money { get; set; }
+        public DateTime TimePlayed { get; set; }
+        public Gender Gender { get; set; }
+        public int HallOfFameDebut { get; set; }
+    }
+    public class ProggressFlagDomain
+    {
+        public HashSet<int> DefeatedTrainers { get; set; } = new();  // trainer id
+        public HashSet<int> ItemTaken { get; set; } = new();          // item npc id
+        public HashSet<int> StoryFlags { get; set; } = new();         // elite four, giovanni, champion progression
+        public HashSet<int> TradedPokemon { get; set; } = new();      // pokedex id of pokemon given away
+    }
+    public class TrainerMapLocDomain
+    {
+        public TrainerInfoDomain trainerInfo { get; set; }
+        // ── Location ─────────────────────────────────────────────────────────
+        public FacingDirection FacingDirection { get; set; }
+        public MapDomain LastMapVisited { get; set; }
+        public MapDomain CurrentMap { get; set; }
+        public (int x, int y) playerLoc { get; set; }
+        public bool IsSurfing { get; set; }
+    }
+    public class TrainerItemDomain
+    {
+        public Dictionary<itemsDomain, int> BagInventory { get; set; } = new();
+        public Dictionary<string, (List<PokemonState>, string)> BoxStorage { get; set; } = new(); // name - pokemon list - wallpaper
+        public KeyItemState RegisterKey { get; set; }
+        public bool HasRunningShoes { get; set; }
     }
 }
