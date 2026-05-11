@@ -309,41 +309,19 @@ namespace PokemonGame.Model.Model.Map
             {
                 for (int sc = 0; sc < cols; sc++)
                 {
-                    var squareType = CollisionType.None;
+                    // Sample only top-right tile of each square
+                    int tileRow = sr * tps;
+                    int tileCol = sc * tps + 1;
+                    var t = (tileRow < map.Height && tileCol < map.Width)
+                        ? tileCollision[tileRow, tileCol]
+                        : CollisionType.None;
 
-                    for (int tr = 0; tr < tps; tr++)
-                    {
-                        for (int tc = 0; tc < tps; tc++)
-                        {
-                            int tileRow = sr * tps + tr;
-                            int tileCol = sc * tps + tc;
-                            var t = tileCollision[tileRow, tileCol];
-
-                            if (t == CollisionType.None) continue;
-
-                            // ── Bug #4 fix ───────────────────────────────────
-                            // Blocked always wins — short-circuit immediately.
-                            // For all other types, take the FIRST non-None value
-                            // found (not the last), so iteration order cannot
-                            // silently overwrite a higher-priority type.
-                            if (t == CollisionType.Blocked)
-                            {
-                                squareType = CollisionType.Blocked;
-                                goto nextSquare; // break both inner loops
-                            }
-
-                            if (squareType == CollisionType.None)
-                                squareType = t; // first non-None, non-Blocked wins
-                        }
-                    }
-
-                nextSquare:
                     grid[sr, sc] = new SquareDomain
                     {
                         Row = sr,
                         Col = sc,
-                        SquareType = squareType,
-                        TileType = CollisionToTileType(squareType),
+                        SquareType = t,
+                        TileType = CollisionToTileType(t),
                     };
                 }
             }

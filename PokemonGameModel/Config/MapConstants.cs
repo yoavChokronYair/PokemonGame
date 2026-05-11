@@ -9,7 +9,7 @@ namespace PokemonGame.Model.Config
         public const int TilesPerSquare = SquareSize / TileSize; // = 2
 
         public const int ViewRowSize = 35;   // viewport height in tiles
-        public const int ViewColSize = 24;   // viewport width in tiles
+        public const int ViewColSize = 25;   // viewport width in tiles
     }
 
     public static class PlayerSprites

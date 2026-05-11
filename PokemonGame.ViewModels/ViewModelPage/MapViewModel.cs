@@ -24,8 +24,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
     {
         void RegisterFocusCallback(Action focus);
     }
+
     // -------------------------------------------------------------------------
-    // MapLoader
+    // MapLoader  (unchanged)
     // -------------------------------------------------------------------------
     public sealed class MapLoader
     {
@@ -170,7 +171,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
     }
 
     // =========================================================================
-    // RangeObservableCollection
+    // RangeObservableCollection  (unchanged)
     // =========================================================================
     public class RangeObservableCollection<T> : ObservableCollection<T>
     {
@@ -185,7 +186,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
     }
 
     // =========================================================================
-    // CanvasOverlayItem
+    // CanvasOverlayItem  (unchanged)
     // =========================================================================
     public class CanvasOverlayItem
     {
@@ -209,8 +210,16 @@ namespace PokemonGame.ViewModels.ViewModelPage
     // =========================================================================
     public class MapViewModel : ViewModelBase, IDisposable, IFocusTarget
     {
-        public const double CellPx = 36.0;
+        // One cell = one SQUARE (2×2 tiles = 16px in PNG → 72px on screen, scale 4.5×)
+        public const double CellPx = 72.0;
         private const int MapTilePx = 8;
+
+        // Viewport in squares (derived once — all internal logic uses these)
+        private static readonly int ViewSqCols = MapConstants.ViewColSize / MapConstants.TilesPerSquare; // 24/2 = 12
+        private static readonly int ViewSqRows = MapConstants.ViewRowSize / MapConstants.TilesPerSquare; // 35/2 = 17
+        // Center square index (0-based). 17→8, 12→6
+        private static readonly int HalfSqRows = ViewSqRows / 2;
+        private static readonly int HalfSqCols = ViewSqCols / 2;
 
         private static readonly string PlayerSpritePath =
             @"C:\Users\yoav\source\repos\PokemonGame\PokemonGame\Assets\Images\Player\";
@@ -228,16 +237,11 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private bool _disposed;
         private bool _pendingOverlayRebuild;
 
-        // ── Tick handlers (stored for unsubscribe) ────────────────────────────
         private EventHandler _npcTickHandler;
         private EventHandler _playerTickHandler;
         private readonly MovementSate _movement = new MovementSate();
         private Action _dialogueOpenedHandler;
         private Action _dialogueClosedHandler;
-
-        // ── Movement queue ────────────────────────────────────────────────────
-        // Keyed input sets this; the player tick drains it once per step.
-        // Nullable — null means "no key held".
 
         // ── Observable state ─────────────────────────────────────────────────
         private ImageSource _mapImageSource;
@@ -251,12 +255,11 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private double _imageDisplayHeight;
         private double _imageOffsetX;
         private double _imageOffsetY;
-        public double ImageDisplayWidth { get => _imageDisplayWidth; private set => SetProperty(ref _imageDisplayWidth, value); }
+        public double ImageDisplayWidth  { get => _imageDisplayWidth;  private set => SetProperty(ref _imageDisplayWidth,  value); }
         public double ImageDisplayHeight { get => _imageDisplayHeight; private set => SetProperty(ref _imageDisplayHeight, value); }
-        public double ImageOffsetX { get => _imageOffsetX; private set => SetProperty(ref _imageOffsetX, value); }
-        public double ImageOffsetY { get => _imageOffsetY; private set => SetProperty(ref _imageOffsetY, value); }
+        public double ImageOffsetX       { get => _imageOffsetX;       private set => SetProperty(ref _imageOffsetX,       value); }
+        public double ImageOffsetY       { get => _imageOffsetY;       private set => SetProperty(ref _imageOffsetY,       value); }
 
-        // ── Player sprite ─────────────────────────────────────────────────────
         private ImageSource _playerImage;
         public ImageSource PlayerImage
         {
@@ -264,8 +267,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
             private set => SetProperty(ref _playerImage, value);
         }
 
-        public double PlayerPixelX => 20 + (MapConstants.ViewColSize / 2) * CellPx - 18;
-        public double PlayerPixelY => 20 + (MapConstants.ViewRowSize / 2) * CellPx - 36;
+        // Player sprite sits at the center square of the canvas
+        public double PlayerPixelX => HalfSqCols * CellPx;
+        public double PlayerPixelY => HalfSqRows * CellPx;
 
         private bool _isReady;
         public bool IsReady { get => _isReady; private set => SetProperty(ref _isReady, value); }
@@ -274,29 +278,29 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public bool IsDebugMode { get => _isDebugMode; set => SetProperty(ref _isDebugMode, value); }
 
         private string _collisionAtCursor = string.Empty;
-        private string _lastMoveResult = string.Empty;
-        private string _inspectResult = string.Empty;
-        private bool _isShowingBackground = true;
-        private bool _isShowingForeground;
+        private string _lastMoveResult    = string.Empty;
+        private string _inspectResult     = string.Empty;
+        private bool   _isShowingBackground = true;
+        private bool   _isShowingForeground;
         private NpcObjectDomain _activeNpc;
 
         public string CollisionAtCursor { get => _collisionAtCursor; private set => SetProperty(ref _collisionAtCursor, value); }
-        public string LastMoveResult { get => _lastMoveResult; private set => SetProperty(ref _lastMoveResult, value); }
-        public string InspectResult { get => _inspectResult; private set => SetProperty(ref _inspectResult, value); }
+        public string LastMoveResult    { get => _lastMoveResult;    private set => SetProperty(ref _lastMoveResult,    value); }
+        public string InspectResult     { get => _inspectResult;     private set => SetProperty(ref _inspectResult,     value); }
         public bool IsShowingBackground { get => _isShowingBackground; private set => SetProperty(ref _isShowingBackground, value); }
         public bool IsShowingForeground { get => _isShowingForeground; private set => SetProperty(ref _isShowingForeground, value); }
 
         // ── Computed header properties ────────────────────────────────────────
         private SquareMapState SquareMap => _mapManager.SquareMap;
-        public string MapName => _mapManager?.ActiveMap.Name ?? string.Empty;
-        public int MapWidth => _mapManager?.ActiveMap.Width ?? 0;
-        public int MapHeight => _mapManager?.ActiveMap.Height ?? 0;
-        public int SquareRows => _mapManager != null ? SquareMap.SquareRows : 0;
-        public int SquareCols => _mapManager != null ? SquareMap.SquareCols : 0;
-        public string FacingText => _player.FacingDirection.ToString();
-        public int PlayerSquareRow => _mapManager != null
+        public string MapName   => _mapManager?.ActiveMap.Name   ?? string.Empty;
+        public int    MapWidth  => _mapManager?.ActiveMap.Width  ?? 0;
+        public int    MapHeight => _mapManager?.ActiveMap.Height ?? 0;
+        public int    SquareRows => _mapManager != null ? SquareMap.SquareRows : 0;
+        public int    SquareCols => _mapManager != null ? SquareMap.SquareCols : 0;
+        public string FacingText      => _player.FacingDirection.ToString();
+        public int    PlayerSquareRow => _mapManager != null
             ? SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x).row : 0;
-        public int PlayerSquareCol => _mapManager != null
+        public int    PlayerSquareCol => _mapManager != null
             ? SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x).col : 0;
 
         // ── Overlay snapshot ──────────────────────────────────────────────────
@@ -311,17 +315,18 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public DialogueViewModel Dialogue { get; } = new();
 
         // ── Viewport dimensions ───────────────────────────────────────────────
-        public double ViewportWidthPx => MapConstants.ViewColSize * CellPx;
-        public double ViewportHeightPx => MapConstants.ViewRowSize * CellPx;
+        // Canvas size = number of square cells × pixels-per-cell
+        public double ViewportWidthPx  => ViewSqCols * CellPx;   // 12 × 72 = 864
+        public double ViewportHeightPx => ViewSqRows * CellPx;   // 17 × 72 = 1224
 
         // ── Commands ─────────────────────────────────────────────────────────
         public ShowLayerCommand ShowBackgroundCommand { get; }
         public ShowLayerCommand ShowForegroundCommand { get; }
-        public MoveCommand MoveUpCommand { get; }
-        public MoveCommand MoveDownCommand { get; }
-        public MoveCommand MoveLeftCommand { get; }
-        public MoveCommand MoveRightCommand { get; }
-        public InspectCommand InspectCommand { get; }
+        public MoveCommand      MoveUpCommand    { get; }
+        public MoveCommand      MoveDownCommand  { get; }
+        public MoveCommand      MoveLeftCommand  { get; }
+        public MoveCommand      MoveRightCommand { get; }
+        public InspectCommand   InspectCommand   { get; }
         public ICommand ToggleDebugCommand { get; }
         public ICommand PickChoice1Command { get; }
         public ICommand PickChoice2Command { get; }
@@ -333,20 +338,20 @@ namespace PokemonGame.ViewModels.ViewModelPage
         // ── Constructor ───────────────────────────────────────────────────────
         public MapViewModel()
         {
-            _player = PlayerDomain.Instance;
-            _mapLoader = new MapLoader(new MapService());
+            _player     = PlayerDomain.Instance;
+            _mapLoader  = new MapLoader(new MapService());
 
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
             ShowForegroundCommand = new ShowLayerCommand(this, background: false);
-            InspectCommand = new InspectCommand(this);
-            MoveUpCommand = new MoveCommand(this, FacingDirection.Up);
-            MoveDownCommand = new MoveCommand(this, FacingDirection.Down);
-            MoveLeftCommand = new MoveCommand(this, FacingDirection.Left);
-            MoveRightCommand = new MoveCommand(this, FacingDirection.Right);
-            ToggleDebugCommand = new RelayCommand(() => ToggleDebug());
-            PickChoice1Command = new RelayCommand(() => Dialogue.PickChoice(0));
-            PickChoice2Command = new RelayCommand(() => Dialogue.PickChoice(1));
-            PickChoice3Command = new RelayCommand(() => Dialogue.PickChoice(2));
+            InspectCommand        = new InspectCommand(this);
+            MoveUpCommand         = new MoveCommand(this, FacingDirection.Up);
+            MoveDownCommand       = new MoveCommand(this, FacingDirection.Down);
+            MoveLeftCommand       = new MoveCommand(this, FacingDirection.Left);
+            MoveRightCommand      = new MoveCommand(this, FacingDirection.Right);
+            ToggleDebugCommand    = new RelayCommand(() => ToggleDebug());
+            PickChoice1Command    = new RelayCommand(() => Dialogue.PickChoice(0));
+            PickChoice2Command    = new RelayCommand(() => Dialogue.PickChoice(1));
+            PickChoice3Command    = new RelayCommand(() => Dialogue.PickChoice(2));
 
             Dialogue.FocusRequested += () => _focusCallback?.Invoke();
 
@@ -368,10 +373,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 _player.playerLoc = (12, 14);
 
             _mapManager = new MapManager(_player);
-            _mapManager.TrainerSpotted += OnPlayerSpotted;
-            _mapManager.NpcInteracted += OnNpcInteracted;
+            _mapManager.TrainerSpotted  += OnPlayerSpotted;
+            _mapManager.NpcInteracted   += OnNpcInteracted;
 
-            // ── NPC tick — moves NPCs, refreshes vision overlay ───────────────
             _npcTickHandler = (_, _) =>
             {
                 Application.Current?.Dispatcher.BeginInvoke(() =>
@@ -383,6 +387,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                         RefreshOverlays();
                 });
             };
+
             _playerTickHandler = (_, _) =>
             {
                 Application.Current?.Dispatcher.BeginInvoke(() =>
@@ -408,10 +413,10 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 _pendingOverlayRebuild = false;
             };
 
-            ClockManager.Instance.NpcTick += _npcTickHandler;
+            ClockManager.Instance.NpcTick    += _npcTickHandler;
             ClockManager.Instance.PlayerTick += _playerTickHandler;
-            Dialogue.DialogueOpened += _dialogueOpenedHandler;
-            Dialogue.DialogueClosed += _dialogueClosedHandler;
+            Dialogue.DialogueOpened          += _dialogueOpenedHandler;
+            Dialogue.DialogueClosed          += _dialogueClosedHandler;
 
             ClockManager.Instance.Start();
             RebuildGrid();
@@ -424,29 +429,24 @@ namespace PokemonGame.ViewModels.ViewModelPage
             if (_disposed) return;
             _disposed = true;
 
-            if (_playerTickHandler != null) ClockManager.Instance.PlayerTick -= _playerTickHandler;
-            if (_npcTickHandler != null) ClockManager.Instance.NpcTick -= _npcTickHandler;
-            if (_dialogueOpenedHandler != null) Dialogue.DialogueOpened -= _dialogueOpenedHandler;
-            if (_dialogueClosedHandler != null) Dialogue.DialogueClosed -= _dialogueClosedHandler;
+            if (_playerTickHandler   != null) ClockManager.Instance.PlayerTick -= _playerTickHandler;
+            if (_npcTickHandler      != null) ClockManager.Instance.NpcTick    -= _npcTickHandler;
+            if (_dialogueOpenedHandler != null) Dialogue.DialogueOpened        -= _dialogueOpenedHandler;
+            if (_dialogueClosedHandler != null) Dialogue.DialogueClosed        -= _dialogueClosedHandler;
 
             if (_mapManager != null)
             {
                 _mapManager.TrainerSpotted -= OnPlayerSpotted;
-                _mapManager.NpcInteracted -= OnNpcInteracted;
+                _mapManager.NpcInteracted  -= OnNpcInteracted;
             }
-            
+
             ClockManager.Instance.Stop();
         }
 
-        // ── Movement — called by MoveCommand (keyboard/dpad) ─────────────────
-        // Just queues the direction. The player tick fires at 150ms intervals
-        // and consumes exactly one step per tick. Holding a key keeps the queue
-        // populated via WPF key-repeat, releasing it leaves the queue empty so
-        // movement stops cleanly after the current step finishes.
+        // ── Movement ─────────────────────────────────────────────────────────
         public void Move(FacingDirection direction)
         {
-            if(Dialogue.IsOpen) return;
-
+            if (Dialogue.IsOpen) return;
             _movement.QueuedDirection = (int)direction;
             _movement.HasQueued = true;
         }
@@ -454,7 +454,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private void proccessMovementTick()
         {
             if (Dialogue.IsOpen) return;
-            if(!_movement.HasQueued) return;
+            if (!_movement.HasQueued) return;
             _movement.HasQueued = false;
             var direction = (FacingDirection)_movement.QueuedDirection;
             _player.IsMoving = true;
@@ -466,19 +466,15 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 LastMoveResult = $"Moved {direction}";
                 RebuildGrid();
                 if (result.WildEncounterTriggered) LastMoveResult += " + Wild Encounter!";
-                if (result.SpottedByNpcId != 0) LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
+                if (result.SpottedByNpcId != 0)   LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
             }
             else
             {
                 _player.IsMoving = false;
                 LastMoveResult = $"Blocked moving {direction}: {result.SquareType}";
                 RefreshOverlays();
-                
             }
         }
-
-
-
 
         // ── Player sprite ─────────────────────────────────────────────────────
         private ImageSource LoadSprite(string filename)
@@ -489,8 +485,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
             {
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
-                bmp.UriSource = new Uri(fullPath, UriKind.Absolute);
-                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                bmp.UriSource    = new Uri(fullPath, UriKind.Absolute);
+                bmp.CacheOption  = BitmapCacheOption.OnLoad;
                 bmp.EndInit();
                 bmp.Freeze();
                 _spriteCache[fullPath] = bmp;
@@ -508,7 +504,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             {
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
-                bmp.UriSource = new Uri(path, UriKind.Absolute);
+                bmp.UriSource   = new Uri(path, UriKind.Absolute);
                 bmp.CacheOption = BitmapCacheOption.OnLoad;
                 bmp.EndInit();
                 bmp.Freeze();
@@ -518,24 +514,37 @@ namespace PokemonGame.ViewModels.ViewModelPage
             catch { return null; }
         }
 
+        // ── Map image crop ────────────────────────────────────────────────────
+        // The PNG is in tile-space (8px per tile).
+        // The canvas is in square-space (CellPx=72 per square = 2 tiles = 16px in PNG).
+        // We crop ViewSqRows*2 × ViewSqCols*2 tiles centred on the player,
+        // then stretch that crop to fill the canvas exactly.
         private void UpdateMapImageSource()
         {
             var sheet = GetMapBitmap();
             if (sheet == null) { MapImageSource = null; return; }
 
-            int viewCols = MapConstants.ViewColSize;
-            int viewRows = MapConstants.ViewRowSize;
+            int tps = MapConstants.TilesPerSquare; // 2
 
-            // Unclamped origin — may be negative or past image edge
-            int px = (_player.playerLoc.x - viewCols / 2) * MapTilePx;
-            int py = (_player.playerLoc.y - viewRows / 2) * MapTilePx;
-            int pw = viewCols * MapTilePx;
-            int ph = viewRows * MapTilePx;
+            // How many tiles the viewport covers
+            int viewTileCols = ViewSqCols * tps;   // 12 × 2 = 24
+            int viewTileRows = ViewSqRows * tps;   // 17 × 2 = 34
+
+            // Top-left tile of the viewport (may be negative near map edges)
+            // playerLoc.x = tile col, playerLoc.y = tile row
+            int originTileCol = _player.playerLoc.x - viewTileCols / 2;  // centre col
+            int originTileRow = _player.playerLoc.y - viewTileRows / 2;  // centre row
+
+            // Convert to PNG pixel space
+            int px = originTileCol * MapTilePx;
+            int py = originTileRow * MapTilePx;
+            int pw = viewTileCols  * MapTilePx;   // 24 × 8 = 192 px
+            int ph = viewTileRows  * MapTilePx;   // 34 × 8 = 272 px
 
             int imgW = sheet.PixelWidth;
             int imgH = sheet.PixelHeight;
 
-            // Pixels of the viewport that are off the top/left edge
+            // How many pixels of the viewport are off the top/left edge of the PNG
             int offsetX = Math.Max(0, -px);
             int offsetY = Math.Max(0, -py);
 
@@ -551,7 +560,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 return;
             }
 
-            double scale = CellPx / MapTilePx;
+            // scale: 1 tile in PNG = MapTilePx px; 1 square on canvas = CellPx px
+            // 1 square = tps tiles → scale = CellPx / (tps * MapTilePx) = 72/16 = 4.5
+            double scale = CellPx / (tps * MapTilePx);
 
             var key = (cropX, cropY, cropW, cropH);
             if (!_cropCache.TryGetValue(key, out var crop))
@@ -565,11 +576,11 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 catch { MapImageSource = null; return; }
             }
 
-            MapImageSource = crop;
-            ImageDisplayWidth = cropW * scale;
-            ImageDisplayHeight = cropH * scale;
-            ImageOffsetX = offsetX * scale;
-            ImageOffsetY = offsetY * scale;
+            MapImageSource     = crop;
+            ImageDisplayWidth  = cropW   * scale;
+            ImageDisplayHeight = cropH   * scale;
+            ImageOffsetX       = offsetX * scale;
+            ImageOffsetY       = offsetY * scale;
         }
 
         // ── NPC square map ────────────────────────────────────────────────────
@@ -584,6 +595,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         }
 
         // ── Grid rebuild ──────────────────────────────────────────────────────
+        // Loops over SQUARES (not tiles). One overlay cell = one square = CellPx wide.
         public void RebuildGrid()
         {
             var (bg, fg, _, playerSprite) = _mapManager.GetViewport();
@@ -591,46 +603,45 @@ namespace PokemonGame.ViewModels.ViewModelPage
             if (playerSprite != null)
                 PlayerImage = LoadSprite(playerSprite.ImagePath);
 
-            var tileLayer = _isShowingBackground ? bg : fg;
-            int viewRows = tileLayer.GetLength(0);
-            int viewCols = tileLayer.GetLength(1);
-            int tps = MapConstants.TilesPerSquare;
-            int halfRows = viewRows / 2;
-            int halfCols = viewCols / 2;
-
             RebuildNpcMap();
             UpdateMapImageSource();
 
             var vl = SquareMap.VisionLayer;
-            var cellData = new List<(int sqRow, int sqCol, bool isPlayer, int npcId, int visionId, CollisionType col)>(viewRows * viewCols);
 
-            for (int r = 0; r < viewRows; r++)
+            // Player's current map square
+            var (psr, psc) = SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x);
+
+            var cellData = new List<(int sqRow, int sqCol, bool isPlayer,
+                                     int npcId, int visionId, CollisionType col)>(ViewSqRows * ViewSqCols);
+
+            for (int r = 0; r < ViewSqRows; r++)
             {
-                for (int c = 0; c < viewCols; c++)
+                for (int c = 0; c < ViewSqCols; c++)
                 {
-                    int mapTileRow = _player.playerLoc.y - halfRows + r;
-                    int mapTileCol = _player.playerLoc.x - halfCols + c;
-                    int mapSqRow = mapTileRow / tps;
-                    int mapSqCol = mapTileCol / tps;
+                    // Absolute map square this viewport cell represents
+                    int mapSqRow = psr - HalfSqRows + r;
+                    int mapSqCol = psc - HalfSqCols + c;
 
                     _npcSquareMap.TryGetValue((mapSqRow, mapSqCol), out int npcId);
 
-                    int vr = r / tps;
-                    int vc = c / tps;
-                    int visionId = (vr < vl.GetLength(0) && vc < vl.GetLength(1)) ? vl[vr, vc] : 0;
+                    // VisionLayer is map-absolute square coords — index directly
+                    int visionId = 0;
+                    if ((uint)mapSqRow < (uint)vl.GetLength(0) &&
+                        (uint)mapSqCol < (uint)vl.GetLength(1))
+                        visionId = vl[mapSqRow, mapSqCol];
 
                     cellData.Add((
                         mapSqRow, mapSqCol,
-                        r == halfRows && c == halfCols,
-                        npcId, visionId,
+                        r == HalfSqRows && c == HalfSqCols,  // true only at player's square
+                        npcId,
+                        visionId,
                         SquareMap.GetSquare(mapSqRow, mapSqCol)?.SquareType ?? CollisionType.None
                     ));
                 }
             }
 
-            RebuildOverlaysFromData(cellData, viewRows, viewCols);
+            RebuildOverlaysFromData(cellData, ViewSqRows, ViewSqCols);
 
-            var (psr, psc) = SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x);
             CollisionAtCursor = SquareMap.GetCollision(psr, psc).ToString();
             NotifyHeaderProperties();
         }
@@ -647,20 +658,22 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 for (int c = 0; c < viewCols; c++)
                 {
                     var (sqRow, sqCol, isPlayer, npcId, visionId, collision) = cellData[r * viewCols + c];
-                    bool isNpc = npcId != 0;
+                    bool isNpc    = npcId    != 0;
                     bool isVision = visionId != 0;
 
                     string tooltip = $"[{sqRow},{sqCol}]  {collision}" +
-                                     (isNpc ? $"  NPC:{npcId}" : string.Empty) +
+                                     (isNpc    ? $"  NPC:{npcId}"        : string.Empty) +
                                      (isVision ? $"  seen-by:{visionId}" : string.Empty);
+
+                    double left = c * CellPx;
+                    double top  = r * CellPx;
 
                     var (colColor, showCol) = CollisionDebugColor(collision);
                     if (showCol)
                         newItems.Add(new CanvasOverlayItem
                         {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
-                            HasCollision = true,
+                            Left = left, Top = top,
+                            HasCollision  = true,
                             CollisionColor = colColor,
                             Tooltip = tooltip,
                         });
@@ -668,38 +681,34 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     if (isVision && !isPlayer && !isNpc)
                         newItems.Add(new CanvasOverlayItem
                         {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
+                            Left = left, Top = top,
                             IsVision = true,
-                            Tooltip = tooltip,
+                            Tooltip  = tooltip,
                         });
 
                     if (isPlayer)
                         newItems.Add(new CanvasOverlayItem
                         {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
+                            Left = left, Top = top,
                             IsPlayer = true,
                         });
 
                     if (isNpc)
                         newItems.Add(new CanvasOverlayItem
                         {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
-                            IsNpc = true,
-                            IsTrainer = npcId % 2 != 0,
-                            NpcSymbol = npcId % 2 != 0 ? "T" : "N",
-                            Tooltip = tooltip,
+                            Left = left, Top = top,
+                            IsNpc      = true,
+                            IsTrainer  = npcId % 2 != 0,
+                            NpcSymbol  = npcId % 2 != 0 ? "T" : "N",
+                            Tooltip    = tooltip,
                         });
 
                     if (_isDebugMode)
                         newItems.Add(new CanvasOverlayItem
                         {
-                            Left = c * CellPx,
-                            Top = r * CellPx,
-                            IsDebug = true,
-                            DebugText = $"{sqRow},{sqCol}",
+                            Left = left, Top = top,
+                            IsDebug        = true,
+                            DebugText      = $"{sqRow},{sqCol}",
                             DebugTintColor = CollisionToDebugColor(collision),
                         });
                 }
@@ -708,42 +717,40 @@ namespace PokemonGame.ViewModels.ViewModelPage
             OverlaySnapshot = newItems;
         }
 
+        // ── Overlay refresh (NPC tick / dialogue close — no image rebuild) ────
         public void RefreshOverlays()
         {
-            var vl = SquareMap.VisionLayer;
-            int viewRows = MapConstants.ViewRowSize;
-            int viewCols = MapConstants.ViewColSize;
-            int tps = MapConstants.TilesPerSquare;
-            int halfRows = viewRows / 2;
-            int halfCols = viewCols / 2;
+            var vl  = SquareMap.VisionLayer;
+            var (psr, psc) = SquareMap.TileToSquare(_player.playerLoc.y, _player.playerLoc.x);
 
-            var cellData = new List<(int sqRow, int sqCol, bool isPlayer, int npcId, int visionId, CollisionType col)>(viewRows * viewCols);
+            var cellData = new List<(int sqRow, int sqCol, bool isPlayer,
+                                     int npcId, int visionId, CollisionType col)>(ViewSqRows * ViewSqCols);
 
-            for (int r = 0; r < viewRows; r++)
+            for (int r = 0; r < ViewSqRows; r++)
             {
-                for (int c = 0; c < viewCols; c++)
+                for (int c = 0; c < ViewSqCols; c++)
                 {
-                    int mapTileRow = _player.playerLoc.y - halfRows + r;
-                    int mapTileCol = _player.playerLoc.x - halfCols + c;
-                    int mapSqRow = mapTileRow / tps;
-                    int mapSqCol = mapTileCol / tps;
+                    int mapSqRow = psr - HalfSqRows + r;
+                    int mapSqCol = psc - HalfSqCols + c;
 
                     _npcSquareMap.TryGetValue((mapSqRow, mapSqCol), out int npcId);
 
-                    int vr = r / tps;
-                    int vc = c / tps;
-                    int visionId = (vr < vl.GetLength(0) && vc < vl.GetLength(1)) ? vl[vr, vc] : 0;
+                    int visionId = 0;
+                    if ((uint)mapSqRow < (uint)vl.GetLength(0) &&
+                        (uint)mapSqCol < (uint)vl.GetLength(1))
+                        visionId = vl[mapSqRow, mapSqCol];
 
                     cellData.Add((
                         mapSqRow, mapSqCol,
-                        r == halfRows && c == halfCols,
-                        npcId, visionId,
+                        r == HalfSqRows && c == HalfSqCols,
+                        npcId,
+                        visionId,
                         SquareMap.GetSquare(mapSqRow, mapSqCol)?.SquareType ?? CollisionType.None
                     ));
                 }
             }
 
-            RebuildOverlaysFromData(cellData, viewRows, viewCols);
+            RebuildOverlaysFromData(cellData, ViewSqRows, ViewSqCols);
         }
 
         // ── Actions ───────────────────────────────────────────────────────────
@@ -811,30 +818,31 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         private static (string color, bool show) CollisionDebugColor(CollisionType c) => c switch
         {
-            CollisionType.Blocked => ("#99FF2222", true),
+            CollisionType.Blocked   => ("#99FF2222", true),
             CollisionType.WildGrass => ("#9922CC44", true),
-            CollisionType.HM => ("#992255FF", true),
-            CollisionType.JumpLeft => ("#99FFCC00", true),
+            CollisionType.HM        => ("#992255FF", true),
+            CollisionType.JumpLeft  => ("#99FFCC00", true),
             CollisionType.JumpRight => ("#99FFCC00", true),
-            CollisionType.JumpUp => ("#99FFCC00", true),
-            CollisionType.JumpDown => ("#99FFCC00", true),
-            CollisionType.None => (string.Empty, false),
-            _ => ("#99FF00FF", true),
+            CollisionType.JumpUp    => ("#99FFCC00", true),
+            CollisionType.JumpDown  => ("#99FFCC00", true),
+            CollisionType.None      => (string.Empty, false),
+            _                       => ("#99FF00FF", true),
         };
 
         private static string CollisionToDebugColor(CollisionType c) => c switch
         {
-            CollisionType.Blocked => "#55FF0000",
+            CollisionType.Blocked   => "#55FF0000",
             CollisionType.WildGrass => "#5500FF00",
-            CollisionType.HM => "#550000FF",
+            CollisionType.HM        => "#550000FF",
             CollisionType.JumpLeft or CollisionType.JumpRight
                 or CollisionType.JumpDown or CollisionType.JumpUp => "#55FFFF00",
             _ => "#00000000",
         };
+
         private sealed class MovementSate
         {
             public bool HasQueued;
-            public int QueuedDirection;
+            public int  QueuedDirection;
         }
     }
 }

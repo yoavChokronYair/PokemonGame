@@ -41,7 +41,7 @@ namespace PokemonGame.Model.Model.Managers
                 AutoReset = true
             };
             _timer.Elapsed += OnElapsed;
-            _playerTimer = new System.Timers.Timer(200) { AutoReset = true };
+            _playerTimer = new System.Timers.Timer(40) { AutoReset = true };
             _playerTimer.Elapsed += (s,e) => PlayerTick?.Invoke(this, EventArgs.Empty);;
 
         }
