@@ -19,12 +19,13 @@ namespace PokemonGame.Model.Model.Managers
         /// Fired every NpcTickInterval with updated play time.
         public event EventHandler<TimeSpan>? TimePlayedUpdated;
         private readonly System.Timers.Timer _playerTimer;
+        public event EventHandler? PlayerTick;
 
         // In constructor, after _timer setup:
 
 
-    // ── State ─────────────────────────────────────────────────────────────
-    public TimeSpan TimePlayed { get; private set; }
+        // ── State ─────────────────────────────────────────────────────────────
+        public TimeSpan TimePlayed { get; private set; }
         public bool IsRunning { get; private set; }
 
         // ── Internals ─────────────────────────────────────────────────────────
@@ -40,17 +41,13 @@ namespace PokemonGame.Model.Model.Managers
                 AutoReset = true
             };
             _timer.Elapsed += OnElapsed;
-            _playerTimer = new System.Timers.Timer(150) { AutoReset = true };
-            _playerTimer.Elapsed += OnPlayerElapsed;
+            _playerTimer = new System.Timers.Timer(200) { AutoReset = true };
+            _playerTimer.Elapsed += (s,e) => PlayerTick?.Invoke(this, EventArgs.Empty);;
 
         }
 
-        public event EventHandler? PlayerTick;
 
-        private void OnPlayerElapsed(object sender, ElapsedEventArgs e)
-        {
-            PlayerTick?.Invoke(this, EventArgs.Empty);
-        }
+
         // ── Control ───────────────────────────────────────────────────────────
         public void Start()
         {
@@ -58,6 +55,7 @@ namespace PokemonGame.Model.Model.Managers
             _lastAutoSave = DateTime.UtcNow;
             IsRunning = true;
             _timer.Start();
+            _playerTimer.Start();
 
         }
 
@@ -65,6 +63,7 @@ namespace PokemonGame.Model.Model.Managers
         {
             IsRunning = false;
             _timer.Stop();
+            _playerTimer.Stop();
         }
 
         /// Pause (e.g. dialogue open) — time stops accumulating.
@@ -92,6 +91,7 @@ namespace PokemonGame.Model.Model.Managers
             if (_disposed) return;
             _disposed = true;
             _timer.Dispose();
+            _playerTimer.Dispose();
         }
     }
 }

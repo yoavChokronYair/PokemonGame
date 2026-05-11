@@ -231,13 +231,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
         // ── Tick handlers (stored for unsubscribe) ────────────────────────────
         private EventHandler _npcTickHandler;
         private EventHandler _playerTickHandler;
+        private readonly MovementSate _movement = new MovementSate();
         private Action _dialogueOpenedHandler;
         private Action _dialogueClosedHandler;
 
         // ── Movement queue ────────────────────────────────────────────────────
         // Keyed input sets this; the player tick drains it once per step.
         // Nullable — null means "no key held".
-        private FacingDirection? _queuedDirection = null;
 
         // ── Observable state ─────────────────────────────────────────────────
         private ImageSource _mapImageSource;
@@ -383,17 +383,12 @@ namespace PokemonGame.ViewModels.ViewModelPage
                         RefreshOverlays();
                 });
             };
-
-            // ── Player tick — one step per tick, drains the direction queue ───
-            // 150 ms per step matches the original Pokemon walk speed.
-            // Holding a key re-queues the direction every few ms via WPF key
-            // repeat, so the queue is always full while the key is held.
             _playerTickHandler = (_, _) =>
             {
                 Application.Current?.Dispatcher.BeginInvoke(() =>
                 {
                     if (_disposed) return;
-                    ProcessMovementTick();
+                    proccessMovementTick();
                 });
             };
 
@@ -414,6 +409,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             };
 
             ClockManager.Instance.NpcTick += _npcTickHandler;
+            ClockManager.Instance.PlayerTick += _playerTickHandler;
             Dialogue.DialogueOpened += _dialogueOpenedHandler;
             Dialogue.DialogueClosed += _dialogueClosedHandler;
 
@@ -428,6 +424,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             if (_disposed) return;
             _disposed = true;
 
+            if (_playerTickHandler != null) ClockManager.Instance.PlayerTick -= _playerTickHandler;
             if (_npcTickHandler != null) ClockManager.Instance.NpcTick -= _npcTickHandler;
             if (_dialogueOpenedHandler != null) Dialogue.DialogueOpened -= _dialogueOpenedHandler;
             if (_dialogueClosedHandler != null) Dialogue.DialogueClosed -= _dialogueClosedHandler;
@@ -437,7 +434,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 _mapManager.TrainerSpotted -= OnPlayerSpotted;
                 _mapManager.NpcInteracted -= OnNpcInteracted;
             }
-
+            
             ClockManager.Instance.Stop();
         }
 
@@ -448,19 +445,18 @@ namespace PokemonGame.ViewModels.ViewModelPage
         // movement stops cleanly after the current step finishes.
         public void Move(FacingDirection direction)
         {
-            if (Dialogue.IsOpen) return;
-            _queuedDirection = direction;
+            if(Dialogue.IsOpen) return;
+
+            _movement.QueuedDirection = (int)direction;
+            _movement.HasQueued = true;
         }
 
-        // ── Player tick processor ─────────────────────────────────────────────
-        private void ProcessMovementTick()
+        private void proccessMovementTick()
         {
             if (Dialogue.IsOpen) return;
-            if (_queuedDirection == null) return;
-
-            var direction = _queuedDirection.Value;
-            _queuedDirection = null; // consume — next tick needs a fresh keypress/repeat
-
+            if(!_movement.HasQueued) return;
+            _movement.HasQueued = false;
+            var direction = (FacingDirection)_movement.QueuedDirection;
             _player.IsMoving = true;
             _player.AdvanceAnimation();
 
@@ -475,12 +471,14 @@ namespace PokemonGame.ViewModels.ViewModelPage
             else
             {
                 _player.IsMoving = false;
-                LastMoveResult = $"Blocked ({direction})";
-                // Still update facing sprite even when blocked
-                OnPropertyChanged(nameof(FacingText));
-                RebuildGrid(); // refresh sprite for new facing direction
+                LastMoveResult = $"Blocked moving {direction}: {result.SquareType}";
+                RefreshOverlays();
+                
             }
         }
+
+
+
 
         // ── Player sprite ─────────────────────────────────────────────────────
         private ImageSource LoadSprite(string filename)
@@ -833,5 +831,10 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 or CollisionType.JumpDown or CollisionType.JumpUp => "#55FFFF00",
             _ => "#00000000",
         };
+        private sealed class MovementSate
+        {
+            public bool HasQueued;
+            public int QueuedDirection;
+        }
     }
 }
