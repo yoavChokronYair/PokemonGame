@@ -9,6 +9,7 @@
     Title="StoryLogIn"
     d:DesignHeight="490"
     d:DesignWidth="800"
+    Background="#4a5194"
     mc:Ignorable="d">
 
     <Page.Resources>

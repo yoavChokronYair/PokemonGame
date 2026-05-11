@@ -62,132 +62,135 @@
                 <KeyBinding Key="Escape" Command="{Binding ToggleMenuCommand}" />
             </ScrollViewer.InputBindings>
 
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Canvas
-                    Width="{Binding ViewportWidthPx}"
-                    Height="{Binding ViewportHeightPx}"
-                    Background="#0A0A0A">
-
-                    <!--  Map image  -->
-                    <Image
-                        Canvas.Left="{Binding ImageOffsetX}"
-                        Canvas.Top="{Binding ImageOffsetY}"
-                        Width="{Binding ImageDisplayWidth}"
-                        Height="{Binding ImageDisplayHeight}"
-                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                        Source="{Binding MapImageSource}"
-                        Stretch="Fill" />
-
-                    <!--  Overlays  -->
-                    <uc:MapOverlayVisual
-                        Canvas.Left="0"
-                        Canvas.Top="0"
+            <Viewbox Stretch="Uniform">
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Canvas
                         Width="{Binding ViewportWidthPx}"
                         Height="{Binding ViewportHeightPx}"
-                        Items="{Binding OverlaySnapshot}" />
+                        Background="#0A0A0A">
 
-                    <!--  Player sprite  -->
-                    <Image
-                        Canvas.Left="{Binding PlayerPixelX}"
-                        Canvas.Top="{Binding PlayerPixelY}"
-                        Width="48"
-                        Height="72"
-                        RenderOptions.BitmapScalingMode="NearestNeighbor"
-                        Source="{Binding PlayerImage}" />
+                        <!--  Map image  -->
+                        <Image
+                            Canvas.Left="{Binding ImageOffsetX}"
+                            Canvas.Top="{Binding ImageOffsetY}"
+                            Width="{Binding ImageDisplayWidth}"
+                            Height="{Binding ImageDisplayHeight}"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor"
+                            Source="{Binding MapImageSource}"
+                            Stretch="Fill" />
 
-                    <!--  Menu  -->
-                    <controls:BoardBackground
-                        Canvas.Left="8"
-                        Canvas.Top="8"
-                        Width="160"
-                        Padding="8"
-                        BackgroundType="White"
-                        Visibility="{Binding IsMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <Style x:Key="MenuItemStyle" TargetType="Border">
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Setter Property="CornerRadius" Value="3" />
-                                    <Setter Property="Padding" Value="4,2" />
-                                    <Setter Property="Margin" Value="0,0,0,6" />
-                                </Style>
-                            </StackPanel.Resources>
+                        <!--  Overlays  -->
+                        <uc:MapOverlayVisual
+                            Canvas.Left="0"
+                            Canvas.Top="0"
+                            Width="{Binding ViewportWidthPx}"
+                            Height="{Binding ViewportHeightPx}"
+                            Items="{Binding OverlaySnapshot}" />
 
-                            <Border
-                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=0}"
-                                BorderThickness="2"
-                                Style="{StaticResource MenuItemStyle}">
-                                <TextBlock
-                                    FontSize="11"
-                                    Foreground="#333"
-                                    Text="Pokedex" />
-                            </Border>
-                            <Border
-                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=1}"
-                                BorderThickness="2"
-                                Style="{StaticResource MenuItemStyle}">
-                                <TextBlock
-                                    FontSize="11"
-                                    Foreground="#333"
-                                    Text="Bag" />
-                            </Border>
-                            <Border
-                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=2}"
-                                BorderThickness="2"
-                                Style="{StaticResource MenuItemStyle}">
-                                <TextBlock
-                                    FontSize="11"
-                                    Foreground="#333"
-                                    Text="Pokemon" />
-                            </Border>
-                            <Border
-                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=3}"
-                                BorderThickness="2"
-                                Style="{StaticResource MenuItemStyle}">
-                                <TextBlock
-                                    FontSize="11"
-                                    Foreground="#333"
-                                    Text="Player" />
-                            </Border>
-                            <Border
-                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=4}"
-                                BorderThickness="2"
-                                Style="{StaticResource MenuItemStyle}">
-                                <TextBlock
-                                    FontSize="11"
-                                    Foreground="#333"
-                                    Text="Save" />
-                            </Border>
-                            <Border
-                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=5}"
-                                BorderThickness="2"
-                                Style="{StaticResource MenuItemStyle}">
-                                <TextBlock
-                                    FontSize="11"
-                                    Foreground="#333"
-                                    Text="Options" />
-                            </Border>
-                            <Border
-                                BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=6}"
-                                BorderThickness="2"
-                                Style="{StaticResource MenuItemStyle}">
-                                <TextBlock
-                                    FontSize="11"
-                                    Foreground="#333"
-                                    Text="Exit" />
-                            </Border>
-                        </StackPanel>
-                    </controls:BoardBackground>
+                        <!--  Player sprite  -->
+                        <Image
+                            Canvas.Left="{Binding PlayerPixelX}"
+                            Canvas.Top="{Binding PlayerPixelY}"
+                            Width="48"
+                            Height="72"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor"
+                            Source="{Binding PlayerImage}" />
 
-                    <!--  Dialogue  -->
-                    <uc:DialogueBoxControl
-                        Canvas.Left="20"
-                        Canvas.Bottom="12"
-                        Width="{Binding ViewportWidthPx}"
-                        Panel.ZIndex="10" />
+                        <!--  Menu  -->
+                        <controls:BoardBackground
+                            Canvas.Top="8"
+                            Canvas.Right="8"
+                            Width="160"
+                            Padding="8"
+                            BackgroundType="White"
+                            Visibility="{Binding IsMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel>
+                                <StackPanel.Resources>
+                                    <Style x:Key="MenuItemStyle" TargetType="Border">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="CornerRadius" Value="3" />
+                                        <Setter Property="Padding" Value="4,2" />
+                                        <Setter Property="Margin" Value="0,0,0,6" />
+                                    </Style>
+                                </StackPanel.Resources>
 
-                </Canvas>
-            </Grid>
+                                <Border
+                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=0}"
+                                    BorderThickness="2"
+                                    Style="{StaticResource MenuItemStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#333"
+                                        Text="Pokedex" />
+                                </Border>
+                                <Border
+                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=1}"
+                                    BorderThickness="2"
+                                    Style="{StaticResource MenuItemStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#333"
+                                        Text="Bag" />
+                                </Border>
+                                <Border
+                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=2}"
+                                    BorderThickness="2"
+                                    Style="{StaticResource MenuItemStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#333"
+                                        Text="Pokemon" />
+                                </Border>
+                                <Border
+                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=3}"
+                                    BorderThickness="2"
+                                    Style="{StaticResource MenuItemStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#333"
+                                        Text="Player" />
+                                </Border>
+                                <Border
+                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=4}"
+                                    BorderThickness="2"
+                                    Style="{StaticResource MenuItemStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#333"
+                                        Text="Save" />
+                                </Border>
+                                <Border
+                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=5}"
+                                    BorderThickness="2"
+                                    Style="{StaticResource MenuItemStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#333"
+                                        Text="Options" />
+                                </Border>
+                                <Border
+                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=6}"
+                                    BorderThickness="2"
+                                    Style="{StaticResource MenuItemStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="#333"
+                                        Text="Exit" />
+                                </Border>
+                            </StackPanel>
+                        </controls:BoardBackground>
+
+                        <!--  Dialogue  -->
+                        <uc:DialogueBoxControl
+                            Canvas.Left="20"
+                            Canvas.Bottom="12"
+                            Width="{Binding ViewportWidthPx}"
+                            Panel.ZIndex="10" />
+
+                    </Canvas>
+                </Grid>
+            </Viewbox>
+
         </ScrollViewer>
     </Grid>
 </Page>

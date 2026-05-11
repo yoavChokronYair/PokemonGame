@@ -75,9 +75,10 @@
                 <local2:StoryLogIn />
             </DataTemplate>
         </Grid.Resources>
-        <Viewbox Stretch="Uniform">
-            <Frame Content="{Binding CurrentViewModel}" NavigationUIVisibility="Hidden" />
-        </Viewbox>
+        <Frame
+            Background="Transparent"
+            Content="{Binding CurrentViewModel}"
+            NavigationUIVisibility="Hidden" />
 
     </Grid>
 </Window>
