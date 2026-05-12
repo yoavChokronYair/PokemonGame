@@ -15,7 +15,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.Trainer
         public string PlayTime { get; } = PlayerDomain.Instance.trainerInfo.TimePlayed.ToString(@"hh\:mm\:ss");
         public string Money { get; } = PlayerDomain.Instance.trainerInfo.Money.ToString();
         public int HallOfFameDebut { get; } = PlayerDomain.Instance.trainerInfo.HallOfFameDebut;
-        public ObservableCollection<PokemonState> Team { get; }
+        public ObservableCollection<PokemonPlayerDomain> Team { get; }
 
 
         public ObservableCollection<BadgeDomain> Badges { get; }
@@ -43,8 +43,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.Trainer
         {
             TrainerCardImage = ResolveCardImage(_isFront, PlayerDomain.Instance.trainerInfo.Gender);
             Badges = InitBadges();
-            Team = new ObservableCollection<PokemonState>(
-                PlayerDomain.Instance.Team?.Members ?? Enumerable.Empty<PokemonState>()); FlipCommand = new RelayCommand(() => IsFront = !IsFront);
+            Team = new ObservableCollection<PokemonPlayerDomain>(
+                PlayerDomain.Instance.Team?.Members ?? Enumerable.Empty<PokemonPlayerDomain>()); FlipCommand = new RelayCommand(() => IsFront = !IsFront);
         }
 
         private static string ResolveCardImage(bool isFront, Gender gender)

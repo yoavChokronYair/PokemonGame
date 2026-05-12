@@ -7,7 +7,7 @@ namespace PokemonGame.Model.Model.Npc
 { 
     public class PokemontradingNpcState : NpcDomain
     {
-        public PokemonState Offered { get; set; }
+        public PokemonPlayerDomain Offered { get; set; }
         public int PokemonRequested { get; set; }
 
         public override void OnDialogueFinishedTrue()

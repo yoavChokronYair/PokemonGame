@@ -167,5 +167,36 @@ namespace PokemonGame.Model.Domain.Pokemon
 
             return playerPokemon;
         }
+        // ─── Battle State ─────────────────────────────────────────────────────────
+
+        /// <summary>Stat stage modifiers (-6 to +6) for Attack, Defense, SpAtk, SpDef, Speed, Accuracy, Evasion</summary>
+        public int[] StatStages { get; private set; } = new int[7]; // Atk, Def, SpA, SpD, Spe, Acc, Eva
+
+        public List<object> VolatileStatuses { get; set; } = new();  // swap object for your volatile-status type
+
+        public int LastDamageDealt { get; set; }
+        public int LastDamageTaken { get; set; }
+        public int turnsActive { get; set; }
+
+        // ─── Identity Shortcut ────────────────────────────────────────────────────
+
+        /// <summary>Pokédex ID — delegates to the underlying state.</summary>
+        public int PokedexId => PokemonState.PokedexId;
+
+        // ─── Battle-State Reset Methods ───────────────────────────────────────────
+
+        /// <summary>
+        /// Resets all stat stages to 0 (used on switch-out or after battle).
+        /// </summary>
+        public void ResetStatStages()
+        {
+            for (int i = 0; i < StatStages.Length; i++)
+                StatStages[i] = 0;
+        }
+
+        /// <summary>
+        /// Clears persistent status condition.
+        /// </summary>
+        public void ClearStatus() => PersistentStatus = StatusCondition.None;
     }
 }
