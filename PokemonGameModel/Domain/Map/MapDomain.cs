@@ -82,6 +82,7 @@ namespace PokemonGame.Model.Domain.Map
         public int BaseFriendshipYield { get; set; }
         public int CatchRate { get; set; }
         public int femaleRatio { get; set; }
+        public GrowthRateType GrowthRate { get; set; }
     }
 
     public class NpcObjectDomain

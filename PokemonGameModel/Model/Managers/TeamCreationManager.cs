@@ -2,8 +2,10 @@
 using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Enums;
 using PokemonGame.Model.Config;
+using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Model.Managers
@@ -119,6 +121,198 @@ namespace PokemonGame.Model.Model.Managers
         private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum =>
             Enum.TryParse<TEnum>(value, true, out var result) ? result : default;
     }
- 
+    public static class PokemonConversionService
+    {
+        // ══════════════════════════════════════════════════════════════════════
+        // PlayerTeam  →  PokemonTeam   (entering battle)
+        // ══════════════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Builds a battle-ready PokemonTeam from the player's active team.
+        /// The PokemonState objects are the same references, so post-battle
+        /// sync only needs to copy the fields that battle can mutate.
+        /// </summary>
+        public static PokemonTeam ToBattleTeam(PlayerTeamDomain playerTeam)
+        {
+            var states = playerTeam.ActiveMembers
+                .Select(p => p.PokemonState)
+                .ToList();
+
+            return PokemonTeam.Create(states);
+        }
+
+
+        // ══════════════════════════════════════════════════════════════════════
+        // PokemonTeam  →  PlayerTeam   (post-battle sync)
+        // ══════════════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// After a battle, writes all mutable battle fields from each
+        /// PokemonState back into the matching PlayerPokemon.
+        /// Matches by PokemonState reference identity (same object), so order
+        /// in the two collections does not need to match.
+        /// </summary>
+        public static void SyncAfterBattle(
+            PlayerTeamDomain playerTeam,
+            PokemonTeam battleTeam,
+            BattleReward reward)
+        {
+            // Build a quick lookup: PokemonState → PlayerPokemon
+            var lookup = playerTeam.ActiveMembers
+                .ToDictionary(p => p.PokemonState);
+
+            foreach (var state in battleTeam.Members)
+            {
+                if (!lookup.TryGetValue(state, out var playerPokemon))
+                    continue; // safety — should never happen
+
+                // ── HP & Status (always mutated in battle) ────────────────────
+                playerPokemon.CurrentHP = state.CurrentHP;
+                playerPokemon.PersistentStatus = state.Status;
+
+                // ── Move PP (consumed during battle) ──────────────────────────
+                for (int i = 0; i < playerPokemon.Moves.Length; i++)
+                {
+                    if (playerPokemon.Moves[i] != null && i < state.Moves.Count)
+                        playerPokemon.Moves[i]!.PP = ((MoveState)state.Moves[i]).PP;
+                }
+            }
+
+            // ── Experience & EV gains ─────────────────────────────────────────
+            foreach (var gain in reward.ExpGains)
+            {
+                if (!lookup.TryGetValue(gain.Target, out var playerPokemon))
+                    continue;
+
+                playerPokemon.Experience += gain.Amount;
+
+                // Level-up loop
+                while (playerPokemon.Experience >= playerPokemon.ExperienceToNextLevel
+                       && playerPokemon.PokemonState.Level < 100)
+                {
+                    playerPokemon.Experience -= playerPokemon.ExperienceToNextLevel;
+                    playerPokemon.PokemonState.Level++;
+                }
+            }
+
+            foreach (var gain in reward.EvGains)
+            {
+                if (!lookup.TryGetValue(gain.Target, out var playerPokemon))
+                    continue;
+
+                ApplyEV(playerPokemon, gain.Stat, gain.Amount);
+            }
+
+            // ── Friendship (post-battle tick) ─────────────────────────────────
+            foreach (var playerPokemon in playerTeam.ActiveMembers)
+                playerPokemon.Friendship = MathHelper.Clamp(playerPokemon.Friendship + reward.FriendshipTick, 0, 255);
+        }
+
+
+        // ══════════════════════════════════════════════════════════════════════
+        // WildPokemonDomain  →  PlayerPokemon   (after a successful catch)
+        // ══════════════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Creates a PlayerPokemon from a wild Pokémon that was just caught.
+        /// Copies IVs/EVs from PokemonState into the flat PlayerPokemon fields
+        /// so they can be edited independently (rare candies, vitamins, etc.).
+        /// </summary>
+        public static PokemonPlayerDomain FromWildCatch(
+            WildPokemonDomain wild,
+            string caughtOnRoute,
+            PokeBallType ballUsed)
+        {
+            var state = wild.pokemonState;
+
+            var playerPokemon = new PokemonPlayerDomain(wild, ObtainMethodType.Caught, caughtOnRoute)
+            {
+                CaughtWithBall = ballUsed,
+                Friendship = wild.BaseFriendshipYield,
+
+                // ── IVs (from state array if present) ─────────────────────────
+                IV_HP = state.IVs is { Length: >= 6 } ? state.IVs[0] : RNGHelper.GenerateIV(),
+                IV_Attack = state.IVs is { Length: >= 6 } ? state.IVs[1] : RNGHelper.GenerateIV(),
+                IV_Defense = state.IVs is { Length: >= 6 } ? state.IVs[2] : RNGHelper.GenerateIV(),
+                IV_SpecialAttack = state.IVs is { Length: >= 6 } ? state.IVs[3] : RNGHelper.GenerateIV(),
+                IV_SpecialDefense = state.IVs is { Length: >= 6 } ? state.IVs[4] : RNGHelper.GenerateIV(),
+                IV_Speed = state.IVs is { Length: >= 6 } ? state.IVs[5] : RNGHelper.GenerateIV(),
+
+                // Wild Pokémon always start with zero EVs
+                EV_HP = 0,
+                EV_Attack = 0,
+                EV_Defense = 0,
+                EV_SpecialAttack = 0,
+                EV_SpecialDefense = 0,
+                EV_Speed = 0,
+            };
+
+            // Copy current moves into MoveSlots
+            for (int i = 0; i < Math.Min(state.Moves.Count, 4); i++)
+            {
+                playerPokemon.Moves[i] = ((MoveState)state.Moves[i]).Clone();
+            }
+
+            return playerPokemon;
+        }
+
+
+        // ══════════════════════════════════════════════════════════════════════
+        // Helpers
+        // ══════════════════════════════════════════════════════════════════════
+
+        private static void ApplyEV(PokemonPlayerDomain pokemon, Stat stat, int amount)
+        {
+            // Hard cap: no single stat above 252, total across all stats 510
+            if (pokemon.TotalEVs >= 510) return;
+
+            int headroom = Math.Min(510 - pokemon.TotalEVs, amount);
+
+            switch (stat)
+            {
+                case Stat.HP: pokemon.EV_HP = Math.Min(252, pokemon.EV_HP + headroom); break;
+                case Stat.Attack: pokemon.EV_Attack = Math.Min(252, pokemon.EV_Attack + headroom); break;
+                case Stat.Defense: pokemon.EV_Defense = Math.Min(252, pokemon.EV_Defense + headroom); break;
+                case Stat.SpecialAttack: pokemon.EV_SpecialAttack = Math.Min(252, pokemon.EV_SpecialAttack + headroom); break;
+                case Stat.SpecialDefense: pokemon.EV_SpecialDefense = Math.Min(252, pokemon.EV_SpecialDefense + headroom); break;
+                case Stat.Speed: pokemon.EV_Speed = Math.Min(252, pokemon.EV_Speed + headroom); break;
+            }
+        }
+    }
+
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // Supporting reward DTOs  (pure data, no logic)
+    // ══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>Everything the battle system awards at the end of a fight.</summary>
+    public class BattleReward
+    {
+        /// <summary>Exp points each participating Pokémon earns.</summary>
+        public List<ExpGain> ExpGains { get; set; } = new();
+
+        /// <summary>EV points each participating Pokémon earns.</summary>
+        public List<EvGain> EvGains { get; set; } = new();
+
+        /// <summary>Flat friendship added to every team member after the battle.</summary>
+        public int FriendshipTick { get; set; } = 0;
+
+        /// <summary>Money awarded to the player.</summary>
+        public int MoneyAwarded { get; set; } = 0;
+    }
+
+    public class ExpGain
+    {
+        /// <summary>The PokemonState that participated (matched by reference in sync).</summary>
+        public PokemonState Target { get; set; } = null!;
+        public int Amount { get; set; }
+    }
+
+    public class EvGain
+    {
+        public PokemonState Target { get; set; } = null!;
+        public Stat Stat { get; set; }
+        public int Amount { get; set; }
+    }
 }
 

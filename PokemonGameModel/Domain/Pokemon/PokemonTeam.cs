@@ -64,7 +64,7 @@ namespace PokemonGame.Model.Domain.Pokemon
             return -1; // not found
         }
         //TODO:add proper evolution handling here, this is just a placeholder to get the flow working
-        public bool TradePokemon(PokemonState currentPokemon, PokemonState newPokemon)
+       public bool TradePokemon(PokemonState currentPokemon, PokemonState newPokemon)
         {
             if (currentPokemon == null || newPokemon == null)
                 return false;
@@ -83,7 +83,7 @@ namespace PokemonGame.Model.Domain.Pokemon
             }
             return true;
         }
-        private void FixActiveAfterTrade()
+        private void FixActiveAfterTrade() 
         {
             if (_slots[_activeIndex] != null && !_slots[_activeIndex].IsFainted)
                 return;

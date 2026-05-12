@@ -13,7 +13,7 @@ namespace PokemonGame.Model.Domain.Player
 
         public TrainerInfoDomain trainerInfo { get; set; } = new();
         public TrainerMapLocDomain trainerMapLocDomain { get; set; } = new();
-        public PokemonTeam Team { get; set; }
+        public PlayerTeamDomain Team { get; set; }
         public ProggressFlagDomain ProgressFlags { get; set; } = new();
         // ── Inventory ────────────────────────────────────────────────────────
         public TrainerItemDomain trainerItemDomain { get; set; } = new();
@@ -112,7 +112,7 @@ namespace PokemonGame.Model.Domain.Player
     public class TrainerItemDomain
     {
         public Dictionary<itemsDomain, int> BagInventory { get; set; } = new();
-        public Dictionary<string, (List<PokemonState>, string)> BoxStorage { get; set; } = new(); // name - pokemon list - wallpaper
+        public Dictionary<string, (List<PokemonPlayerDomain>, string)> BoxStorage { get; set; } = new(); // name - pokemon list - wallpaper
         public KeyItemState RegisterKey { get; set; }
         public bool HasRunningShoes { get; set; }
     }

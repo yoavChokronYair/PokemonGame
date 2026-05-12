@@ -64,6 +64,11 @@ namespace PokemonGame.Model.Domain.Move
             battle.Logger.Log($"{battle.Attacker.Name} used {Name}!");
             _attempt.Execute(battle);
         }
+        public MoveState Clone()
+        {
+            return new MoveState(
+                _attempt, Name, Element, Category, PP, Target, Tag, Priority, CritStage, Description);
 
+        }
     }
 }

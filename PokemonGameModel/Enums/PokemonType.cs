@@ -38,5 +38,14 @@
         Location,
         MoveLearned
     }
+    public enum GrowthRateType
+    {
+        Erratic,        // Fastest early, slowest late
+        Fast,
+        MediumFast,     // Standard cubic: n^3
+        MediumSlow,
+        Slow,
+        Fluctuating     // Slowest early, fastest late
+    }
 
 }

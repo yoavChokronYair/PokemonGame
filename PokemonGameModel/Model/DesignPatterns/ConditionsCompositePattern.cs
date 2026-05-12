@@ -266,20 +266,6 @@ namespace PokemonGame.Model.Model.DesignPatterns
         public bool Check(PokemonState pokemon) => pokemon.IsFainted;
     }
 
-    // status
-    // ── Team conditions ───────────────────────────────────────────────────────────
-
-    public class TeamHasPokemon : ICondition<PlayerDomain>
-    {
-        private readonly int _pokedexId;
-        public TeamHasPokemon(int pokedexId) { _pokedexId = pokedexId; }
-        public bool Check(PlayerDomain player) => player.Team.ContainsPokemon(_pokedexId);
-    }
-
-    public class TeamHasSpace : ICondition<PlayerDomain>
-    {
-        public bool Check(PlayerDomain player) => player.Team.getAllPokemonCount() < PokemonConstants.PartyCapacity;
-    }
 
     // ── Inventory conditions ──────────────────────────────────────────────────────
 

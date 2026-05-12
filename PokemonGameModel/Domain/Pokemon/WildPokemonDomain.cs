@@ -10,7 +10,7 @@ using PokemonGame.Model.Helper;
 namespace PokemonGame.Model.Domain.Pokemon
 {
     //TODO:Modify it to be bot level wildPokemon
-    public class WildPokemonState
+    public class WildPokemonDomain
     {
         public PokemonState pokemonState;
         public (Stat stat, int amount)? EvYield { get; set; }
@@ -18,7 +18,8 @@ namespace PokemonGame.Model.Domain.Pokemon
         public int BaseExpYield { get; set; }
         public int BaseFriendshipYield { get; set; }
         public int CatchRate { get; set; }
-        public WildPokemonState(EncounterDomain encounter)
+        public GrowthRateType GrowthRate { get; set; }
+        public WildPokemonDomain(EncounterDomain encounter)
         {
             RNGHelper rNGHelper = RNGHelper.GenerateRandomPokemonIdentity(PlayerDomain.Instance.trainerInfo.TrainerID);
             this.pokemonState = encounter.Pokemon;
@@ -31,6 +32,7 @@ namespace PokemonGame.Model.Domain.Pokemon
             pokemonState.IsShiny = rNGHelper.IsShiny();
             pokemonState.gender = rNGHelper.IsFemale(encounter.femaleRatio);
             BotLevel = BotLevel.Easy;
+            GrowthRate = encounter.GrowthRate;
         }
     }
 }
