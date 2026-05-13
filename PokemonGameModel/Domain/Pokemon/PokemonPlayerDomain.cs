@@ -117,7 +117,9 @@ namespace PokemonGame.Model.Domain.Pokemon
                     Moves[i] = wild.pokemonState.Moves[i] as MoveState;
             }
         }
-
+        public PokemonPlayerDomain()
+        {
+        }
         // ─── Factory Methods ──────────────────────────────────────────────────
 
         /// <summary>

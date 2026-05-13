@@ -5,7 +5,7 @@ namespace PokemonGame.Services.Interfaces
 {
     public interface IPokemonService
     {
-        PokemonLoadResult? GetPokemon(int pokemonId);
+        PokemonLoadResult? LoadPokemon(int pokemonId);
         PokemonLoadResult GetPokemonFromInstance(BattlerPokemon battler);
         List<PokemonLoadResult> LoadTeamResults(int battlePlayerId);
         List<PokemonLoadResult> GenerateRandomTeam(int count = 6, int level = 50);

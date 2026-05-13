@@ -82,6 +82,7 @@ namespace PokemonGame.Services.Factory
         internal PokedexRepository PokedexRepository { get; }
         internal PartyRepository PartyRepository { get; }
         internal StoryPlayerRepository StoryPlayerRepository { get; }
+        internal StoryPlayerPokemonRepository StoryPlayerPokemonRepository { get; }
 
         // ── Constructor ───────────────────────────────────────────────────────
         public ServiceFactory(IDbConnectionService db)
@@ -133,6 +134,7 @@ namespace PokemonGame.Services.Factory
             PokedexRepository = new PokedexRepository(db);
             PartyRepository = new PartyRepository(db);
             StoryPlayerRepository = new StoryPlayerRepository(db);
+            StoryPlayerPokemonRepository = new StoryPlayerPokemonRepository(db);
 
             UserService = new LocalUserService(UserRepository);
             ProfileService = new LocalProfileService(OnlinePlayerRepository, BattlePlayerSettingsRepository,
@@ -171,9 +173,19 @@ namespace PokemonGame.Services.Factory
             ItemService = new LocalItemService(
                 ItemRepository, ConditionRepository, EffectRepository, NumberRepository);
             StoryPlayerService = new LocalStoryPlayerService(
-                TrainerInfoRepository, BadgeRepository, StoryFlagRepository,
-                DefeatedTrainerRepository, ItemTakenRepository, TradedPokemonRepository,
-                BagInventoryRepository, PokedexRepository, PartyRepository, StoryPlayerRepository);
+                TrainerInfoRepository,
+                BadgeRepository,
+                StoryFlagRepository,
+                DefeatedTrainerRepository,
+                ItemTakenRepository,
+                TradedPokemonRepository,
+                BagInventoryRepository,
+                PokedexRepository,
+
+                // CHANGED
+                StoryPlayerPokemonRepository,
+
+                StoryPlayerRepository);
         }
 
         // ── Factory methods ───────────────────────────────────────────────────

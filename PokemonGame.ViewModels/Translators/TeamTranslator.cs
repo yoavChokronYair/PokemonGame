@@ -43,6 +43,7 @@ namespace PokemonGame.ViewModels.Translators
             return _teamCreator.BuildTeam(roster);
         }
 
+
         public PokemonState TranslateToDomain(PokemonLoadResult result) =>
             _teamCreator.BuildPokemon(ToCreationData(result));
 

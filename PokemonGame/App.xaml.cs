@@ -182,8 +182,8 @@ namespace PokemonGame
         }
         private TrainerCardViewModel CreateTrainerCardViewModel()
         {
-            return new TrainerCardViewModel();
+            return new TrainerCardViewModel(_navigationStore,CreateMapViewModel);
         }
-        private MapViewModel CreateMapViewModel() => new MapViewModel();
+        private MapViewModel CreateMapViewModel() => new MapViewModel(_navigationStore, CreateTrainerCardViewModel);
     }
 }

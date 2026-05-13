@@ -135,7 +135,7 @@ namespace PokemonGame.ViewModels.Translators
                                  e.OnFail != null ? TranslateEffect(e.OnFail) : null),
 
             // ── Fallback ─────────────────────────────────────────────────────
-            _ => throw new NotSupportedException($"Unknown effect type: '{e.Type}'")
+            _ => new NoEffect()
         };
 
         // ── Helpers ──────────────────────────────────────────────────────────

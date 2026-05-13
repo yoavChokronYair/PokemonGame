@@ -46,7 +46,7 @@ namespace PokemonGame.Services.Handler
         }
 
         // ── All method bodies identical to your existing PokemonService ───────
-        public PokemonLoadResult? GetPokemon(int pokemonId)
+        public PokemonLoadResult? LoadPokemon(int pokemonId)
         {
             var battler = _battlerRepo.GetPokemonInstance(pokemonId);
             if (battler == null) return null;
@@ -84,7 +84,7 @@ namespace PokemonGame.Services.Handler
             var members = _memberRepo.GetTeamMembers(team.Id);
             return members
                 .OrderBy(m => m.Slot_number)
-                .Select(m => GetPokemon(m.PokemonID)
+                .Select(m => LoadPokemon(m.PokemonID)
                     ?? throw new InvalidOperationException($"Member ID {m.PokemonID} data missing."))
                 .ToList();
         }

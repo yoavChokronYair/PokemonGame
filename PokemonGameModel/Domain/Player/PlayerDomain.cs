@@ -18,7 +18,7 @@ namespace PokemonGame.Model.Domain.Player
         // ── Inventory ────────────────────────────────────────────────────────
         public TrainerItemDomain trainerItemDomain { get; set; } = new();
 
-        public Dictionary<int, (bool seen, bool caught)> Pokedex { get; set; } = new();
+        public Dictionary<int, (bool seen, bool caught,string name)> Pokedex { get; set; } = new();
 
         // ── Badge count (derived) ─────────────────────────────────────────────
         public List<BadgeDomain> Badges { get; set; } = new();

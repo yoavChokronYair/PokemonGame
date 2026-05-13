@@ -43,6 +43,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
     //just fields propertys,constructor, and InitializeAsync
     public partial class MapViewModel : ViewModelBase, IDisposable, IFocusTarget
     {
+        private readonly NavigationStore _navigationStore;
+        private readonly Func<ViewModelBase> _createTrainerCardViewModel;   
         public const double CellPx = 72.0;
         private const int MapTilePx = 8;
 
@@ -74,6 +76,12 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private NpcObjectDomain _activeNpc;
 
         // ── Observable properties ─────────────────────────────────────────────
+        private string _playerName;
+        public string PlayerName
+        {
+            get => _playerName;
+            private set => SetProperty(ref _playerName, value);
+        }
         private ImageSource _mapImageSource;
         public ImageSource MapImageSource
         {
@@ -149,11 +157,12 @@ namespace PokemonGame.ViewModels.ViewModelPage
         }
 
         // ── Constructor ───────────────────────────────────────────────────────
-        public MapViewModel()
+        public MapViewModel(NavigationStore navigationStore, Func<ViewModelBase> createTrainerCardViewModel)
         {
+            _navigationStore = navigationStore;
             _player = PlayerDomain.Instance;
             _mapLoader = new MapLoader(new MapService());
-
+            PlayerName = _player.trainerInfo.Name;
             InitCommands();
             Dialogue.FocusRequested += () => _focusCallback?.Invoke();
 
@@ -162,6 +171,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 if (t.IsFaulted)
                     System.Diagnostics.Debug.WriteLine("InitializeAsync failed: " + t.Exception);
             });
+            _createTrainerCardViewModel = createTrainerCardViewModel;
         }
 
         private async Task InitializeAsync()
@@ -304,10 +314,10 @@ namespace PokemonGame.ViewModels.ViewModelPage
             OpenPokedexCommand = new RelayCommand(() => { /* TODO */ });
             OpenBagCommand = new RelayCommand(() => { /* TODO */ });
             OpenPokemonCommand = new RelayCommand(() => { /* TODO */ });
-            OpenPlayerCommand = new RelayCommand(() => { /* TODO */ });
+            OpenPlayerCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createTrainerCardViewModel(); });
             SaveCommand = new RelayCommand(() => { /* TODO */ });
             OpenOptionsCommand = new RelayCommand(() => { /* TODO */ });
-            ExitCommand = new RelayCommand(() => Application.Current.Shutdown());
+            ExitCommand = new RelayCommand(() => IsMenuOpen = false);
         }
     }
     //menu

@@ -22,12 +22,16 @@ namespace PokemonGame.Services.Handler
         private readonly TradedPokemonRepository _tradedPokemonRepo;
         private readonly BagInventoryRepository _bagInventoryRepo;
         private readonly PokedexRepository _pokedexRepo;
-        private readonly PartyRepository _partyRepo;
+
+        // CHANGED
+        private readonly StoryPlayerPokemonRepository _partyRepo;
+
         private readonly StoryPlayerRepository _storyPlayerRepo;
 
         public LocalStoryPlayerService()
         {
             var f = ServiceFactory.Instance;
+
             _trainerInfoRepo = f.TrainerInfoRepository;
             _badgeRepo = f.BadgeRepository;
             _storyFlagRepo = f.StoryFlagRepository;
@@ -36,7 +40,10 @@ namespace PokemonGame.Services.Handler
             _tradedPokemonRepo = f.TradedPokemonRepository;
             _bagInventoryRepo = f.BagInventoryRepository;
             _pokedexRepo = f.PokedexRepository;
-            _partyRepo = f.PartyRepository;
+
+            // CHANGED
+            _partyRepo = f.StoryPlayerPokemonRepository;
+
             _storyPlayerRepo = f.StoryPlayerRepository;
         }
 
@@ -49,7 +56,10 @@ namespace PokemonGame.Services.Handler
             TradedPokemonRepository tradedPokemonRepo,
             BagInventoryRepository bagInventoryRepo,
             PokedexRepository pokedexRepo,
-            PartyRepository partyRepo,
+
+            // CHANGED
+            StoryPlayerPokemonRepository partyRepo,
+
             StoryPlayerRepository storyPlayerRepo)
         {
             _trainerInfoRepo = trainerInfoRepo;
@@ -60,7 +70,10 @@ namespace PokemonGame.Services.Handler
             _tradedPokemonRepo = tradedPokemonRepo;
             _bagInventoryRepo = bagInventoryRepo;
             _pokedexRepo = pokedexRepo;
+
+            // CHANGED
             _partyRepo = partyRepo;
+
             _storyPlayerRepo = storyPlayerRepo;
         }
 
@@ -68,7 +81,11 @@ namespace PokemonGame.Services.Handler
 
         public void SetStoryPlayer(int userId)
         {
-            var player = new StoryPlayerData { UserID = userId };
+            var player = new StoryPlayerData
+            {
+                UserID = userId
+            };
+
             _storyPlayerRepo.Save(player);
         }
 
@@ -78,7 +95,7 @@ namespace PokemonGame.Services.Handler
         {
             var player = _storyPlayerRepo.GetPlayerUserId(userId)
                 ?? throw new InvalidOperationException(
-                       $"No story player found for user {userId}.");
+                    $"No story player found for user {userId}.");
 
             int pid = player.PlayerID;
 
@@ -93,9 +110,15 @@ namespace PokemonGame.Services.Handler
                 TradedPokemon = _tradedPokemonRepo.LoadAll(pid),
                 BagInventory = _bagInventoryRepo.LoadAll(pid),
                 Pokedex = _pokedexRepo.LoadAll(pid),
-                Party = _partyRepo.LoadAll(pid),
+
+                // IMPORTANT:
+                // This now loads FULL party pokemon records
+                // including BattlerPokemonId
+                Party = _partyRepo.LoadAll(pid)
             };
         }
+
+        // ── Summaries ─────────────────────────────────────────────────────────
 
         public List<StoryPlayerSummary> GetSummaries(int userId)
         {
@@ -104,7 +127,10 @@ namespace PokemonGame.Services.Handler
             return players.Select(p =>
             {
                 var trainerInfo = _trainerInfoRepo.Load(p.PlayerID);
-                var badgeCount = _badgeRepo.LoadAll(p.PlayerID).Count(b => b.IsObtained == 1);
+
+                var badgeCount = _badgeRepo
+                    .LoadAll(p.PlayerID)
+                    .Count(b => b.IsObtained == 1);
 
                 return new StoryPlayerSummary
                 {
@@ -124,15 +150,43 @@ namespace PokemonGame.Services.Handler
             int pid = save.CurrentPlayer.PlayerID;
 
             _trainerInfoRepo.Save(save.TrainerInfo);
+
             _badgeRepo.SaveAll(save.Badges);
+
             _bagInventoryRepo.SaveAll(save.BagInventory);
+
             _pokedexRepo.SaveAll(save.Pokedex);
+
+            // IMPORTANT:
+            // clear old party before saving
+            _partyRepo.Clear(pid);
+
+            foreach (var pokemon in save.Party)
+            {
+                pokemon.PlayerID = pid;
+            }
+
             _partyRepo.SaveAll(save.Party);
 
-            foreach (var flagId in save.StoryFlags) _storyFlagRepo.Add(pid, flagId);
-            foreach (var trainerId in save.DefeatedTrainers) _defeatedTrainerRepo.Add(pid, trainerId);
-            foreach (var npcId in save.ItemsTaken) _itemTakenRepo.Add(pid, npcId);
-            foreach (var pokedexId in save.TradedPokemon) _tradedPokemonRepo.Add(pid, pokedexId);
+            foreach (var flagId in save.StoryFlags)
+            {
+                _storyFlagRepo.Add(pid, flagId);
+            }
+
+            foreach (var trainerId in save.DefeatedTrainers)
+            {
+                _defeatedTrainerRepo.Add(pid, trainerId);
+            }
+
+            foreach (var npcId in save.ItemsTaken)
+            {
+                _itemTakenRepo.Add(pid, npcId);
+            }
+
+            foreach (var pokedexId in save.TradedPokemon)
+            {
+                _tradedPokemonRepo.Add(pid, pokedexId);
+            }
         }
     }
 
@@ -141,23 +195,38 @@ namespace PokemonGame.Services.Handler
     public class StorySaveTree
     {
         public StoryPlayerData CurrentPlayer { get; set; } = new();
+
         public TrainerInfoData TrainerInfo { get; set; } = new();
+
         public List<BadgeData> Badges { get; set; } = new();
+
         public List<int> StoryFlags { get; set; } = new();
+
         public List<int> DefeatedTrainers { get; set; } = new();
+
         public List<int> ItemsTaken { get; set; } = new();
+
         public List<int> TradedPokemon { get; set; } = new();
+
         public List<BagInventoryData> BagInventory { get; set; } = new();
+
         public List<PokedexData> Pokedex { get; set; } = new();
-        public List<PartyData> Party { get; set; } = new();
+
+        // CHANGED:
+        // full persistent pokemon data
+        public List<StoryPlayerPokemonData> Party { get; set; } = new();
     }
 
     public class StoryPlayerSummary
     {
         public int PlayerID { get; set; }
+
         public int UserID { get; set; }
+
         public string Name { get; set; } = "";
+
         public string TimePlayed { get; set; } = "00:00:00";
+
         public int BadgeCount { get; set; }
     }
 }

@@ -1,7 +1,13 @@
-﻿using PokemonGame.Model.Domain.Player;
+﻿using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Player;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Data.GameData.User;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
 
 namespace PokemonGame.ViewModels.Translators
@@ -22,6 +28,7 @@ namespace PokemonGame.ViewModels.Translators
         public PlayerDomain Load()
         {
             var save = _playerService.LoadAll(UserStore.Instance.UserID);
+
             var player = PlayerDomain.Instance;
 
             ApplyTrainerInfo(save.TrainerInfo, player);
@@ -31,9 +38,111 @@ namespace PokemonGame.ViewModels.Translators
             ApplyBagInventory(save.BagInventory, player);
             ApplyPokedex(save.Pokedex, player);
 
+            // CHANGED
+            ApplyParty(save.Party, player);
+
             return player;
         }
 
+        private static void ApplyParty(
+            List<StoryPlayerPokemonData> party,
+            PlayerDomain player)
+        {
+            player.Team = new PlayerTeamDomain();
+
+            var pokemonService = ServiceFactory.Instance.PokemonService;
+
+            var translator = new TeamTranslator(
+                pokemonService,
+                new MoveTranslator(),
+                new AbilityTranslator(),
+                new ItemTranslator());
+
+            foreach (var slot in party.OrderBy(p => p.Id))
+            {
+                // Load battler pokemon
+                PokemonLoadResult? result =
+                    pokemonService.LoadPokemon(slot.BattlerPokemonId);
+
+                if (result == null)
+                    continue;
+
+                // Build real PokemonState
+                PokemonState state =
+                    translator.TranslateToDomain(result);
+
+                state.CurrentHP = slot.CurrentHP;
+
+                // Build player pokemon
+                var pokemon = new PokemonPlayerDomain
+                {
+                    // Identity
+                    PokemonUID = slot.PokemonUID,
+
+                    PokemonState = state,
+
+                    Nickname = slot.Nickname,
+
+                    // OT
+                    OriginalTrainerID = slot.OriginalTrainerID,
+                    OriginalTrainerName = slot.OriginalTrainerName,
+
+                    // Catch data
+                    ObtainMethod = (ObtainMethodType)slot.ObtainMethod,
+                    ObtainedAtRoute = slot.ObtainedAtRoute,
+                    ObtainedAt = slot.ObtainedAt,
+                    ObtainedAtLevel = slot.ObtainedAtLevel,
+                    CaughtWithBall = (PokeBallType)slot.CaughtWithBall,
+                    MetLocationText = slot.MetLocationText,
+
+                    // Progression
+                    Experience = slot.Experience,
+
+                    GrowthRate = Enum.TryParse<GrowthRateType>(
+                        slot.GrowthRate,
+                        out var growth)
+                            ? growth
+                            : GrowthRateType.MediumFast,
+
+                    // Battle state
+                    CurrentHP = slot.CurrentHP,
+
+                    PersistentStatus =
+                        (StatusCondition)slot.StatusId,
+
+                    Friendship = slot.Friendship,
+                    Affection = slot.Affection,
+
+                    // IVs
+                    IV_HP = result.Battler.Iv_hp,
+                    IV_Attack = result.Battler.Iv_atk,
+                    IV_Defense = result.Battler.Iv_def,
+                    IV_SpecialAttack = result.Battler.Iv_spAtk,
+                    IV_SpecialDefense = result.Battler.Iv_spDef,
+                    IV_Speed = result.Battler.Iv_speed,
+
+                    // EVs
+                    EV_HP = result.Battler.Ev_hp,
+                    EV_Attack = result.Battler.Ev_atk,
+                    EV_Defense = result.Battler.Ev_def,
+                    EV_SpecialAttack = result.Battler.Ev_spAtk,
+                    EV_SpecialDefense = result.Battler.Ev_spDef,
+                    EV_Speed = result.Battler.Ev_speed,
+                };
+
+                // Copy moves
+                if (state.Moves != null)
+                {
+                    for (int i = 0; i < Math.Min(state.Moves.Count, 4); i++)
+                    {
+                        pokemon.Moves[i] =
+                            (MoveState)state.Moves[i];
+                    }
+                }
+
+                player.Team.TryAdd(pokemon);
+            }
+        }
         // ── Save ─────────────────────────────────────────────────────────────
 
         public void Save(PlayerDomain player)
@@ -120,7 +229,7 @@ namespace PokemonGame.ViewModels.Translators
         {
             player.Pokedex = entries.ToDictionary(
                 e => e.PokedexId,
-                e => (seen: e.Seen == 1, caught: e.Caught == 1));
+                e => (seen: e.Seen == 1, caught: e.Caught == 1, name: "test"));
         }
 
         // ── Extract helpers (domain → data) ──────────────────────────────────

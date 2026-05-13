@@ -83,4 +83,45 @@
         public int PlayerID { get; set; }
         public int PokedexId { get; set; }
     }
+    public class StoryPlayerPokemonData
+    {
+        public int Id { get; set; }
+
+        public int PlayerID { get; set; }
+
+        // Links to battler_pokemon.pokemonID
+        public int BattlerPokemonId { get; set; }
+
+        public string? Nickname { get; set; }
+
+        public int PokemonUID { get; set; }
+
+        public int OriginalTrainerID { get; set; }
+
+        public string OriginalTrainerName { get; set; } = "";
+
+        public int ObtainMethod { get; set; }
+
+        public string ObtainedAtRoute { get; set; } = "";
+
+        public DateTime ObtainedAt { get; set; }
+
+        public int ObtainedAtLevel { get; set; }
+
+        public int CaughtWithBall { get; set; }
+
+        public string MetLocationText { get; set; } = "";
+
+        public int Experience { get; set; }
+
+        public string GrowthRate { get; set; } = "MediumFast";
+
+        public int CurrentHP { get; set; }
+
+        public int StatusId { get; set; }
+
+        public int Friendship { get; set; }
+
+        public int Affection { get; set; }
+    }
 }

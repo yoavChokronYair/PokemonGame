@@ -148,7 +148,7 @@
                                     <TextBlock
                                         FontSize="11"
                                         Foreground="#333"
-                                        Text="Player" />
+                                        Text="{Binding PlayerName}" />
                                 </Border>
                                 <Border
                                     BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=4}"

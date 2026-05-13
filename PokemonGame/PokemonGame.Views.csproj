@@ -601,35 +601,16 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\Images\TallGrass.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\road.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Assets\Images\RivalPokemon.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\BattleBackground.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\Images\TextBackground.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\BattleMenu.png" />
+    <Resource Include="Assets\Images\TextBackgroundMap.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\TeamPokemon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\PokemonMoveSet.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\background.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\Backgrounds\Red\BottomLeft.png" />
@@ -641,19 +622,6 @@
     <Resource Include="Assets\Images\Backgrounds\Red\TopRight.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\TopMiddle.png" />
     <Resource Include="Assets\Images\Backgrounds\Red\TopLeft.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\PokeBallsBackground.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\tile_0.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\Images\GrassPath4.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\Backgrounds\White\BottomLeft.png">
@@ -711,6 +679,14 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\Badges\7.png" />
+    <Resource Include="Assets\Images\Badges\8.png" />
+    <Resource Include="Assets\Images\Badges\1.png" />
+    <Resource Include="Assets\Images\Badges\2.png" />
+    <Resource Include="Assets\Images\Badges\3.png" />
+    <Resource Include="Assets\Images\Badges\4.png" />
+    <Resource Include="Assets\Images\Badges\5.png" />
+    <Resource Include="Assets\Images\Badges\6.png" />
     <Resource Include="Assets\Images\Map\RedHouseFOne.png" />
     <Resource Include="Assets\Images\Map\PalletTown.png" />
     <Resource Include="Assets\Images\Map\RouteOne.png" />

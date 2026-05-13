@@ -2,10 +2,12 @@
     x:Class="PokemonGame.Views.Pages.Trainer.TrainerCard"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:PokemonGame.View.Behaviors"
     xmlns:converters="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="TrainerCard"
+    behaviors:FocusBehavior.FocusOnLoad="True"
     d:DesignHeight="450"
     d:DesignWidth="800"
     Focusable="True"
@@ -13,12 +15,15 @@
 
     <Page.Resources>
         <converters:BadgeIdToImageConverter x:Key="BadgeIdToImageConverter" />
+        <converters:PokemonIdToImageConverter x:Key="PokemonIdToImageConverter" />
+
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
     </Page.Resources>
 
     <Page.InputBindings>
         <KeyBinding Key="A" Command="{Binding FlipCommand}" />
+        <KeyBinding Key="Esc" Command="{Binding ExistCommand}" />
     </Page.InputBindings>
 
     <Grid>
@@ -65,11 +70,11 @@
                         <RowDefinition Height="29*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="70" />
-                        <ColumnDefinition Width="65" />
+                        <ColumnDefinition Width="64" />
+                        <ColumnDefinition Width="71" />
                         <ColumnDefinition Width="326" />
-                        <ColumnDefinition Width="95*" />
-                        <ColumnDefinition Width="47*" />
+                        <ColumnDefinition Width="93*" />
+                        <ColumnDefinition Width="46*" />
                     </Grid.ColumnDefinitions>
 
                     <!--  Trainer ID  -->
@@ -78,7 +83,6 @@
                         Height="20"
                         Margin="0,50,0,0"
                         VerticalAlignment="Top"
-                        FontFamily="Consolas"
                         FontSize="13"
                         Text="{Binding TrainerId}" />
 
@@ -87,8 +91,8 @@
                         Grid.Row="1"
                         Grid.Column="2"
                         Height="39"
-                        VerticalAlignment="Bottom"
-                        FontFamily="Consolas"
+                        Margin="0,17,0,0"
+                        VerticalAlignment="Top"
                         FontSize="20"
                         Text="{Binding TrainerName}" />
 
@@ -96,8 +100,9 @@
                     <TextBlock
                         Grid.Row="2"
                         Grid.Column="2"
-                        VerticalAlignment="Bottom"
-                        FontFamily="Consolas"
+                        Height="33"
+                        Margin="0,34,0,0"
+                        VerticalAlignment="Top"
                         FontSize="20"
                         Text="{Binding Money}" />
 
@@ -105,16 +110,18 @@
                     <TextBlock
                         Grid.Row="3"
                         Grid.Column="2"
-                        VerticalAlignment="Bottom"
-                        FontFamily="Consolas"
+                        Height="32"
+                        Margin="0,53,0,0"
+                        VerticalAlignment="Top"
                         FontSize="20"
                         Text="{Binding PlayTime}" />
 
                     <!--  Badges  -->
                     <ItemsControl
-                        Grid.Row="4"
+                        Grid.Row="5"
                         Grid.Column="1"
                         Grid.ColumnSpan="3"
+                        HorizontalAlignment="Left"
                         ItemsSource="{Binding Badges}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -126,7 +133,7 @@
                                 <Image
                                     Width="40"
                                     Height="40"
-                                    Margin="5"
+                                    Margin="0,0,23,0"
                                     RenderOptions.BitmapScalingMode="NearestNeighbor"
                                     Source="{Binding Id, Converter={StaticResource BadgeIdToImageConverter}}"
                                     Visibility="{Binding IsObtained, Converter={StaticResource BoolToVisibilityConverter}}" />
@@ -139,37 +146,62 @@
                 <Grid
                     Grid.RowSpan="7"
                     Grid.ColumnSpan="5"
-                    Margin="160,40,20,20"
+                    Margin="120,40,20,20"
                     Visibility="{Binding IsFront, Converter={StaticResource InverseBoolToVisibilityConverter}}">
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
 
                     <!--  Hall of Fame  -->
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Margin="0,8"
-                        FontFamily="Consolas"
-                        FontSize="12"
-                        Text="HALL OF FAME DEBUT" />
-                    <TextBlock
-                        Grid.Row="0"
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,8"
+                            FontSize="12"
+                            Text="HALL OF FAME DEBUT" />
+
+                        <TextBlock
+                            Margin="16,8,0,8"
+                            FontSize="12"
+                            Foreground="#FF6600"
+                            Text="{Binding HallOfFameDebut}" />
+                    </StackPanel>
+
+                    <!--  Pokémon Team  -->
+                    <ItemsControl
+                        Grid.Row="5"
                         Grid.Column="1"
-                        Margin="16,8,0,8"
-                        FontFamily="Consolas"
-                        FontSize="12"
-                        Foreground="#FF6600"
-                        Text="{Binding HallOfFameDebut}" />
+                        Grid.ColumnSpan="3"
+                        HorizontalAlignment="Left"
+                        ItemsSource="{Binding Team}">
+
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="8">
+
+                                    <!--  Pokémon Sprite  -->
+                                    <Image
+                                        Width="40"
+                                        Height="40"
+                                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                        Source="{Binding PokedexId, Converter={StaticResource PokemonIdToImageConverter}}" />
+
+                                    <!--  Pokémon Name  -->
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="10"
+                                        Text="{Binding Nickname}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
 
             </Grid>

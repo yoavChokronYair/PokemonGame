@@ -1,8 +1,120 @@
 ﻿using PokemonGame.Services.Data.ConnectionsService;
 using PokemonGame.Services.Data.GameData.Pokemon;
+using PokemonGame.Services.Data.GameData.User;
 
 namespace PokemonGame.Services.Data.Repositories
 {
+    internal class StoryPlayerPokemonRepository : DbRepository<int, StoryPlayerPokemonData>
+    {
+        internal StoryPlayerPokemonRepository(IDbConnectionService db) : base(db) { }
+
+        public List<StoryPlayerPokemonData> LoadAll(int playerID) =>
+            GetAllCached(() =>
+                _db.Query<StoryPlayerPokemonData>(
+                    @"SELECT * 
+                  FROM StoryPlayerPokemon 
+                  WHERE PlayerID = @PlayerID",
+                    new { PlayerID = playerID }),
+                p => p.Id);
+
+        public StoryPlayerPokemonData? Load(int id) =>
+            GetCached(id, () =>
+                _db.QuerySingle<StoryPlayerPokemonData>(
+                    @"SELECT * 
+                  FROM StoryPlayerPokemon 
+                  WHERE Id = @Id",
+                    new { Id = id }));
+
+        public void Save(StoryPlayerPokemonData pokemon)
+        {
+            _db.Execute(@"
+            INSERT OR REPLACE INTO StoryPlayerPokemon
+            (
+                Id,
+                PlayerID,
+                BattlerPokemonId,
+                Nickname,
+                PokemonUID,
+                OriginalTrainerID,
+                OriginalTrainerName,
+                ObtainMethod,
+                ObtainedAtRoute,
+                ObtainedAt,
+                ObtainedAtLevel,
+                CaughtWithBall,
+                MetLocationText,
+                Experience,
+                GrowthRate,
+                CurrentHP,
+                StatusId,
+                Friendship,
+                Affection
+            )
+            VALUES
+            (
+                @Id,
+                @PlayerID,
+                @BattlerPokemonId,
+                @Nickname,
+                @PokemonUID,
+                @OriginalTrainerID,
+                @OriginalTrainerName,
+                @ObtainMethod,
+                @ObtainedAtRoute,
+                @ObtainedAt,
+                @ObtainedAtLevel,
+                @CaughtWithBall,
+                @MetLocationText,
+                @Experience,
+                @GrowthRate,
+                @CurrentHP,
+                @StatusId,
+                @Friendship,
+                @Affection
+            )",
+                new
+                {
+                    pokemon.Id,
+                    pokemon.PlayerID,
+                    pokemon.BattlerPokemonId,
+                    pokemon.Nickname,
+                    pokemon.PokemonUID,
+                    pokemon.OriginalTrainerID,
+                    pokemon.OriginalTrainerName,
+                    pokemon.ObtainMethod,
+                    pokemon.ObtainedAtRoute,
+                    ObtainedAt = pokemon.ObtainedAt.ToString("o"),
+                    pokemon.ObtainedAtLevel,
+                    pokemon.CaughtWithBall,
+                    pokemon.MetLocationText,
+                    pokemon.Experience,
+                    pokemon.GrowthRate,
+                    pokemon.CurrentHP,
+                    pokemon.StatusId,
+                    pokemon.Friendship,
+                    pokemon.Affection
+                });
+
+            StoreAndReturn(pokemon.Id, () => pokemon);
+        }
+
+        public void SaveAll(IEnumerable<StoryPlayerPokemonData> pokemon)
+        {
+            foreach (var p in pokemon)
+                Save(p);
+        }
+
+        public void Delete(int id) =>
+            _db.Execute(
+                "DELETE FROM StoryPlayerPokemon WHERE Id = @Id",
+                new { Id = id });
+
+        public void Clear(int playerID) =>
+            _db.Execute(
+                "DELETE FROM StoryPlayerPokemon WHERE PlayerID = @PlayerID",
+                new { PlayerID = playerID });
+    }
+
     internal class BattlerPokemonRepository
     {
         private readonly IDbConnectionService _db;
