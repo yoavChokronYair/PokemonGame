@@ -74,6 +74,9 @@
             <DataTemplate DataType="{x:Type signinvm:StoryLogInViewModel}">
                 <local2:StoryLogIn />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type trainerviewmodel:PokedexPageViewModel}">
+                <trainerview:PokedexPage />
+            </DataTemplate>
         </Grid.Resources>
         <Frame
             Background="Transparent"

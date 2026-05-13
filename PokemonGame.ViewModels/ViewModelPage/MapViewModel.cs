@@ -45,6 +45,8 @@ namespace PokemonGame.ViewModels.ViewModelPage
     {
         private readonly NavigationStore _navigationStore;
         private readonly Func<ViewModelBase> _createTrainerCardViewModel;   
+        private readonly Func<ViewModelBase> _createpokedexPageViewModel;
+
         public const double CellPx = 72.0;
         private const int MapTilePx = 8;
 
@@ -157,7 +159,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         }
 
         // ── Constructor ───────────────────────────────────────────────────────
-        public MapViewModel(NavigationStore navigationStore, Func<ViewModelBase> createTrainerCardViewModel)
+        public MapViewModel(NavigationStore navigationStore, Func<ViewModelBase> createTrainerCardViewModel, Func<ViewModelBase> createPokedexPageViewModel)
         {
             _navigationStore = navigationStore;
             _player = PlayerDomain.Instance;
@@ -172,6 +174,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     System.Diagnostics.Debug.WriteLine("InitializeAsync failed: " + t.Exception);
             });
             _createTrainerCardViewModel = createTrainerCardViewModel;
+            _createpokedexPageViewModel = createPokedexPageViewModel;
         }
 
         private async Task InitializeAsync()
@@ -310,7 +313,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             MenuUpCommand = new RelayCommand(() => MenuUp());
             MenuDownCommand = new RelayCommand(() => MenuDown());
             MenuConfirmCommand = new RelayCommand(() => MenuConfirm());
-            OpenPokedexCommand = new RelayCommand(() => { /* TODO */ });
+            OpenPokedexCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createpokedexPageViewModel(); });
             OpenBagCommand = new RelayCommand(() => { /* TODO */ });
             OpenPokemonCommand = new RelayCommand(() => { /* TODO */ });
             OpenPlayerCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createTrainerCardViewModel(); });

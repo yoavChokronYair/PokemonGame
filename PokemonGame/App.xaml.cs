@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using PokemonGame.ViewModels;
 using PokemonGame.ViewModels.Store;
@@ -180,10 +181,14 @@ namespace PokemonGame
                 CreateMapViewModel
             );
         }
+        private PokedexPageViewModel CreatePokedexPageViewModel()
+        {
+            return new PokedexPageViewModel(_navigationStore, CreateMapViewModel);
+        }
         private TrainerCardViewModel CreateTrainerCardViewModel()
         {
             return new TrainerCardViewModel(_navigationStore,CreateMapViewModel);
         }
-        private MapViewModel CreateMapViewModel() => new MapViewModel(_navigationStore, CreateTrainerCardViewModel);
+        private MapViewModel CreateMapViewModel() => new MapViewModel(_navigationStore, CreateTrainerCardViewModel,CreatePokedexPageViewModel);
     }
 }

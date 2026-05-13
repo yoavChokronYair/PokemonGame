@@ -294,6 +294,9 @@
     <Compile Include="Views\Pages\SignIn\StoryLogIn.xaml.cs">
       <DependentUpon>StoryLogIn.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\Summery\PokedexPage.xaml.cs">
+      <DependentUpon>PokedexPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\Trainer\TrainerCard.xaml.cs">
       <DependentUpon>TrainerCard.xaml</DependentUpon>
     </Compile>
@@ -424,6 +427,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\SignIn\StoryLogIn.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\Summery\PokedexPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -679,6 +686,8 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\PokeballCaught.png" />
+    <Resource Include="Assets\Images\Backgrounds\PokedexBackgroundImage.png" />
     <Resource Include="Assets\Images\Badges\7.png" />
     <Resource Include="Assets\Images\Badges\8.png" />
     <Resource Include="Assets\Images\Badges\1.png" />
