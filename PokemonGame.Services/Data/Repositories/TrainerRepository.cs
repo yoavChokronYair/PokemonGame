@@ -7,22 +7,24 @@ namespace PokemonGame.Services.Data.Repositories
     {
         internal TrainerInfoRepository(IDbConnectionService db) : base(db) { }
 
-        public TrainerInfoData Load() =>
-            GetCached(1, () => _db.QuerySingle<TrainerInfoData>(
-                "SELECT * FROM TrainerInfo WHERE Id = 1"));
+        public TrainerInfoData Load(int playerID) =>
+            GetCached(playerID, () => _db.QuerySingle<TrainerInfoData>(
+                "SELECT * FROM TrainerInfo WHERE PlayerID = @PlayerID",
+                new { PlayerID = playerID }));
 
         public void Save(TrainerInfoData data) =>
             _db.Execute(@"
-                INSERT OR REPLACE INTO TrainerInfo 
-                    (Id, TrainerID, Name, Money, TimePlayed, Gender, HallOfFameDebut,
+                INSERT OR REPLACE INTO TrainerInfo
+                    (PlayerID, Id, TrainerID, Name, Money, TimePlayed, Gender, HallOfFameDebut,
                      FacingDirection, CurrentMap, LastMapVisited, PlayerLocX, PlayerLocY,
                      IsSurfing, HasRunningShoes)
-                VALUES 
-                    (@Id, @TrainerID, @Name, @Money, @TimePlayed, @Gender, @HallOfFameDebut,
+                VALUES
+                    (@PlayerID, @Id, @TrainerID, @Name, @Money, @TimePlayed, @Gender, @HallOfFameDebut,
                      @FacingDirection, @CurrentMap, @LastMapVisited, @PlayerLocX, @PlayerLocY,
                      @IsSurfing, @HasRunningShoes)",
                 new
                 {
+                    data.PlayerID,
                     data.Id,
                     data.TrainerID,
                     data.Name,
@@ -44,14 +46,18 @@ namespace PokemonGame.Services.Data.Repositories
     {
         internal BadgeRepository(IDbConnectionService db) : base(db) { }
 
-        public List<BadgeData> LoadAll() =>
-            GetAllCached(() => _db.Query<BadgeData>("SELECT * FROM Badges"), b => b.Id);
+        public List<BadgeData> LoadAll(int playerID) =>
+            GetAllCached(() =>
+                _db.Query<BadgeData>(
+                    "SELECT * FROM Badges WHERE PlayerID = @PlayerID",
+                    new { PlayerID = playerID }),
+                b => b.Id);
 
         public void Save(BadgeData badge)
         {
             _db.Execute(
-                "INSERT OR REPLACE INTO Badges (Id, IsObtained) VALUES (@Id, @IsObtained)",
-                new { badge.Id, badge.IsObtained });
+                "INSERT OR REPLACE INTO Badges (PlayerID, Id, IsObtained) VALUES (@PlayerID, @Id, @IsObtained)",
+                new { badge.PlayerID, badge.Id, badge.IsObtained });
             StoreAndReturn(badge.Id, () => badge);
         }
 
@@ -66,67 +72,83 @@ namespace PokemonGame.Services.Data.Repositories
     {
         internal StoryFlagRepository(IDbConnectionService db) : base(db) { }
 
-        public List<int> LoadAll() =>
-            _db.QueryScalarList<int>("SELECT FlagId FROM StoryFlags");
+        public List<int> LoadAll(int playerID) =>
+            _db.QueryScalarList<int>(
+                "SELECT FlagId FROM StoryFlags WHERE PlayerID = @PlayerID",
+                new { PlayerID = playerID });
 
-        public void Add(int flagId) =>
-            _db.Execute("INSERT OR IGNORE INTO StoryFlags (FlagId) VALUES (@FlagId)",
-                new { FlagId = flagId });
+        public void Add(int playerID, int flagId) =>
+            _db.Execute(
+                "INSERT OR IGNORE INTO StoryFlags (PlayerID, FlagId) VALUES (@PlayerID, @FlagId)",
+                new { PlayerID = playerID, FlagId = flagId });
 
-        public void Remove(int flagId) =>
-            _db.Execute("DELETE FROM StoryFlags WHERE FlagId = @FlagId",
-                new { FlagId = flagId });
+        public void Remove(int playerID, int flagId) =>
+            _db.Execute(
+                "DELETE FROM StoryFlags WHERE PlayerID = @PlayerID AND FlagId = @FlagId",
+                new { PlayerID = playerID, FlagId = flagId });
     }
 
     internal class DefeatedTrainerRepository : DbRepository<int, DefeatedTrainerData>
     {
         internal DefeatedTrainerRepository(IDbConnectionService db) : base(db) { }
 
-        public List<int> LoadAll() =>
-            _db.QueryScalarList<int>("SELECT TrainerId FROM DefeatedTrainers");
+        public List<int> LoadAll(int playerID) =>
+            _db.QueryScalarList<int>(
+                "SELECT TrainerId FROM DefeatedTrainers WHERE PlayerID = @PlayerID",
+                new { PlayerID = playerID });
 
-        public void Add(int trainerId) =>
-            _db.Execute("INSERT OR IGNORE INTO DefeatedTrainers (TrainerId) VALUES (@TrainerId)",
-                new { TrainerId = trainerId });
+        public void Add(int playerID, int trainerId) =>
+            _db.Execute(
+                "INSERT OR IGNORE INTO DefeatedTrainers (PlayerID, TrainerId) VALUES (@PlayerID, @TrainerId)",
+                new { PlayerID = playerID, TrainerId = trainerId });
     }
 
     internal class ItemTakenRepository : DbRepository<int, ItemTakenData>
     {
         internal ItemTakenRepository(IDbConnectionService db) : base(db) { }
 
-        public List<int> LoadAll() =>
-            _db.QueryScalarList<int>("SELECT NpcId FROM ItemsTaken");
+        public List<int> LoadAll(int playerID) =>
+            _db.QueryScalarList<int>(
+                "SELECT NpcId FROM ItemsTaken WHERE PlayerID = @PlayerID",
+                new { PlayerID = playerID });
 
-        public void Add(int npcId) =>
-            _db.Execute("INSERT OR IGNORE INTO ItemsTaken (NpcId) VALUES (@NpcId)",
-                new { NpcId = npcId });
+        public void Add(int playerID, int npcId) =>
+            _db.Execute(
+                "INSERT OR IGNORE INTO ItemsTaken (PlayerID, NpcId) VALUES (@PlayerID, @NpcId)",
+                new { PlayerID = playerID, NpcId = npcId });
     }
 
     internal class TradedPokemonRepository : DbRepository<int, TradedPokemonData>
     {
         internal TradedPokemonRepository(IDbConnectionService db) : base(db) { }
 
-        public List<int> LoadAll() =>
-            _db.QueryScalarList<int>("SELECT PokedexId FROM TradedPokemon");
+        public List<int> LoadAll(int playerID) =>
+            _db.QueryScalarList<int>(
+                "SELECT PokedexId FROM TradedPokemon WHERE PlayerID = @PlayerID",
+                new { PlayerID = playerID });
 
-        public void Add(int pokedexId) =>
-            _db.Execute("INSERT OR IGNORE INTO TradedPokemon (PokedexId) VALUES (@PokedexId)",
-                new { PokedexId = pokedexId });
+        public void Add(int playerID, int pokedexId) =>
+            _db.Execute(
+                "INSERT OR IGNORE INTO TradedPokemon (PlayerID, PokedexId) VALUES (@PlayerID, @PokedexId)",
+                new { PlayerID = playerID, PokedexId = pokedexId });
     }
 
     internal class BagInventoryRepository : DbRepository<int, BagInventoryData>
     {
         internal BagInventoryRepository(IDbConnectionService db) : base(db) { }
 
-        public List<BagInventoryData> LoadAll() =>
-            GetAllCached(() => _db.Query<BagInventoryData>("SELECT * FROM BagInventory"),
+        public List<BagInventoryData> LoadAll(int playerID) =>
+            GetAllCached(() =>
+                _db.Query<BagInventoryData>(
+                    "SELECT * FROM BagInventory WHERE PlayerID = @PlayerID",
+                    new { PlayerID = playerID }),
                 b => b.ItemId);
 
         public void Save(BagInventoryData item)
         {
             _db.Execute(
-                "INSERT OR REPLACE INTO BagInventory (ItemId, Quantity) VALUES (@ItemId, @Quantity)",
-                new { item.ItemId, item.Quantity });
+                "INSERT OR REPLACE INTO BagInventory (PlayerID, ItemId, Quantity) VALUES (@PlayerID, @ItemId, @Quantity)",
+                new { item.PlayerID, item.ItemId, item.Quantity });
             StoreAndReturn(item.ItemId, () => item);
         }
 
@@ -141,14 +163,18 @@ namespace PokemonGame.Services.Data.Repositories
     {
         internal PokedexRepository(IDbConnectionService db) : base(db) { }
 
-        public List<PokedexData> LoadAll() =>
-            GetAllCached(() => _db.Query<PokedexData>("SELECT * FROM Pokedex"), p => p.PokedexId);
+        public List<PokedexData> LoadAll(int playerID) =>
+            GetAllCached(() =>
+                _db.Query<PokedexData>(
+                    "SELECT * FROM Pokedex WHERE PlayerID = @PlayerID",
+                    new { PlayerID = playerID }),
+                p => p.PokedexId);
 
         public void Save(PokedexData entry)
         {
             _db.Execute(
-                "INSERT OR REPLACE INTO Pokedex (PokedexId, Seen, Caught) VALUES (@PokedexId, @Seen, @Caught)",
-                new { entry.PokedexId, entry.Seen, entry.Caught });
+                "INSERT OR REPLACE INTO Pokedex (PlayerID, PokedexId, Seen, Caught) VALUES (@PlayerID, @PokedexId, @Seen, @Caught)",
+                new { entry.PlayerID, entry.PokedexId, entry.Seen, entry.Caught });
             StoreAndReturn(entry.PokedexId, () => entry);
         }
 
@@ -163,19 +189,23 @@ namespace PokemonGame.Services.Data.Repositories
     {
         internal PartyRepository(IDbConnectionService db) : base(db) { }
 
-        public List<PartyData> LoadAll() =>
-            GetAllCached(() => _db.Query<PartyData>("SELECT * FROM Party ORDER BY Slot"),
+        public List<PartyData> LoadAll(int playerID) =>
+            GetAllCached(() =>
+                _db.Query<PartyData>(
+                    "SELECT * FROM Party WHERE PlayerID = @PlayerID ORDER BY Slot",
+                    new { PlayerID = playerID }),
                 p => p.Slot);
 
         public void Save(PartyData slot)
         {
             _db.Execute(@"
-                INSERT OR REPLACE INTO Party 
-                    (Slot, PokedexId, Nickname, Level, CurrentHP, Experience, StatusId, IsShiny)
-                VALUES 
-                    (@Slot, @PokedexId, @Nickname, @Level, @CurrentHP, @Experience, @StatusId, @IsShiny)",
+                INSERT OR REPLACE INTO Party
+                    (PlayerID, Slot, PokedexId, Nickname, Level, CurrentHP, Experience, StatusId, IsShiny)
+                VALUES
+                    (@PlayerID, @Slot, @PokedexId, @Nickname, @Level, @CurrentHP, @Experience, @StatusId, @IsShiny)",
                 new
                 {
+                    slot.PlayerID,
                     slot.Slot,
                     slot.PokedexId,
                     slot.Nickname,
@@ -194,33 +224,40 @@ namespace PokemonGame.Services.Data.Repositories
                 Save(slot);
         }
 
-        public void Clear() =>
-            _db.Execute("DELETE FROM Party");
+        public void Clear(int playerID) =>
+            _db.Execute(
+                "DELETE FROM Party WHERE PlayerID = @PlayerID",
+                new { PlayerID = playerID });
     }
+
     internal class StoryPlayerRepository : DbRepository<int, StoryPlayerData>
     {
         internal StoryPlayerRepository(IDbConnectionService db) : base(db) { }
 
         public List<StoryPlayerData> LoadAll() =>
-            GetAllCached(() => _db.Query<StoryPlayerData>("SELECT * FROM StoryPlayer"), p => p.PlayerID);
+            GetAllCached(() =>
+                _db.Query<StoryPlayerData>("SELECT * FROM StoryPlayer"),
+                p => p.PlayerID);
 
-        public void Save(StoryPlayerData player)
-        {
+        public void Save(StoryPlayerData player) =>
             _db.Execute(
                 "INSERT OR REPLACE INTO StoryPlayer (UserID) VALUES (@UserID)",
                 new { player.UserID });
-        }
 
         public void SaveAll(IEnumerable<StoryPlayerData> players)
         {
             foreach (var player in players)
                 Save(player);
         }
+
         public StoryPlayerData? GetPlayerUserId(int userId) =>
-            _db.QuerySingle<StoryPlayerData>("SELECT * FROM StoryPlayer WHERE UserID = @UserID",
-            new { UserID = userId });
+            _db.QuerySingle<StoryPlayerData>(
+                "SELECT * FROM StoryPlayer WHERE UserID = @UserID",
+                new { UserID = userId });
+
         public List<StoryPlayerData> GetPlayersUserId(int userId) =>
-            _db.Query<StoryPlayerData>("SELECT * FROM StoryPlayer WHERE UserID = @UserID",
-        new { UserID = userId });
+            _db.Query<StoryPlayerData>(
+                "SELECT * FROM StoryPlayer WHERE UserID = @UserID",
+                new { UserID = userId });
     }
 }

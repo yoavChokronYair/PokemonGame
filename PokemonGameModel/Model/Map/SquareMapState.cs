@@ -46,7 +46,7 @@ namespace PokemonGame.Model.Model.Map
             RebuildVisionLayer();
         }
 
-        // ── Dimensions ───────────────────────────────────────────────────────
+        // ── Dimensions ───────────────────────────────────────────────c───────
 
         public int SquareRows => _squares.GetLength(0);
         public int SquareCols => _squares.GetLength(1);

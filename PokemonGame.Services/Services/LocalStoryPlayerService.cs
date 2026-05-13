@@ -1,7 +1,6 @@
 ﻿using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
-using PokemonGame.Services.Interfaces;
 
 namespace PokemonGame.Services.Handler
 {
@@ -11,7 +10,6 @@ namespace PokemonGame.Services.Handler
         void SaveAll(StorySaveTree save);
         void SetStoryPlayer(int userId);
         List<StoryPlayerSummary> GetSummaries(int userId);
-
     }
 
     public class LocalStoryPlayerService : IStoryPlayerService
@@ -66,72 +64,83 @@ namespace PokemonGame.Services.Handler
             _storyPlayerRepo = storyPlayerRepo;
         }
 
-        // ── Load ─────────────────────────────────────────────────────────────
+        // ── Create ────────────────────────────────────────────────────────────
+
         public void SetStoryPlayer(int userId)
         {
             var player = new StoryPlayerData { UserID = userId };
             _storyPlayerRepo.Save(player);
         }
 
+        // ── Load ──────────────────────────────────────────────────────────────
+
         public StorySaveTree LoadAll(int userId)
         {
             var player = _storyPlayerRepo.GetPlayerUserId(userId)
-                ?? throw new InvalidOperationException($"No story player found for user {userId}.");
+                ?? throw new InvalidOperationException(
+                       $"No story player found for user {userId}.");
+
+            int pid = player.PlayerID;
 
             return new StorySaveTree
             {
                 CurrentPlayer = player,
-                TrainerInfo = _trainerInfoRepo.Load(),
-                Badges = _badgeRepo.LoadAll(),
-                StoryFlags = _storyFlagRepo.LoadAll(),
-                DefeatedTrainers = _defeatedTrainerRepo.LoadAll(),
-                ItemsTaken = _itemTakenRepo.LoadAll(),
-                TradedPokemon = _tradedPokemonRepo.LoadAll(),
-                BagInventory = _bagInventoryRepo.LoadAll(),
-                Pokedex = _pokedexRepo.LoadAll(),
-                Party = _partyRepo.LoadAll(),
+                TrainerInfo = _trainerInfoRepo.Load(pid),
+                Badges = _badgeRepo.LoadAll(pid),
+                StoryFlags = _storyFlagRepo.LoadAll(pid),
+                DefeatedTrainers = _defeatedTrainerRepo.LoadAll(pid),
+                ItemsTaken = _itemTakenRepo.LoadAll(pid),
+                TradedPokemon = _tradedPokemonRepo.LoadAll(pid),
+                BagInventory = _bagInventoryRepo.LoadAll(pid),
+                Pokedex = _pokedexRepo.LoadAll(pid),
+                Party = _partyRepo.LoadAll(pid),
             };
         }
+
         public List<StoryPlayerSummary> GetSummaries(int userId)
         {
             var players = _storyPlayerRepo.GetPlayersUserId(userId);
-            var trainerInfo = _trainerInfoRepo.Load();
-            var badgeCount = _badgeRepo.LoadAll().Count(b => b.IsObtained == 1);
 
-            return players.Select(p => new StoryPlayerSummary
+            return players.Select(p =>
             {
-                PlayerID = p.PlayerID,
-                UserID = p.UserID,
-                Name = trainerInfo.Name,
-                TimePlayed = trainerInfo.TimePlayed,
-                BadgeCount = badgeCount,
+                var trainerInfo = _trainerInfoRepo.Load(p.PlayerID);
+                var badgeCount = _badgeRepo.LoadAll(p.PlayerID).Count(b => b.IsObtained == 1);
+
+                return new StoryPlayerSummary
+                {
+                    PlayerID = p.PlayerID,
+                    UserID = p.UserID,
+                    Name = trainerInfo.Name,
+                    TimePlayed = trainerInfo.TimePlayed,
+                    BadgeCount = badgeCount,
+                };
             }).ToList();
         }
-        // ── Save (called on start and on every button press) ──────────────────
+
+        // ── Save ──────────────────────────────────────────────────────────────
 
         public void SaveAll(StorySaveTree save)
         {
+            int pid = save.CurrentPlayer.PlayerID;
+
             _trainerInfoRepo.Save(save.TrainerInfo);
             _badgeRepo.SaveAll(save.Badges);
             _bagInventoryRepo.SaveAll(save.BagInventory);
             _pokedexRepo.SaveAll(save.Pokedex);
             _partyRepo.SaveAll(save.Party);
 
-            foreach (var flagId in save.StoryFlags)
-                _storyFlagRepo.Add(flagId);
-            foreach (var trainerId in save.DefeatedTrainers)
-                _defeatedTrainerRepo.Add(trainerId);
-            foreach (var npcId in save.ItemsTaken)
-                _itemTakenRepo.Add(npcId);
-            foreach (var pokedexId in save.TradedPokemon)
-                _tradedPokemonRepo.Add(pokedexId);
+            foreach (var flagId in save.StoryFlags) _storyFlagRepo.Add(pid, flagId);
+            foreach (var trainerId in save.DefeatedTrainers) _defeatedTrainerRepo.Add(pid, trainerId);
+            foreach (var npcId in save.ItemsTaken) _itemTakenRepo.Add(pid, npcId);
+            foreach (var pokedexId in save.TradedPokemon) _tradedPokemonRepo.Add(pid, pokedexId);
         }
     }
 
-    // ── Result container returned to the caller ───────────────────────────────
+    // ── Result container ─────────────────────────────────────────────────────
 
     public class StorySaveTree
     {
+        public StoryPlayerData CurrentPlayer { get; set; } = new();
         public TrainerInfoData TrainerInfo { get; set; } = new();
         public List<BadgeData> Badges { get; set; } = new();
         public List<int> StoryFlags { get; set; } = new();
@@ -141,8 +150,8 @@ namespace PokemonGame.Services.Handler
         public List<BagInventoryData> BagInventory { get; set; } = new();
         public List<PokedexData> Pokedex { get; set; } = new();
         public List<PartyData> Party { get; set; } = new();
-        public StoryPlayerData CurrentPlayer { get; set; } = new();
     }
+
     public class StoryPlayerSummary
     {
         public int PlayerID { get; set; }
