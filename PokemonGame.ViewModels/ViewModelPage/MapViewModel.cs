@@ -291,7 +291,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public ICommand OpenPokemonCommand { get; private set; }
         public ICommand OpenPlayerCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
-        public ICommand OpenOptionsCommand { get; private set; }
         public ICommand ExitCommand { get; private set; }
 
         private void InitCommands()
@@ -316,7 +315,6 @@ namespace PokemonGame.ViewModels.ViewModelPage
             OpenPokemonCommand = new RelayCommand(() => { /* TODO */ });
             OpenPlayerCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createTrainerCardViewModel(); });
             SaveCommand = new RelayCommand(() => { /* TODO */ });
-            OpenOptionsCommand = new RelayCommand(() => { /* TODO */ });
             ExitCommand = new RelayCommand(() => IsMenuOpen = false);
         }
     }
@@ -348,13 +346,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public void MenuUp()
         {
             if (!IsMenuOpen) return;
-            MenuIndex = (MenuIndex - 1 + 7) % 7;
+            MenuIndex = (MenuIndex - 1 + 6) % 6;
         }
 
         public void MenuDown()
         {
             if (!IsMenuOpen) return;
-            MenuIndex = (MenuIndex + 1) % 7;
+            MenuIndex = (MenuIndex + 1) % 6;
         }
 
         public void MenuConfirm()
@@ -367,8 +365,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 case 2: OpenPokemonCommand.Execute(null); break;
                 case 3: OpenPlayerCommand.Execute(null); break;
                 case 4: SaveCommand.Execute(null); break;
-                case 5: OpenOptionsCommand.Execute(null); break;
-                case 6: ExitCommand.Execute(null); break;
+                case 5: ExitCommand.Execute(null); break;
             }
         }
     }

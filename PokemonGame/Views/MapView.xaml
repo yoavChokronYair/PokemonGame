@@ -159,17 +159,9 @@
                                         Foreground="#333"
                                         Text="Save" />
                                 </Border>
+
                                 <Border
                                     BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=5}"
-                                    BorderThickness="2"
-                                    Style="{StaticResource MenuItemStyle}">
-                                    <TextBlock
-                                        FontSize="11"
-                                        Foreground="#333"
-                                        Text="Options" />
-                                </Border>
-                                <Border
-                                    BorderBrush="{Binding MenuIndex, Converter={StaticResource MenuHighlightConverter}, ConverterParameter=6}"
                                     BorderThickness="2"
                                     Style="{StaticResource MenuItemStyle}">
                                     <TextBlock

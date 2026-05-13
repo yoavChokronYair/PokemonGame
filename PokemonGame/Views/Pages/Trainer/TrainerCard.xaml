@@ -22,7 +22,7 @@
     </Page.Resources>
 
     <Page.InputBindings>
-        <KeyBinding Key="A" Command="{Binding FlipCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding FlipCommand}" />
         <KeyBinding Key="Esc" Command="{Binding ExistCommand}" />
     </Page.InputBindings>
 
