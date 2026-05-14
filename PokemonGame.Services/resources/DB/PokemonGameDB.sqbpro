@@ -1,51 +1,2053 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="PokemonGameDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="6926"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Badges" custom_title="0" dock_id="16" table="4,6:mainBadges"/><dock_state state="000000ff00000000fd0000000100000002000005bb00000398fc0100000005fc000000000000046c0000000000fffffffa000000000100000003fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fc00000000000005bb0000000000fffffffa000000000100000001fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fc00000000000005bb0000000000fffffffa000000000100000006fb000000180064006f0063006b00420072006f007700730065003100310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340000000000ffffffff0000000000000000fb000000180064006f0063006b00420072006f007700730065003100360100000000000005bb0000011e00ffffff000005bb0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Badges" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="58"/><column index="2" value="35"/><column index="3" value="70"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Battle" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="55"/><column index="2" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Maps" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="103"/><column index="3" value="41"/><column index="4" value="45"/><column index="5" value="39"/><column index="6" value="61"/><column index="7" value="61"/><column index="8" value="69"/><column index="9" value="69"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Party" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="58"/><column index="2" value="35"/><column index="3" value="69"/><column index="4" value="63"/><column index="5" value="38"/><column index="6" value="66"/><column index="7" value="70"/><column index="8" value="57"/><column index="9" value="50"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="StoryPlayer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="57"/><column index="2" value="48"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="StoryPlayerPokemon" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="58"/><column index="3" value="114"/><column index="4" value="63"/><column index="5" value="82"/><column index="6" value="105"/><column index="7" value="124"/><column index="8" value="88"/><column index="9" value="106"/><column index="10" value="72"/><column index="11" value="102"/><column index="12" value="94"/><column index="13" value="104"/><column index="14" value="70"/><column index="15" value="76"/><column index="16" value="66"/><column index="17" value="57"/><column index="18" value="66"/><column index="19" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="TrainerInfo" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="62"/><column index="3" value="40"/><column index="4" value="46"/><column index="5" value="74"/><column index="6" value="49"/><column index="7" value="106"/><column index="8" value="95"/><column index="9" value="87"/><column index="10" value="94"/><column index="11" value="70"/><column index="12" value="70"/><column index="13" value="59"/><column index="14" value="109"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="47"/><column index="2" value="71"/><column index="3" value="87"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="levelup_moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="71"/><column index="2" value="54"/><column index="3" value="35"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="pokedex_data" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="0" mode="0"/></sort><column_widths><column index="1" value="71"/><column index="2" value="55"/><column index="3" value="58"/><column index="4" value="103"/><column index="5" value="87"/><column index="6" value="109"/><column index="7" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="team_members" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="57"/><column index="2" value="75"/><column index="3" value="80"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="PokemonGameDB.db.sql" filename="C:/Users/yoav/Downloads/PokemonGameDB.db.sql">-- Reference to file &quot;C:/Users/yoav/Downloads/PokemonGameDB.db.sql&quot; (not supported by this version) --</sql><sql name="SQL 2*">INSERT INTO &quot;StoryPlayerPokemon&quot; (
-    &quot;PlayerID&quot;,
-    &quot;BattlerPokemonId&quot;,
-    &quot;Nickname&quot;,
-    &quot;PokemonUID&quot;,
-    &quot;OriginalTrainerID&quot;,
-    &quot;OriginalTrainerName&quot;,
-    &quot;ObtainMethod&quot;,
-    &quot;ObtainedAtRoute&quot;,
-    &quot;ObtainedAt&quot;,
-    &quot;ObtainedAtLevel&quot;,
-    &quot;CaughtWithBall&quot;,
-    &quot;MetLocationText&quot;,
-    &quot;Experience&quot;,
-    &quot;GrowthRate&quot;,
-    &quot;CurrentHP&quot;,
-    &quot;StatusId&quot;,
-    &quot;Friendship&quot;,
-    &quot;Affection&quot;
-)
-VALUES
-(
-    1, 1, NULL, 100001, 1001, 'Ash',
-    0, 'Pallet Town', datetime('now'), 5, 4,
-    'Pallet Town', 4200, 'MediumFast', 45, 0, 70, 0
-),
-(
-    1, 6, 'Blaze', 100002, 1001, 'Ash',
-    0, 'Route 3', datetime('now'), 16, 2,
-    'Route 3', 48000, 'MediumSlow', 130, 0, 120, 20
-),
-(
-    1, 11, NULL, 100003, 1001, 'Ash',
-    0, 'Route 5', datetime('now'), 18, 1,
-    'Route 5', 9800, 'Fast', 58, 0, 80, 0
-),
-(
-    1, 12, 'Punchy', 100004, 1001, 'Ash',
-    0, 'Route 7', datetime('now'), 20, 3,
-    'Route 7', 22000, 'MediumFast', 88, 0, 90, 5
-),
-(
-    1, 74, NULL, 100005, 1001, 'Ash',
-    1, 'Rock Tunnel', datetime('now'), 25, 1,
-    'Rock Tunnel', 28000, 'MediumFast', 75, 0, 70, 0
-),
-(
-    1, 128, 'Drake', 100006, 1001, 'Ash',
-    0, 'Safari Zone', datetime('now'), 45, 2,
-    'Safari Zone', 150000, 'Slow', 210, 0, 255, 100
-);</sql><current_tab id="1"/></tab_sql></sqlb_project>
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/yoav/Downloads/PokemonMoves.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="5767"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="moves" custom_title="0" dock_id="4" table="4,5:mainmoves"/><dock_state state="000000ff00000000fd00000001000000020000024800000215fc0100000006fc000000000000046c0000000000fffffffa000000000100000003fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fc00000000000005bb0000000000fffffffa000000000100000001fb000000160064006f0063006b00420072006f00770073006500390000000000ffffffff0000000000000000fc00000000000005bb0000000000fffffffa000000000100000005fb000000180064006f0063006b00420072006f007700730065003100310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340000000000ffffffff0000000000000000fb000000180064006f0063006b00420072006f007700730065003100360100000000000005bb0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000000002480000013b00ffffff000002480000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="abilities" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="40"/><column index="3" value="71"/><column index="4" value="60"/><column index="5" value="79"/><column index="6" value="47"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="moves" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="119"/><column index="3" value="71"/><column index="4" value="71"/><column index="5" value="71"/><column index="6" value="35"/><column index="7" value="50"/><column index="8" value="66"/><column index="9" value="300"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 2*">
+
+BEGIN TRANSACTION;
+
+-- =====================================================================
+-- NUMBERS
+-- =====================================================================
+INSERT INTO numbers (id, type, exact_value) VALUES
+  (1,  'Exactly', 10),
+  (2,  'Exactly', 15),
+  (3,  'Exactly', 18),
+  (4,  'Exactly', 20),
+  (5,  'Exactly', 25),
+  (6,  'Exactly', 30),
+  (7,  'Exactly', 35),
+  (8,  'Exactly', 40),
+  (9,  'Exactly', 45),
+  (10, 'Exactly', 50),
+  (11, 'Exactly', 55),
+  (12, 'Exactly', 60),
+  (13, 'Exactly', 65),
+  (14, 'Exactly', 70),
+  (15, 'Exactly', 75),
+  (16, 'Exactly', 80),
+  (17, 'Exactly', 85),
+  (18, 'Exactly', 90),
+  (19, 'Exactly', 95),
+  (20, 'Exactly', 100),
+  (21, 'Exactly', 110),
+  (22, 'Exactly', 120),
+  (23, 'Exactly', 130),
+  (24, 'Exactly', 140),
+  (25, 'Exactly', 150),
+  (26, 'Exactly', 200),
+  (27, 'Exactly', 250),
+  (28, 'Exactly', 0.5),
+  (29, 'Exactly', 0.25),
+  (30, 'Exactly', 0.333),
+  (31, 'Exactly', 2),
+  (32, 'Exactly', 3),
+  -- Multi-hit 2-5 weighted (Gen 3 distribution)
+  (33, 'Weighted', NULL),
+  -- HP / Level references
+  (34, 'MaxHP',     NULL),
+  (35, 'CurrentHP', NULL),
+  (36, 'Level',     NULL),
+  -- Magnitude random power weighted
+  (37, 'Weighted',  NULL),
+  -- Exactly-2 alias already id=31; Exactly-3 = id=32
+  (38, 'Exactly', 80);   -- extra 80 alias for effects needing it independently
+
+-- Multi-hit 2-5 weights (Gen 3: 2→37.5%, 3→37.5%, 4→12.5%, 5→12.5%)
+INSERT INTO weighted_entries (number_id, value, weight) VALUES
+  (33, 2, 0.375),
+  (33, 3, 0.375),
+  (33, 4, 0.125),
+  (33, 5, 0.125);
+
+-- Magnitude random power
+INSERT INTO weighted_entries (number_id, value, weight) VALUES
+  (37, 10,  0.05),
+  (37, 30,  0.10),
+  (37, 50,  0.20),
+  (37, 70,  0.30),
+  (37, 90,  0.20),
+  (37, 110, 0.10),
+  (37, 150, 0.05);
+
+-- =====================================================================
+-- CONDITIONS  (accuracy checks — all probability-based)
+-- =====================================================================
+INSERT INTO conditions (id, type, probability) VALUES
+  (1,  'Probability', 1.00),  -- 100% / never-miss
+  (2,  'Probability', 0.95),
+  (3,  'Probability', 0.90),
+  (4,  'Probability', 0.85),
+  (5,  'Probability', 0.80),
+  (6,  'Probability', 0.75),
+  (7,  'Probability', 0.70),
+  (8,  'Probability', 0.55),  -- Sing, Grass Whistle
+  (9,  'Probability', 0.60),  -- Hypnosis
+  (10, 'Probability', 0.50),  -- Zap Cannon, Dynamic Punch
+  (11, 'Probability', 0.30);  -- OHKO moves
+
+COMMIT;
+-- =============================================================================
+-- PART 2: LEAF EFFECTS (status, stat changes, weather, screens, damage nodes)
+-- =============================================================================
+
+BEGIN TRANSACTION;
+
+-- ---- FAINT / STATUS ----
+INSERT INTO effects (id, type, target) VALUES
+  (1,  'Burn',     'Defender'),
+  (2,  'Paralyze', 'Defender'),
+  (3,  'Freeze',   'Defender'),
+  (4,  'Flinch',   'Defender'),
+  (5,  'Faint',    'Attacker'),
+  (6,  'Faint',    'Defender'),
+  (7,  'CureStatus','Attacker'),
+  (8,  'NoEffect', NULL);
+
+INSERT INTO effects (id, type, target, is_toxic) VALUES
+  (9,  'Poison', 'Defender', 0),
+  (10, 'Poison', 'Defender', 1);
+
+INSERT INTO effects (id, type, target, sleep_min_turns, sleep_max_turns) VALUES
+  (11, 'Sleep', 'Defender', 1, 3),
+  (12, 'Sleep', 'Attacker', 2, 2);
+
+INSERT INTO effects (id, type, target, confuse_min_turns, confuse_max_turns) VALUES
+  (13, 'Confuse', 'Defender', 1, 4),
+  (14, 'Confuse', 'Attacker', 2, 5);
+
+-- ---- HEAL ----
+INSERT INTO effects (id, type, target, number_id) VALUES
+  (15, 'RestoreHP', 'Attacker', 28);
+
+-- ---- STAT CHANGES — ATTACKER ----
+INSERT INTO effects (id, type, target, stat, stat_stages) VALUES
+  (17, 'StatChange', 'Attacker', 'Attack',         1),
+  (18, 'StatChange', 'Attacker', 'Attack',         2),
+  (19, 'StatChange', 'Attacker', 'Attack',        -1),
+  (20, 'StatChange', 'Attacker', 'Defense',        1),
+  (21, 'StatChange', 'Attacker', 'Defense',        2),
+  (22, 'StatChange', 'Attacker', 'Speed',          2),
+  (23, 'StatChange', 'Attacker', 'SpecialAttack',  1),
+  (24, 'StatChange', 'Attacker', 'SpecialAttack',  2),
+  (25, 'StatChange', 'Attacker', 'SpecialAttack', -2),
+  (26, 'StatChange', 'Attacker', 'SpecialDefense', 1),
+  (27, 'StatChange', 'Attacker', 'SpecialDefense', 2),
+  (28, 'StatChange', 'Attacker', 'CritRatio',      1),
+  (40, 'StatChange', 'Attacker', 'Evasion',        1),
+  (42, 'StatChange', 'Attacker', 'Evasion',        2);
+
+-- ---- STAT CHANGES — DEFENDER ----
+INSERT INTO effects (id, type, target, stat, stat_stages) VALUES
+  (29, 'StatChange', 'Defender', 'Attack',         -1),
+  (30, 'StatChange', 'Defender', 'Attack',         -2),
+  (31, 'StatChange', 'Defender', 'Defense',        -1),
+  (32, 'StatChange', 'Defender', 'Defense',        -2),
+  (33, 'StatChange', 'Defender', 'Speed',          -1),
+  (34, 'StatChange', 'Defender', 'Speed',          -2),
+  (35, 'StatChange', 'Defender', 'SpecialAttack',  -1),
+  (36, 'StatChange', 'Defender', 'SpecialAttack',  -2),
+  (37, 'StatChange', 'Defender', 'SpecialDefense', -1),
+  (38, 'StatChange', 'Defender', 'SpecialDefense', -2),
+  (39, 'StatChange', 'Defender', 'Accuracy',       -1),
+  (41, 'StatChange', 'Defender', 'Evasion',        -1),
+  (43, 'StatChange', 'Defender', 'SpecialAttack',   1);
+
+-- ---- MULTI STAT CHANGES ----
+-- Bulk Up: +1 Atk/Def
+INSERT INTO effects (id, type, target) VALUES (44, 'MultiStatChange', 'Attacker');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (44,'Attack',1),(44,'Defense',1);
+
+-- Calm Mind: +1 SpAtk/SpDef
+INSERT INTO effects (id, type, target) VALUES (45, 'MultiStatChange', 'Attacker');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (45,'SpecialAttack',1),(45,'SpecialDefense',1);
+
+-- Dragon Dance: +1 Atk/Speed
+INSERT INTO effects (id, type, target) VALUES (46, 'MultiStatChange', 'Attacker');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (46,'Attack',1),(46,'Speed',1);
+
+-- Growth: +1 Atk/SpAtk
+INSERT INTO effects (id, type, target) VALUES (47, 'MultiStatChange', 'Attacker');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (47,'Attack',1),(47,'SpecialAttack',1);
+
+-- Tickle: -1 Atk/-1 Def on Defender
+INSERT INTO effects (id, type, target) VALUES (48, 'MultiStatChange', 'Defender');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (48,'Attack',-1),(48,'Defense',-1);
+
+-- Superpower self: -1 Atk/-1 Def
+INSERT INTO effects (id, type, target) VALUES (49, 'MultiStatChange', 'Attacker');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (49,'Attack',-1),(49,'Defense',-1);
+
+-- Silver Wind / Ancient Power: +1 all stats
+INSERT INTO effects (id, type, target) VALUES (50, 'MultiStatChange', 'Attacker');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES
+  (50,'Attack',1),(50,'Defense',1),(50,'Speed',1),(50,'SpecialAttack',1),(50,'SpecialDefense',1);
+
+-- Cosmic Power: +1 Def/SpDef
+INSERT INTO effects (id, type, target) VALUES (51, 'MultiStatChange', 'Attacker');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (51,'Defense',1),(51,'SpecialDefense',1);
+
+-- Memento defender: -2 Atk/-2 SpAtk
+INSERT INTO effects (id, type, target) VALUES (52, 'MultiStatChange', 'Defender');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (52,'Attack',-2),(52,'SpecialAttack',-2);
+
+-- Swagger: +2 Atk on Defender
+INSERT INTO effects (id, type, target) VALUES (216, 'MultiStatChange', 'Defender');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (216,'Attack',2);
+
+-- Flatter: +1 SpAtk on Defender
+INSERT INTO effects (id, type, target) VALUES (215, 'MultiStatChange', 'Defender');
+INSERT INTO multi_stat_changes (effect_id, stat, stages) VALUES (215,'SpecialAttack',1);
+
+-- ---- WEATHER ----
+INSERT INTO effects (id, type, weather, weather_turns) VALUES
+  (54, 'SetWeather', 'Sunny',     5),
+  (55, 'SetWeather', 'Rain',      5),
+  (56, 'SetWeather', 'Sandstorm', 5),
+  (57, 'SetWeather', 'Hail',      5);
+
+-- ---- SCREENS ----
+INSERT INTO effects (id, type, battle_side, screen, screen_turns) VALUES
+  (58, 'SetScreen', 'Player', 'Reflect',     5),
+  (59, 'SetScreen', 'Player', 'LightScreen', 5);
+
+-- ---- HAZARD ----
+INSERT INTO effects (id, type, battle_side, hazard) VALUES
+  (60, 'SetHazard', 'Opponent', 'Spikes');
+
+-- ---- DRAIN / RECOIL / CRASH ----
+INSERT INTO effects (id, type, target, heal_target, number_id) VALUES
+  (61, 'Drain', 'Defender', 'Attacker', 28);
+
+INSERT INTO effects (id, type, target, number_id) VALUES
+  (62, 'Recoil',     'Attacker', 29),   -- 1/4 recoil
+  (63, 'Recoil',     'Attacker', 30),   -- 1/3 recoil
+  (64, 'CrashDamage','Attacker', 28);   -- 50% HP crash (HJK/Jump Kick miss)
+
+-- ---- MISC EFFECTS ----
+INSERT INTO effects (id, type, target) VALUES
+  (65, 'ForceSwitch',         'Defender'),
+  (66, 'PreventSwitch',       'Defender'),
+  (67, 'PreventFlee',         'Defender'),
+  (68, 'CopyLastMove',        'Attacker'),
+  (69, 'CureStatus',          'Defender'),
+  (70, 'LockMove',            'Attacker'),
+  (71, 'NoEffect',            NULL),
+  (72, 'NoEffect',            NULL),
+  (73, 'Endure',              'Attacker'),
+  (74, 'ModifyAccuracy',      'Defender'),
+  (75, 'OHKO',                'Defender'),
+  (76, 'NoEffect',            NULL),
+  (77, 'StoreAndRelease',     'Defender'),
+  (282,'PreventItemTheft',    'Defender'),
+  (500,'CopyAbility',         'Attacker'),
+  (501,'TypeChange',          'Attacker'),
+  (502,'InspectOpponent',     'Defender'),
+  (503,'PreventStatReduction','Attacker');
+
+-- ---- DIRECT DAMAGE (fixed values) ----
+INSERT INTO effects (id, type, target, number_id) VALUES
+  (78, 'DirectDamage', 'Defender', 8),   -- Dragon Rage: always 40 HP
+  (79, 'DirectDamage', 'Defender', 4),   -- Sonic Boom: always 20 HP
+  (80, 'DirectDamage', 'Defender', 36),  -- Night Shade / Seismic Toss: Level HP
+  (81, 'DirectDamage', 'Defender', 36),  -- alias
+  (82, 'DirectDamage', 'Defender', 35);  -- Super Fang: CurrentHP (engine halves)
+
+-- ---- FORMULA DAMAGE NODES (one per distinct power value needed) ----
+INSERT INTO effects (id, type, target, number_id) VALUES
+  (100, 'FormulaDamage', 'Defender', 1),   -- 10
+  (101, 'FormulaDamage', 'Defender', 2),   -- 15
+  (102, 'FormulaDamage', 'Defender', 3),   -- 18
+  (103, 'FormulaDamage', 'Defender', 4),   -- 20
+  (104, 'FormulaDamage', 'Defender', 5),   -- 25
+  (105, 'FormulaDamage', 'Defender', 6),   -- 30
+  (106, 'FormulaDamage', 'Defender', 7),   -- 35
+  (107, 'FormulaDamage', 'Defender', 8),   -- 40
+  (108, 'FormulaDamage', 'Defender', 9),   -- 45
+  (109, 'FormulaDamage', 'Defender', 10),  -- 50
+  (110, 'FormulaDamage', 'Defender', 11),  -- 55
+  (111, 'FormulaDamage', 'Defender', 12),  -- 60
+  (112, 'FormulaDamage', 'Defender', 13),  -- 65
+  (113, 'FormulaDamage', 'Defender', 14),  -- 70
+  (114, 'FormulaDamage', 'Defender', 15),  -- 75
+  (115, 'FormulaDamage', 'Defender', 16),  -- 80
+  (116, 'FormulaDamage', 'Defender', 17),  -- 85
+  (117, 'FormulaDamage', 'Defender', 18),  -- 90
+  (118, 'FormulaDamage', 'Defender', 19),  -- 95
+  (119, 'FormulaDamage', 'Defender', 20),  -- 100
+  (120, 'FormulaDamage', 'Defender', 21),  -- 110
+  (121, 'FormulaDamage', 'Defender', 22),  -- 120
+  (122, 'FormulaDamage', 'Defender', 23),  -- 130
+  (123, 'FormulaDamage', 'Defender', 24),  -- 140
+  (124, 'FormulaDamage', 'Defender', 25),  -- 150
+  (125, 'FormulaDamage', 'Defender', 26),  -- 200
+  (126, 'FormulaDamage', 'Defender', 27),  -- 250
+  -- Variable-power placeholders (engine computes at runtime)
+  (127, 'FormulaDamage', 'Defender', 35),  -- Flail/Reversal/Eruption/Water Spout (HP-based)
+  (128, 'FormulaDamage', 'Defender', 36),  -- Low Kick (weight-based, use Level node as proxy)
+  (129, 'FormulaDamage', 'Defender', 37);  -- Magnitude (weighted random)
+
+COMMIT;
+-- =============================================================================
+-- PART 3: CHANCE WRAPPERS + SEQUENCE EFFECTS
+-- =============================================================================
+
+BEGIN TRANSACTION;
+
+-- =====================================================================
+-- CHANCE WRAPPERS  (id 200–299)
+-- =====================================================================
+INSERT INTO effects (id, type, chance_probability, child_effect_id) VALUES
+  -- 10% secondaries
+  (200, 'Chance', 0.10, 1),    -- 10% Burn
+  (201, 'Chance', 0.10, 2),    -- 10% Paralyze
+  (202, 'Chance', 0.10, 3),    -- 10% Freeze
+  (203, 'Chance', 0.10, 4),    -- 10% Flinch
+  (204, 'Chance', 0.10, 9),    -- 10% Poison
+  (205, 'Chance', 0.10, 29),   -- 10% lower Atk
+  (206, 'Chance', 0.10, 31),   -- 10% lower Def
+  (207, 'Chance', 0.10, 33),   -- 10% lower Speed
+  (208, 'Chance', 0.10, 37),   -- 10% lower SpDef
+  (209, 'Chance', 0.10, 13),   -- 10% Confuse
+  (210, 'Chance', 0.10, 17),   -- 10% raise Atk (Metal Claw)
+  (211, 'Chance', 0.10, 20),   -- 10% raise Def (Steel Wing)
+  -- 20% secondaries
+  (220, 'Chance', 0.20, 1),    -- 20% Burn
+  (221, 'Chance', 0.20, 2),    -- 20% Paralyze
+  (222, 'Chance', 0.20, 3),    -- 20% Freeze
+  (223, 'Chance', 0.20, 4),    -- 20% Flinch
+  (224, 'Chance', 0.20, 9),    -- 20% Poison  (Twineedle per hit)
+  (225, 'Chance', 0.20, 31),   -- 20% lower Def
+  (226, 'Chance', 0.20, 37),   -- 20% lower SpDef (Crunch, Shadow Ball)
+  (227, 'Chance', 0.20, 13),   -- 20% Confuse (Water Pulse, Dizzy Punch)
+  (228, 'Chance', 0.20, 17),   -- 20% raise Atk (Meteor Mash)
+  (229, 'Chance', 0.20, 50),   -- 20% all-stats (Tri Attack simplified)
+  -- 30% secondaries
+  (230, 'Chance', 0.30, 1),    -- 30% Burn
+  (231, 'Chance', 0.30, 2),    -- 30% Paralyze (Body Slam, Lick, Dragon Breath, Bounce)
+  (232, 'Chance', 0.30, 4),    -- 30% Flinch (Headbutt, Bite, Stomp, Rock Slide, Astonish etc.)
+  (233, 'Chance', 0.30, 9),    -- 30% Poison (Sludge, Sludge Bomb, Poison Tail)
+  (234, 'Chance', 0.30, 31),   -- 30% lower Def (Iron Tail)
+  (235, 'Chance', 0.30, 39),   -- 30% lower Accuracy (Muddy Water)
+  -- 40% secondaries
+  (240, 'Chance', 0.40, 9),    -- 40% Poison (Smog)
+  -- 50% secondaries
+  (250, 'Chance', 0.50, 1),    -- 50% Burn (Sacred Fire)
+  (251, 'Chance', 0.50, 4),    -- 50% Flinch
+  (252, 'Chance', 0.50, 31),   -- 50% lower Def (Crush Claw)
+  (253, 'Chance', 0.50, 39),   -- 50% lower Accuracy (Octazooka)
+  (254, 'Chance', 0.50, 35),   -- 50% lower SpAtk (Mist Ball)
+  (255, 'Chance', 0.50, 37),   -- 50% lower SpDef (Luster Purge)
+  -- 100% guaranteed
+  (260, 'Chance', 1.00, 13),   -- 100% Confuse (Dynamic Punch)
+  (261, 'Chance', 1.00, 2),    -- 100% Paralyze (Zap Cannon on hit)
+  -- 10% raise all stats (Ancient Power / Silver Wind)
+  (262, 'Chance', 0.10, 50),
+  -- Rock Smash 50% lower Defense
+  (263, 'Chance', 0.50, 31);
+
+-- =====================================================================
+-- SEQUENCES  (id 300–499)
+-- Each sequence: damage → optional secondary
+-- =====================================================================
+
+-- Helper: all sequences are (type='Sequence', target=NULL)
+-- We insert the Sequence effect row first, then its steps.
+
+-- 300: Ember  40 → 10% Burn
+INSERT INTO effects (id, type) VALUES (300, 'Sequence');
+INSERT INTO sequence_steps VALUES (300,1,107),(300,2,200);
+
+-- 301: Flamethrower  95 → 10% Burn
+INSERT INTO effects (id, type) VALUES (301, 'Sequence');
+INSERT INTO sequence_steps VALUES (301,1,118),(301,2,200);
+
+-- 302: Fire Blast  110 → 10% Burn
+INSERT INTO effects (id, type) VALUES (302, 'Sequence');
+INSERT INTO sequence_steps VALUES (302,1,120),(302,2,200);
+
+-- 303: Fire Punch  75 → 10% Burn
+INSERT INTO effects (id, type) VALUES (303, 'Sequence');
+INSERT INTO sequence_steps VALUES (303,1,114),(303,2,200);
+
+-- 304: Flame Wheel  60 → 10% Burn
+INSERT INTO effects (id, type) VALUES (304, 'Sequence');
+INSERT INTO sequence_steps VALUES (304,1,111),(304,2,200);
+
+-- 305: Blaze Kick  85 → 10% Burn
+INSERT INTO effects (id, type) VALUES (305, 'Sequence');
+INSERT INTO sequence_steps VALUES (305,1,116),(305,2,200);
+
+-- 306: Heat Wave  95 → 10% Burn
+INSERT INTO effects (id, type) VALUES (306, 'Sequence');
+INSERT INTO sequence_steps VALUES (306,1,118),(306,2,200);
+
+-- 307: Sacred Fire  100 → 50% Burn
+INSERT INTO effects (id, type) VALUES (307, 'Sequence');
+INSERT INTO sequence_steps VALUES (307,1,119),(307,2,250);
+
+-- 308: Will-O-Wisp: just Burn (no damage — direct effect id=1 used in attempt)
+
+-- 309: Thunderbolt  90 → 10% Paralyze
+INSERT INTO effects (id, type) VALUES (309, 'Sequence');
+INSERT INTO sequence_steps VALUES (309,1,117),(309,2,201);
+
+-- 310: Thunder  110 → 30% Paralyze
+INSERT INTO effects (id, type) VALUES (310, 'Sequence');
+INSERT INTO sequence_steps VALUES (310,1,120),(310,2,231);
+
+-- 311: Thunder Shock  40 → 10% Paralyze
+INSERT INTO effects (id, type) VALUES (311, 'Sequence');
+INSERT INTO sequence_steps VALUES (311,1,107),(311,2,201);
+
+-- 312: Spark  65 → 30% Paralyze
+INSERT INTO effects (id, type) VALUES (312, 'Sequence');
+INSERT INTO sequence_steps VALUES (312,1,112),(312,2,231);
+
+-- 313: Thunder Punch  75 → 10% Paralyze
+INSERT INTO effects (id, type) VALUES (313, 'Sequence');
+INSERT INTO sequence_steps VALUES (313,1,114),(313,2,201);
+
+-- 314: Zap Cannon  120 → 100% Paralyze
+INSERT INTO effects (id, type) VALUES (314, 'Sequence');
+INSERT INTO sequence_steps VALUES (314,1,121),(314,2,261);
+
+-- 315: Body Slam  85 → 30% Paralyze
+INSERT INTO effects (id, type) VALUES (315, 'Sequence');
+INSERT INTO sequence_steps VALUES (315,1,116),(315,2,231);
+
+-- 316: Lick  30 → 30% Paralyze
+INSERT INTO effects (id, type) VALUES (316, 'Sequence');
+INSERT INTO sequence_steps VALUES (316,1,105),(316,2,231);
+
+-- 317: Dragon Breath  60 → 30% Paralyze
+INSERT INTO effects (id, type) VALUES (317, 'Sequence');
+INSERT INTO sequence_steps VALUES (317,1,111),(317,2,231);
+
+-- 318: Bounce  85 → 30% Paralyze  (release turn)
+INSERT INTO effects (id, type) VALUES (318, 'Sequence');
+INSERT INTO sequence_steps VALUES (318,1,116),(318,2,231);
+
+-- 319: Volt Tackle  120 → 1/3 recoil → 10% Paralyze
+INSERT INTO effects (id, type) VALUES (319, 'Sequence');
+INSERT INTO sequence_steps VALUES (319,1,121),(319,2,63),(319,3,201);
+
+-- 320: Ice Beam  90 → 10% Freeze
+INSERT INTO effects (id, type) VALUES (320, 'Sequence');
+INSERT INTO sequence_steps VALUES (320,1,117),(320,2,202);
+
+-- 321: Blizzard  110 → 10% Freeze
+INSERT INTO effects (id, type) VALUES (321, 'Sequence');
+INSERT INTO sequence_steps VALUES (321,1,120),(321,2,202);
+
+-- 322: Ice Punch  75 → 10% Freeze
+INSERT INTO effects (id, type) VALUES (322, 'Sequence');
+INSERT INTO sequence_steps VALUES (322,1,114),(322,2,202);
+
+-- 323: Powder Snow  40 → 10% Freeze
+INSERT INTO effects (id, type) VALUES (323, 'Sequence');
+INSERT INTO sequence_steps VALUES (323,1,107),(323,2,202);
+
+-- 324: Psychic  90 → 10% lower SpDef
+INSERT INTO effects (id, type) VALUES (324, 'Sequence');
+INSERT INTO sequence_steps VALUES (324,1,117),(324,2,208);
+
+-- 325: Acid  40 → 10% lower SpDef
+INSERT INTO effects (id, type) VALUES (325, 'Sequence');
+INSERT INTO sequence_steps VALUES (325,1,107),(325,2,208);
+
+-- 326: Shadow Ball  80 → 20% lower SpDef
+INSERT INTO effects (id, type) VALUES (326, 'Sequence');
+INSERT INTO sequence_steps VALUES (326,1,115),(326,2,226);
+
+-- 327: Crunch  80 → 20% lower Defense
+INSERT INTO effects (id, type) VALUES (327, 'Sequence');
+INSERT INTO sequence_steps VALUES (327,1,115),(327,2,225);
+
+-- 328: Iron Tail  100 → 30% lower Defense
+INSERT INTO effects (id, type) VALUES (328, 'Sequence');
+INSERT INTO sequence_steps VALUES (328,1,119),(328,2,234);
+
+-- 329: Crush Claw  75 → 50% lower Defense
+INSERT INTO effects (id, type) VALUES (329, 'Sequence');
+INSERT INTO sequence_steps VALUES (329,1,114),(329,2,252);
+
+-- 330: Rock Slide  75 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (330, 'Sequence');
+INSERT INTO sequence_steps VALUES (330,1,114),(330,2,232);
+
+-- 331: Headbutt  70 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (331, 'Sequence');
+INSERT INTO sequence_steps VALUES (331,1,113),(331,2,232);
+
+-- 332: Stomp  65 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (332, 'Sequence');
+INSERT INTO sequence_steps VALUES (332,1,112),(332,2,232);
+
+-- 333: Bite  60 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (333, 'Sequence');
+INSERT INTO sequence_steps VALUES (333,1,111),(333,2,232);
+
+-- 334: Astonish  30 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (334, 'Sequence');
+INSERT INTO sequence_steps VALUES (334,1,105),(334,2,232);
+
+-- 335: Needle Arm  60 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (335, 'Sequence');
+INSERT INTO sequence_steps VALUES (335,1,111),(335,2,232);
+
+-- 336: Extrasensory  80 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (336, 'Sequence');
+INSERT INTO sequence_steps VALUES (336,1,115),(336,2,232);
+
+-- 337: Waterfall  80 → 20% Flinch
+INSERT INTO effects (id, type) VALUES (337, 'Sequence');
+INSERT INTO sequence_steps VALUES (337,1,115),(337,2,223);
+
+-- 338: Rock Slide 2nd ref (same as 330, but Rock Tomb needs speed drop)
+-- 339: Hyper Fang  80 → 10% Flinch
+INSERT INTO effects (id, type) VALUES (339, 'Sequence');
+INSERT INTO sequence_steps VALUES (339,1,115),(339,2,203);
+
+-- 340: Rolling Kick  60 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (340, 'Sequence');
+INSERT INTO sequence_steps VALUES (340,1,111),(340,2,232);
+
+-- 341: Bone Club  65 → 10% Flinch
+INSERT INTO effects (id, type) VALUES (341, 'Sequence');
+INSERT INTO sequence_steps VALUES (341,1,112),(341,2,203);
+
+-- 342: Snore  50 → 30% Flinch (used-while-asleep)
+INSERT INTO effects (id, type) VALUES (342, 'Sequence');
+INSERT INTO sequence_steps VALUES (342,1,109),(342,2,232);
+
+-- 343: Twister  40 → 20% Flinch
+INSERT INTO effects (id, type) VALUES (343, 'Sequence');
+INSERT INTO sequence_steps VALUES (343,1,107),(343,2,223);
+
+-- 344: Fake Out  40 → guaranteed Flinch (effect id=4 directly, no Chance wrapper)
+INSERT INTO effects (id, type) VALUES (344, 'Sequence');
+INSERT INTO sequence_steps VALUES (344,1,107),(344,2,4);
+
+-- 345: Psybeam  65 → 10% Confuse
+INSERT INTO effects (id, type) VALUES (345, 'Sequence');
+INSERT INTO sequence_steps VALUES (345,1,112),(345,2,209);
+
+-- 346: Confusion  50 → 10% Confuse
+INSERT INTO effects (id, type) VALUES (346, 'Sequence');
+INSERT INTO sequence_steps VALUES (346,1,109),(346,2,209);
+
+-- 347: Water Pulse  60 → 20% Confuse
+INSERT INTO effects (id, type) VALUES (347, 'Sequence');
+INSERT INTO sequence_steps VALUES (347,1,111),(347,2,227);
+
+-- 348: Signal Beam  75 → 10% Confuse
+INSERT INTO effects (id, type) VALUES (348, 'Sequence');
+INSERT INTO sequence_steps VALUES (348,1,114),(348,2,209);
+
+-- 349: Dizzy Punch  70 → 20% Confuse
+INSERT INTO effects (id, type) VALUES (349, 'Sequence');
+INSERT INTO sequence_steps VALUES (349,1,113),(349,2,227);
+
+-- 350: Dynamic Punch  100 → 100% Confuse
+INSERT INTO effects (id, type) VALUES (350, 'Sequence');
+INSERT INTO sequence_steps VALUES (350,1,119),(350,2,260);
+
+-- 351: Swagger: +2 Atk Defender then Confuse (effect 216=MultiStatChange, 13=Confuse)
+INSERT INTO effects (id, type) VALUES (351, 'Sequence');
+INSERT INTO sequence_steps VALUES (351,1,216),(351,2,13);
+
+-- 352: Flatter: +1 SpAtk Defender then Confuse
+INSERT INTO effects (id, type) VALUES (352, 'Sequence');
+INSERT INTO sequence_steps VALUES (352,1,215),(352,2,13);
+
+-- 353: Sludge  65 → 30% Poison
+INSERT INTO effects (id, type) VALUES (353, 'Sequence');
+INSERT INTO sequence_steps VALUES (353,1,112),(353,2,233);
+
+-- 354: Sludge Bomb  90 → 30% Poison
+INSERT INTO effects (id, type) VALUES (354, 'Sequence');
+INSERT INTO sequence_steps VALUES (354,1,117),(354,2,233);
+
+-- 355: Smog  30 → 40% Poison
+INSERT INTO effects (id, type) VALUES (355, 'Sequence');
+INSERT INTO sequence_steps VALUES (355,1,105),(355,2,240);
+
+-- 356: Poison Sting  15 → 30% Poison
+INSERT INTO effects (id, type) VALUES (356, 'Sequence');
+INSERT INTO sequence_steps VALUES (356,1,101),(356,2,233);
+
+-- 357: Poison Fang  50 → 30% badly poison (id=10)
+INSERT INTO effects (id, type, chance_probability, child_effect_id) VALUES (357,'Chance',0.30,10);
+INSERT INTO effects (id, type) VALUES (358, 'Sequence');
+INSERT INTO sequence_steps VALUES (358,1,109),(358,2,357);
+
+-- 359: Poison Tail  50 → 10% poison
+INSERT INTO effects (id, type) VALUES (359, 'Sequence');
+INSERT INTO sequence_steps VALUES (359,1,109),(359,2,204);
+
+-- 360: Twineedle per-hit: 25 power → 20% Poison
+INSERT INTO effects (id, type) VALUES (360, 'Sequence');
+INSERT INTO sequence_steps VALUES (360,1,104),(360,2,224);
+
+-- 361: Aurora Beam  65 → 10% lower Attack
+INSERT INTO effects (id, type) VALUES (361, 'Sequence');
+INSERT INTO sequence_steps VALUES (361,1,112),(361,2,205);
+
+-- 362: Bubble  40 → 10% lower Speed
+INSERT INTO effects (id, type) VALUES (362, 'Sequence');
+INSERT INTO sequence_steps VALUES (362,1,107),(362,2,207);
+
+-- 363: Bubble Beam  65 → 10% lower Speed
+INSERT INTO effects (id, type) VALUES (363, 'Sequence');
+INSERT INTO sequence_steps VALUES (363,1,112),(363,2,207);
+
+-- 364: Constrict  10 → 10% lower Speed
+INSERT INTO effects (id, type) VALUES (364, 'Sequence');
+INSERT INTO sequence_steps VALUES (364,1,100),(364,2,207);
+
+-- 365: Mud Shot  55 → always -1 Speed (guaranteed, no Chance wrapper)
+INSERT INTO effects (id, type) VALUES (365, 'Sequence');
+INSERT INTO sequence_steps VALUES (365,1,110),(365,2,33);
+
+-- 366: Rock Tomb  60 → always -1 Speed
+INSERT INTO effects (id, type) VALUES (366, 'Sequence');
+INSERT INTO sequence_steps VALUES (366,1,111),(366,2,33);
+
+-- 367: Icy Wind  55 → always -1 Speed
+INSERT INTO effects (id, type) VALUES (367, 'Sequence');
+INSERT INTO sequence_steps VALUES (367,1,110),(367,2,33);
+
+-- 368: Mud-Slap  20 → always -1 Accuracy
+INSERT INTO effects (id, type) VALUES (368, 'Sequence');
+INSERT INTO sequence_steps VALUES (368,1,103),(368,2,39);
+
+-- 369: Muddy Water  90 → 30% lower Accuracy
+INSERT INTO effects (id, type) VALUES (369, 'Sequence');
+INSERT INTO sequence_steps VALUES (369,1,117),(369,2,235);
+
+-- 370: Octazooka  65 → 50% lower Accuracy
+INSERT INTO effects (id, type) VALUES (370, 'Sequence');
+INSERT INTO sequence_steps VALUES (370,1,112),(370,2,253);
+
+-- 371: Metal Claw  50 → 10% raise Atk
+INSERT INTO effects (id, type) VALUES (371, 'Sequence');
+INSERT INTO sequence_steps VALUES (371,1,109),(371,2,210);
+
+-- 372: Meteor Mash  90 → 20% raise Atk
+INSERT INTO effects (id, type) VALUES (372, 'Sequence');
+INSERT INTO sequence_steps VALUES (372,1,117),(372,2,228);
+
+-- 373: Steel Wing  70 → 10% raise Def
+INSERT INTO effects (id, type) VALUES (373, 'Sequence');
+INSERT INTO sequence_steps VALUES (373,1,113),(373,2,211);
+
+-- 374: Mist Ball  95 → 50% lower SpAtk
+INSERT INTO effects (id, type) VALUES (374, 'Sequence');
+INSERT INTO sequence_steps VALUES (374,1,118),(374,2,254);
+
+-- 375: Luster Purge  95 → 50% lower SpDef
+INSERT INTO effects (id, type) VALUES (375, 'Sequence');
+INSERT INTO sequence_steps VALUES (375,1,118),(375,2,255);
+
+-- 376: Overheat  130 → -2 SpAtk (user)
+INSERT INTO effects (id, type) VALUES (376, 'Sequence');
+INSERT INTO sequence_steps VALUES (376,1,122),(376,2,25);
+
+-- 377: Psycho Boost  140 → -2 SpAtk
+INSERT INTO effects (id, type) VALUES (377, 'Sequence');
+INSERT INTO sequence_steps VALUES (377,1,123),(377,2,25);
+
+-- 378: Superpower  120 → -1 Atk/-1 Def (self)
+INSERT INTO effects (id, type) VALUES (378, 'Sequence');
+INSERT INTO sequence_steps VALUES (378,1,121),(378,2,49);
+
+-- 379: Double-Edge  120 → 1/3 recoil
+INSERT INTO effects (id, type) VALUES (379, 'Sequence');
+INSERT INTO sequence_steps VALUES (379,1,121),(379,2,63);
+
+-- 380: Take Down  90 → 1/4 recoil
+INSERT INTO effects (id, type) VALUES (380, 'Sequence');
+INSERT INTO sequence_steps VALUES (380,1,117),(380,2,62);
+
+-- 381: Submission  80 → 1/4 recoil
+INSERT INTO effects (id, type) VALUES (381, 'Sequence');
+INSERT INTO sequence_steps VALUES (381,1,115),(381,2,62);
+
+-- 382: Drain (Absorb 20, Mega Drain 40, Giga Drain 75, Leech Life 20, Dream Eater 100)
+-- Absorb  20 → drain 50%
+INSERT INTO effects (id, type) VALUES (382, 'Sequence');
+INSERT INTO sequence_steps VALUES (382,1,103),(382,2,61);
+
+-- 383: Mega Drain  40 → drain
+INSERT INTO effects (id, type) VALUES (383, 'Sequence');
+INSERT INTO sequence_steps VALUES (383,1,107),(383,2,61);
+
+-- 384: Giga Drain  75 → drain
+INSERT INTO effects (id, type) VALUES (384, 'Sequence');
+INSERT INTO sequence_steps VALUES (384,1,114),(384,2,61);
+
+-- 385: Leech Life  20 → drain
+INSERT INTO effects (id, type) VALUES (385, 'Sequence');
+INSERT INTO sequence_steps VALUES (385,1,103),(385,2,61);
+
+-- 386: Dream Eater  100 → drain
+INSERT INTO effects (id, type) VALUES (386, 'Sequence');
+INSERT INTO sequence_steps VALUES (386,1,119),(386,2,61);
+
+-- 387: Rest  = Sleep(self,2) → RestoreHP(50%)
+INSERT INTO effects (id, type) VALUES (387, 'Sequence');
+INSERT INTO sequence_steps VALUES (387,1,12),(387,2,15);
+
+-- 388: Explosion  250 → Faint self
+INSERT INTO effects (id, type) VALUES (388, 'Sequence');
+INSERT INTO sequence_steps VALUES (388,1,126),(388,2,5);
+
+-- 389: Self-Destruct  200 → Faint self
+INSERT INTO effects (id, type) VALUES (389, 'Sequence');
+INSERT INTO sequence_steps VALUES (389,1,125),(389,2,5);
+
+-- 390: Memento = (lower Atk/SpAtk Defender) → Faint self
+INSERT INTO effects (id, type) VALUES (390, 'Sequence');
+INSERT INTO sequence_steps VALUES (390,1,52),(390,2,5);
+
+-- 391: Smelling Salts  70 → CureStatus(Defender paralysis)
+INSERT INTO effects (id, type) VALUES (391, 'Sequence');
+INSERT INTO sequence_steps VALUES (391,1,113),(391,2,69);
+
+-- 392: Tri Attack  80 → 20% all-stats (simplified to 20% chance of status)
+INSERT INTO effects (id, type) VALUES (392, 'Sequence');
+INSERT INTO sequence_steps VALUES (392,1,115),(392,2,229);
+
+-- 393: Ancient Power / Silver Wind  60 → 10% raise all stats
+INSERT INTO effects (id, type) VALUES (393, 'Sequence');
+INSERT INTO sequence_steps VALUES (393,1,111),(393,2,262);
+
+-- 394: Rock Smash  40 → 50% lower Defense
+INSERT INTO effects (id, type) VALUES (394, 'Sequence');
+INSERT INTO sequence_steps VALUES (394,1,107),(394,2,263);
+
+-- 395: Knock Off  65 → remove held item
+INSERT INTO effects (id, type) VALUES (395, 'Sequence');
+INSERT INTO sequence_steps VALUES (395,1,112),(395,2,282);
+
+-- 396: Thief / Covet  60 → steal held item
+INSERT INTO effects (id, type) VALUES (396, 'Sequence');
+INSERT INTO sequence_steps VALUES (396,1,111),(396,2,282);
+
+-- 397: Brick Break  75 → break screens (NoEffect: screen-break logic in engine)
+INSERT INTO effects (id, type) VALUES (397, 'Sequence');
+INSERT INTO sequence_steps VALUES (397,1,114),(397,2,8);
+
+-- 398: Struggle  50 → 1/4 recoil
+INSERT INTO effects (id, type) VALUES (398, 'Sequence');
+INSERT INTO sequence_steps VALUES (398,1,109),(398,2,62);
+
+-- 399: Sky Attack  140 → 30% Flinch
+INSERT INTO effects (id, type) VALUES (399, 'Sequence');
+INSERT INTO sequence_steps VALUES (399,1,123),(399,2,232);
+
+COMMIT;
+-- =============================================================================
+-- PART 4: MOVES TABLE  (all 354 moves, Gen 1 + Gen 2 + Gen 3)
+-- Values: Gen 3 FireRed/LeafGreen.
+-- category column: Physical/Special/Status  (Gen 3 type-based split)
+-- crit_stage: 0=normal, 1=high (+1 stage inherent to the move)
+-- =============================================================================
+
+BEGIN TRANSACTION;
+
+INSERT INTO moves (id, name, element, category, target, pp, priority, crit_stage, description) VALUES
+
+-- =====================================================================
+-- GENERATION 1  (moves 1–165)
+-- =====================================================================
+(1,  'Pound',         'Normal',  'Physical','Opponent',35, 0,0,'A basic physical tackle.'),
+(2,  'Karate Chop',   'Fighting','Physical','Opponent',25, 0,1,'A chop with a high critical hit ratio.'),
+(3,  'Double Slap',   'Normal',  'Physical','Opponent',10, 0,0,'Slaps the foe 2-5 times.'),
+(4,  'Comet Punch',   'Normal',  'Physical','Opponent',15, 0,0,'Punches the foe 2-5 times.'),
+(5,  'Mega Punch',    'Normal',  'Physical','Opponent',20, 0,0,'A powerful punch.'),
+(6,  'Pay Day',       'Normal',  'Physical','Opponent',20, 0,0,'Tosses coins that are collected after battle.'),
+(7,  'Fire Punch',    'Fire',    'Physical','Opponent',15, 0,0,'A fiery punch. May burn.'),
+(8,  'Ice Punch',     'Ice',     'Physical','Opponent',15, 0,0,'An icy punch. May freeze.'),
+(9,  'Thunder Punch', 'Electric','Physical','Opponent',15, 0,0,'An electric punch. May paralyze.'),
+(10, 'Scratch',       'Normal',  'Physical','Opponent',35, 0,0,'Scratches with sharp claws.'),
+(11, 'Vice Grip',     'Normal',  'Physical','Opponent',30, 0,0,'Grips the foe with pincers.'),
+(12, 'Guillotine',    'Normal',  'Physical','Opponent', 5, 0,0,'One-hit KO if it hits.'),
+(13, 'Razor Wind',    'Normal',  'Special', 'Opponent',10, 0,1,'Charges turn 1, strikes turn 2. High crit.'),
+(14, 'Swords Dance',  'Normal',  'Status',  'Self',    20, 0,0,'A ritual dance that sharply raises Attack.'),
+(15, 'Cut',           'Normal',  'Physical','Opponent',30, 0,0,'Cuts with sharp claws or blades.'),
+(16, 'Gust',          'Flying',  'Special', 'Opponent',35, 0,0,'Whips up a gust of wind. Hits Fly users double.'),
+(17, 'Wing Attack',   'Flying',  'Physical','Opponent',35, 0,0,'Strikes with wings spread wide.'),
+(18, 'Whirlwind',     'Normal',  'Status',  'Opponent',20,-6,0,'Forces the foe to switch out.'),
+(19, 'Fly',           'Flying',  'Physical','Opponent',15, 0,0,'Flies up turn 1, dives down turn 2.'),
+(20, 'Bind',          'Normal',  'Physical','Opponent',20, 0,0,'Squeezes and traps for 4-5 turns.'),
+(21, 'Slam',          'Normal',  'Physical','Opponent',20, 0,0,'Slams the foe with a long tail or vine.'),
+(22, 'Vine Whip',     'Grass',   'Physical','Opponent',25, 0,0,'Strikes with slender vines.'),
+(23, 'Stomp',         'Normal',  'Physical','Opponent',20, 0,0,'Stomps the foe. May cause flinching.'),
+(24, 'Double Kick',   'Fighting','Physical','Opponent',30, 0,0,'Kicks twice in one turn.'),
+(25, 'Mega Kick',     'Normal',  'Physical','Opponent', 5, 0,0,'An incredibly powerful kick.'),
+(26, 'Jump Kick',     'Fighting','Physical','Opponent',10, 0,0,'A jumping kick. Crashes if it misses.'),
+(27, 'Rolling Kick',  'Fighting','Physical','Opponent',15, 0,0,'A spinning kick. May cause flinching.'),
+(28, 'Sand Attack',   'Ground',  'Status',  'Opponent',15, 0,0,'Hurls sand to lower opponent Accuracy.'),
+(29, 'Headbutt',      'Normal',  'Physical','Opponent',15, 0,0,'A ramming headbutt. May cause flinching.'),
+(30, 'Horn Attack',   'Normal',  'Physical','Opponent',25, 0,0,'Stabs the foe with a long horn.'),
+(31, 'Fury Attack',   'Normal',  'Physical','Opponent',20, 0,0,'Jabs with a horn or beak 2-5 times.'),
+(32, 'Horn Drill',    'Normal',  'Physical','Opponent', 5, 0,0,'One-hit KO if it hits.'),
+(33, 'Tackle',        'Normal',  'Physical','Opponent',35, 0,0,'A full-body charge attack.'),
+(34, 'Body Slam',     'Normal',  'Physical','Opponent',15, 0,0,'Slams into the foe. May paralyze.'),
+(35, 'Wrap',          'Normal',  'Physical','Opponent',20, 0,0,'Wraps and squeezes the foe for 4-5 turns.'),
+(36, 'Take Down',     'Normal',  'Physical','Opponent',20, 0,0,'A reckless charge. User takes recoil.'),
+(37, 'Thrash',        'Normal',  'Physical','Opponent',10, 0,0,'Rampages for 2-3 turns then confuses user.'),
+(38, 'Double-Edge',   'Normal',  'Physical','Opponent',15, 0,0,'A life-risking tackle. User takes recoil.'),
+(39, 'Tail Whip',     'Normal',  'Status',  'Opponent',30, 0,0,'Lowers the foe''s Defense.'),
+(40, 'Poison Sting',  'Poison',  'Physical','Opponent',35, 0,0,'Stings with a poisonous stinger. May poison.'),
+(41, 'Twineedle',     'Bug',     'Physical','Opponent',20, 0,0,'Jabs twice with sharp needles. May poison.'),
+(42, 'Pin Missile',   'Bug',     'Physical','Opponent',20, 0,0,'Sharp pins are fired at the foe 2-5 times.'),
+(43, 'Leer',          'Normal',  'Status',  'Opponent',30, 0,0,'Intimidates the foe to lower its Defense.'),
+(44, 'Bite',          'Dark',    'Physical','Opponent',25, 0,0,'Bites with vicious fangs. May cause flinching.'),
+(45, 'Growl',         'Normal',  'Status',  'Opponent',40, 0,0,'Growls to lower the foe''s Attack.'),
+(46, 'Roar',          'Normal',  'Status',  'Opponent',20,-6,0,'Scares the foe to force a switch.'),
+(47, 'Sing',          'Normal',  'Status',  'Opponent',15, 0,0,'A soothing melody that puts the foe to sleep.'),
+(48, 'Supersonic',    'Normal',  'Status',  'Opponent',20, 0,0,'Emits a confusing ultrasonic noise.'),
+(49, 'Sonic Boom',    'Normal',  'Special', 'Opponent',20, 0,0,'Always inflicts 20 HP of damage.'),
+(50, 'Disable',       'Normal',  'Status',  'Opponent',20, 0,0,'Disables the foe''s last-used move for 4 turns.'),
+(51, 'Acid',          'Poison',  'Special', 'Opponent',30, 0,0,'Sprays acid. May lower SpDef.'),
+(52, 'Ember',         'Fire',    'Special', 'Opponent',25, 0,0,'Shoots small flames. May burn.'),
+(53, 'Flamethrower',  'Fire',    'Special', 'Opponent',15, 0,0,'Breathes intense fire. May burn.'),
+(54, 'Mist',          'Ice',     'Status',  'Self',    30, 0,0,'Protects user''s stats from reduction.'),
+(55, 'Water Gun',     'Water',   'Special', 'Opponent',25, 0,0,'Squirts water to attack.'),
+(56, 'Hydro Pump',    'Water',   'Special', 'Opponent', 5, 0,0,'Blasts water with great force.'),
+(57, 'Surf',          'Water',   'Special', 'Opponent',15, 0,0,'Rides a wave and hits all adjacent foes.'),
+(58, 'Ice Beam',      'Ice',     'Special', 'Opponent',10, 0,0,'Fires a chilling beam. May freeze.'),
+(59, 'Blizzard',      'Ice',     'Special', 'Opponent', 5, 0,0,'Blasts blizzard to freeze foe. Hits Fly users.'),
+(60, 'Psybeam',       'Psychic', 'Special', 'Opponent',20, 0,0,'Fires a peculiar ray. May confuse.'),
+(61, 'Bubble Beam',   'Water',   'Special', 'Opponent',20, 0,0,'Forceful bubbles. May lower Speed.'),
+(62, 'Aurora Beam',   'Ice',     'Special', 'Opponent',20, 0,0,'Shoots rainbow-colored beams. May lower Attack.'),
+(63, 'Hyper Beam',    'Normal',  'Special', 'Opponent', 5, 0,0,'Fires a powerful beam. Must recharge next turn.'),
+(64, 'Peck',          'Flying',  'Physical','Opponent',35, 0,0,'Jabs the foe with a beak.'),
+(65, 'Drill Peck',    'Flying',  'Physical','Opponent',20, 0,0,'A corkscrewing peck attack.'),
+(66, 'Submission',    'Fighting','Physical','Opponent',20, 0,0,'A judo throw that also damages the user.'),
+(67, 'Low Kick',      'Fighting','Physical','Opponent',20, 0,0,'A kick that inflicts more damage on heavier foes.'),
+(68, 'Counter',       'Fighting','Physical','Self',    20,-5,0,'Counters physical attacks at double the power.'),
+(69, 'Seismic Toss',  'Fighting','Physical','Opponent',20, 0,0,'Damage equals the user''s level.'),
+(70, 'Strength',      'Normal',  'Physical','Opponent',15, 0,0,'A powerful HM move.'),
+(71, 'Absorb',        'Grass',   'Special', 'Opponent',25, 0,0,'Drains the foe''s HP to restore user''s HP.'),
+(72, 'Mega Drain',    'Grass',   'Special', 'Opponent',15, 0,0,'Drains the foe''s HP.'),
+(73, 'Leech Seed',    'Grass',   'Status',  'Opponent',10, 0,0,'Plants a seed that steals HP each turn.'),
+(74, 'Growth',        'Normal',  'Status',  'Self',    20, 0,0,'Raises the user''s Attack and Sp. Attack.'),
+(75, 'Razor Leaf',    'Grass',   'Physical','Opponent',25, 0,1,'Slices with sharp leaves. High crit ratio.'),
+(76, 'Solar Beam',    'Grass',   'Special', 'Opponent',10, 0,0,'Absorbs light turn 1, fires beam turn 2.'),
+(77, 'Poison Powder', 'Poison',  'Status',  'Opponent',35, 0,0,'Scatters toxic powder to poison the foe.'),
+(78, 'Stun Spore',    'Grass',   'Status',  'Opponent',30, 0,0,'Scatters numbing powder to paralyze.'),
+(79, 'Sleep Powder',  'Grass',   'Status',  'Opponent',15, 0,0,'Scatters sleep-inducing powder.'),
+(80, 'Petal Dance',   'Grass',   'Special', 'Opponent',10, 0,0,'Attacks for 2-3 turns then confuses user.'),
+(81, 'String Shot',   'Bug',     'Status',  'Opponent',40, 0,0,'Binds the foe with string to lower Speed.'),
+(82, 'Dragon Rage',   'Dragon',  'Special', 'Opponent',10, 0,0,'Always inflicts 40 HP of damage.'),
+(83, 'Fire Spin',     'Fire',    'Special', 'Opponent',15, 0,0,'Traps the foe in a vortex of fire for 4-5 turns.'),
+(84, 'Thunder Shock', 'Electric','Special', 'Opponent',30, 0,0,'An electric jolt. May paralyze.'),
+(85, 'Thunderbolt',   'Electric','Special', 'Opponent',15, 0,0,'A strong electric blast. May paralyze.'),
+(86, 'Thunder Wave',  'Electric','Status',  'Opponent',20, 0,0,'A weak electric charge that paralyzes.'),
+(87, 'Thunder',       'Electric','Special', 'Opponent',10, 0,0,'A large lightning bolt. May paralyze.'),
+(88, 'Rock Throw',    'Rock',    'Physical','Opponent',15, 0,0,'Hurls large rocks at the foe.'),
+(89, 'Earthquake',    'Ground',  'Physical','Opponent',10, 0,0,'A powerful magnitude-9 quake. Hits Dig users.'),
+(90, 'Fissure',       'Ground',  'Physical','Opponent', 5, 0,0,'Drops the foe into a fissure. One-hit KO.'),
+(91, 'Dig',           'Ground',  'Physical','Opponent',10, 0,0,'Digs underground turn 1, strikes turn 2.'),
+(92, 'Toxic',         'Poison',  'Status',  'Opponent',10, 0,0,'Badly poisons the foe with a toxin.'),
+(93, 'Confusion',     'Psychic', 'Special', 'Opponent',25, 0,0,'Hits with a weak telekinetic force. May confuse.'),
+(94, 'Psychic',       'Psychic', 'Special', 'Opponent',10, 0,0,'A powerful psychic attack. May lower SpDef.'),
+(95, 'Hypnosis',      'Psychic', 'Status',  'Opponent',20, 0,0,'Induces sleep with a hypnotic suggestion.'),
+(96, 'Meditate',      'Psychic', 'Status',  'Self',    40, 0,0,'Meditates to sharpen focus and raise Attack.'),
+(97, 'Agility',       'Psychic', 'Status',  'Self',    30, 0,0,'Relaxes the body to sharply raise Speed.'),
+(98, 'Quick Attack',  'Normal',  'Physical','Opponent',30, 1,0,'Zips to attack before the foe can move.'),
+(99, 'Rage',          'Normal',  'Physical','Opponent',20, 0,0,'Raises Attack if hit while using this move.'),
+(100,'Teleport',      'Psychic', 'Status',  'Self',    20, 0,0,'Warps the user to its last visited PokéCenter.'),
+(101,'Night Shade',   'Ghost',   'Special', 'Opponent',15, 0,0,'Inflicts damage equal to the user''s level.'),
+(102,'Mimic',         'Normal',  'Status',  'Opponent',10, 0,0,'Copies the foe''s last used move.'),
+(103,'Screech',       'Normal',  'Status',  'Opponent',40, 0,0,'Emits a screech to sharply lower foe''s Defense.'),
+(104,'Double Team',   'Normal',  'Status',  'Self',    15, 0,0,'Creates illusory copies to raise Evasiveness.'),
+(105,'Recover',       'Normal',  'Status',  'Self',     5, 0,0,'Recovers up to half the user''s max HP.'),
+(106,'Harden',        'Normal',  'Status',  'Self',    30, 0,0,'Stiffens the body to raise Defense.'),
+(107,'Minimize',      'Normal',  'Status',  'Self',    10, 0,0,'Minimizes the body to sharply raise Evasiveness.'),
+(108,'Smokescreen',   'Normal',  'Status',  'Opponent',20, 0,0,'Emits smoke to lower the foe''s Accuracy.'),
+(109,'Confuse Ray',   'Ghost',   'Status',  'Opponent',10, 0,0,'Shoots a sinister ray to confuse the foe.'),
+(110,'Withdraw',      'Water',   'Status',  'Self',    40, 0,0,'Withdraws into shell to raise Defense.'),
+(111,'Defense Curl',  'Normal',  'Status',  'Self',    40, 0,0,'Rolls up to raise Defense.'),
+(112,'Barrier',       'Psychic', 'Status',  'Self',    20, 0,0,'Creates an invisible wall to sharply raise Defense.'),
+(113,'Light Screen',  'Psychic', 'Status',  'Self',    30, 0,0,'Reduces damage from special attacks for 5 turns.'),
+(114,'Haze',          'Ice',     'Status',  'Self',    30, 0,0,'Sprays icy air to reset all stat changes.'),
+(115,'Reflect',       'Psychic', 'Status',  'Self',    20, 0,0,'Reduces damage from physical attacks for 5 turns.'),
+(116,'Focus Energy',  'Normal',  'Status',  'Self',    30, 0,0,'Focuses power to raise the critical hit ratio.'),
+(117,'Bide',          'Normal',  'Physical','Opponent',10, 0,0,'Endures attacks for 2 turns then retaliates double.'),
+(118,'Metronome',     'Normal',  'Status',  'Self',    10, 0,0,'Randomly uses almost any move in the game.'),
+(119,'Mirror Move',   'Flying',  'Status',  'Self',    20, 0,0,'Mimics the move the foe just used.'),
+(120,'Self-Destruct', 'Normal',  'Physical','Opponent', 5, 0,0,'Blows up the user for massive damage.'),
+(121,'Egg Bomb',      'Normal',  'Physical','Opponent',10, 0,0,'Hurls an egg at the foe.'),
+(122,'Lick',          'Ghost',   'Physical','Opponent',30, 0,0,'Licks with a long tongue. May paralyze.'),
+(123,'Smog',          'Poison',  'Special', 'Opponent',20, 0,0,'Belches poison gas. May poison.'),
+(124,'Sludge',        'Poison',  'Special', 'Opponent',20, 0,0,'Hurls filthy sludge. May poison.'),
+(125,'Bone Club',     'Ground',  'Physical','Opponent',20, 0,0,'Hits with a bone. May cause flinching.'),
+(126,'Fire Blast',    'Fire',    'Special', 'Opponent', 5, 0,0,'Fires an intense blast of all-consuming fire. May burn.'),
+(127,'Waterfall',     'Water',   'Physical','Opponent',15, 0,0,'Charges up a waterfall. May cause flinching.'),
+(128,'Clamp',         'Water',   'Physical','Opponent',15, 0,0,'Clamps and squeezes the foe for 4-5 turns.'),
+(129,'Swift',         'Normal',  'Special', 'Opponent',20, 0,0,'Star-shaped rays that never miss.'),
+(130,'Skull Bash',    'Normal',  'Physical','Opponent',10, 0,0,'Raises Defense turn 1, then headbutts turn 2.'),
+(131,'Spike Cannon',  'Normal',  'Physical','Opponent',15, 0,0,'Launches sharp spikes 2-5 times in a row.'),
+(132,'Constrict',     'Normal',  'Physical','Opponent',35, 0,0,'Squeezes with long tentacles. May lower Speed.'),
+(133,'Amnesia',       'Psychic', 'Status',  'Self',    20, 0,0,'Forgets about something to sharply raise Sp. Def.'),
+(134,'Kinesis',       'Psychic', 'Status',  'Opponent',15, 0,0,'Distracts the foe to lower Accuracy.'),
+(135,'Soft-Boiled',   'Normal',  'Status',  'Self',     5, 0,0,'Restores up to half the user''s max HP.'),
+(136,'High Jump Kick','Fighting','Physical','Opponent',10, 0,0,'A jumping kick. May crash if it misses.'),
+(137,'Glare',         'Normal',  'Status',  'Opponent',30, 0,0,'Frightens the foe with terrifying eyes to paralyze.'),
+(138,'Dream Eater',   'Psychic', 'Special', 'Opponent',15, 0,0,'Eats the dreams of a sleeping foe. Drains HP.'),
+(139,'Poison Gas',    'Poison',  'Status',  'Opponent',40, 0,0,'Envelops the foe in poison gas.'),
+(140,'Barrage',       'Normal',  'Physical','Opponent',20, 0,0,'Throws round objects at the foe 2-5 times.'),
+(141,'Leech Life',    'Bug',     'Physical','Opponent',10, 0,0,'Drains the foe''s blood to restore HP.'),
+(142,'Lovely Kiss',   'Normal',  'Status',  'Opponent',10, 0,0,'Demands a kiss that induces deep sleep.'),
+(143,'Sky Attack',    'Flying',  'Physical','Opponent', 5, 0,1,'Gathers energy turn 1, then strikes turn 2. May flinch.'),
+(144,'Transform',     'Normal',  'Status',  'Opponent',10, 0,0,'Transforms into a copy of the foe.'),
+(145,'Bubble',        'Water',   'Special', 'Opponent',30, 0,0,'Shoots bubbles at the foe. May lower Speed.'),
+(146,'Dizzy Punch',   'Normal',  'Physical','Opponent',10, 0,0,'A rhythmic punch that may confuse.'),
+(147,'Spore',         'Grass',   'Status',  'Opponent',15, 0,0,'Scatters sleep-inducing spores all over.'),
+(148,'Flash',         'Normal',  'Status',  'Opponent',20, 0,0,'Blinds the foe to lower Accuracy.'),
+(149,'Psywave',       'Psychic', 'Special', 'Opponent',15, 0,0,'Attacks with a psychic wave of varying intensity.'),
+(150,'Splash',        'Normal',  'Status',  'Self',    40, 0,0,'Splashes around. Has absolutely no effect.'),
+(151,'Acid Armor',    'Poison',  'Status',  'Self',    20, 0,0,'Dissolves into acid to sharply raise Defense.'),
+(152,'Crabhammer',    'Water',   'Physical','Opponent',10, 0,1,'Hammers with a pincer. High crit ratio.'),
+(153,'Explosion',     'Normal',  'Physical','Opponent', 5, 0,0,'Attacks everything in range by exploding. User faints.'),
+(154,'Fury Swipes',   'Normal',  'Physical','Opponent',15, 0,0,'Rakes with sharp claws 2-5 times.'),
+(155,'Bonemerang',    'Ground',  'Physical','Opponent',10, 0,0,'Throws a bone boomerang that hits twice.'),
+(156,'Rest',          'Psychic', 'Status',  'Self',     5, 0,0,'User sleeps for 2 turns but is fully healed.'),
+(157,'Rock Slide',    'Rock',    'Physical','Opponent',10, 0,0,'Large boulders are hurled. May cause flinching.'),
+(158,'Hyper Fang',    'Normal',  'Physical','Opponent',15, 0,0,'Bites with sharp fangs. May cause flinching.'),
+(159,'Sharpen',       'Normal',  'Status',  'Self',    30, 0,0,'Reduces angular mass to raise Attack.'),
+(160,'Conversion',    'Normal',  'Status',  'Self',    30, 0,0,'Changes the user''s type to its first move''s type.'),
+(161,'Tri Attack',    'Normal',  'Special', 'Opponent',10, 0,0,'Fires three types of beams simultaneously. May burn, freeze, or paralyze.'),
+(162,'Super Fang',    'Normal',  'Physical','Opponent',10, 0,0,'Gnaws with sharp fangs to halve the foe''s HP.'),
+(163,'Slash',         'Normal',  'Physical','Opponent',20, 0,1,'Slashes with sharp claws. High crit ratio.'),
+(164,'Substitute',    'Normal',  'Status',  'Self',    10, 0,0,'Creates a decoy using 25% of max HP to take hits.'),
+(165,'Struggle',      'Normal',  'Physical','Opponent', 1, 0,0,'Used only when all PP are gone. Hurts the user.'),
+
+-- =====================================================================
+-- GENERATION 2  (moves 166–251)
+-- =====================================================================
+(166,'Sketch',        'Normal',  'Status',  'Opponent', 1, 0,0,'Permanently copies the foe''s last move.'),
+(167,'Triple Kick',   'Fighting','Physical','Opponent',10, 0,0,'Hits thrice with increasing power (10, 20, 30).'),
+(168,'Thief',         'Dark',    'Physical','Opponent',25, 0,0,'Steals the foe''s held item while attacking.'),
+(169,'Spider Web',    'Bug',     'Status',  'Opponent',10, 0,0,'Ensnares the foe to prevent it from fleeing.'),
+(170,'Mind Reader',   'Normal',  'Status',  'Opponent', 5, 0,0,'Reads the foe''s mind; next move always hits.'),
+(171,'Nightmare',     'Ghost',   'Status',  'Opponent',15, 0,0,'Sends the sleeping foe nightmares—loses 1/4 HP per turn.'),
+(172,'Flame Wheel',   'Fire',    'Physical','Opponent',25, 0,0,'Rolls forward in a wheel of fire. May burn.'),
+(173,'Snore',         'Normal',  'Special', 'Opponent',15, 0,0,'Can only be used while asleep. May cause flinching.'),
+(174,'Curse',         'Ghost',   'Status',  'Self',    10, 0,0,'Ghost: haunts foe at cost of HP. Others: +Atk/Def, -Speed.'),
+(175,'Flail',         'Normal',  'Physical','Opponent',15, 0,0,'Flails about to inflict more damage at low HP.'),
+(176,'Conversion 2',  'Normal',  'Status',  'Self',    30, 0,0,'Changes type to resist the foe''s last move.'),
+(177,'Aeroblast',     'Flying',  'Special', 'Opponent', 5, 0,1,'Launches a vacuumed blast. High crit ratio.'),
+(178,'Cotton Spore',  'Grass',   'Status',  'Opponent',40, 0,0,'Spores cling to the foe to sharply lower Speed.'),
+(179,'Reversal',      'Fighting','Physical','Opponent',15, 0,0,'Inflicts more damage the lower the user''s HP.'),
+(180,'Spite',         'Ghost',   'Status',  'Opponent',10, 0,0,'Cuts the PP of the foe''s last used move.'),
+(181,'Powder Snow',   'Ice',     'Special', 'Opponent',25, 0,0,'Blasts the foe with snow. May freeze.'),
+(182,'Protect',       'Normal',  'Status',  'Self',    10, 4,0,'Evades all attacks. May fail if used in succession.'),
+(183,'Mach Punch',    'Fighting','Physical','Opponent',30, 1,0,'A punch thrown so quickly it always strikes first.'),
+(184,'Scary Face',    'Normal',  'Status',  'Opponent',10, 0,0,'Makes a horrible face to sharply lower Speed.'),
+(185,'Faint Attack',  'Dark',    'Physical','Opponent',20, 0,0,'Catches the foe off guard; never misses.'),
+(186,'Sweet Kiss',    'Fairy',   'Status',  'Opponent',10, 0,0,'Demands a kiss to confuse the foe.'),
+(187,'Belly Drum',    'Normal',  'Status',  'Self',    10, 0,0,'Maximizes Attack at cost of half of max HP.'),
+(188,'Sludge Bomb',   'Poison',  'Special', 'Opponent',10, 0,0,'Hurls unsanitary sludge. May poison.'),
+(189,'Mud-Slap',      'Ground',  'Special', 'Opponent',10, 0,0,'Throws mud at the foe. Lowers Accuracy.'),
+(190,'Octazooka',     'Water',   'Special', 'Opponent',10, 0,0,'Squirts ink to damage and may lower Accuracy.'),
+(191,'Spikes',        'Ground',  'Status',  'Opponent',20, 0,0,'Lays sharp spikes that damage incoming foes.'),
+(192,'Zap Cannon',    'Electric','Special', 'Opponent', 5, 0,0,'Fires a massive jolt. Paralyzes if it hits.'),
+(193,'Foresight',     'Normal',  'Status',  'Opponent',40, 0,0,'Removes evasion boosts and Ghost immunities.'),
+(194,'Destiny Bond',  'Ghost',   'Status',  'Self',     5, 0,0,'If the user faints, so does the foe.'),
+(195,'Perish Song',   'Normal',  'Status',  'Opponent', 5, 0,0,'All Pokémon hearing this faint after 3 turns.'),
+(196,'Icy Wind',      'Ice',     'Special', 'Opponent',15, 0,0,'Attacks with a chilling gust that lowers Speed.'),
+(197,'Detect',        'Fighting','Status',  'Self',     5, 4,0,'Evades all attacks. May fail if used in succession.'),
+(198,'Bone Rush',     'Ground',  'Physical','Opponent',10, 0,0,'Strikes with a bone 2-5 times in a row.'),
+(199,'Lock-On',       'Normal',  'Status',  'Opponent', 5, 0,0,'Takes aim so the next move cannot miss.'),
+(200,'Outrage',       'Dragon',  'Physical','Opponent',10, 0,0,'Rampages for 2-3 turns then confuses user.'),
+(201,'Sandstorm',     'Rock',    'Status',  'Self',    10, 0,0,'Summons a sandstorm that lasts for 5 turns.'),
+(202,'Giga Drain',    'Grass',   'Special', 'Opponent',10, 0,0,'Drains the foe''s energy to restore HP.'),
+(203,'Endure',        'Normal',  'Status',  'Self',    10, 4,0,'Endures any attack with at least 1 HP.'),
+(204,'Charm',         'Fairy',   'Status',  'Opponent',20, 0,0,'Charms the foe to sharply lower its Attack.'),
+(205,'Rollout',       'Rock',    'Physical','Opponent',20, 0,0,'Rolls into the foe. Power doubles each turn for 5 turns.'),
+(206,'False Swipe',   'Normal',  'Physical','Opponent',40, 0,0,'Leaves the foe with at least 1 HP.'),
+(207,'Swagger',       'Normal',  'Status',  'Opponent',15, 0,0,'Angers the foe to sharply raise its Attack. Confuses it.'),
+(208,'Milk Drink',    'Normal',  'Status',  'Self',     5, 0,0,'Restores up to half the user''s max HP.'),
+(209,'Spark',         'Electric','Physical','Opponent',20, 0,0,'Electrifies the foe. May paralyze.'),
+(210,'Fury Cutter',   'Bug',     'Physical','Opponent',20, 0,0,'Slashes with scythes. Power doubles each turn.'),
+(211,'Steel Wing',    'Steel',   'Physical','Opponent',25, 0,0,'Strikes with hard wings. May raise Defense.'),
+(212,'Mean Look',     'Normal',  'Status',  'Opponent', 5, 0,0,'Fixes the foe with a piercing stare; it cannot flee.'),
+(213,'Attract',       'Normal',  'Status',  'Opponent',15, 0,0,'Makes opposite-gender foe infatuated; less likely to attack.'),
+(214,'Sleep Talk',    'Normal',  'Status',  'Self',    10, 0,0,'Randomly uses one of the user''s moves while asleep.'),
+(215,'Heal Bell',     'Normal',  'Status',  'Self',     5, 0,0,'Rings a bell to heal all party Pokémon of status.'),
+(216,'Return',        'Normal',  'Physical','Opponent',20, 0,0,'Power increases the more the user likes its Trainer.'),
+(217,'Present',       'Normal',  'Physical','Opponent',15, 0,0,'Gives the foe a box that either damages or heals.'),
+(218,'Frustration',   'Normal',  'Physical','Opponent',20, 0,0,'Power increases the less the user likes its Trainer.'),
+(219,'Safeguard',     'Normal',  'Status',  'Self',    25, 0,0,'Protects the party from status conditions for 5 turns.'),
+(220,'Pain Split',    'Normal',  'Status',  'Opponent',20, 0,0,'Averages the HP of the user and the foe.'),
+(221,'Sacred Fire',   'Fire',    'Physical','Opponent', 5, 0,0,'Ho-Oh''s signature fire. May burn.'),
+(222,'Magnitude',     'Ground',  'Physical','Opponent',30, 0,0,'Attacks with a ground-shaking tremor of random intensity.'),
+(223,'Dynamic Punch', 'Fighting','Physical','Opponent', 5, 0,0,'An explosive punch. Always confuses if it hits.'),
+(224,'Megahorn',      'Bug',     'Physical','Opponent',10, 0,0,'Drives a massive horn home with tremendous power.'),
+(225,'Dragon Breath', 'Dragon',  'Special', 'Opponent',20, 0,0,'Blows out a mighty breath. May paralyze.'),
+(226,'Baton Pass',    'Normal',  'Status',  'Self',    40, 0,0,'Switches out, passing stat changes to the next Pokémon.'),
+(227,'Encore',        'Normal',  'Status',  'Opponent', 5, 0,0,'Forces the foe to keep using its last move for 3 turns.'),
+(228,'Pursuit',       'Dark',    'Physical','Opponent',20, 0,0,'Doubles in power if the foe is switching out.'),
+(229,'Rapid Spin',    'Normal',  'Physical','Opponent',40, 0,0,'Spins rapidly to attack and remove hazards.'),
+(230,'Sweet Scent',   'Normal',  'Status',  'Opponent',20, 0,0,'Wafts a sweet scent to lower the foe''s Evasiveness.'),
+(231,'Iron Tail',     'Steel',   'Physical','Opponent',15, 0,0,'Slams the foe with a steel-hard tail. May lower Defense.'),
+(232,'Metal Claw',    'Steel',   'Physical','Opponent',35, 0,0,'Rakes with metal claws. May raise user''s Attack.'),
+(233,'Vital Throw',   'Fighting','Physical','Opponent',10,-1,0,'Makes the user act last but never misses.'),
+(234,'Morning Sun',   'Normal',  'Status',  'Self',     5, 0,0,'Restores HP. Amount varies with the weather.'),
+(235,'Synthesis',     'Grass',   'Status',  'Self',     5, 0,0,'Restores HP. Amount varies with the weather.'),
+(236,'Moonlight',     'Fairy',   'Status',  'Self',     5, 0,0,'Restores HP. Amount varies with the weather.'),
+(237,'Hidden Power',  'Normal',  'Special', 'Opponent',15, 0,0,'A unique attack that varies in type and power by individual.'),
+(238,'Cross Chop',    'Fighting','Physical','Opponent', 5, 0,1,'Delivers a double chop. High crit ratio.'),
+(239,'Twister',       'Dragon',  'Special', 'Opponent',20, 0,0,'Whips up a twisting tornado. May cause flinching.'),
+(240,'Rain Dance',    'Water',   'Status',  'Self',     5, 0,0,'Summons rain that lasts for 5 turns.'),
+(241,'Sunny Day',     'Fire',    'Status',  'Self',     5, 0,0,'Intensifies the sun for 5 turns.'),
+(242,'Crunch',        'Dark',    'Physical','Opponent',15, 0,0,'Crunches hard with fangs. May lower Defense.'),
+(243,'Mirror Coat',   'Psychic', 'Special', 'Self',    20,-5,0,'Counters special attacks at double the damage.'),
+(244,'Psych Up',      'Normal',  'Status',  'Self',    10, 0,0,'Copies the foe''s stat changes.'),
+(245,'ExtremeSpeed',  'Normal',  'Physical','Opponent', 5, 2,0,'An extremely fast attack that always goes first.'),
+(246,'AncientPower',  'Rock',    'Special', 'Opponent', 5, 0,0,'An ancient power attack. May raise all user stats.'),
+(247,'Shadow Ball',   'Ghost',   'Special', 'Opponent',15, 0,0,'Hurls a black blob. May lower Sp. Def.'),
+(248,'Future Sight',  'Psychic', 'Special', 'Opponent',10, 0,0,'Attacks the foe with a mighty psychic blast 2 turns later.'),
+(249,'Rock Smash',    'Fighting','Physical','Opponent',15, 0,0,'Smashes with great force. May lower Defense.'),
+(250,'Whirlpool',     'Water',   'Special', 'Opponent',15, 0,0,'Traps the foe in a whirlpool for 4-5 turns.'),
+(251,'Beat Up',       'Dark',    'Physical','Opponent',10, 0,0,'Calls all party Pokémon to attack the foe.'),
+
+-- =====================================================================
+-- GENERATION 3  (moves 252–354)
+-- =====================================================================
+(252,'Fake Out',      'Normal',  'Physical','Opponent',10, 3,0,'Strikes first on first turn. Always causes flinching.'),
+(253,'Uproar',        'Normal',  'Special', 'Opponent',10, 0,0,'Attacks for 3 turns in a row. Prevents sleep.'),
+(254,'Stockpile',     'Normal',  'Status',  'Self',    20, 0,0,'Stores power for use with Spit Up and Swallow.'),
+(255,'Spit Up',       'Normal',  'Special', 'Opponent',10, 0,0,'Releases stockpiled power. More Stockpile = more power.'),
+(256,'Swallow',       'Normal',  'Status',  'Self',    10, 0,0,'Swallows stockpiled power to restore HP.'),
+(257,'Heat Wave',     'Fire',    'Special', 'Opponent',10, 0,0,'Exhales a heated breath on the foe. May burn.'),
+(258,'Hail',          'Ice',     'Status',  'Self',    10, 0,0,'Summons a hailstorm that lasts for 5 turns.'),
+(259,'Torment',       'Dark',    'Status',  'Opponent',15, 0,0,'Torments the foe so it cannot use the same move twice.'),
+(260,'Flatter',       'Dark',    'Status',  'Opponent',15, 0,0,'Confuses the foe but raises its Sp. Attack.'),
+(261,'Will-O-Wisp',   'Fire',    'Status',  'Opponent',15, 0,0,'Shoots a sinister flame to inflict a burn.'),
+(262,'Memento',       'Dark',    'Status',  'Opponent',10, 0,0,'The user faints to sharply lower the foe''s Atk and SpAtk.'),
+(263,'Facade',        'Normal',  'Physical','Opponent',20, 0,0,'Power doubles when the user has a status condition.'),
+(264,'Focus Punch',   'Fighting','Physical','Opponent',20,-3,0,'A powerful punch. Fails if the user is hit first.'),
+(265,'SmellingSalts', 'Normal',  'Physical','Opponent',10, 0,0,'Cures paralysis and doubles power against paralyzed foes.'),
+(266,'Follow Me',     'Normal',  'Status',  'Self',    20, 3,0,'Draws all attacks to the user in Double Battles.'),
+(267,'Nature Power',  'Normal',  'Status',  'Self',    20, 0,0,'Uses a terrain-dependent move.'),
+(268,'Charge',        'Electric','Status',  'Self',    20, 0,0,'Raises SpDef and doubles the next Electric move''s power.'),
+(269,'Taunt',         'Dark',    'Status',  'Opponent',20, 0,0,'Taunts the foe into only using attacking moves for 3 turns.'),
+(270,'Helping Hand',  'Normal',  'Status',  'Self',    20, 5,0,'Boosts the power of the partner''s move in Double Battles.'),
+(271,'Trick',         'Psychic', 'Status',  'Opponent',10, 0,0,'Tricks the foe into trading held items.'),
+(272,'Role Play',     'Psychic', 'Status',  'Opponent',10, 0,0,'Acts out a part to copy the foe''s Ability.'),
+(273,'Wish',          'Normal',  'Status',  'Self',    10, 0,0,'Wishes for health; the user or its replacement recovers HP next turn.'),
+(274,'Assist',        'Normal',  'Status',  'Self',    20, 0,0,'Randomly uses one of the party Pokémon''s moves.'),
+(275,'Ingrain',       'Grass',   'Status',  'Self',    20, 0,0,'Ingrain roots the user, restoring HP but preventing switching.'),
+(276,'Superpower',    'Fighting','Physical','Opponent', 5, 0,0,'Attacks with great power. Lowers user''s Atk and Def.'),
+(277,'Magic Coat',    'Psychic', 'Status',  'Self',    15, 4,0,'Reflects status-inducing moves back at the foe.'),
+(278,'Recycle',       'Normal',  'Status',  'Self',    10, 0,0,'Recycles the user''s used held item.'),
+(279,'Revenge',       'Fighting','Physical','Opponent',10,-4,0,'Power doubles if the user was hit this turn.'),
+(280,'Brick Break',   'Fighting','Physical','Opponent',15, 0,0,'Breaks through screens then strikes. 75 power.'),
+(281,'Yawn',          'Normal',  'Status',  'Opponent',10, 0,0,'Releases a huge yawn that lulls the foe to sleep next turn.'),
+(282,'Knock Off',     'Dark',    'Physical','Opponent',20, 0,0,'Knocks away and removes the foe''s held item.'),
+(283,'Endeavor',      'Normal',  'Physical','Opponent', 5, 0,0,'An attack that cuts down the foe''s HP to equal the user''s.'),
+(284,'Eruption',      'Fire',    'Special', 'Opponent', 5, 0,0,'Erupts violently. Power is higher the more HP the user has.'),
+(285,'Skill Swap',    'Psychic', 'Status',  'Opponent',10, 0,0,'The user employs its psychic power to swap Abilities.'),
+(286,'Imprison',      'Psychic', 'Status',  'Self',    10, 0,0,'Prevents the foe from using any moves the user knows.'),
+(287,'Refresh',       'Normal',  'Status',  'Self',    20, 0,0,'Cures the user''s burn, paralysis, or poison.'),
+(288,'Grudge',        'Ghost',   'Status',  'Self',     5, 0,0,'If the user faints, the PP of the foe''s last move goes to 0.'),
+(289,'Snatch',        'Dark',    'Status',  'Self',    10, 4,0,'Steals the effects of the foe''s self-targeted move.'),
+(290,'Secret Power',  'Normal',  'Physical','Opponent',20, 0,0,'Attacks with terrain-determined secondary effects.'),
+(291,'Dive',          'Water',   'Physical','Opponent',10, 0,0,'Dives underwater turn 1, then strikes turn 2.'),
+(292,'Arm Thrust',    'Fighting','Physical','Opponent',20, 0,0,'Shoves the foe repeatedly for 2-5 hits.'),
+(293,'Camouflage',    'Normal',  'Status',  'Self',    20, 0,0,'Changes the user''s type based on its location.'),
+(294,'Tail Glow',     'Bug',     'Status',  'Self',    20, 0,0,'Flashes a light that sharply raises Sp. Attack (+2).'),
+(295,'Luster Purge',  'Psychic', 'Special', 'Opponent', 5, 0,0,'Fires a blast of mystical light. May lower Sp. Def.'),
+(296,'Mist Ball',     'Psychic', 'Special', 'Opponent', 5, 0,0,'Hurls a mist-like fluff. May lower Sp. Attack.'),
+(297,'FeatherDance',  'Flying',  'Status',  'Opponent',15, 0,0,'Covers the foe in feathers to sharply lower Attack.'),
+(298,'Teeter Dance',  'Normal',  'Status',  'Opponent',20, 0,0,'Dances comically to confuse all Pokémon.'),
+(299,'Blaze Kick',    'Fire',    'Physical','Opponent',10, 0,1,'Kicks with a fiery foot. High crit. May burn.'),
+(300,'Mud Sport',     'Ground',  'Status',  'Self',    15, 0,0,'Covers the user in mud to weaken Electric-type moves.'),
+(301,'Ice Ball',      'Ice',     'Physical','Opponent',20, 0,0,'Rolls a ball of ice; power doubles for 5 turns.'),
+(302,'Needle Arm',    'Grass',   'Physical','Opponent',15, 0,0,'Strikes with thorny arms. May cause flinching.'),
+(303,'Slack Off',     'Normal',  'Status',  'Self',     5, 0,0,'Slacks off to restore half of max HP.'),
+(304,'Hyper Voice',   'Normal',  'Special', 'Opponent',10, 0,0,'Lets loose a horribly loud echoing yell.'),
+(305,'Poison Fang',   'Poison',  'Physical','Opponent',15, 0,0,'Bites with poisonous fangs. May badly poison.'),
+(306,'Crush Claw',    'Normal',  'Physical','Opponent',10, 0,0,'Tears with sharp claws. May lower Defense.'),
+(307,'Blast Burn',    'Fire',    'Special', 'Opponent', 5, 0,0,'Forces the foe into the brunt of a fiery blast. Must recharge.'),
+(308,'Hydro Cannon',  'Water',   'Special', 'Opponent', 5, 0,0,'Shoots a torrent of water. Must recharge next turn.'),
+(309,'Meteor Mash',   'Steel',   'Physical','Opponent',10, 0,0,'Punches like a meteor. May raise user''s Attack.'),
+(310,'Astonish',      'Ghost',   'Physical','Opponent',15, 0,0,'Startles the foe to cause flinching.'),
+(311,'Weather Ball',  'Normal',  'Special', 'Opponent',10, 0,0,'A weather-affecting attack that changes type and power.'),
+(312,'Aromatherapy',  'Grass',   'Status',  'Self',     5, 0,0,'Releases a soothing scent that heals all party status.'),
+(313,'Fake Tears',    'Dark',    'Status',  'Opponent',20, 0,0,'Feigns crying to sharply lower the foe''s Sp. Def.'),
+(314,'Air Cutter',    'Flying',  'Special', 'Opponent',25, 0,1,'Slices with sharp winds. High crit ratio.'),
+(315,'Overheat',      'Fire',    'Special', 'Opponent', 5, 0,0,'An all-out attack that sharply lowers user''s Sp. Attack.'),
+(316,'Odor Sleuth',   'Normal',  'Status',  'Opponent',40, 0,0,'Negates Ghost immunities and evasion boosts.'),
+(317,'Rock Tomb',     'Rock',    'Physical','Opponent',15, 0,0,'Hurls rocks to block the foe''s movement. Lowers Speed.'),
+(318,'Silver Wind',   'Bug',     'Special', 'Opponent', 5, 0,0,'Blows silver scales. May raise all user''s stats.'),
+(319,'Metal Sound',   'Steel',   'Status',  'Opponent',40, 0,0,'A horrible metallic screech that sharply lowers Sp. Def.'),
+(320,'Grass Whistle', 'Grass',   'Status',  'Opponent',15, 0,0,'Uses a pleasant melody to put the foe to sleep.'),
+(321,'Tickle',        'Normal',  'Status',  'Opponent',20, 0,0,'Tickles to lower both Attack and Defense.'),
+(322,'Cosmic Power',  'Psychic', 'Status',  'Self',    20, 0,0,'Absorbs cosmic energy to raise Def and SpDef.'),
+(323,'Water Spout',   'Water',   'Special', 'Opponent', 5, 0,0,'Fires water to inflict max damage when the user is at full HP.'),
+(324,'Signal Beam',   'Bug',     'Special', 'Opponent',15, 0,0,'Attacks with a flashing beam. May confuse.'),
+(325,'Shadow Punch',  'Ghost',   'Physical','Opponent',20, 0,0,'Throws a punch from the shadows. Never misses.'),
+(326,'Extrasensory',  'Psychic', 'Special', 'Opponent',20, 0,0,'Attacks with an odd power. May cause flinching.'),
+(327,'Sky Uppercut',  'Fighting','Physical','Opponent',15, 0,0,'Leaps to deliver an uppercut. Hits Fly users.'),
+(328,'Sand Tomb',     'Ground',  'Physical','Opponent',15, 0,0,'Traps the foe in a whirlpool of sand for 4-5 turns.'),
+(329,'Sheer Cold',    'Ice',     'Special', 'Opponent', 5, 0,0,'Blasts a subzero blizzard. One-hit KO if it hits.'),
+(330,'Muddy Water',   'Water',   'Special', 'Opponent',10, 0,0,'Attacks with muddy water. May lower Accuracy.'),
+(331,'Bullet Seed',   'Grass',   'Physical','Opponent',30, 0,0,'Forcefully shoots seeds at the foe 2-5 times.'),
+(332,'Aerial Ace',    'Flying',  'Physical','Opponent',20, 0,0,'Confounds with swift movements then slashes. Never misses.'),
+(333,'Icicle Spear',  'Ice',     'Physical','Opponent',30, 0,0,'Hurls icicles at the foe 2-5 times in a row.'),
+(334,'Iron Defense',  'Steel',   'Status',  'Self',    15, 0,0,'Hardens the body''s surface to sharply raise Defense.'),
+(335,'Block',         'Normal',  'Status',  'Opponent', 5, 0,0,'Prevents the foe from fleeing or switching.'),
+(336,'Howl',          'Normal',  'Status',  'Self',    40, 0,0,'Howls to raise the user''s Attack.'),
+(337,'Dragon Claw',   'Dragon',  'Physical','Opponent',15, 0,0,'Tears at the foe with sharp claws.'),
+(338,'Frenzy Plant',  'Grass',   'Special', 'Opponent', 5, 0,0,'Smashes the foe with an enormous tree. Must recharge.'),
+(339,'Bulk Up',       'Fighting','Status',  'Self',    20, 0,0,'Tenses the muscles to raise Attack and Defense.'),
+(340,'Bounce',        'Flying',  'Physical','Opponent', 5, 0,0,'Springs up high then down. May paralyze.'),
+(341,'Mud Shot',      'Ground',  'Special', 'Opponent',15, 0,0,'Hurls mud at the foe. Lowers Speed.'),
+(342,'Poison Tail',   'Poison',  'Physical','Opponent',25, 0,1,'A high-crit tail strike. May poison.'),
+(343,'Covet',         'Normal',  'Physical','Opponent',25, 0,0,'Cutely begs for the foe''s held item, then takes it.'),
+(344,'Volt Tackle',   'Electric','Physical','Opponent',15, 0,0,'Tackles with a jolt of electricity. Recoil. May paralyze.'),
+(345,'Magical Leaf',  'Grass',   'Special', 'Opponent',20, 0,0,'Scatters magical leaves that always hit.'),
+(346,'Water Sport',   'Water',   'Status',  'Self',    15, 0,0,'Dousing itself with water to weaken Fire-type moves.'),
+(347,'Calm Mind',     'Psychic', 'Status',  'Self',    20, 0,0,'Calms the mind to raise Sp. Attack and Sp. Defense.'),
+(348,'Leaf Blade',    'Grass',   'Physical','Opponent',15, 0,1,'Slices with a sharp leaf. High crit ratio.'),
+(349,'Dragon Dance',  'Dragon',  'Status',  'Self',    20, 0,0,'A mystic dance that raises Attack and Speed.'),
+(350,'Rock Blast',    'Rock',    'Physical','Opponent',10, 0,0,'Hurls hard rocks at the foe 2-5 times.'),
+(351,'Shock Wave',    'Electric','Special', 'Opponent',20, 0,0,'Zaps the foe with a jolt of electricity that never misses.'),
+(352,'Water Pulse',   'Water',   'Special', 'Opponent',20, 0,0,'Attacks with a pulse of water. May confuse.'),
+(353,'Doom Desire',   'Steel',   'Special', 'Opponent', 5, 0,0,'Chooses a future attack 2 turns in advance.'),
+(354,'Psycho Boost',  'Psychic', 'Special', 'Opponent', 5, 0,0,'Drops a barrage of shock waves. Sharply lowers Sp. Attack.');
+
+COMMIT;
+-- =============================================================================
+-- PART 5: ATTEMPTS
+-- INSERT ORDER:
+--   1. Release sub-attempts for Charge moves  (explicit IDs 1000001-1000008)
+--   2. Triple Kick child + Cascade attempts    (explicit IDs 1000010-1000013)
+--   3. All normal attempts                     (AUTOINCREMENT, stays under 1000000)
+--   4. Charge wrapper attempts                 (reference the release IDs above)
+--   5. cascade_steps for Triple Kick
+-- =============================================================================
+
+BEGIN TRANSACTION;
+
+-- =====================================================================
+-- STEP 1: CHARGE RELEASE SUB-ATTEMPTS  (must exist before Charge wrappers)
+-- =====================================================================
+-- Razor Wind release: 80 power
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000001,13,'Attempt',1.0,115,1);
+-- Fly release: 90 power, 95% acc
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000002,19,'Attempt',0.95,117,1);
+-- Skull Bash release: 130 power
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000003,130,'Attempt',1.0,122,1);
+-- Sky Attack release: 140 power + 30% flinch
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000004,143,'Attempt',0.90,399,1);
+-- Solar Beam release: 120 power
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000005,76,'Attempt',1.0,121,1);
+-- Dig release: 80 power
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000006,91,'Attempt',1.0,115,1);
+-- Bounce release: 85 power + 30% paralyze
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000007,340,'Attempt',0.85,318,1);
+-- Dive release: 80 power
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000008,291,'Attempt',1.0,115,1);
+
+-- =====================================================================
+-- STEP 2: TRIPLE KICK CHILDREN + CASCADE WRAPPER
+-- =====================================================================
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000010,167,'Attempt',0.90,100,1);
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000011,167,'Attempt',0.90,103,1);
+INSERT INTO attempts (id,move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1000012,167,'Attempt',0.90,105,1);
+INSERT INTO attempts (id,move_id,type,stop_on_miss)                                  VALUES (1000013,167,'Cascade',1);
+
+-- =====================================================================
+-- STEP 3: ALL NORMAL ATTEMPTS  (AUTOINCREMENT — no explicit IDs)
+-- =====================================================================
+
+-- GEN 1 -------------------------------------------------------------------
+-- 1: Pound  40, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (1,'Attempt',1.0,107,1);
+-- 2: Karate Chop  50, 100%, high crit (crit_stage on move)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (2,'Attempt',1.0,109,1);
+-- 3: Double Slap  15/hit, 2-5 hits, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (3,'Combo',0.85,33,101,1);
+-- 4: Comet Punch  18/hit, 2-5, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (4,'Combo',0.85,33,102,1);
+-- 5: Mega Punch  80, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (5,'Attempt',0.85,115,1);
+-- 6: Pay Day  40, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (6,'Attempt',1.0,107,1);
+-- 7: Fire Punch  75, 100%, 10% burn
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (7,'Attempt',1.0,303,1);
+-- 8: Ice Punch  75, 100%, 10% freeze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (8,'Attempt',1.0,322,1);
+-- 9: Thunder Punch  75, 100%, 10% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (9,'Attempt',1.0,313,1);
+-- 10: Scratch  40
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (10,'Attempt',1.0,107,1);
+-- 11: Vice Grip  55
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (11,'Attempt',1.0,110,1);
+-- 12: Guillotine  OHKO, 30%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (12,'Attempt',0.30,75,1);
+-- 13: Razor Wind  → Charge wrapper inserted in STEP 4
+-- 14: Swords Dance  +2 Attack
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (14,'Attempt',1.0,18,1);
+-- 15: Cut  50, 95%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (15,'Attempt',0.95,109,1);
+-- 16: Gust  40, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (16,'Attempt',1.0,107,1);
+-- 17: Wing Attack  60, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (17,'Attempt',1.0,111,1);
+-- 18: Whirlwind  force switch, always hits (priority -6 on move)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (18,'Attempt',1.0,65,1);
+-- 19: Fly  → Charge wrapper in STEP 4
+-- 20: Bind  15, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (20,'Attempt',0.85,101,1);
+-- 21: Slam  80, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (21,'Attempt',0.75,115,1);
+-- 22: Vine Whip  45, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (22,'Attempt',1.0,108,1);
+-- 23: Stomp  65, 100%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (23,'Attempt',1.0,332,1);
+-- 24: Double Kick  30x2, always 2 hits, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (24,'Combo',1.0,31,105,1);
+-- 25: Mega Kick  120, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (25,'Attempt',0.75,121,1);
+-- 26: Jump Kick  70, 95%, crash on miss
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,on_miss_effect_id,stop_on_miss) VALUES (26,'Attempt',0.95,113,64,1);
+-- 27: Rolling Kick  60, 85%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (27,'Attempt',0.85,340,1);
+-- 28: Sand Attack  -1 Accuracy, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (28,'Attempt',1.0,39,1);
+-- 29: Headbutt  70, 100%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (29,'Attempt',1.0,331,1);
+-- 30: Horn Attack  65, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (30,'Attempt',1.0,112,1);
+-- 31: Fury Attack  15/hit, 2-5, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (31,'Combo',0.85,33,101,1);
+-- 32: Horn Drill  OHKO, 30%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (32,'Attempt',0.30,75,1);
+-- 33: Tackle  40, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (33,'Attempt',1.0,107,1);
+-- 34: Body Slam  85, 100%, 30% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (34,'Attempt',1.0,315,1);
+-- 35: Wrap  15, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (35,'Attempt',0.90,101,1);
+-- 36: Take Down  90, 85%, 1/4 recoil
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (36,'Attempt',0.85,380,1);
+-- 37: Thrash  120, 100%, rampage 2-3 turns, confuse after
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,after_rampage_effect_id,rampage_min_turns,rampage_max_turns,stop_on_miss) VALUES (37,'Rampage',1.0,121,14,2,3,1);
+-- 38: Double-Edge  120, 100%, 1/3 recoil
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (38,'Attempt',1.0,379,1);
+-- 39: Tail Whip  -1 Defense, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (39,'Attempt',1.0,31,1);
+-- 40: Poison Sting  15, 100%, 30% poison
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (40,'Attempt',1.0,356,1);
+-- 41: Twineedle  25/hit x2 always, 100%, 20% poison per hit
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (41,'Combo',1.0,31,360,1);
+-- 42: Pin Missile  25/hit, 2-5, 95%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (42,'Combo',0.95,33,104,1);
+-- 43: Leer  -1 Defense, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (43,'Attempt',1.0,31,1);
+-- 44: Bite  60, 100%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (44,'Attempt',1.0,333,1);
+-- 45: Growl  -1 Attack, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (45,'Attempt',1.0,29,1);
+-- 46: Roar  force switch, priority -6
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (46,'Attempt',1.0,65,1);
+-- 47: Sing  sleep, 55%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (47,'Attempt',0.55,11,1);
+-- 48: Supersonic  confuse, 55%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (48,'Attempt',0.55,13,1);
+-- 49: Sonic Boom  always 20 HP, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (49,'Attempt',0.90,79,1);
+-- 50: Disable  lock last move, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (50,'Attempt',1.0,70,1);
+-- 51: Acid  40, 100%, 10% lower SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (51,'Attempt',1.0,325,1);
+-- 52: Ember  40, 100%, 10% burn
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (52,'Attempt',1.0,300,1);
+-- 53: Flamethrower  95, 100%, 10% burn
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (53,'Attempt',1.0,301,1);
+-- 54: Mist  prevent stat reduction
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (54,'Attempt',1.0,503,1);
+-- 55: Water Gun  40, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (55,'Attempt',1.0,107,1);
+-- 56: Hydro Pump  110, 80%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (56,'Attempt',0.80,120,1);
+-- 57: Surf  90, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (57,'Attempt',1.0,117,1);
+-- 58: Ice Beam  90, 100%, 10% freeze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (58,'Attempt',1.0,320,1);
+-- 59: Blizzard  110, 70%, 10% freeze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (59,'Attempt',0.70,321,1);
+-- 60: Psybeam  65, 100%, 10% confuse
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (60,'Attempt',1.0,345,1);
+-- 61: Bubble Beam  65, 100%, 10% lower Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (61,'Attempt',1.0,363,1);
+-- 62: Aurora Beam  65, 100%, 10% lower Attack
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (62,'Attempt',1.0,361,1);
+-- 63: Hyper Beam  150, 90%  (recharge handled by engine)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (63,'Attempt',0.90,124,1);
+-- 64: Peck  35, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (64,'Attempt',1.0,106,1);
+-- 65: Drill Peck  80, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (65,'Attempt',1.0,115,1);
+-- 66: Submission  80, 80%, 1/4 recoil
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (66,'Attempt',0.80,381,1);
+-- 67: Low Kick  weight-based power, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (67,'Attempt',1.0,128,1);
+-- 68: Counter  priority -5  (engine logic)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (68,'Attempt',1.0,8,1);
+-- 69: Seismic Toss  level damage, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (69,'Attempt',1.0,80,1);
+-- 70: Strength  80, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (70,'Attempt',1.0,115,1);
+-- 71: Absorb  20, 100%, drain
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (71,'Attempt',1.0,382,1);
+-- 72: Mega Drain  40, 100%, drain
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (72,'Attempt',1.0,383,1);
+-- 73: Leech Seed  90%  (volatile handled by engine)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (73,'Attempt',0.90,8,1);
+-- 74: Growth  +1 Atk/SpAtk
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (74,'Attempt',1.0,47,1);
+-- 75: Razor Leaf  55, 95%, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (75,'Attempt',0.95,110,1);
+-- 76: Solar Beam  → Charge wrapper in STEP 4
+-- 77: Poison Powder  poison, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (77,'Attempt',0.75,9,1);
+-- 78: Stun Spore  paralyze, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (78,'Attempt',0.75,2,1);
+-- 79: Sleep Powder  sleep, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (79,'Attempt',0.75,11,1);
+-- 80: Petal Dance  120, rampage 2-3, confuse after
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,after_rampage_effect_id,rampage_min_turns,rampage_max_turns,stop_on_miss) VALUES (80,'Rampage',1.0,121,14,2,3,1);
+-- 81: String Shot  -1 Speed, 95%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (81,'Attempt',0.95,33,1);
+-- 82: Dragon Rage  always 40 HP, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (82,'Attempt',1.0,78,1);
+-- 83: Fire Spin  35, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (83,'Attempt',0.85,106,1);
+-- 84: Thunder Shock  40, 100%, 10% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (84,'Attempt',1.0,311,1);
+-- 85: Thunderbolt  90, 100%, 10% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (85,'Attempt',1.0,309,1);
+-- 86: Thunder Wave  paralyze, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (86,'Attempt',0.90,2,1);
+-- 87: Thunder  110, 70%, 30% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (87,'Attempt',0.70,310,1);
+-- 88: Rock Throw  50, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (88,'Attempt',0.90,109,1);
+-- 89: Earthquake  100, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (89,'Attempt',1.0,119,1);
+-- 90: Fissure  OHKO, 30%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (90,'Attempt',0.30,75,1);
+-- 91: Dig  → Charge wrapper in STEP 4
+-- 92: Toxic  badly poison, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (92,'Attempt',0.90,10,1);
+-- 93: Confusion  50, 100%, 10% confuse
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (93,'Attempt',1.0,346,1);
+-- 94: Psychic  90, 100%, 10% lower SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (94,'Attempt',1.0,324,1);
+-- 95: Hypnosis  sleep, 60%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (95,'Attempt',0.60,11,1);
+-- 96: Meditate  +1 Attack
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (96,'Attempt',1.0,17,1);
+-- 97: Agility  +2 Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (97,'Attempt',1.0,22,1);
+-- 98: Quick Attack  40, priority +1
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (98,'Attempt',1.0,107,1);
+-- 99: Rage  20  (raises Atk when hit — engine volatile)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (99,'Attempt',1.0,103,1);
+-- 100: Teleport  no battle effect
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (100,'Attempt',1.0,8,1);
+-- 101: Night Shade  level damage, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (101,'Attempt',1.0,80,1);
+-- 102: Mimic  copy last move
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (102,'Attempt',1.0,68,1);
+-- 103: Screech  -2 Defense, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (103,'Attempt',0.85,32,1);
+-- 104: Double Team  +1 Evasion
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (104,'Attempt',1.0,40,1);
+-- 105: Recover  restore 50% HP
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (105,'Attempt',1.0,15,1);
+-- 106: Harden  +1 Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (106,'Attempt',1.0,20,1);
+-- 107: Minimize  +2 Evasion
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (107,'Attempt',1.0,42,1);
+-- 108: Smokescreen  -1 Accuracy, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (108,'Attempt',1.0,39,1);
+-- 109: Confuse Ray  confuse, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (109,'Attempt',1.0,13,1);
+-- 110: Withdraw  +1 Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (110,'Attempt',1.0,20,1);
+-- 111: Defense Curl  +1 Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (111,'Attempt',1.0,20,1);
+-- 112: Barrier  +2 Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (112,'Attempt',1.0,21,1);
+-- 113: Light Screen  set screen
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (113,'Attempt',1.0,59,1);
+-- 114: Haze  reset all stats
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (114,'Attempt',1.0,8,1);
+-- 115: Reflect  set screen
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (115,'Attempt',1.0,58,1);
+-- 116: Focus Energy  +1 crit stage
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (116,'Attempt',1.0,28,1);
+-- 117: Bide  engine handles
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (117,'Attempt',1.0,8,1);
+-- 118: Metronome  engine picks random move
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (118,'Attempt',1.0,8,1);
+-- 119: Mirror Move  copy last move
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (119,'Attempt',1.0,68,1);
+-- 120: Self-Destruct  200, faint self
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (120,'Attempt',1.0,389,1);
+-- 121: Egg Bomb  100, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (121,'Attempt',0.75,119,1);
+-- 122: Lick  30, 100%, 30% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (122,'Attempt',1.0,316,1);
+-- 123: Smog  30, 70%, 40% poison
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (123,'Attempt',0.70,355,1);
+-- 124: Sludge  65, 100%, 30% poison
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (124,'Attempt',1.0,353,1);
+-- 125: Bone Club  65, 85%, 10% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (125,'Attempt',0.85,341,1);
+-- 126: Fire Blast  110, 85%, 10% burn
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (126,'Attempt',0.85,302,1);
+-- 127: Waterfall  80, 100%, 20% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (127,'Attempt',1.0,337,1);
+-- 128: Clamp  35, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (128,'Attempt',0.85,106,1);
+-- 129: Swift  60, never misses
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (129,'Attempt',1.0,111,1);
+-- 130: Skull Bash  → Charge wrapper in STEP 4
+-- 131: Spike Cannon  20/hit, 2-5, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (131,'Combo',1.0,33,103,1);
+-- 132: Constrict  10, 100%, 10% lower Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (132,'Attempt',1.0,364,1);
+-- 133: Amnesia  +2 SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (133,'Attempt',1.0,27,1);
+-- 134: Kinesis  -1 Accuracy, 80%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (134,'Attempt',0.80,39,1);
+-- 135: Soft-Boiled  restore 50%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (135,'Attempt',1.0,15,1);
+-- 136: High Jump Kick  85, 90%, crash on miss
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,on_miss_effect_id,stop_on_miss) VALUES (136,'Attempt',0.90,116,64,1);
+-- 137: Glare  paralyze, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (137,'Attempt',1.0,2,1);
+-- 138: Dream Eater  100, drain (foe must be asleep — engine precondition)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (138,'Attempt',1.0,386,1);
+-- 139: Poison Gas  poison, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (139,'Attempt',0.90,9,1);
+-- 140: Barrage  15/hit, 2-5, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (140,'Combo',0.85,33,101,1);
+-- 141: Leech Life  20, 100%, drain
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (141,'Attempt',1.0,385,1);
+-- 142: Lovely Kiss  sleep, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (142,'Attempt',0.75,11,1);
+-- 143: Sky Attack  → Charge wrapper in STEP 4
+-- 144: Transform  engine handles
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (144,'Attempt',1.0,8,1);
+-- 145: Bubble  40, 100%, 10% lower Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (145,'Attempt',1.0,362,1);
+-- 146: Dizzy Punch  70, 100%, 20% confuse
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (146,'Attempt',1.0,349,1);
+-- 147: Spore  sleep, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (147,'Attempt',1.0,11,1);
+-- 148: Flash  -1 Accuracy, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (148,'Attempt',1.0,39,1);
+-- 149: Psywave  variable level damage, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (149,'Attempt',1.0,80,1);
+-- 150: Splash  does nothing
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (150,'Attempt',1.0,8,1);
+-- 151: Acid Armor  +2 Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (151,'Attempt',1.0,21,1);
+-- 152: Crabhammer  100, 90%, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (152,'Attempt',0.90,119,1);
+-- 153: Explosion  250, faint self
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (153,'Attempt',1.0,388,1);
+-- 154: Fury Swipes  18/hit, 2-5, 80%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (154,'Combo',0.80,33,102,1);
+-- 155: Bonemerang  50x2, exactly 2 hits, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (155,'Combo',0.90,31,109,1);
+-- 156: Rest  sleep self + full heal
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (156,'Attempt',1.0,387,1);
+-- 157: Rock Slide  75, 90%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (157,'Attempt',0.90,330,1);
+-- 158: Hyper Fang  80, 90%, 10% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (158,'Attempt',0.90,339,1);
+-- 159: Sharpen  +1 Attack
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (159,'Attempt',1.0,17,1);
+-- 160: Conversion  engine handles type change
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (160,'Attempt',1.0,8,1);
+-- 161: Tri Attack  80, 100%, 20% random status
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (161,'Attempt',1.0,392,1);
+-- 162: Super Fang  halves HP, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (162,'Attempt',0.90,82,1);
+-- 163: Slash  70, 100%, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (163,'Attempt',1.0,113,1);
+-- 164: Substitute  engine handles
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (164,'Attempt',1.0,8,1);
+-- 165: Struggle  50, 1/4 recoil
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (165,'Attempt',1.0,398,1);
+
+-- GEN 2 -------------------------------------------------------------------
+-- 166: Sketch  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (166,'Attempt',1.0,8,1);
+-- 167: Triple Kick  → Cascade wrapper in STEP 5 (children in STEP 2)
+-- 168: Thief  60, steal item
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (168,'Attempt',1.0,396,1);
+-- 169: Spider Web  prevent escape
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (169,'Attempt',1.0,66,1);
+-- 170: Mind Reader  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (170,'Attempt',1.0,8,1);
+-- 171: Nightmare  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (171,'Attempt',1.0,8,1);
+-- 172: Flame Wheel  60, 100%, 10% burn
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (172,'Attempt',1.0,304,1);
+-- 173: Snore  50, 100%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (173,'Attempt',1.0,342,1);
+-- 174: Curse  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (174,'Attempt',1.0,8,1);
+-- 175: Flail  HP-based power, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (175,'Attempt',1.0,127,1);
+-- 176: Conversion 2  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (176,'Attempt',1.0,8,1);
+-- 177: Aeroblast  100, 95%, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (177,'Attempt',0.95,119,1);
+-- 178: Cotton Spore  -2 Speed, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (178,'Attempt',1.0,34,1);
+-- 179: Reversal  HP-based power, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (179,'Attempt',1.0,127,1);
+-- 180: Spite  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (180,'Attempt',1.0,8,1);
+-- 181: Powder Snow  40, 100%, 10% freeze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (181,'Attempt',1.0,323,1);
+-- 182: Protect  priority +4
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (182,'Attempt',1.0,73,1);
+-- 183: Mach Punch  40, priority +1
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (183,'Attempt',1.0,107,1);
+-- 184: Scary Face  -2 Speed, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (184,'Attempt',1.0,34,1);
+-- 185: Faint Attack  60, never misses
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (185,'Attempt',1.0,111,1);
+-- 186: Sweet Kiss  confuse, 75%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (186,'Attempt',0.75,13,1);
+-- 187: Belly Drum  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (187,'Attempt',1.0,8,1);
+-- 188: Sludge Bomb  90, 100%, 30% poison
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (188,'Attempt',1.0,354,1);
+-- 189: Mud-Slap  20, 100%, -1 Accuracy
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (189,'Attempt',1.0,368,1);
+-- 190: Octazooka  65, 85%, 50% lower Accuracy
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (190,'Attempt',0.85,370,1);
+-- 191: Spikes  set hazard
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (191,'Attempt',1.0,60,1);
+-- 192: Zap Cannon  120, 50%, 100% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (192,'Attempt',0.50,314,1);
+-- 193: Foresight  negate Ghost immunity + evasion
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (193,'Attempt',1.0,502,1);
+-- 194: Destiny Bond  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (194,'Attempt',1.0,8,1);
+-- 195: Perish Song  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (195,'Attempt',1.0,8,1);
+-- 196: Icy Wind  55, 95%, -1 Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (196,'Attempt',0.95,367,1);
+-- 197: Detect  protect priority +4
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (197,'Attempt',1.0,73,1);
+-- 198: Bone Rush  25/hit, 2-5, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (198,'Combo',0.90,33,104,1);
+-- 199: Lock-On  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (199,'Attempt',1.0,8,1);
+-- 200: Outrage  120, rampage 2-3, confuse after
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,after_rampage_effect_id,rampage_min_turns,rampage_max_turns,stop_on_miss) VALUES (200,'Rampage',1.0,121,14,2,3,1);
+-- 201: Sandstorm
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (201,'Attempt',1.0,56,1);
+-- 202: Giga Drain  75, 100%, drain
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (202,'Attempt',1.0,384,1);
+-- 203: Endure  survive with 1 HP
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (203,'Attempt',1.0,73,1);
+-- 204: Charm  -2 Attack defender
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (204,'Attempt',1.0,30,1);
+-- 205: Rollout  30 base, doubles each turn for 5, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (205,'Attempt',0.90,105,1);
+-- 206: False Swipe  40, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (206,'Attempt',1.0,107,1);
+-- 207: Swagger  +2 Atk defender + confuse, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (207,'Attempt',0.85,351,1);
+-- 208: Milk Drink  restore 50%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (208,'Attempt',1.0,15,1);
+-- 209: Spark  65, 100%, 30% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (209,'Attempt',1.0,312,1);
+-- 210: Fury Cutter  10 base, doubles each turn, 95%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (210,'Attempt',0.95,100,1);
+-- 211: Steel Wing  70, 90%, 10% raise Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (211,'Attempt',0.90,373,1);
+-- 212: Mean Look  prevent escape
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (212,'Attempt',1.0,66,1);
+-- 213: Attract  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (213,'Attempt',1.0,8,1);
+-- 214: Sleep Talk  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (214,'Attempt',1.0,8,1);
+-- 215: Heal Bell  cure party status
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (215,'Attempt',1.0,7,1);
+-- 216: Return  friendship-based power, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (216,'Attempt',1.0,119,1);
+-- 217: Present  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (217,'Attempt',0.90,8,1);
+-- 218: Frustration  inverse friendship, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (218,'Attempt',1.0,119,1);
+-- 219: Safeguard  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (219,'Attempt',1.0,8,1);
+-- 220: Pain Split  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (220,'Attempt',1.0,8,1);
+-- 221: Sacred Fire  100, 95%, 50% burn
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (221,'Attempt',0.95,307,1);
+-- 222: Magnitude  weighted power, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (222,'Attempt',1.0,129,1);
+-- 223: Dynamic Punch  100, 50%, 100% confuse on hit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (223,'Attempt',0.50,350,1);
+-- 224: Megahorn  120, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (224,'Attempt',0.85,121,1);
+-- 225: Dragon Breath  60, 100%, 30% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (225,'Attempt',1.0,317,1);
+-- 226: Baton Pass  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (226,'Attempt',1.0,8,1);
+-- 227: Encore  lock move, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (227,'Attempt',1.0,70,1);
+-- 228: Pursuit  40 base (doubles vs switching), 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (228,'Attempt',1.0,107,1);
+-- 229: Rapid Spin  50, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (229,'Attempt',1.0,109,1);
+-- 230: Sweet Scent  -1 Evasion, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (230,'Attempt',1.0,41,1);
+-- 231: Iron Tail  100, 75%, 30% lower Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (231,'Attempt',0.75,328,1);
+-- 232: Metal Claw  50, 95%, 10% raise Attack
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (232,'Attempt',0.95,371,1);
+-- 233: Vital Throw  70, never misses, priority -1
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (233,'Attempt',1.0,113,1);
+-- 234/235/236: Morning Sun / Synthesis / Moonlight
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (234,'Attempt',1.0,15,1);
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (235,'Attempt',1.0,15,1);
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (236,'Attempt',1.0,15,1);
+-- 237: Hidden Power  60, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (237,'Attempt',1.0,111,1);
+-- 238: Cross Chop  100, 80%, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (238,'Attempt',0.80,119,1);
+-- 239: Twister  40, 100%, 20% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (239,'Attempt',1.0,343,1);
+-- 240: Rain Dance
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (240,'Attempt',1.0,55,1);
+-- 241: Sunny Day
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (241,'Attempt',1.0,54,1);
+-- 242: Crunch  80, 100%, 20% lower Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (242,'Attempt',1.0,327,1);
+-- 243: Mirror Coat  priority -5, engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (243,'Attempt',1.0,8,1);
+-- 244: Psych Up  copy stat changes
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (244,'Attempt',1.0,8,1);
+-- 245: Extreme Speed  80, priority +2
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (245,'Attempt',1.0,115,1);
+-- 246: Ancient Power  60, 100%, 10% raise all stats
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (246,'Attempt',1.0,393,1);
+-- 247: Shadow Ball  80, 100%, 20% lower SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (247,'Attempt',1.0,326,1);
+-- 248: Future Sight  2-turn delayed hit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (248,'Attempt',1.0,77,1);
+-- 249: Rock Smash  40, 100%, 50% lower Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (249,'Attempt',1.0,394,1);
+-- 250: Whirlpool  35, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (250,'Attempt',0.85,106,1);
+-- 251: Beat Up  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (251,'Attempt',1.0,8,1);
+
+-- GEN 3 -------------------------------------------------------------------
+-- 252: Fake Out  40, priority +3, guaranteed flinch (first turn only — engine)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (252,'Attempt',1.0,344,1);
+-- 253: Uproar  90, rampage 3 turns fixed, no confusion after
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,after_rampage_effect_id,rampage_min_turns,rampage_max_turns,stop_on_miss) VALUES (253,'Rampage',1.0,117,8,3,3,1);
+-- 254/255/256: Stockpile / Spit Up / Swallow  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (254,'Attempt',1.0,8,1);
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (255,'Attempt',1.0,8,1);
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (256,'Attempt',1.0,8,1);
+-- 257: Heat Wave  95, 90%, 10% burn
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (257,'Attempt',0.90,306,1);
+-- 258: Hail
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (258,'Attempt',1.0,57,1);
+-- 259: Torment  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (259,'Attempt',1.0,8,1);
+-- 260: Flatter  +1 SpAtk defender + confuse, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (260,'Attempt',1.0,352,1);
+-- 261: Will-O-Wisp  burn, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (261,'Attempt',0.85,1,1);
+-- 262: Memento  -2 Atk/-2 SpAtk defender + faint self
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (262,'Attempt',1.0,390,1);
+-- 263: Facade  70 (doubles if statused — engine), 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (263,'Attempt',1.0,113,1);
+-- 264: Focus Punch  150, priority -3
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (264,'Attempt',1.0,124,1);
+-- 265: Smelling Salts  70, cures paralysis
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (265,'Attempt',1.0,391,1);
+-- 266: Follow Me  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (266,'Attempt',1.0,8,1);
+-- 267: Nature Power  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (267,'Attempt',1.0,8,1);
+-- 268: Charge  +1 SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (268,'Attempt',1.0,26,1);
+-- 269: Taunt  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (269,'Attempt',1.0,8,1);
+-- 270: Helping Hand  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (270,'Attempt',1.0,8,1);
+-- 271: Trick  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (271,'Attempt',1.0,8,1);
+-- 272: Role Play  copy ability
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (272,'Attempt',1.0,500,1);
+-- 273: Wish  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (273,'Attempt',1.0,8,1);
+-- 274: Assist  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (274,'Attempt',1.0,8,1);
+-- 275: Ingrain  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (275,'Attempt',1.0,8,1);
+-- 276: Superpower  120, -1 Atk/-1 Def self
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (276,'Attempt',1.0,378,1);
+-- 277: Magic Coat  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (277,'Attempt',1.0,8,1);
+-- 278: Recycle  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (278,'Attempt',1.0,8,1);
+-- 279: Revenge  60 base (doubles if hit), priority -4
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (279,'Attempt',1.0,111,1);
+-- 280: Brick Break  75, breaks screens
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (280,'Attempt',1.0,397,1);
+-- 281: Yawn  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (281,'Attempt',1.0,8,1);
+-- 282: Knock Off  65, remove item
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (282,'Attempt',1.0,395,1);
+-- 283: Endeavor  reduce to user HP
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (283,'Attempt',1.0,82,1);
+-- 284: Eruption  HP-based power, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (284,'Attempt',1.0,127,1);
+-- 285: Skill Swap  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (285,'Attempt',1.0,8,1);
+-- 286: Imprison  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (286,'Attempt',1.0,8,1);
+-- 287: Refresh  cure self status
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (287,'Attempt',1.0,7,1);
+-- 288: Grudge  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (288,'Attempt',1.0,8,1);
+-- 289: Snatch  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (289,'Attempt',1.0,8,1);
+-- 290: Secret Power  70, terrain-based secondary
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (290,'Attempt',1.0,113,1);
+-- 291: Dive  → Charge wrapper in STEP 4
+-- 292: Arm Thrust  15/hit, 2-5, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (292,'Combo',1.0,33,101,1);
+-- 293: Camouflage  type change
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (293,'Attempt',1.0,501,1);
+-- 294: Tail Glow  +2 SpAtk
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (294,'Attempt',1.0,24,1);
+-- 295: Luster Purge  95, 100%, 50% lower SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (295,'Attempt',1.0,375,1);
+-- 296: Mist Ball  95, 100%, 50% lower SpAtk
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (296,'Attempt',1.0,374,1);
+-- 297: Feather Dance  -2 Attack defender, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (297,'Attempt',1.0,30,1);
+-- 298: Teeter Dance  confuse all, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (298,'Attempt',1.0,13,1);
+-- 299: Blaze Kick  85, 90%, 10% burn, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (299,'Attempt',0.90,305,1);
+-- 300: Mud Sport  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (300,'Attempt',1.0,8,1);
+-- 301: Ice Ball  30 base, doubles each turn for 5, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (301,'Attempt',0.90,105,1);
+-- 302: Needle Arm  60, 100%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (302,'Attempt',1.0,335,1);
+-- 303: Slack Off  restore 50%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (303,'Attempt',1.0,15,1);
+-- 304: Hyper Voice  90, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (304,'Attempt',1.0,117,1);
+-- 305: Poison Fang  50, 100%, 30% badly poison
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (305,'Attempt',1.0,358,1);
+-- 306: Crush Claw  75, 95%, 50% lower Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (306,'Attempt',0.95,329,1);
+-- 307: Blast Burn  150, 90%  (recharge — engine)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (307,'Attempt',0.90,124,1);
+-- 308: Hydro Cannon  150, 90%  (recharge — engine)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (308,'Attempt',0.90,124,1);
+-- 309: Meteor Mash  90, 90%, 20% raise Attack
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (309,'Attempt',0.90,372,1);
+-- 310: Astonish  30, 100%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (310,'Attempt',1.0,334,1);
+-- 311: Weather Ball  50 base, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (311,'Attempt',1.0,109,1);
+-- 312: Aromatherapy  cure party
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (312,'Attempt',1.0,7,1);
+-- 313: Fake Tears  -2 SpDef defender, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (313,'Attempt',1.0,38,1);
+-- 314: Air Cutter  60, 95%, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (314,'Attempt',0.95,111,1);
+-- 315: Overheat  130, 90%, -2 SpAtk self
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (315,'Attempt',0.90,376,1);
+-- 316: Odor Sleuth  negate Ghost immunity
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (316,'Attempt',1.0,502,1);
+-- 317: Rock Tomb  60, 95%, -1 Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (317,'Attempt',0.95,366,1);
+-- 318: Silver Wind  60, 100%, 10% raise all stats
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (318,'Attempt',1.0,393,1);
+-- 319: Metal Sound  -2 SpDef, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (319,'Attempt',0.85,38,1);
+-- 320: Grass Whistle  sleep, 55%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (320,'Attempt',0.55,11,1);
+-- 321: Tickle  -1 Atk/-1 Def defender
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (321,'Attempt',1.0,48,1);
+-- 322: Cosmic Power  +1 Def/+1 SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (322,'Attempt',1.0,51,1);
+-- 323: Water Spout  HP-based power, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (323,'Attempt',1.0,127,1);
+-- 324: Signal Beam  75, 100%, 10% confuse
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (324,'Attempt',1.0,348,1);
+-- 325: Shadow Punch  60, never misses
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (325,'Attempt',1.0,111,1);
+-- 326: Extrasensory  80, 100%, 30% flinch
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (326,'Attempt',1.0,336,1);
+-- 327: Sky Uppercut  85, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (327,'Attempt',0.90,116,1);
+-- 328: Sand Tomb  35, 85%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (328,'Attempt',0.85,106,1);
+-- 329: Sheer Cold  OHKO, 30%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (329,'Attempt',0.30,75,1);
+-- 330: Muddy Water  90, 85%, 30% lower Accuracy
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (330,'Attempt',0.85,369,1);
+-- 331: Bullet Seed  25/hit, 2-5, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (331,'Combo',1.0,33,104,1);
+-- 332: Aerial Ace  60, never misses
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (332,'Attempt',1.0,111,1);
+-- 333: Icicle Spear  25/hit, 2-5, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (333,'Combo',1.0,33,104,1);
+-- 334: Iron Defense  +2 Defense
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (334,'Attempt',1.0,21,1);
+-- 335: Block  prevent escape
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (335,'Attempt',1.0,66,1);
+-- 336: Howl  +1 Attack
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (336,'Attempt',1.0,17,1);
+-- 337: Dragon Claw  80, 100%
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (337,'Attempt',1.0,115,1);
+-- 338: Frenzy Plant  150, 90%  (recharge — engine)
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (338,'Attempt',0.90,124,1);
+-- 339: Bulk Up  +1 Atk/+1 Def
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (339,'Attempt',1.0,44,1);
+-- 340: Bounce  → Charge wrapper in STEP 4
+-- 341: Mud Shot  55, 95%, -1 Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (341,'Attempt',0.95,365,1);
+-- 342: Poison Tail  50, 100%, 10% poison, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (342,'Attempt',1.0,359,1);
+-- 343: Covet  60, steal item
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (343,'Attempt',1.0,396,1);
+-- 344: Volt Tackle  120, 1/3 recoil, 10% paralyze
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (344,'Attempt',1.0,319,1);
+-- 345: Magical Leaf  60, never misses
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (345,'Attempt',1.0,111,1);
+-- 346: Water Sport  engine
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (346,'Attempt',1.0,8,1);
+-- 347: Calm Mind  +1 SpAtk/+1 SpDef
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (347,'Attempt',1.0,45,1);
+-- 348: Leaf Blade  90, 100%, high crit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (348,'Attempt',1.0,117,1);
+-- 349: Dragon Dance  +1 Atk/+1 Speed
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (349,'Attempt',1.0,46,1);
+-- 350: Rock Blast  25/hit, 2-5, 90%
+INSERT INTO attempts (move_id,type,accuracy_value,hits_number_id,on_hit_effect_id,stop_on_miss) VALUES (350,'Combo',0.90,33,104,1);
+-- 351: Shock Wave  60, never misses
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (351,'Attempt',1.0,111,1);
+-- 352: Water Pulse  60, 100%, 20% confuse
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (352,'Attempt',1.0,347,1);
+-- 353: Doom Desire  2-turn delayed hit
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (353,'Attempt',1.0,77,1);
+-- 354: Psycho Boost  140, 90%, -2 SpAtk self
+INSERT INTO attempts (move_id,type,accuracy_value,on_hit_effect_id,stop_on_miss) VALUES (354,'Attempt',0.90,377,1);
+
+-- =====================================================================
+-- STEP 4: CHARGE WRAPPER ATTEMPTS  (reference release IDs 1000001-1000008)
+-- =====================================================================
+-- 13: Razor Wind  charge=NoEffect, release=1000001
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (13,'Charge',8,1000001);
+-- 19: Fly  charge=NoEffect, release=1000002
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (19,'Charge',8,1000002);
+-- 76: Solar Beam  charge=NoEffect, release=1000005
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (76,'Charge',8,1000005);
+-- 91: Dig  charge=NoEffect, release=1000006
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (91,'Charge',8,1000006);
+-- 130: Skull Bash  charge=+1 Def, release=1000003
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (130,'Charge',20,1000003);
+-- 143: Sky Attack  charge=NoEffect, release=1000004
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (143,'Charge',8,1000004);
+-- 291: Dive  charge=NoEffect, release=1000008
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (291,'Charge',8,1000008);
+-- 340: Bounce  charge=NoEffect, release=1000007
+INSERT INTO attempts (move_id,type,charge_effect_id,release_attempt_id) VALUES (340,'Charge',8,1000007);
+
+-- =====================================================================
+-- STEP 5: TRIPLE KICK CASCADE_STEPS  (references 1000010-1000013)
+-- =====================================================================
+INSERT INTO cascade_steps (cascade_attempt_id,step_order,child_attempt_id) VALUES
+  (1000013,1,1000010),
+  (1000013,2,1000011),
+  (1000013,3,1000012);
+
+COMMIT;
+-- =============================================================================
+-- PART 6: ABILITY EFFECTS + CONDITIONS + ABILITIES  (Gen 3 complete)
+-- Effect IDs: 600-650
+-- Condition IDs for abilities: 700-710 (separate range from move conditions 1-26)
+-- Ability IDs: 1-76 (all unique names)
+-- =============================================================================
+
+BEGIN TRANSACTION;
+
+-- =====================================================================
+-- ABILITY-SPECIFIC EFFECTS  (IDs 600-650)
+-- =====================================================================
+INSERT INTO effects (id, type, target, multiplier) VALUES
+  (600, 'ModifyDamageDealt',    'Attacker', 1.5),
+  (601, 'ModifyDamageDealt',    'Attacker', 2.0),
+  (602, 'ModifyDamageDealt',    'Defender', 0.5),
+  (603, 'ModifyDamageDealt',    'Defender', 0.0),
+  (604, 'ModifyDamageDealt',    'Attacker', 1.3),
+  (605, 'DamageOnAttack',       'Attacker', 0.125),
+  (606, 'ModifySpeedMultiplier','Attacker', 2.0),
+  (607, 'ModifySpeedMultiplier','Attacker', 0.5),
+  (608, 'ModifyAccuracy',       'Attacker', 1.3),
+  (609, 'ModifyEvasion',        'Attacker', 1.25),
+  (610, 'ModifyCritRatio',      'Attacker', 1),
+  (611, 'BlockCritical',        'Defender', 0),
+  (612, 'BlockSecondaryEffects','Defender', 0),
+  (613, 'BlockRecoil',          'Attacker', 0),
+  (614, 'BlockIndirectDamage',  'Attacker', 0),
+  (616, 'PreventStatReduction', 'Attacker', 0),
+  (617, 'IgnoreStatChanges',    'Attacker', 0),
+  (618, 'MaxMultiStrike',       'Attacker', 0),
+  (619, 'NormalizeType',        'Attacker', 0),
+  (620, 'ModifyChance',         'Attacker', 2.0),
+  (622, 'SuppressWeather',      'Attacker', 0),
+  (623, 'IgnoreAbility',        'Attacker', 0),
+  (624, 'MoveLastPriority',     'Attacker', 0),
+  (625, 'WeatherTransform',     'Attacker', 0),
+  (626, 'DoublePPUsage',        'Defender', 0),
+  (627, 'ModifySleepTurns',     'Attacker', 0.5),
+  (628, 'GenderRivalry',        'Attacker', 0),
+  (629, 'Truant',               'Attacker', 0),
+  (630, 'SlowStart',            'Attacker', 0),
+  (631, 'PassStatus',           'Attacker', 0),
+  (632, 'DamageRedirect',       'Attacker', 0);
+
+INSERT INTO effects (id, type, target, stat) VALUES
+  (640, 'Immune', 'Attacker', 'Paralysis'),
+  (641, 'Immune', 'Attacker', 'Burn'),
+  (642, 'Immune', 'Attacker', 'Poison'),
+  (643, 'Immune', 'Attacker', 'Sleep'),
+  (644, 'Immune', 'Attacker', 'Freeze'),
+  (645, 'Immune', 'Attacker', 'Confusion'),
+  (646, 'Immune', 'Attacker', 'Infatuation');
+
+INSERT INTO effects (id, type, chance_probability, child_effect_id) VALUES
+  (650, 'Chance', 0.333, 7);
+
+-- =====================================================================
+-- ABILITY-SPECIFIC CONDITIONS  (IDs 700+, separate from move conditions)
+-- =====================================================================
+INSERT INTO conditions (id, type, hp_fraction) VALUES
+  (700, 'HPBelow', 0.333),
+  (701, 'HPBelow', 0.500);
+
+INSERT INTO conditions (id, type, weather) VALUES
+  (702, 'IsWeatherActive', 'Rain'),
+  (703, 'IsWeatherActive', 'Sunny'),
+  (704, 'IsWeatherActive', 'Sandstorm'),
+  (705, 'IsWeatherActive', 'Hail');
+
+INSERT INTO conditions (id, type, status) VALUES
+  (706, 'HasStatus', 'Poison');
+
+-- =====================================================================
+-- ABILITIES  (76 unique abilities, all Gen 3)
+-- =====================================================================
+INSERT INTO abilities (id, name, description, effect_id, condition_id, trigger) VALUES
+(1,  'Overgrow',       'Powers up Grass moves at low HP.',                  600, 700, 'passive'),
+(2,  'Blaze',          'Powers up Fire moves at low HP.',                   600, 700, 'passive'),
+(3,  'Torrent',        'Powers up Water moves at low HP.',                  600, 700, 'passive'),
+(4,  'Swarm',          'Powers up Bug moves at low HP.',                    600, 700, 'passive'),
+(5,  'Huge Power',     'Doubles the Pokemon''s Attack stat.',               601, NULL, 'passive'),
+(6,  'Pure Power',     'Doubles the Pokemon''s Attack stat.',               601, NULL, 'passive'),
+(7,  'Thick Fat',      'Halves damage from Fire- and Ice-type moves.',      602, NULL, 'passive'),
+(8,  'Levitate',       'Grants immunity to Ground-type moves.',             603, NULL, 'passive'),
+(9,  'Wonder Guard',   'Only super-effective moves will hit.',              603, NULL, 'passive'),
+(10, 'Intimidate',     'Lowers the foe''s Attack on entry.',                29, NULL, 'on_entry'),
+(11, 'Rough Skin',     'Damages attackers that make direct contact.',       605, NULL, 'on_contact'),
+(12, 'Static',         '30% chance to paralyze on contact.',               631, NULL, 'on_contact'),
+(13, 'Flame Body',     '30% chance to burn on contact.',                   631, NULL, 'on_contact'),
+(14, 'Poison Point',   '30% chance to poison on contact.',                 631, NULL, 'on_contact'),
+(15, 'Effect Spore',   '30% chance sleep/poison/paralysis on contact.',     631, NULL, 'on_contact'),
+(16, 'Swift Swim',     'Doubles Speed in rain.',                            606, 702, 'passive'),
+(17, 'Chlorophyll',    'Doubles Speed in harsh sunlight.',                  606, 703, 'passive'),
+(18, 'Sand Rush',      'Doubles Speed in a sandstorm.',                     606, 704, 'passive'),
+(19, 'Slush Rush',     'Doubles Speed in hail.',                            606, 705, 'passive'),
+(20, 'Compound Eyes',  'Raises accuracy of moves by 30%.',                  608, NULL, 'passive'),
+(21, 'Sand Veil',      'Boosts evasion in sandstorm.',                      609, 704, 'passive'),
+(22, 'Snow Cloak',     'Boosts evasion in hail.',                           609, 705, 'passive'),
+(23, 'Hustle',         'Raises Attack 50% but lowers accuracy.',            604, NULL, 'passive'),
+(24, 'No Guard',       'All moves hit the user and the foe.',               608, NULL, 'passive'),
+(25, 'Keen Eye',       'Prevents Accuracy from being lowered.',             616, NULL, 'passive'),
+(26, 'Super Luck',     'Raises the critical-hit ratio.',                    610, NULL, 'passive'),
+(27, 'Battle Armor',   'Protects the Pokemon from critical hits.',          611, NULL, 'passive'),
+(28, 'Shell Armor',    'Protects the Pokemon from critical hits.',          611, NULL, 'passive'),
+(29, 'Shield Dust',    'Blocks additional effects of moves.',               612, NULL, 'passive'),
+(30, 'Rock Head',      'Prevents recoil damage.',                           613, NULL, 'passive'),
+(31, 'Magic Guard',    'Only damaged by direct attacks.',                   614, NULL, 'passive'),
+(32, 'Clear Body',     'Prevents stat reduction from foe''s moves.',       616, NULL, 'passive'),
+(33, 'White Smoke',    'Prevents stat reduction from foe''s moves.',       616, NULL, 'passive'),
+(34, 'Hyper Cutter',   'Prevents Attack from being lowered.',              616, NULL, 'passive'),
+(35, 'Limber',         'Prevents paralysis.',                               640, NULL, 'passive'),
+(36, 'Water Veil',     'Prevents burns.',                                   641, NULL, 'passive'),
+(37, 'Immunity',       'Prevents poisoning.',                               642, NULL, 'passive'),
+(38, 'Insomnia',       'Prevents sleep.',                                   643, NULL, 'passive'),
+(39, 'Vital Spirit',   'Prevents sleep.',                                   643, NULL, 'passive'),
+(40, 'Magma Armor',    'Prevents freezing.',                                644, NULL, 'passive'),
+(41, 'Own Tempo',      'Prevents confusion.',                               645, NULL, 'passive'),
+(42, 'Oblivious',      'Prevents infatuation.',                             646, NULL, 'passive'),
+(43, 'Soundproof',     'Nullifies sound-based moves.',                      603, NULL, 'passive'),
+(44, 'Inner Focus',    'Prevents flinching.',                               612, NULL, 'passive'),
+(45, 'Rain Dish',      'Restores HP slowly in rain.',                        15, 702, 'on_turn_end'),
+(46, 'Dry Skin',       'Restores HP in rain; hurt more by Fire.',            15, 702, 'on_turn_end'),
+(47, 'Ice Body',       'Restores HP slowly in hail.',                        15, 705, 'on_turn_end'),
+(48, 'Poison Heal',    'Restores HP when poisoned instead of losing it.',    15, 706, 'on_turn_end'),
+(49, 'Shed Skin',      '33% chance to cure status at end of each turn.',    650, NULL, 'on_turn_end'),
+(50, 'Natural Cure',   'Cures status when switching out.',                    7, NULL, 'on_switch_out'),
+(51, 'Guts',           'Boosts Attack by 50% when statused.',               604, NULL, 'passive'),
+(52, 'Marvel Scale',   'Boosts Defense by 50% when statused.',              604, NULL, 'passive'),
+(53, 'Flash Fire',     'Powers up Fire moves when hit by Fire.',            604, NULL, 'on_hit'),
+(54, 'Volt Absorb',    'Restores HP when hit by Electric moves.',            15, NULL, 'on_hit'),
+(55, 'Water Absorb',   'Restores HP when hit by Water moves.',               15, NULL, 'on_hit'),
+(56, 'Motor Drive',    'Raises Speed when hit by Electric moves.',           22, NULL, 'on_hit'),
+(57, 'Lightning Rod',  'Draws Electric moves and raises Sp. Atk.',          632, NULL, 'passive'),
+(58, 'Storm Drain',    'Draws Water moves and raises Sp. Atk.',             632, NULL, 'passive'),
+(59, 'Sap Sipper',     'Raises Attack when hit by Grass moves.',             17, NULL, 'on_hit'),
+(60, 'Serene Grace',   'Doubles the chance of secondary effects.',           620, NULL, 'passive'),
+(61, 'Synchronize',    'Passes burn/paralysis/poison to attacker.',          631, NULL, 'on_status'),
+(62, 'Trace',          'Copies the foe''s Ability on entry.',               302, NULL, 'on_entry'),
+(63, 'Illuminate',     'Raises likelihood of wild Pokemon encounters.',        8, NULL, 'passive'),
+(64, 'Arena Trap',     'Prevents the foe from fleeing.',                     66, NULL, 'passive'),
+(65, 'Shadow Tag',     'Prevents the foe from fleeing.',                     66, NULL, 'passive'),
+(66, 'Magnet Pull',    'Prevents Steel-type Pokemon from fleeing.',          66, NULL, 'passive'),
+(67, 'Sticky Hold',    'Prevents the held item from being taken.',           282, NULL, 'passive'),
+(68, 'Suction Cups',   'Prevents being forced out by Roar/Whirlwind.',       65, NULL, 'passive'),
+(69, 'Run Away',       'Enables sure escape from wild Pokemon.',               8, NULL, 'passive'),
+(70, 'Truant',         'Pokemon can only attack every other turn.',          629, NULL, 'passive'),
+(71, 'Slow Start',     'Halves Attack and Speed for 5 turns on entry.',      630, NULL, 'on_entry'),
+(72, 'Pressure',       'Raises the foe''s PP usage by 1.',                  626, NULL, 'passive'),
+(73, 'Cloud Nine',     'Eliminates the effects of weather.',                 622, NULL, 'passive'),
+(74, 'Air Lock',       'Eliminates the effects of weather.',                 622, NULL, 'passive'),
+(75, 'Pickup',         'May pick up items after battle.',                      8, NULL, 'passive'),
+(76, 'Normalize',      'All moves used by the Pokemon become Normal-type.',  619, NULL, 'passive');
+
+COMMIT;</sql><current_tab id="0"/></tab_sql></sqlb_project>

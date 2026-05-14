@@ -30,7 +30,6 @@ namespace PokemonGame.Services.Data.Repositories
             _db.Execute(@"
             INSERT OR REPLACE INTO StoryPlayerPokemon
             (
-                Id,
                 PlayerID,
                 BattlerPokemonId,
                 Nickname,
@@ -52,7 +51,6 @@ namespace PokemonGame.Services.Data.Repositories
             )
             VALUES
             (
-                @Id,
                 @PlayerID,
                 @BattlerPokemonId,
                 @Nickname,
@@ -74,7 +72,6 @@ namespace PokemonGame.Services.Data.Repositories
             )",
                 new
                 {
-                    pokemon.Id,
                     pokemon.PlayerID,
                     pokemon.BattlerPokemonId,
                     pokemon.Nickname,

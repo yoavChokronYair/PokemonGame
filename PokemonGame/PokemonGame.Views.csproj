@@ -268,6 +268,7 @@
     <Compile Include="Converters\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Converters\IsNegativeConverter.cs" />
     <Compile Include="Converters\MenuHighlightConverter.cs" />
+    <Compile Include="Converters\MultiBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\NameToImageConverter.cs" />
     <Compile Include="Converters\NullToBoolConverter .cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
@@ -686,6 +687,7 @@
     <Content Include="Assets\Audio\2-66. Champion Cynthia.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Images\TextBackground.png" />
     <Resource Include="Assets\Images\PokeballCaught.png" />
     <Resource Include="Assets\Images\Backgrounds\PokedexBackgroundImage.png" />
     <Resource Include="Assets\Images\Badges\7.png" />

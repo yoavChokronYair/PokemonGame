@@ -2,13 +2,30 @@
     x:Class="PokemonGame.Views.Pages.PokemonBattlePages.PokemonBattlePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:PokemonGame.View.Behaviors"
     xmlns:converters="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame.Views.Pages.PokemonBattlePages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uc="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
     Title="PokemonBattlePage"
+    behaviors:FocusBehavior.FocusOnLoad="True"
+    Focusable="True"
     mc:Ignorable="d">
+
+    <Page.InputBindings>
+
+        <!--  Logger advance  -->
+        <KeyBinding Key="Space" Command="{Binding BattleMenu.LoggerNextCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding BattleMenu.LoggerNextCommand}" />
+
+        <!--  Open FIGHT menu  -->
+        <KeyBinding Key="A" Command="{Binding BattleMenu.OpenMenuCommand}" />
+
+        <!--  Back  -->
+        <KeyBinding Key="Escape" Command="{Binding BattleMenu.BackCommand}" />
+
+    </Page.InputBindings>
 
     <Page.Resources>
         <converters:PokemonIdToImageConverter x:Key="IdToSprite" />
@@ -19,7 +36,13 @@
     </Page.Resources>
 
     <Viewbox Stretch="Fill" StretchDirection="Both">
-        <Grid Width="800" Height="533">
+        <Grid
+            Width="800"
+            Height="533"
+            FocusManager.FocusedElement="{Binding ElementName=FocusTarget}"
+            FocusManager.IsFocusScope="True"
+            Focusable="True"
+           >
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
@@ -40,6 +63,12 @@
                 RenderOptions.BitmapScalingMode="NearestNeighbor"
                 Source="/Assets/Images/BattleBackground.png"
                 Stretch="Fill" />
+            <TextBox
+                x:Name="FocusTarget"
+                Width="0"
+                Height="0"
+                IsTabStop="False"
+                Opacity="0" />
 
             <!--  Waiting for opponent overlay  -->
             <Border

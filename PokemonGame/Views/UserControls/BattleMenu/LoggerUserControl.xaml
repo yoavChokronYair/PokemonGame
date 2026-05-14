@@ -7,6 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="150"
     d:DesignWidth="800"
+    Focusable="False"
+    IsTabStop="False"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -48,24 +50,6 @@
                 Text="{Binding CurrentMessage}"
                 TextWrapping="Wrap" />
 
-            <!--  Next button — only visible while there are queued messages  -->
-            <Button
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                Grid.Column="0"
-                Width="50"
-                Height="50"
-                Margin="10,0,0,0"
-                VerticalAlignment="Center"
-                Command="{Binding NextCommand}"
-                ToolTip="Next"
-                Visibility="{Binding HasMore, Converter={StaticResource BoolToVis}}">
-                <TextBlock
-                    FontSize="18"
-                    FontWeight="Bold"
-                    Foreground="White"
-                    Text="▶" />
-            </Button>
         </Grid>
     </Grid>
 </UserControl>

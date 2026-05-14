@@ -24,6 +24,8 @@ namespace PokemonGame.Model.Domain.Pokemon
 
         /// <summary>Read-only view of all slots (including nulls)</summary>
         public IReadOnlyList<PokemonPlayerDomain?> Slots => _slots;
+        public int getAllPokemonCount() => Count;
+
 
         /// <summary>Only the filled slots, in order</summary>
         public IEnumerable<PokemonPlayerDomain> ActiveMembers => _slots.Where(p => p != null)!;

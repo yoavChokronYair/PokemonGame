@@ -21,7 +21,8 @@ namespace PokemonGame.Model.Model.Managers
         private readonly PokemonTeam _botTeam;
         private readonly BattleState _state;
         private readonly BattleBotManager _botManager;
-
+        public bool HasBotFainted = false;
+        public bool HasTrainerFainted = false;
         public PokemonState PlayerActive => _playerTeam.Active;
         public PokemonState BotActive => _botTeam.Active;
 
@@ -69,6 +70,8 @@ namespace PokemonGame.Model.Model.Managers
         // ── Existing offline turn — bot AI picks the opponent move ────────────
         public bool RunTurn(int playerIndex, BattleAction playerAction = BattleAction.Move)
         {
+            HasBotFainted = false;
+            HasTrainerFainted = false;
             BotAction botAction = _botManager.PickAction();
 
             IMove? pendingPlayerMove = null;
@@ -255,6 +258,7 @@ namespace PokemonGame.Model.Model.Managers
             if (_playerTeam.IsDefeated)
             {
                 EndBattle(_botTeam, _playerTeam);
+
                 return;
             }
             if (_botTeam.IsDefeated)
@@ -264,6 +268,7 @@ namespace PokemonGame.Model.Model.Managers
             }
             if (BotActive.IsFainted)
             {
+                HasBotFainted = true;
                 BotAction forcedSwitch = _botManager.PickAction();
                 _botTeam.SwitchTo(forcedSwitch.SwitchSlot!.Value);
                 new SwitchIn(BotActive).Run(_state);
@@ -271,6 +276,7 @@ namespace PokemonGame.Model.Model.Managers
             }
             if (PlayerActive.IsFainted)
             {
+                HasTrainerFainted = true;
                 _playerTeam.SwitchToNextAvailable();
                 new SwitchIn(PlayerActive).Run(_state);
                 _state.UpdateActivePair(PlayerActive, BotActive);

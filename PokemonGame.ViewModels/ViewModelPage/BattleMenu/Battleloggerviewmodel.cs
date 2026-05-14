@@ -23,23 +23,39 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             get => _phaseLabel;
             private set => SetProperty(ref _phaseLabel, value);
         }
+        private bool _isTypingAnimation;
+
+        public bool IsTexting => _isTypingAnimation || HasMore;
+
 
         private bool _hasMore;
         public bool HasMore
         {
             get => _hasMore;
-            private set
+            set
+{
+    if (SetProperty(ref _hasMore, value))
+    {
+        OnPropertyChanged(nameof(AreActionsUnlocked));
+        OnPropertyChanged(nameof(IsTexting));
+    }
+}
+        }
+        private bool _isTyping;
+
+        public bool IsTyping
+        {
+            get => _isTyping;
+            set
             {
-                if (SetProperty(ref _hasMore, value))
+                if (SetProperty(ref _isTyping, value))
                 {
                     OnPropertyChanged(nameof(AreActionsUnlocked));
-                    ((RelayCommand)NextCommand).NotifyCanExecuteChanged();
                 }
             }
         }
 
-        public bool AreActionsUnlocked => !HasMore;
-
+        public bool AreActionsUnlocked => !HasMore && !IsTyping;
         public ICommand NextCommand { get; }
 
         public BattleLoggerViewModel()
@@ -92,8 +108,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             return _waitTcs.Task;
         }
 
-        private void ShowNext()
+        public void ShowNext()
         {
+            if (IsTyping)
+                return;
             if (_queue.Count == 0)
             {
                 HasMore = false;
@@ -104,15 +122,35 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             var entry = _queue.Dequeue();
             ApplyEntry(entry);
             HasMore = _queue.Count > 0;
-
+            ((RelayCommand)NextCommand).NotifyCanExecuteChanged();
             if (!HasMore)
                 _waitTcs?.TrySetResult(true);
         }
 
-        private void ApplyEntry(BattleLogEntry entry)
+        private async void ApplyEntry(BattleLogEntry entry)
         {
-            CurrentMessage = entry.Message;
+
             PhaseLabel = FormatPhaseLabel(entry);
+
+            IsTyping = true;
+
+            CurrentMessage = "";
+
+
+            _isTypingAnimation = true;
+
+            OnPropertyChanged(nameof(IsTexting));
+
+            foreach (char c in entry.Message)
+            {
+                CurrentMessage += c;
+                await Task.Delay(18);
+            }
+            _isTypingAnimation = false;
+            OnPropertyChanged(nameof(IsTexting));
+
+            IsTyping = false;
+            ((RelayCommand)NextCommand).NotifyCanExecuteChanged();
         }
 
         private static string FormatPhaseLabel(BattleLogEntry entry) =>

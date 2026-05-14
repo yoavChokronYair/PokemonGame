@@ -1,8 +1,14 @@
-﻿using PokemonGame.Model.Domain.Map;
+﻿using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
+using PokemonGame.Model.Domain.Player;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Map;
+using PokemonGame.Services.Handler;
 using PokemonGame.Services.Services;
+using PokemonGame.ViewModels.Store;
 
 namespace PokemonGame.ViewModels.Translators
 {
@@ -13,6 +19,8 @@ namespace PokemonGame.ViewModels.Translators
         private readonly Dictionary<int, MapDomain> _cycleCache = new();
 
         public MapLoader(IMapService mapService) => _mapService = mapService;
+
+        // ── Map Loading ───────────────────────────────────────────────────────
 
         public MapDomain Load(string mapName)
         {
@@ -145,6 +153,230 @@ namespace PokemonGame.ViewModels.Translators
                 visionRange = spawn.VisionRange,
                 VisionType = SafeCast(spawn.VisionType, VisionType.Normal, nameof(spawn.VisionType), spawn.Id),
             };
+        }
+
+        // ── Save ─────────────────────────────────────────────────────────────
+
+        public void Save(IStoryPlayerService storyPlayerService)
+        {
+            var player = PlayerDomain.Instance;
+            storyPlayerService.SaveAll(BuildSaveTree(player),UserStore.Instance.PlayerID);
+        }
+
+        private static StorySaveTree BuildSaveTree(PlayerDomain player) => new()
+        {
+            CurrentPlayer = BuildStoryPlayer(player),
+            TrainerInfo = BuildTrainerInfo(player),
+            Badges = BuildBadges(player),
+            StoryFlags = player.ProgressFlags.StoryFlags.ToList(),
+            DefeatedTrainers = player.ProgressFlags.DefeatedTrainers.ToList(),
+            ItemsTaken = player.ProgressFlags.ItemTaken.ToList(),
+            TradedPokemon = player.ProgressFlags.TradedPokemon.ToList(),
+            BagInventory = BuildBagInventory(player),
+            Pokedex = BuildPokedex(player),
+            Party = BuildParty(player),
+        };
+
+        private static StoryPlayerData BuildStoryPlayer(PlayerDomain player) => new()
+        {
+            PlayerID = player.trainerInfo.TrainerID,
+            UserID = player.trainerInfo.TrainerID,
+        };
+
+        private static TrainerInfoData BuildTrainerInfo(PlayerDomain player) => new()
+        {
+            PlayerID = player.trainerInfo.TrainerID,
+            TrainerID = player.trainerInfo.TrainerID,
+            Name = player.trainerInfo.Name,
+            Money = player.trainerInfo.Money,
+            TimePlayed = player.trainerInfo.TimePlayed.ToString(@"hh\:mm\:ss"),
+            Gender = (int)player.trainerInfo.Gender,
+            HallOfFameDebut = player.trainerInfo.HallOfFameDebut,
+            FacingDirection = (int)player.trainerMapLocDomain.FacingDirection,
+            CurrentMap = player.trainerMapLocDomain.CurrentMap?.Name ?? "",
+            LastMapVisited = player.trainerMapLocDomain.LastMapVisited?.Name ?? "",
+            PlayerLocX = player.trainerMapLocDomain.playerLoc.x,
+            PlayerLocY = player.trainerMapLocDomain.playerLoc.y,
+            IsSurfing = player.trainerMapLocDomain.IsSurfing ? 1 : 0,
+            HasRunningShoes = player.trainerItemDomain.HasRunningShoes ? 1 : 0,
+        };
+
+        private static List<BadgeData> BuildBadges(PlayerDomain player) =>
+            player.Badges.Select(b => new BadgeData
+            {
+                PlayerID = player.trainerInfo.TrainerID,
+                Id = b.Id,
+                IsObtained = b.IsObtained ? 1 : 0,
+            }).ToList();
+
+        private static List<BagInventoryData> BuildBagInventory(PlayerDomain player) =>
+            player.trainerItemDomain.BagInventory
+                .Select(kv => new BagInventoryData
+                {
+                    PlayerID = player.trainerInfo.TrainerID,
+                    ItemId = kv.Key.Id,
+                    Quantity = kv.Value,
+                })
+                .ToList();
+
+        private static List<PokedexData> BuildPokedex(PlayerDomain player) =>
+            player.Pokedex
+                .Select(kv => new PokedexData
+                {
+                    PlayerID = player.trainerInfo.TrainerID,
+                    PokedexId = kv.Key,
+                    Seen = kv.Value.seen ? 1 : 0,
+                    Caught = kv.Value.caught ? 1 : 0,
+                })
+                .ToList();
+
+        private static List<StoryPlayerPokemonData> BuildParty(PlayerDomain player)
+        {
+            if (player.Team == null) return new();
+            return player.Team.ActiveMembers
+                .Select(p => new StoryPlayerPokemonData
+                {
+                    PlayerID = player.trainerInfo.TrainerID,
+                    BattlerPokemonId = p.PokemonState.PokedexId,
+                    Nickname = p.Nickname,
+                    PokemonUID = p.PokemonUID,
+                    OriginalTrainerID = p.OriginalTrainerID,
+                    OriginalTrainerName = p.OriginalTrainerName,
+                    ObtainMethod = (int)p.ObtainMethod,
+                    ObtainedAtRoute = p.ObtainedAtRoute ?? "",
+                    ObtainedAt = p.ObtainedAt,
+                    ObtainedAtLevel = p.ObtainedAtLevel,
+                    CaughtWithBall = (int)p.CaughtWithBall,
+                    MetLocationText = p.MetLocationText ?? "",
+                    Experience = p.Experience,
+                    GrowthRate = p.GrowthRate.ToString(),
+                    CurrentHP = p.CurrentHP,
+                    StatusId = (int)p.PersistentStatus,
+                    Friendship = p.Friendship,
+                    Affection = p.Affection,
+                })
+                .ToList();
+        }
+
+        // ── Load ─────────────────────────────────────────────────────────────
+
+        public void Load(IStoryPlayerService storyPlayerService, int userId)
+        {
+            var save = storyPlayerService.LoadAll(userId);
+            ApplySaveTree(save);
+        }
+
+        private void ApplySaveTree(StorySaveTree save)
+        {
+            var player = PlayerDomain.Instance;
+            ApplyTrainerInfo(player, save.TrainerInfo);
+            ApplyBadges(player, save.Badges);
+            ApplyProgressFlags(player, save);
+            ApplyBagInventory(player, save.BagInventory);
+            ApplyPokedex(player, save.Pokedex);
+            ApplyParty(player, save.Party);
+        }
+
+        private void ApplyTrainerInfo(PlayerDomain player, TrainerInfoData data)
+        {
+            player.trainerInfo.TrainerID = data.TrainerID;
+            player.trainerInfo.Name = data.Name;
+            player.trainerInfo.Money = data.Money;
+            player.trainerInfo.Gender = (Gender)data.Gender;
+            player.trainerInfo.HallOfFameDebut = data.HallOfFameDebut;
+
+            if (TimeSpan.TryParse(data.TimePlayed, out var ts))
+                player.trainerInfo.TimePlayed = DateTime.Today.Add(ts);
+
+            player.trainerMapLocDomain.FacingDirection = (FacingDirection)data.FacingDirection;
+            player.trainerMapLocDomain.playerLoc = (data.PlayerLocX, data.PlayerLocY);
+            player.trainerMapLocDomain.IsSurfing = data.IsSurfing == 1;
+
+            if (!string.IsNullOrEmpty(data.CurrentMap))
+                player.trainerMapLocDomain.CurrentMap = Load(data.CurrentMap);
+
+            if (!string.IsNullOrEmpty(data.LastMapVisited))
+                player.trainerMapLocDomain.LastMapVisited = Load(data.LastMapVisited);
+
+            player.trainerItemDomain.HasRunningShoes = data.HasRunningShoes == 1;
+        }
+
+        private static void ApplyBadges(PlayerDomain player, List<BadgeData> badges)
+        {
+            player.Badges.Clear();
+            foreach (var b in badges)
+                player.Badges.Add(new BadgeDomain { Id = b.Id, IsObtained = b.IsObtained == 1 });
+        }
+
+        private static void ApplyProgressFlags(PlayerDomain player, StorySaveTree save)
+        {
+            player.ProgressFlags.StoryFlags.Clear();
+            foreach (var f in save.StoryFlags)
+                player.ProgressFlags.StoryFlags.Add(f);
+
+            player.ProgressFlags.DefeatedTrainers.Clear();
+            foreach (var t in save.DefeatedTrainers)
+                player.ProgressFlags.DefeatedTrainers.Add(t);
+
+            player.ProgressFlags.ItemTaken.Clear();
+            foreach (var i in save.ItemsTaken)
+                player.ProgressFlags.ItemTaken.Add(i);
+
+            player.ProgressFlags.TradedPokemon.Clear();
+            foreach (var p in save.TradedPokemon)
+                player.ProgressFlags.TradedPokemon.Add(p);
+        }
+
+        private static void ApplyBagInventory(PlayerDomain player, List<BagInventoryData> inventory)
+        {
+            player.trainerItemDomain.BagInventory.Clear();
+            foreach (var entry in inventory)
+            {
+                var item = new itemsDomain { Id = entry.ItemId };
+                player.trainerItemDomain.BagInventory[item] = entry.Quantity;
+            }
+        }
+
+        private static void ApplyPokedex(PlayerDomain player, List<PokedexData> pokedex)
+        {
+            player.Pokedex.Clear();
+            foreach (var entry in pokedex)
+            {
+                player.Pokedex[entry.PokedexId] = (
+                    seen: entry.Seen == 1,
+                    caught: entry.Caught == 1,
+                    name: entry.PokedexId.ToString() // replace with species name lookup
+                );
+            }
+        }
+
+        private static void ApplyParty(PlayerDomain player, List<StoryPlayerPokemonData> party)
+        {
+            player.Team = new PlayerTeamDomain();
+            foreach (var data in party)
+            {
+                var pokemon = new PokemonPlayerDomain
+                {
+                    PokemonUID = data.PokemonUID,
+                    Nickname = data.Nickname,
+                    OriginalTrainerID = data.OriginalTrainerID,
+                    OriginalTrainerName = data.OriginalTrainerName,
+                    ObtainMethod = (ObtainMethodType)data.ObtainMethod,
+                    ObtainedAtRoute = data.ObtainedAtRoute,
+                    ObtainedAt = data.ObtainedAt,
+                    ObtainedAtLevel = data.ObtainedAtLevel,
+                    CaughtWithBall = (PokeBallType)data.CaughtWithBall,
+                    MetLocationText = data.MetLocationText,
+                    Experience = data.Experience,
+                    GrowthRate = Enum.TryParse<GrowthRateType>(data.GrowthRate, out var gr)
+                                            ? gr : GrowthRateType.MediumFast,
+                    CurrentHP = data.CurrentHP,
+                    PersistentStatus = (StatusCondition)data.StatusId,
+                    Friendship = data.Friendship,
+                    Affection = data.Affection,
+                };
+                player.Team.TryAdd(pokemon);
+            }
         }
     }
 }

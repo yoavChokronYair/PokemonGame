@@ -12,8 +12,10 @@ using PokemonGame.Model.Model.Managers;
 using PokemonGame.Model.Model.Map;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Services;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.Translators;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 using PokemonGame.ViewModels.ViewModelPage.Dialogue;
 using PokemonGame.ViewModels.ViewModelPage.Map.Command;
 
@@ -46,6 +48,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private readonly NavigationStore _navigationStore;
         private readonly Func<ViewModelBase> _createTrainerCardViewModel;   
         private readonly Func<ViewModelBase> _createpokedexPageViewModel;
+        private readonly Func<ViewModelBase> _createGameModChooser;
 
         public const double CellPx = 72.0;
         private const int MapTilePx = 8;
@@ -159,9 +162,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
         }
 
         // ── Constructor ───────────────────────────────────────────────────────
-        public MapViewModel(NavigationStore navigationStore, Func<ViewModelBase> createTrainerCardViewModel, Func<ViewModelBase> createPokedexPageViewModel)
+        public MapViewModel(NavigationStore navigationStore, Func<ViewModelBase> createTrainerCardViewModel, Func<ViewModelBase> createPokedexPageViewModel, Func<ViewModelBase> createGameModChoosercreatePokedexPageViewModel)
         {
-            _navigationStore = navigationStore;
+            _navigationStore = navigationStore; 
             _player = PlayerDomain.Instance;
             _mapLoader = new MapLoader(new MapService());
             PlayerName = _player.trainerInfo.Name;
@@ -175,6 +178,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             });
             _createTrainerCardViewModel = createTrainerCardViewModel;
             _createpokedexPageViewModel = createPokedexPageViewModel;
+            _createGameModChooser = createGameModChoosercreatePokedexPageViewModel;
         }
 
         private async Task InitializeAsync()
@@ -298,6 +302,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         private void InitCommands()
         {
+            TeamSelectionOptions team = new TeamSelectionOptions
+            {
+                CanMove = false,
+                CanSummary = true,
+                CanSwitch = true,
+                IsUsingUserStore = false
+            };
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
             ShowForegroundCommand = new ShowLayerCommand(this, background: false);
             InspectCommand = new InspectCommand(this);
@@ -315,10 +326,12 @@ namespace PokemonGame.ViewModels.ViewModelPage
             MenuConfirmCommand = new RelayCommand(() => MenuConfirm());
             OpenPokedexCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createpokedexPageViewModel(); });
             OpenBagCommand = new RelayCommand(() => { /* TODO */ });
-            OpenPokemonCommand = new RelayCommand(() => { /* TODO */ });
+   
+
+            OpenPokemonCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = new TeamSelectionViewModel(UserStore.Instance, _navigationStore,() => this,team); });
             OpenPlayerCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createTrainerCardViewModel(); });
-            SaveCommand = new RelayCommand(() => { /* TODO */ });
-            ExitCommand = new RelayCommand(() => IsMenuOpen = false);
+            SaveCommand = new RelayCommand(() => { _mapLoader.Save(ServiceFactory.Instance.StoryPlayerService);IsMenuOpen = false;});
+            ExitCommand = new RelayCommand(() => _navigationStore.CurrentViewModel = _createGameModChooser());
         }
     }
     //menu

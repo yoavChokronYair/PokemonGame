@@ -158,7 +158,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 OnSwitchChosen,
                 OnForfeit,
                 OnOpenSwitch,
-                _manager,
                 Logger);
 
             NewGameCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.NewGame));
@@ -191,12 +190,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 _logCursor = _manager.logger.Entries.Count;
 
                 await Logger.WaitUntilQueueEmpty();
-
-                EnemyStatus.CurrentHP = _manager.BotActive.CurrentHP;
+                if (_manager.HasBotFainted)
+                {
+                    EnemyStatus.CurrentHP = 0;
+                }
                 await EnemyStatus.WaitForHpAnimation();
                 if (_manager.BotActive.IsFainted) SyncEnemyPokemon();
-
-                PlayerStatus.CurrentHP = _manager.PlayerActive.CurrentHP;
+                if (_manager.HasTrainerFainted)
+                {
+                    PlayerStatus.CurrentHP = 0;
+                }
                 await PlayerStatus.WaitForHpAnimation();
                 if (_manager.PlayerActive.IsFainted) SyncPlayerPokemon();
 
@@ -249,6 +252,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 _playerUserStore,
                 _navigationStore,
                 () => this,
+                new TeamSelectionOptions(),
                 OnSwitchChosen,
                 true);
         }

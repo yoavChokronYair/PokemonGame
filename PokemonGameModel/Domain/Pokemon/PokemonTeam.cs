@@ -83,6 +83,13 @@ namespace PokemonGame.Model.Domain.Pokemon
             }
             return true;
         }
+        public void SwapSlots(int indexA, int indexB)
+        {
+            if (indexA < 0 || indexA >= 6) throw new ArgumentOutOfRangeException(nameof(indexA));
+            if (indexB < 0 || indexB >= 6) throw new ArgumentOutOfRangeException(nameof(indexB));
+
+            (_slots[indexA], _slots[indexB]) = (_slots[indexB], _slots[indexA]);
+        }
         private void FixActiveAfterTrade() 
         {
             if (_slots[_activeIndex] != null && !_slots[_activeIndex].IsFainted)

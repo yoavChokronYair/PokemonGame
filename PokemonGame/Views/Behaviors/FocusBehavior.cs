@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interactivity;
 using PokemonGame.ViewModels.ViewModelPage;
 
@@ -21,7 +22,32 @@ namespace PokemonGame.View.Behaviors
 
         public static void SetFocusOnLoad(UIElement element, bool value) =>
             element.SetValue(FocusOnLoadProperty, value);
+        public static readonly DependencyProperty FocusWhenTrueProperty =
+            DependencyProperty.RegisterAttached(
+        "FocusWhenTrue",
+        typeof(bool),
+        typeof(FocusBehavior),
+        new PropertyMetadata(false, OnFocusWhenTrueChanged));
 
+        public static bool GetFocusWhenTrue(UIElement element) =>
+            (bool)element.GetValue(FocusWhenTrueProperty);
+
+        public static void SetFocusWhenTrue(UIElement element, bool value) =>
+            element.SetValue(FocusWhenTrueProperty, value);
+
+        private static void OnFocusWhenTrueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is UIElement element)) return;
+
+            if ((bool)e.NewValue)
+            {
+                element.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    element.Focus();
+                    Keyboard.Focus(element);
+                }));
+            }
+        }
         private static void OnFocusOnLoadChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is FrameworkElement element)) return;
@@ -84,6 +110,7 @@ namespace PokemonGame.View.Behaviors
             if (d is ScrollViewer sv)
                 sv.ScrollToVerticalOffset((double)e.NewValue);
         }
+
     }   
 
 }

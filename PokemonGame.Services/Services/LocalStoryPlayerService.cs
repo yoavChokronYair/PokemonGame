@@ -1,4 +1,5 @@
-﻿using PokemonGame.Services.Data.GameData.User;
+﻿using System.Runtime.InteropServices;
+using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
@@ -7,7 +8,7 @@ namespace PokemonGame.Services.Handler
     public interface IStoryPlayerService
     {
         StorySaveTree LoadAll(int userId);
-        void SaveAll(StorySaveTree save);
+        void SaveAll(StorySaveTree save, int storyPlayerID);
         void SetStoryPlayer(int userId);
         List<StoryPlayerSummary> GetSummaries(int userId);
     }
@@ -145,48 +146,41 @@ namespace PokemonGame.Services.Handler
 
         // ── Save ──────────────────────────────────────────────────────────────
 
-        public void SaveAll(StorySaveTree save)
+        public void SaveAll(StorySaveTree save,int storyPlayerID)
         {
-            int pid = save.CurrentPlayer.PlayerID;
-
+            int pid = storyPlayerID;
+            save.TrainerInfo.PlayerID = pid;
+            foreach(var badge in save.Badges)
+            {
+                badge.PlayerID = pid;
+            }
+            foreach (var pokedex in save.Pokedex)
+                pokedex.PlayerID = pid;
+            // ── 2. TrainerInfo ───────────────────────────────────────────────
             _trainerInfoRepo.Save(save.TrainerInfo);
 
+            // ── 3. Everything else ───────────────────────────────────────────
             _badgeRepo.SaveAll(save.Badges);
-
             _bagInventoryRepo.SaveAll(save.BagInventory);
-
             _pokedexRepo.SaveAll(save.Pokedex);
 
-            // IMPORTANT:
-            // clear old party before saving
             _partyRepo.Clear(pid);
-
             foreach (var pokemon in save.Party)
-            {
                 pokemon.PlayerID = pid;
-            }
-
+            
             _partyRepo.SaveAll(save.Party);
 
             foreach (var flagId in save.StoryFlags)
-            {
                 _storyFlagRepo.Add(pid, flagId);
-            }
 
             foreach (var trainerId in save.DefeatedTrainers)
-            {
                 _defeatedTrainerRepo.Add(pid, trainerId);
-            }
 
             foreach (var npcId in save.ItemsTaken)
-            {
                 _itemTakenRepo.Add(pid, npcId);
-            }
 
             foreach (var pokedexId in save.TradedPokemon)
-            {
                 _tradedPokemonRepo.Add(pid, pokedexId);
-            }
         }
     }
 

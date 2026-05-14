@@ -15,18 +15,17 @@ namespace PokemonGame.Services.Data.Repositories
         public void Save(TrainerInfoData data) =>
             _db.Execute(@"
                 INSERT OR REPLACE INTO TrainerInfo
-                    (PlayerID, Id, TrainerID, Name, Money, TimePlayed, Gender, HallOfFameDebut,
+                    (PlayerID, TrainerID, Name, Money, TimePlayed, Gender, HallOfFameDebut,
                      FacingDirection, CurrentMap, LastMapVisited, PlayerLocX, PlayerLocY,
                      IsSurfing, HasRunningShoes)
                 VALUES
-                    (@PlayerID, @Id, @TrainerID, @Name, @Money, @TimePlayed, @Gender, @HallOfFameDebut,
+                    (@PlayerID, @TrainerID, @Name, @Money, @TimePlayed, @Gender, @HallOfFameDebut,
                      @FacingDirection, @CurrentMap, @LastMapVisited, @PlayerLocX, @PlayerLocY,
                      @IsSurfing, @HasRunningShoes)",
                 new
                 {
-                    data.PlayerID,
-                    data.Id,
                     data.TrainerID,
+                    data.PlayerID,
                     data.Name,
                     data.Money,
                     data.TimePlayed,

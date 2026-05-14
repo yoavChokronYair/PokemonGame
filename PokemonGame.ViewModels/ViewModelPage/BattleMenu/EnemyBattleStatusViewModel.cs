@@ -145,7 +145,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 if (_animatedHpPercentage != value)
                 {
                     _animatedHpPercentage = value;
+
                     OnPropertyChanged(nameof(AnimatedHpPercentage));
+                    OnPropertyChanged(nameof(HPColor));
                 }
             }
         }
@@ -154,7 +156,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             get
             {
-                double r = HpPercentage;
+                double r = AnimatedHpPercentage;
 
                 if (r > 0.5)
                 {

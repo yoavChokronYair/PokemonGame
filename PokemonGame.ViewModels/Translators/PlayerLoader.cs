@@ -160,7 +160,7 @@ namespace PokemonGame.ViewModels.Translators
                 Pokedex = ExtractPokedex(player),
             };
 
-            _playerService.SaveAll(save);
+            _playerService.SaveAll(save, UserStore.Instance.PlayerID);
         }
         private static StoryPlayerData ExtractCurrentPlayer() => new()
         {
@@ -241,7 +241,7 @@ namespace PokemonGame.ViewModels.Translators
 
             return new TrainerInfoData
             {
-                Id = 1,
+                PlayerID = UserStore.Instance.PlayerID,
                 TrainerID = info.TrainerID,
                 Name = info.Name,
                 Money = info.Money,
