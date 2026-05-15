@@ -1,4 +1,5 @@
-﻿using PokemonGame.Model.Domain.Item;
+﻿using PokemonGame.Core.Config;
+using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
@@ -57,7 +58,47 @@ namespace PokemonGame.Model.Domain.Player
                 badge.IsObtained = true;
             }
         }
+        public void AddPokemonToStorage(PokemonPlayerDomain pokemon)
+        {
+            const int boxCapacity = 30;
 
+            // Find existing box with free space
+            foreach (var box in trainerItemDomain.BoxStorage)
+            {
+                if (box.Value.Item1.Count < boxCapacity)
+                {
+                    box.Value.Item1.Add(pokemon);
+                    return;
+                }
+            }
+
+            // Create new box automatically
+            int nextBoxNumber = trainerItemDomain.BoxStorage.Count + 1;
+
+            string newBoxName = $"Box {nextBoxNumber}";
+
+            trainerItemDomain.BoxStorage[newBoxName] =
+            (
+                new List<PokemonPlayerDomain> { pokemon },
+                "Default"
+            );
+        }
+        public bool IsPartyFull()
+        {
+            return Team.ActiveMembers.Count() >= PokemonConstants.PartyCapacity;
+        }
+        public bool AddPokemon(PokemonPlayerDomain pokemon)
+        {
+            if (!IsPartyFull())
+            {
+                Team.TryAdd(pokemon);
+                return true;
+            }
+
+            AddPokemonToStorage(pokemon);
+
+            return false;
+        }
         public bool HasBadge(int badgeId)
         {
             return Badges.Any(b =>

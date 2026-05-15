@@ -15,9 +15,11 @@ namespace PokemonGame.Model.Domain.Pokemon
     }
     public class LevelUpResult
     {
-        public List<int> GainedLevels { get; set; } = new();
+        public List<int> GainedLevels { get; set; }
+            = new();
 
-        public List<MoveLearnResult> LearnedMoves { get; set; } = new();
+        public List<MoveLearnResult> LearnedMoves { get; set; }
+            = new();
 
         public bool Evolved { get; set; }
 
@@ -28,7 +30,7 @@ namespace PokemonGame.Model.Domain.Pokemon
     {
         public int Level { get; set; }
 
-        public MoveState Move { get; set; }
+        public MoveState Move { get; set; } = null!;
 
         public bool NeedsReplacement { get; set; }
     }
