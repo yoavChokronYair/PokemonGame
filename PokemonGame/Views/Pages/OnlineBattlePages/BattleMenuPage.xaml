@@ -69,11 +69,6 @@
                         GroupName="BattleFormat"
                         IsChecked="{Binding Is1v1}"
                         Style="{StaticResource ToggleRadioStyle}" />
-                    <RadioButton
-                        Content="⚔️⚔️  2 v 2"
-                        FontSize="12"
-                        GroupName="BattleFormat"
-                        Style="{StaticResource ToggleRadioStyle}" />
                 </StackPanel>
             </controls:BoardBackground>
 

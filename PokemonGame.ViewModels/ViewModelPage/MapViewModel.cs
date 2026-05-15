@@ -325,7 +325,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
             MenuDownCommand = new RelayCommand(() => MenuDown());
             MenuConfirmCommand = new RelayCommand(() => MenuConfirm());
             OpenPokedexCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createpokedexPageViewModel(); });
-            OpenBagCommand = new RelayCommand(() => { /* TODO */ });
+            OpenBagCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = new PokemonBagViewModel(_navigationStore, () => this); });
    
 
             OpenPokemonCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = new TeamSelectionViewModel(UserStore.Instance, _navigationStore,() => this,team); });
