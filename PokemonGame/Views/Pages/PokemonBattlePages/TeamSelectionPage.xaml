@@ -16,8 +16,17 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Page.Resources>
     <Page.InputBindings>
+
+        <KeyBinding Key="W" Command="{Binding SelectNextSlotCommand}" />
+        <KeyBinding Key="S" Command="{Binding SelectPreviousSlotCommand}" />
+        <KeyBinding Key="A" Command="{Binding SelectRightCommand}" />
+        <KeyBinding Key="D" Command="{Binding SelectLeftCommand}" />
+
         <KeyBinding Key="Down" Command="{Binding SelectNextSlotCommand}" />
         <KeyBinding Key="Up" Command="{Binding SelectPreviousSlotCommand}" />
+        <KeyBinding Key="Left" Command="{Binding SelectRightCommand}" />
+        <KeyBinding Key="Right" Command="{Binding SelectLeftCommand}" />
+
         <KeyBinding Key="Z" Command="{Binding ConfirmCurrentSelectionCommand}" />
         <KeyBinding Key="Enter" Command="{Binding ConfirmCurrentSelectionCommand}" />
         <KeyBinding Key="X" Command="{Binding CancelCommand}" />
@@ -47,11 +56,131 @@
                 </Grid.ColumnDefinitions>
 
                 <!--  MAIN SLOT  -->
-                <local:MainPokemonSlotUserControl
+                <!--  MAIN SLOT  -->
+                <Grid
                     Grid.Row="0"
                     Grid.Column="0"
-                    Margin="0,62,0,140"
-                    DataContext="{Binding Slots[0]}" />
+                    Margin="0,62,0,140">
+
+                    <local:MainPokemonSlotUserControl DataContext="{Binding Slots[0]}" />
+
+                    <!--  ACTION MENU  -->
+                    <Grid Panel.ZIndex="999" IsHitTestVisible="True">
+
+                        <Border
+                            Width="120"
+                            Padding="4"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="#FF202020"
+                            BorderBrush="White"
+                            BorderThickness="2"
+                            CornerRadius="4">
+
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+
+                                    <Style.Triggers>
+
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+
+                                                <Condition Binding="{Binding Slots[0].IsSelected}" Value="True" />
+
+                                                <Condition Binding="{Binding IsActionMenuOpen}" Value="True" />
+
+                                            </MultiDataTrigger.Conditions>
+
+                                            <Setter Property="Visibility" Value="Visible" />
+
+                                        </MultiDataTrigger>
+
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <StackPanel>
+
+                                <Button
+                                    Command="{Binding SwitchCommand}"
+                                    CommandParameter="{Binding Slots[0]}"
+                                    Content="SWITCH"
+                                    Visibility="{Binding Options.CanSwitch, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSwitchSelected}" Value="True">
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="Foreground" Value="Yellow" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+
+                                </Button>
+
+                                <Button
+                                    Command="{Binding MovePokemonCommand}"
+                                    CommandParameter="{Binding Slots[0]}"
+                                    Content="MOVE"
+                                    Visibility="{Binding Options.CanMove, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMoveSelected}" Value="True">
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="Foreground" Value="Yellow" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+
+                                </Button>
+
+                                <Button
+                                    Command="{Binding OpenSummaryCommand}"
+                                    CommandParameter="{Binding Slots[0]}"
+                                    Content="SUMMARY"
+                                    Visibility="{Binding Options.CanSummary, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSummarySelected}" Value="True">
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="Foreground" Value="Yellow" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+
+                                </Button>
+
+                                <Button Command="{Binding CloseActionMenuCommand}" Content="CANCEL">
+
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCancelSelected}" Value="True">
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                    <Setter Property="Foreground" Value="Yellow" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+
+                                </Button>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </Grid>
+
+                </Grid>
 
                 <!--  TEAM LIST  -->
                 <ItemsControl

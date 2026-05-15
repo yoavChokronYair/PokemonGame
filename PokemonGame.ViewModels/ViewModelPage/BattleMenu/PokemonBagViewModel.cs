@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Helper;
+using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
@@ -94,16 +95,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public ObservableCollection<BagItemEntryViewModel> PokemonEntries { get; } = new();
 
         // ── Commands ──────────────────────────────────────────────────────────
-        // Unified — bound to BOTH W/S AND Up/Down in XAML
         public ICommand SelectNextCommand { get; }
         public ICommand SelectPreviousCommand { get; }
-
-        // Unified — bound to BOTH A/D AND Left/Right in XAML
         public ICommand CategoryLeftCommand { get; }
         public ICommand CategoryRightCommand { get; }
-
-        public ICommand ConfirmCommand { get; }   // Z / Enter
-        public ICommand CancelCommand { get; }   // X / Esc
+        public ICommand ConfirmCommand { get; }
+        public ICommand CancelCommand { get; }
         public ICommand UseCommand { get; }
         public ICommand DeleteCommand { get; }
 
@@ -126,7 +123,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             LoadEntries();
         }
 
-        // ── Unified navigation (mirrors TeamSelection SelectNextSlot) ─────────
+        // ── Navigation ────────────────────────────────────────────────────────
         private void SelectNext()
         {
             if (IsActionMenuOpen)
@@ -137,16 +134,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             if (PokemonEntries.Count == 0) return;
 
-            int maxIndex = PokemonEntries.Count - 1;
-            _selectedIndex = MathHelper.Clamp(_selectedIndex + 1, 0, maxIndex);
-
-            int scrollMax = Math.Max(0, PokemonEntries.Count - VisibleCount);
-            _scrollIndex = MathHelper.Clamp(_scrollIndex + 1, 0, scrollMax);
+            _selectedIndex = MathHelper.Clamp(_selectedIndex + 1, 0, PokemonEntries.Count - 1);
+            _scrollIndex = MathHelper.Clamp(_scrollIndex + 1, 0, Math.Max(0, PokemonEntries.Count - VisibleCount));
 
             RefreshSelection();
-            OnPropertyChanged(nameof(ScrollOffset));
-            OnPropertyChanged(nameof(SelectedEntry));
-            OnPropertyChanged(nameof(SelectedDescription));
+            NotifyScrollAndSelection();
         }
 
         private void SelectPrevious()
@@ -159,16 +151,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             if (PokemonEntries.Count == 0) return;
 
-            int maxIndex = PokemonEntries.Count - 1;
-            _selectedIndex = MathHelper.Clamp(_selectedIndex - 1, 0, maxIndex);
-
-            int scrollMax = Math.Max(0, PokemonEntries.Count - VisibleCount);
-            _scrollIndex = MathHelper.Clamp(_scrollIndex - 1, 0, scrollMax);
+            _selectedIndex = MathHelper.Clamp(_selectedIndex - 1, 0, PokemonEntries.Count - 1);
+            _scrollIndex = MathHelper.Clamp(_scrollIndex - 1, 0, Math.Max(0, PokemonEntries.Count - VisibleCount));
 
             RefreshSelection();
-            OnPropertyChanged(nameof(ScrollOffset));
-            OnPropertyChanged(nameof(SelectedEntry));
-            OnPropertyChanged(nameof(SelectedDescription));
+            NotifyScrollAndSelection();
         }
 
         // ── Confirm / Cancel ──────────────────────────────────────────────────
@@ -206,17 +193,82 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             ActionMenuIndex = 0;
         }
 
-        // ── Item actions ──────────────────────────────────────────────────────
+        // ── Use ───────────────────────────────────────────────────────────────
         private void OnUse()
-        {
-            // TODO: wire to item-use service
-            CloseActionMenu();
-        }
-
-        private void OnDelete()
         {
             var entry = SelectedEntry;
             if (entry == null) return;
+
+            // Look up the real domain item by Id match so we get the Effect reference
+            var domainItem = _player.trainerItemDomain.BagInventory
+                .Keys.FirstOrDefault(k => k.Name == entry.Name);
+
+            if (domainItem == null) return;
+
+            // Must be usable outside battle
+            if (!domainItem.UsableInField)
+            {
+                CloseActionMenu();
+                return;
+            }
+
+            // Effect must implement IDualEffect (covers RestoreHp, status cures, etc.)
+            if (domainItem.Effect is not IDualEffect dualEffect)
+            {
+                // Item is field-usable but has no IDualEffect wired up yet — do nothing
+                CloseActionMenu();
+                return;
+            }
+
+            CloseActionMenu();
+
+            // Navigate to team selection. Selecting a Pokémon applies the effect
+            // and consumes one item, then navigation returns here.
+            _navigationStore.CurrentViewModel = new TeamSelectionViewModel(
+                userStore: null!,
+                navigationStore: _navigationStore,
+                createCancelViewModel: () => this,      // X / Esc → back to bag
+                options: new TeamSelectionOptions
+                {
+                    CanSwitch = false,
+                    CanMove = false,
+                    CanSummary = true,
+                    IsUsingUserStore = false,
+
+                    // NEW
+                    AutoConfirmSelection = true
+                },
+                onSwitchChosen: slotIndex => ApplyItemToSlot(domainItem, dualEffect, slotIndex)
+            );
+        }
+
+        /// <summary>
+        /// Applies the item effect to the chosen Pokémon and removes one from the bag.
+        /// Called by TeamSelectionViewModel via onSwitchChosen.
+        /// </summary>
+        private void ApplyItemToSlot(itemsDomain item, IDualEffect effect, int slotIndex)
+        {
+            var target = _player.Team?.GetAt(slotIndex);
+            if (target == null) return;
+
+            effect.Apply(_player, target);
+
+            // Consume one
+            var qty = _player.trainerItemDomain.BagInventory[item];
+            if (qty <= 1)
+                _player.trainerItemDomain.BagInventory.Remove(item);
+            else
+                _player.trainerItemDomain.BagInventory[item] = qty - 1;
+
+            // Refresh so the updated quantity shows when we return to the bag
+            LoadEntries();
+        }
+
+        // ── Delete ────────────────────────────────────────────────────────────
+        private void OnDelete()
+        {
+            var entry = SelectedEntry;
+            if (entry == null ||CurrentCategoryName == "Key Items") return;
 
             var key = _player.trainerItemDomain.BagInventory
                 .Keys.FirstOrDefault(k => k.Name == entry.Name);
@@ -266,9 +318,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
 
             RefreshSelection();
-            OnPropertyChanged(nameof(ScrollOffset));
-            OnPropertyChanged(nameof(SelectedEntry));
-            OnPropertyChanged(nameof(SelectedDescription));
+            NotifyScrollAndSelection();
         }
 
         private static bool MatchesTab(itemsDomain item, BagTab tab) => tab switch
@@ -293,6 +343,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             for (int i = 0; i < PokemonEntries.Count; i++)
                 PokemonEntries[i].IsSelected = i == _selectedIndex;
         }
+
+        private void NotifyScrollAndSelection()
+        {
+            OnPropertyChanged(nameof(ScrollOffset));
+            OnPropertyChanged(nameof(SelectedEntry));
+            OnPropertyChanged(nameof(SelectedDescription));
+        }
     }
 
     // ── Entry display model ───────────────────────────────────────────────────
@@ -310,3 +367,4 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
     }
 }
+

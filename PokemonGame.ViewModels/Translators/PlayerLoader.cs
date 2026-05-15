@@ -3,6 +3,7 @@ using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model.DesignPatterns;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
@@ -89,6 +90,7 @@ namespace PokemonGame.ViewModels.Translators
                 Name = "Potion",
                 Type = ItemType.Consumable,
                 Description = "Restores 20 HP to a Pokémon.",
+                Effect = new RestoreHp(20),
                 UsableInBattle = true,
                 UsableInField = true,
                 Price = 300,

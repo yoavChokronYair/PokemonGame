@@ -76,6 +76,7 @@ namespace PokemonGame.Model.Domain.Pokemon
         public IMove? LockedMove { get; private set; }
         public int? PriorityOverride { get; private set; }
 
+        public List<LearnableMove> Learnset { get; set; } = new();
         // ── Charge / Rampage / Bide ───────────────────────────────────────────
         public bool IsChargingState { get; private set; }
         public IAttempt? ChargeRelease { get; private set; }
