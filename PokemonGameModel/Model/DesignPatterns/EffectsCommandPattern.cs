@@ -1,5 +1,8 @@
 using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
@@ -1088,7 +1091,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             var pokemon = _target.Resolve(battle);
             var opponent = battle.Attacker == pokemon ? battle.Defender : battle.Attacker;
 
-            var move = opponent.LastUsedMove as PokemonGame.Model.Domain.Move.MoveState;
+            var move = opponent.LastUsedMove as MoveState;
             if (move == null) return;
 
             if (move.PP > 0)
@@ -1237,7 +1240,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             var pokemon = _target.Resolve(battle);
             if (battle.LastUsedMove == null) return;
 
-            var move = battle.LastUsedMove as PokemonGame.Model.Domain.Move.MoveState;
+            var move = battle.LastUsedMove as MoveState;
             if (move == null) return;
 
             // Use the active type override if present (e.g. Normalize overrode the type).
@@ -1274,7 +1277,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
                 "Flower Gift", "Forecast", "Trace", "Imposter"
             };
 
-            var opponentAbility = opponent.Ability as PokemonGame.Model.Domain.Pokemon.AbilityState;
+            var opponentAbility = opponent.Ability as AbilityState;
             if (opponentAbility == null) return;
             if (uncopyable.Contains(opponentAbility.Name)) return;
 
@@ -1392,7 +1395,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             if (opponent.Moves.Count > 0)
             {
                 var strongest = opponent.Moves
-                    .OfType<PokemonGame.Model.Domain.Move.MoveState>()
+                    .OfType<MoveState>()
                     .OrderByDescending(m => m.PP)
                     .FirstOrDefault();
 
@@ -1404,4 +1407,525 @@ namespace PokemonGame.Model.Model.DesignPatterns
             }
         }
     }
-}   
+
+
+        // ─────────────────────────────────────────────────────────────
+        //  Field-effect contracts
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Effect that runs outside of battle, targeting a specific
+        /// Pokémon in the player's team.
+        /// </summary>
+        public interface IFieldEffect
+        {
+            void Apply(PlayerDomain player, PokemonPlayerDomain target);
+        }
+
+        /// <summary>
+        /// Effect that targets the whole party (Sacred Ash, Pokémon Centre).
+        /// </summary>
+        public interface IPartyEffect
+        {
+            void Apply(PlayerDomain player);
+        }
+
+        /// <summary>
+        /// Works in both battle and field contexts.
+        /// </summary>
+        public interface IDualEffect : IEffect, IFieldEffect { }
+
+        // ─────────────────────────────────────────────────────────────
+        //  HP restore  — Potion / Super Potion / Hyper Potion / Max Potion
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Restores HP to one Pokémon.
+        /// amount = -1 → full restore (Max Potion).
+        /// </summary>
+        public class RestoreHp : IDualEffect
+        {
+            private readonly int _amount;
+
+            public RestoreHp(int amount = -1) => _amount = amount;
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null || target.IsFainted) return;
+                int restore = _amount < 0
+                    ? target.PokemonState.MaxHP - target.CurrentHP
+                    : _amount;
+                target.CurrentHP = Math.Min(target.CurrentHP + restore, target.PokemonState.MaxHP);
+            }
+
+            public void Apply(BattleState battle)
+            {
+                // In battle the item targets the Attacker (the player's active Pokémon).
+                // PokemonState.RestoreHP already clamps to MaxHP.
+                var target = battle.Attacker;
+                if (target == null || target.IsFainted) return;
+                int restore = _amount < 0
+                    ? target.MaxHP - target.CurrentHP
+                    : _amount;
+                target.RestoreHP(restore);
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Revive  — Revive (0.5) / Max Revive (1.0)
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Revives a fainted Pokémon and restores a fraction of its MaxHP.
+        /// reviveRatio 0.5 = Revive, 1.0 = Max Revive.
+        /// </summary>
+        public class Revive : IFieldEffect
+        {
+            private readonly float _reviveRatio;
+
+            public Revive(float reviveRatio = 0.5f) => _reviveRatio = reviveRatio;
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null || !target.IsFainted) return;
+                int restoreAmount = (int)(target.PokemonState.MaxHP * _reviveRatio);
+                target.CurrentHP = Math.Max(1, restoreAmount);
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Status cure  — Antidote / Burn Heal / Ice Heal / Full Heal
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Cures one or more persistent StatusConditions.
+        /// Pass no arguments to cure ALL statuses (Full Heal).
+        /// </summary>
+        public class CureStatusDual : IDualEffect
+        {
+            private readonly StatusCondition[]? _toCure;
+
+            public CureStatusDual(params StatusCondition[] toCure) =>
+                _toCure = toCure.Length == 0 ? null : toCure;
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null || target.IsFainted) return;
+                CureTarget(target);
+            }
+
+            public void Apply(BattleState battle) =>
+                CureTarget(battle.Attacker);
+
+            // Field context — PokemonPlayerDomain uses PersistentStatus property directly.
+            private void CureTarget(PokemonPlayerDomain pokemon)
+            {
+                if (_toCure == null)
+                {
+                    pokemon.PersistentStatus = StatusCondition.None;
+                }
+                else
+                {
+                    foreach (var s in _toCure)
+                        if (pokemon.PersistentStatus == s)
+                            pokemon.PersistentStatus = StatusCondition.None;
+                }
+            }
+
+            // Battle context — PokemonState exposes ClearStatus() and PokemonStatusCondition().
+            private void CureTarget(PokemonState pokemon)
+            {
+                if (_toCure == null)
+                {
+                    pokemon.ClearStatus();
+                }
+                else
+                {
+                    foreach (var s in _toCure)
+                        if (pokemon.PokemonStatusCondition() == s)
+                            pokemon.ClearStatus();
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  PP restore  — Ether / Max Ether / Elixir / Max Elixir
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Restores PP for one move slot or all slots.
+        /// moveSlot -1 = all moves (Elixir).
+        /// amount   -1 = full restore (Max Ether / Max Elixir).
+        /// Uses MoveState.PP and MoveState.MaxPP directly.
+        /// </summary>
+        public class RestorePP : IDualEffect
+        {
+            private readonly int _moveSlot;
+            private readonly int _amount;
+
+            public RestorePP(int moveSlot = -1, int amount = -1)
+            {
+                _moveSlot = moveSlot;
+                _amount = amount;
+            }
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null || target.IsFainted) return;
+                RestoreTarget(target);
+            }
+
+            public void Apply(BattleState battle) =>
+                RestoreTarget(battle.Attacker);
+
+            private void RestoreTarget(PokemonPlayerDomain pokemon)
+            {
+                if (_moveSlot < 0)
+                {
+                    foreach (var move in pokemon.Moves)
+                        if (move != null) RestoreMove(move);
+                }
+                else
+                {
+                    var move = pokemon.Moves.ElementAtOrDefault(_moveSlot);
+                    if (move != null) RestoreMove(move);
+                }
+            }
+
+            // Battle context — PokemonState.Moves is List<IMove>; cast to MoveState to reach PP.
+            private void RestoreTarget(PokemonState pokemon)
+            {
+                if (_moveSlot < 0)
+                {
+                    foreach (var move in pokemon.Moves.OfType<MoveState>())
+                        RestoreMove(move);
+                }
+                else
+                {
+                    if (pokemon.Moves.ElementAtOrDefault(_moveSlot) is MoveState ms)
+                        RestoreMove(ms);
+                }
+            }
+
+            private void RestoreMove(MoveState move)
+            {
+                int restore = _amount < 0
+                    ? move.MaxPP - move.PP
+                    : _amount;
+                move.PP = Math.Min(move.PP + restore, move.MaxPP);
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Rare Candy / experience grant
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Grants a level-up or raw EXP to a Pokémon.
+        /// levelUp  true  = Rare Candy: increments PokemonState.Level and
+        ///                  resets Experience to 0 (level-threshold is
+        ///                  handled by ExperienceToNextLevel already).
+        /// levelUp  false = adds expAmount to Experience.
+        /// </summary>
+        public class GrantExperience : IFieldEffect
+        {
+            private readonly bool _levelUp;
+            private readonly int _expAmount;
+
+            public GrantExperience(bool levelUp = true, int expAmount = 0)
+            {
+                _levelUp = levelUp;
+                _expAmount = expAmount;
+            }
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null || target.IsFainted) return;
+                if (target.PokemonState.Level >= 100) return;
+
+                if (_levelUp)
+                {
+                    target.PokemonState.Level += 1;
+                    target.Experience = 0;
+                }
+                else
+                {
+                    target.Experience += _expAmount;
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Stat vitamin  — HP Up / Protein / Iron / Calcium / Zinc / Carbos
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Raises a single EV field on PokemonPlayerDomain.
+        /// Respects the 252-per-stat and 510-total caps.
+        /// Uses the existing EV_* properties directly.
+        /// </summary>
+        public class StatVitamin : IFieldEffect
+        {
+            private readonly Stat _stat;
+            private readonly int _evGain;
+            private const int StatCap = 252;
+            private const int TotalCap = 510;
+
+            public StatVitamin(Stat stat, int evGain = 10)
+            {
+                _stat = stat;
+                _evGain = evGain;
+            }
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null) return;
+                if (target.TotalEVs >= TotalCap) return;
+
+                int allowed = Math.Min(_evGain, TotalCap - target.TotalEVs);
+
+                switch (_stat)
+                {
+                    case Stat.HP:
+                        target.EV_HP = Math.Min(target.EV_HP + allowed, StatCap); break;
+                    case Stat.Attack:
+                        target.EV_Attack = Math.Min(target.EV_Attack + allowed, StatCap); break;
+                    case Stat.Defense:
+                        target.EV_Defense = Math.Min(target.EV_Defense + allowed, StatCap); break;
+                    case Stat.SpecialAttack:
+                        target.EV_SpecialAttack = Math.Min(target.EV_SpecialAttack + allowed, StatCap); break;
+                    case Stat.SpecialDefense:
+                        target.EV_SpecialDefense = Math.Min(target.EV_SpecialDefense + allowed, StatCap); break;
+                    case Stat.Speed:
+                        target.EV_Speed = Math.Min(target.EV_Speed + allowed, StatCap); break;
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Teach move  — TM / HM / Move Tutor
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Writes a MoveState into the target's Moves[] array.
+        /// replaceSlot -1 = auto-fill the first null slot.
+        /// If all four slots are occupied and replaceSlot is -1 the method
+        /// returns without doing anything — the UI layer should ask the
+        /// player which slot to overwrite, then call with the chosen index.
+        /// </summary>
+        public class TeachMove : IFieldEffect
+        {
+            private readonly MoveState _move;
+            private readonly int _replaceSlot;
+
+            public TeachMove(MoveState move, int replaceSlot = -1)
+            {
+                _move = move;
+                _replaceSlot = replaceSlot;
+            }
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null) return;
+
+                if (_replaceSlot >= 0 && _replaceSlot < 4)
+                {
+                    target.Moves[_replaceSlot] = _move;
+                    return;
+                }
+
+                for (int i = 0; i < 4; i++)
+                {
+                    if (target.Moves[i] == null)
+                    {
+                        target.Moves[i] = _move;
+                        return;
+                    }
+                }
+                // All slots full — no-op; caller must pick a slot and retry
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Friendship boost
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Raises PokemonPlayerDomain.Friendship by a flat amount.
+        /// Capped at 255.
+        /// </summary>
+        public class RaiseFriendship : IFieldEffect
+        {
+            private readonly int _amount;
+            private const int Cap = 255;
+
+            public RaiseFriendship(int amount = 1) => _amount = amount;
+
+            public void Apply(PlayerDomain player, PokemonPlayerDomain target)
+            {
+                if (target == null) return;
+                target.Friendship = Math.Min(target.Friendship + _amount, Cap);
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Full party heal  — Sacred Ash / Pokémon Centre
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Fully heals the whole party by delegating to
+        /// PlayerTeamDomain.HealAll() which already handles HP,
+        /// status, PP, stat stages, and volatile statuses.
+        /// </summary>
+        public class FullPartyHeal : IPartyEffect
+        {
+            public void Apply(PlayerDomain player) =>
+                player.Team.HealAll();
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Grant money  — Nugget / Big Pearl / prize money
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Adds money to TrainerInfoDomain.Money.
+        /// Capped at 999 999 (Gen 1-5 wallet maximum).
+        /// </summary>
+        public class GrantMoney : IPartyEffect
+        {
+            private readonly int _amount;
+            private const int Cap = 999_999;
+
+            public GrantMoney(int amount) => _amount = amount;
+
+            public void Apply(PlayerDomain player)
+            {
+                player.trainerInfo.Money =
+                    Math.Min(player.trainerInfo.Money + _amount, Cap);
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Register key item  — Bicycle / Town Map / etc.
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Assigns a KeyItemState to TrainerItemDomain.RegisterKey
+        /// (the Y-button / shortcut slot).
+        /// </summary>
+        public class RegisterKeyItem : IPartyEffect
+        {
+            private readonly KeyItemState _keyItem;
+
+            public RegisterKeyItem(KeyItemState keyItem) => _keyItem = keyItem;
+
+            public void Apply(PlayerDomain player)
+            {
+                if (_keyItem is { Registerable: true })
+                    player.trainerItemDomain.RegisterKey = _keyItem;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  Bag helper  — add / remove / query items in BagInventory
+        // ─────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Static helpers for item bag operations.
+        /// All item-use call sites should go through here so bag
+        /// management stays in one place.
+        /// </summary>
+        public static class ItemBagHelper
+        {
+            /// <summary>
+            /// Uses a field-effect item on the Pokémon in the given team slot.
+            /// Removes one copy from the bag on success.
+            /// Returns false if the slot is empty.
+            /// </summary>
+            public static bool UseOnSlot(
+                IFieldEffect effect,
+                itemsDomain item,
+                PlayerDomain player,
+                int slotIndex)
+            {
+                var target = player.Team.GetAt(slotIndex);
+                if (target == null) return false;
+
+                effect.Apply(player, target);
+                RemoveFromBag(player, item, 1);
+                return true;
+            }
+
+            /// <summary>
+            /// Uses a party-wide item (Sacred Ash, etc.).
+            /// Removes one copy from the bag after use.
+            /// </summary>
+            public static void UsePartyEffect(
+                IPartyEffect effect,
+                itemsDomain item,
+                PlayerDomain player)
+            {
+                effect.Apply(player);
+                RemoveFromBag(player, item, 1);
+            }
+
+            /// <summary>
+            /// Returns true if the player has at least one of the given item.
+            /// </summary>
+            public static bool HasItem(PlayerDomain player, itemsDomain item) =>
+                player.trainerItemDomain.BagInventory
+                      .TryGetValue(item, out int qty) && qty > 0;
+
+            /// <summary>
+            /// Returns the quantity of an item the player is holding. 0 if none.
+            /// </summary>
+            public static int GetCount(PlayerDomain player, itemsDomain item)
+            {
+                player.trainerItemDomain.BagInventory.TryGetValue(item, out int qty);
+                return qty;
+            }
+
+            /// <summary>
+            /// Adds qty copies of an item to BagInventory.
+            /// </summary>
+            public static void AddToBag(PlayerDomain player, itemsDomain item, int qty = 1)
+            {
+                var bag = player.trainerItemDomain.BagInventory;
+                if (bag.ContainsKey(item))
+                    bag[item] += qty;
+                else
+                    bag[item] = qty;
+            }
+
+            /// <summary>
+            /// Removes qty copies of an item. Removes the entry when quantity hits 0.
+            /// </summary>
+            public static void RemoveFromBag(PlayerDomain player, itemsDomain item, int qty = 1)
+            {
+                var bag = player.trainerItemDomain.BagInventory;
+                if (!bag.ContainsKey(item)) return;
+                bag[item] -= qty;
+                if (bag[item] <= 0)
+                    bag.Remove(item);
+            }
+
+            /// <summary>
+            /// Returns all items in the bag of the given ItemType, sorted by name.
+            /// Useful for rendering bag pockets (e.g. show only Poké Balls pocket).
+            /// </summary>
+            public static IEnumerable<(itemsDomain item, int qty)> GetPocket(
+                PlayerDomain player,
+                ItemType type) =>
+                player.trainerItemDomain.BagInventory
+                      .Where(kv => kv.Key.Type == type)
+                      .Select(kv => (kv.Key, kv.Value))
+                      .OrderBy(t => t.Key.Name);
+
+            /// <summary>
+            /// Returns true if the player has the Running Shoes.
+            /// Shortcut into TrainerItemDomain.HasRunningShoes.
+            /// </summary>
+            public static bool HasRunningShoes(PlayerDomain player) =>
+                player.trainerItemDomain.HasRunningShoes;
+        }
+    }

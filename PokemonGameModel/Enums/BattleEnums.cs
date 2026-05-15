@@ -65,5 +65,17 @@ namespace PokemonGame.Model.Enums
         Champion,
         Rival
     }
-
+    public enum BattleEndReason
+    {
+        Win,
+        Lose,
+        Catch,
+        Flee
+    }
+    public enum BattleType
+    {
+        Trainer,
+        Wild,
+        Online
+    }
 }

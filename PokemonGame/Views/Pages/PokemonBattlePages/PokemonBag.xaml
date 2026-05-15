@@ -2,15 +2,203 @@
     x:Class="PokemonGame.Views.Pages.PokemonBattlePages.PokemonBag"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:PokemonGame.View.Behaviors"
+    xmlns:converters="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PokemonGame.Views.Pages.PokemonBattlePages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="PokemonBag"
+    behaviors:FocusBehavior.FocusOnLoad="True"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Focusable="True"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
+
+    <Page.InputBindings>
+        <!--  Up / down — WASD and arrows both fire the same command  -->
+        <KeyBinding Key="W" Command="{Binding SelectPreviousCommand}" />
+        <KeyBinding Key="Up" Command="{Binding SelectPreviousCommand}" />
+        <KeyBinding Key="S" Command="{Binding SelectNextCommand}" />
+        <KeyBinding Key="Down" Command="{Binding SelectNextCommand}" />
+
+        <!--  Left / right — WASD and arrows both fire the same command  -->
+        <KeyBinding Key="A" Command="{Binding CategoryLeftCommand}" />
+        <KeyBinding Key="Left" Command="{Binding CategoryLeftCommand}" />
+        <KeyBinding Key="D" Command="{Binding CategoryRightCommand}" />
+        <KeyBinding Key="Right" Command="{Binding CategoryRightCommand}" />
+
+        <!--  Confirm / cancel  -->
+        <KeyBinding Key="Z" Command="{Binding ConfirmCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding ConfirmCommand}" />
+        <KeyBinding Key="X" Command="{Binding CancelCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </Page.InputBindings>
+
     <Grid>
-        <Grid.Background />
+        <Grid.Background>
+            <ImageBrush ImageSource="/Assets/Images/PokemonBag.png" Stretch="Fill" />
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="143*" />
+            <RowDefinition Height="73*" />
+            <RowDefinition Height="5*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="14*" />
+            <ColumnDefinition Width="276*" />
+            <ColumnDefinition Width="485*" />
+            <ColumnDefinition Width="25*" />
+        </Grid.ColumnDefinitions>
+
+        <!--  Category header  -->
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="10,0,0,0"
+            FontSize="24"
+            Text="{Binding CurrentCategoryName}" />
+
+        <!--  Item list  -->
+        <ScrollViewer
+            x:Name="BagScrollViewer"
+            Grid.Row="1"
+            Grid.Column="2"
+            behaviors:FocusBehavior.FocusOnLoad="True"
+            behaviors:FocusBehavior.RegisterFocusTarget="True"
+            behaviors:ScrollViewerOffsetBehavior.VerticalOffset="{Binding ScrollOffset}"
+            Focusable="False"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Hidden">
+
+            <ItemsControl
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                ItemsSource="{Binding PokemonEntries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+
+                            <!--  Row  -->
+                            <Border
+                                Height="60"
+                                Margin="4,2"
+                                BorderThickness="2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Background" Value="Wheat" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid Margin="6,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        FontSize="16"
+                                        Text="{Binding Name}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        FontSize="16"
+                                        Text="{Binding Amount, StringFormat='x{0}'}" />
+                                </Grid>
+                            </Border>
+
+                            <!--  Action menu overlay — only on selected row while open  -->
+                            <Grid Panel.ZIndex="999">
+                                <Border
+                                    Width="110"
+                                    Padding="4"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Background="#FF202020"
+                                    BorderBrush="White"
+                                    BorderThickness="2"
+                                    CornerRadius="4">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding IsSelected}" Value="True" />
+                                                        <Condition Binding="{Binding DataContext.IsActionMenuOpen, RelativeSource={RelativeSource AncestorType=Page}}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <StackPanel>
+                                        <Button Command="{Binding DataContext.UseCommand, RelativeSource={RelativeSource AncestorType=Page}}" Content="USE">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsUseSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                            <Setter Property="Foreground" Value="Yellow" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                        <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=Page}}" Content="DELETE">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsDeleteSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                            <Setter Property="Foreground" Value="Yellow" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                        <Button Command="{Binding DataContext.CancelCommand, RelativeSource={RelativeSource AncestorType=Page}}" Content="CANCEL">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.IsCancelSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                            <Setter Property="Foreground" Value="Yellow" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!--  Description panel  -->
+        <TextBlock
+            Grid.Row="2"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            FontSize="14"
+            Text="{Binding SelectedDescription}"
+            TextWrapping="Wrap" />
     </Grid>
 </Page>

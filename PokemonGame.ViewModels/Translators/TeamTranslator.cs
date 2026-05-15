@@ -89,7 +89,7 @@ namespace PokemonGame.ViewModels.Translators
                         .Select(_moveTranslator.Translate) // Direct reference to the method
                         .ToList(),
                 Ability = _abilityTranslator.TranslateById(b.AbilityID),
-                HeldItem = b.ItemID.HasValue ? _itemTranslator.TranslateById(b.ItemID.Value) : null,
+                HeldItem = null,
             };
         }
     }

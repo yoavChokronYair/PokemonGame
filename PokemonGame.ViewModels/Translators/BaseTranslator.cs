@@ -119,6 +119,8 @@ namespace PokemonGame.ViewModels.Translators
 
         // ── Number ───────────────────────────────────────────────────────────
 
+        // ── Number ────────────────────────────────────────────────────────────
+
         public INumber TranslateNumber(MoveNumber n) => n.Type switch
         {
             "Exactly" => new Exactly(n.ExactValue ?? 0),
@@ -131,33 +133,32 @@ namespace PokemonGame.ViewModels.Translators
             "CurrentHP" => new CurrentHP(ResolveTarget(n.Target)),
             "Level" => new Level(ResolveTarget(n.Target)),
             "LastDamageDealt" => new LastDamageDealt(ResolveTarget(n.Target)),
-            _ => throw new NotSupportedException($"Unknown number type: '{n.Type}'")
+            _ => HandleUnknownNumber(n.Type)
         };
 
-        // ── Condition ────────────────────────────────────────────────────────
+        private INumber HandleUnknownNumber(string? type)
+        {
+            Console.WriteLine($"[Warning] Unknown number type: '{type ?? "NULL"}'. Defaulting to Exactly(0).");
+            return new Exactly(0);
+        }
+
+        // ── Condition ─────────────────────────────────────────────────────────
 
         public virtual ICondition<BattleState> TranslateCondition(MoveCondition? c)
         {
-            // If no condition is defined in the DB, the check always passes.
             if (c == null) return new Probability(1);
 
             return c.Type switch
             {
-                // --- Core Logic & Environment ---
                 "Probability" => new Probability(c.Probability ?? 0),
                 "IsWeatherActive" => new IsWeatherActive(ParseEnum<Weather>(c.Weather!)),
                 "IsTerrainActive" => new IsTerrainActive(ParseEnum<TerrainType>(c.Terrain!)),
                 "IsAnyTerrainActive" => new IsAnyTerrainActive(),
-                
-
-                // --- Move Context Conditions ---
                 "WasHitByContact" => new WasHitByContact(),
                 "WasHitByMoveType" => new WasHitByMoveType(ParseEnum<PokemonType>(c.PokemonType!)),
                 "MoveHasTag" => new MoveHasTag(ParseEnum<MoveTag>(c.MoveTag!)),
                 "MoveIsCategory" => new MoveIsCategory(ParseEnum<MoveCategory>(c.MoveCategory!)),
                 "ContactHit" => new MoveIsCategory(ParseEnum<MoveCategory>(c.MoveCategory!)),
-
-                // --- Attacker State Conditions (ICondition<BattleState>) ---
                 "HasStatus" => new HasStatus(ParseEnum<StatusCondition>(c.Status!)),
                 "HasAnyStatus" => new HasAnyStatus(),
                 "HasVolatile" => new HasVolatile(ParseEnum<VolatileStatus>(c.VolatileStatus!)),
@@ -172,21 +173,19 @@ namespace PokemonGame.ViewModels.Translators
                 "IsGrounded" => new IsGrounded(),
                 "IsBattleOver" => new IsBattleOver(),
                 "IsNewPokemon" => new IsNewPokemon(),
-
-                // --- Combinators (Recursive) ---
                 "And" => new And<BattleState>(TranslateCondition(c.Left), TranslateCondition(c.Right)),
                 "Or" => new Or<BattleState>(TranslateCondition(c.Left), TranslateCondition(c.Right)),
                 "Not" => new Not<BattleState>(TranslateCondition(c.Inner)),
-
-                // --- Context Switching (Adapters) ---
-                // UserCondition wraps an ICondition<BattleState> (usually checking the Attacker)
                 "UserCondition" => new UserCondition(TranslateCondition(c.Inner)),
-
-                // OpponentCondition wraps an ICondition<PokemonState> to check the Defender
                 "OpponentCondition" => new OpponentCondition(TranslatePokemonCondition(c.Inner!)),
-
-                _ => throw new NotSupportedException($"Unknown condition type: '{c.Type}'")
+                _ => HandleUnknownCondition(c.Type)
             };
+        }
+
+        private ICondition<BattleState> HandleUnknownCondition(string? type)
+        {
+            Console.WriteLine($"[Warning] Unknown condition type: '{type ?? "NULL"}'. Defaulting to Probability(1) (always passes).");
+            return new Probability(1);
         }
 
         public virtual ICondition<PokemonState> TranslatePokemonCondition(MoveCondition c) => c.Type switch
@@ -201,8 +200,14 @@ namespace PokemonGame.ViewModels.Translators
             "IsFullHP" => new PokemonIsFullHP(),
             "IsFainted" => new PokemonIsFainted(),
             "Probability" => new ProbabilityPokemon(c.Probability ?? 0),
-            _ => throw new NotSupportedException($"Unknown pokemon condition type: '{c.Type}'")
+            _ => HandleUnknownPokemonCondition(c.Type)
         };
+
+        private ICondition<PokemonState> HandleUnknownPokemonCondition(string? type)
+        {
+            Console.WriteLine($"[Warning] Unknown pokemon condition type: '{type ?? "NULL"}'. Defaulting to ProbabilityPokemon(1) (always passes).");
+            return new ProbabilityPokemon(1);
+        }
 
         // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -213,12 +218,14 @@ namespace PokemonGame.ViewModels.Translators
             _ => new DefenderTarget()
         };
 
-        protected static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum
+        protected static TEnum ParseEnum<TEnum>(string? value) where TEnum : struct, Enum
         {
-            if (Enum.TryParse<TEnum>(value, ignoreCase: true, out var result))
+            if (!string.IsNullOrWhiteSpace(value) && Enum.TryParse<TEnum>(value, ignoreCase: true, out var result))
                 return result;
 
-            throw new InvalidOperationException($"Cannot parse '{value}' as {typeof(TEnum).Name}");
+            var fallback = default(TEnum);
+            Console.WriteLine($"[Warning] Cannot parse '{value ?? "NULL"}' as {typeof(TEnum).Name}. Defaulting to '{fallback}'.");
+            return fallback;
         }
     }
 }

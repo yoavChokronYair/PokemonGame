@@ -27,34 +27,6 @@ namespace PokemonGame.ViewModels.Translators
             _moveTranslator = moveTranslator;
         }
 
-        public HeldItemState Translate(string itemName)
-        {
-            var tree = _itemService.GetItem(itemName)
-                ?? throw new InvalidOperationException($"Item '{itemName}' not found.");
-
-            return BuildItemState(tree);
-        }
-
-        public HeldItemState TranslateById(int id)
-        {
-            var tree = _itemService.GetItemById(id)
-                ?? throw new InvalidOperationException($"Item with id '{id}' not found.");
-
-            return BuildItemState(tree);
-        }
-
-        private HeldItemState BuildItemState(ItemTree tree)
-        {
-            ICondition<BattleState> condition = tree.Condition != null
-                ? TranslateCondition(tree.Condition)
-                : new Probability<BattleState>(1.0);
-
-            IEffect effect = tree.Effect != null
-                ? TranslateEffect(tree.Effect)
-                : new NoEffect();
-
-            return new HeldItemState(tree.Name, condition, effect, tree.IsConsumable, tree.Description);
-        }
 
         // ── Condition ────────────────────────────────────────────────────────
 

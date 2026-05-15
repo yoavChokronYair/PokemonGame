@@ -17,6 +17,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public bool CanMove { get; set; } = true;
         public bool CanSummary { get; set; } = true;
         public bool IsUsingUserStore { get; set; } = true;
+        public bool AutoConfirmSelection { get; set; } = false;
     }
     public class PokemonSlotViewModel : ViewModelBase
     {
@@ -137,7 +138,18 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public ICommand ConfirmSelectionCommand { get; }
         // NEW
         private readonly Action<int> _onSwitchChosen;
+        private PokemonSlotViewModel? GetSelectedSlot()
+        {
+            return Slots.FirstOrDefault(s => s.IsSelected && !s.IsEmpty);
+        }
 
+        private void SelectSlot(PokemonSlotViewModel slot)
+        {
+            foreach (var s in Slots)
+                s.IsSelected = false;
+
+            slot.IsSelected = true;
+        }
         public ObservableCollection<PokemonSlotViewModel> Slots { get; } = new();
         private bool _isActionMenuOpen;
         public bool IsActionMenuOpen
@@ -196,6 +208,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public ICommand ActionSwitchCommand { get; }
         public ICommand ActionMoveCommand { get; }
         public ICommand ActionSummaryCommand { get; }
+        public ICommand SelectLeftCommand { get; }
+        public ICommand SelectRightCommand { get; }
 
         public TeamSelectionViewModel(
             UserStore userStore,
@@ -239,7 +253,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 var selected = Slots.FirstOrDefault(s => s.IsSelected && !s.IsEmpty);
                 if (selected != null) OnSwitch(selected);
             });
-
+            SelectLeftCommand = new RelayCommand(SelectLeft);
+            SelectRightCommand = new RelayCommand(SelectRight);
             ActionMoveCommand = new RelayCommand(() =>
             {
                 var selected = Slots.FirstOrDefault(s => s.IsSelected && !s.IsEmpty);
@@ -256,7 +271,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 LoadTeam(_userStore);
             else
                 LoadTeam(PlayerDomain.Instance);
-            
+            var mainSlot = Slots.FirstOrDefault(s =>
+                s.SlotIndex == 0 &&
+                !s.IsEmpty);
+
+            if (mainSlot != null)
+                mainSlot.IsSelected = true;
+
         }
         private void OnMovePokemon(PokemonSlotViewModel? slot)
         {
@@ -272,7 +293,59 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             slot.IsSelected = true;
             IsMoveMode = true;
         }
+        private void SelectRight()
+        {
+            if (IsActionMenuOpen || IsMoveMode)
+                return;
 
+            var current = GetSelectedSlot();
+
+            // Nothing selected -> main
+            if (current == null)
+            {
+                var main = Slots.FirstOrDefault(s =>
+                    s.SlotIndex == 0 &&
+                    !s.IsEmpty);
+
+                if (main != null)
+                    SelectSlot(main);
+
+                return;
+            }
+
+            // Main -> top right
+            if (current.SlotIndex == 0)
+            {
+                var top = Slots.FirstOrDefault(s =>
+                    s.SlotIndex == 1 &&
+                    !s.IsEmpty);
+
+                if (top != null)
+                    SelectSlot(top);
+            }
+        }
+
+        private void SelectLeft()
+        {
+            if (IsActionMenuOpen || IsMoveMode)
+                return;
+
+            var current = GetSelectedSlot();
+
+            if (current == null)
+                return;
+
+            // Any right-side slot -> main
+            if (current.SlotIndex >= 1)
+            {
+                var main = Slots.FirstOrDefault(s =>
+                    s.SlotIndex == 0 &&
+                    !s.IsEmpty);
+
+                if (main != null)
+                    SelectSlot(main);
+            }
+        }
         private void CompleteMove(PokemonSlotViewModel? slot)
         {
             if (slot == null || _pendingSwapSlot == null) return;
@@ -320,69 +393,92 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             if (IsMoveMode)
             {
-                // cycle to next slot to swap with
-                var filled = Slots.Where(s => !s.IsEmpty).ToList();
-                var current = filled.FirstOrDefault(s => s.IsSelected && s != _pendingSwapSlot);
-                var next = current == null
-                    ? filled.First(s => s != _pendingSwapSlot)
-                    : filled[(filled.IndexOf(current) + 1) % filled.Count];
-                if (next == _pendingSwapSlot)
-                    next = filled[(filled.IndexOf(next) + 1) % filled.Count];
-                foreach (var s in Slots) s.IsSelected = s == _pendingSwapSlot;
-                next.IsSelected = true;
+                HandleMoveModeNext();
                 return;
             }
 
             if (IsActionMenuOpen)
             {
                 var actions = GetAvailableActions();
-                if (actions.Count == 0) return;
-                ActionMenuIndex = (ActionMenuIndex + 1) % actions.Count;
+
+                if (actions.Count == 0)
+                    return;
+
+                ActionMenuIndex =
+                    (ActionMenuIndex + 1) % actions.Count;
+
                 return;
             }
 
-            var filledSlots = Slots.Where(s => !s.IsEmpty).ToList();
-            if (!filledSlots.Any()) return;
-            var cur = filledSlots.FirstOrDefault(s => s.IsSelected);
-            var nx = cur == null
-                ? filledSlots[0]
-                : filledSlots[(filledSlots.IndexOf(cur) + 1) % filledSlots.Count];
-            foreach (var s in Slots) s.IsSelected = false;
-            nx.IsSelected = true;
+            var current = GetSelectedSlot();
+
+            if (current == null)
+            {
+                SelectSlot(Slots[0]);
+                return;
+            }
+
+            // Main does not move down
+            if (current.SlotIndex == 0)
+                return;
+
+            int nextIndex = current.SlotIndex + 1;
+
+            if (nextIndex > 5)
+                nextIndex = 1;
+
+            var next = Slots.FirstOrDefault(s =>
+                s.SlotIndex == nextIndex &&
+                !s.IsEmpty);
+
+            if (next != null)
+                SelectSlot(next);
         }
 
         private void SelectPreviousSlot()
         {
             if (IsMoveMode)
             {
-                var filled = Slots.Where(s => !s.IsEmpty).ToList();
-                var current = filled.FirstOrDefault(s => s.IsSelected && s != _pendingSwapSlot);
-                var prev = current == null
-                    ? filled.Last(s => s != _pendingSwapSlot)
-                    : filled[(filled.IndexOf(current) - 1 + filled.Count) % filled.Count];
-                if (prev == _pendingSwapSlot)
-                    prev = filled[(filled.IndexOf(prev) - 1 + filled.Count) % filled.Count];
-                foreach (var s in Slots) s.IsSelected = s == _pendingSwapSlot;
-                prev.IsSelected = true;
+                HandleMoveModePrevious();
                 return;
             }
 
             if (IsActionMenuOpen)
             {
                 var actions = GetAvailableActions();
-                if (actions.Count == 0) return;
-                ActionMenuIndex = (ActionMenuIndex - 1 + actions.Count) % actions.Count;
+
+                if (actions.Count == 0)
+                    return;
+
+                ActionMenuIndex =
+                    (ActionMenuIndex - 1 + actions.Count) % actions.Count;
+
                 return;
             }
 
-            var filledSlots = Slots.Where(s => !s.IsEmpty).ToList();
-            if (!filledSlots.Any()) return;
-            var cur = filledSlots.FirstOrDefault(s => s.IsSelected);
-            var pr = cur == null
-                ? filledSlots[1]
-                : filledSlots[(filledSlots.IndexOf(cur) - 1 + filledSlots.Count) % filledSlots.Count];
-            foreach (var s in Slots) s.IsSelected = false;
-            pr.IsSelected = true;
+            var current = GetSelectedSlot();
+
+            if (current == null)
+            {
+                SelectSlot(Slots[0]);
+                return;
+            }
+
+            // Main does not move up
+            if (current.SlotIndex == 0)
+                return;
+
+            int prevIndex = current.SlotIndex - 1;
+
+            if (prevIndex < 1)
+                prevIndex = 5;
+
+            var prev = Slots.FirstOrDefault(s =>
+                s.SlotIndex == prevIndex &&
+                !s.IsEmpty);
+
+            if (prev != null)
+                SelectSlot(prev);
         }
 
         private void ConfirmCurrentSelection()
@@ -407,7 +503,47 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             ActionMenuIndex = 0;
             OnSlotSelected(selected);
         }
+        private void HandleMoveModeNext()
+        {
+            var filled = Slots.Where(s => !s.IsEmpty).ToList();
 
+            var current = filled.FirstOrDefault(s =>
+                s.IsSelected &&
+                s != _pendingSwapSlot);
+
+            var next = current == null
+                ? filled.First(s => s != _pendingSwapSlot)
+                : filled[(filled.IndexOf(current) + 1) % filled.Count];
+
+            if (next == _pendingSwapSlot)
+                next = filled[(filled.IndexOf(next) + 1) % filled.Count];
+
+            foreach (var s in Slots)
+                s.IsSelected = s == _pendingSwapSlot;
+
+            next.IsSelected = true;
+        }
+
+        private void HandleMoveModePrevious()
+        {
+            var filled = Slots.Where(s => !s.IsEmpty).ToList();
+
+            var current = filled.FirstOrDefault(s =>
+                s.IsSelected &&
+                s != _pendingSwapSlot);
+
+            var prev = current == null
+                ? filled.Last(s => s != _pendingSwapSlot)
+                : filled[(filled.IndexOf(current) - 1 + filled.Count) % filled.Count];
+
+            if (prev == _pendingSwapSlot)
+                prev = filled[(filled.IndexOf(prev) - 1 + filled.Count) % filled.Count];
+
+            foreach (var s in Slots)
+                s.IsSelected = s == _pendingSwapSlot;
+
+            prev.IsSelected = true;
+        }
         public int SwitchActionIndex => GetAvailableActionNames().IndexOf("SWITCH");
         public int MoveActionIndex => GetAvailableActionNames().IndexOf("MOVE");
         public int SummaryActionIndex => GetAvailableActionNames().IndexOf("SUMMARY");
@@ -527,25 +663,30 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             selected.IsSelected = true;
 
+            // Auto-confirm mode (bag item usage)
+            if (Options.AutoConfirmSelection)
+            {
+                _onSwitchChosen?.Invoke(selected.SlotIndex);
+
+                IsActionMenuOpen = false;
+
+                _navigationStore.CurrentViewModel =
+                    _createCancelViewModel();
+
+                return;
+            }
+
+            // Normal behavior
             IsActionMenuOpen = true;
         }
         private void OnSwitch(PokemonSlotViewModel? slot)
         {
-            if (slot == null) return;
+            if (slot == null)
+                return;
 
-            if (_onSwitchChosen != null)
-            {
-                // Battle context — notify caller and navigate back
-                _onSwitchChosen.Invoke(slot.SlotIndex);
-                IsActionMenuOpen = false;
-                _navigationStore.CurrentViewModel = _createCancelViewModel();
-            }
-            else
-            {
-                // No battle callback — this is team reorder, go to move mode
-                IsActionMenuOpen = false;
-                StartMove(slot);
-            }
+            // Normal team management mode
+            IsActionMenuOpen = false;
+            StartMove(slot);
         }
 
         private void OnSummary(PokemonSlotViewModel? slot)

@@ -70,7 +70,20 @@
                 Grid.Column="1"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Text="{Binding StatusCondition}" />
+                Text="{Binding StatusCondition}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding StatusCondition}" Value="None">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding StatusCondition}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </Grid>
     </Grid>
 </UserControl>

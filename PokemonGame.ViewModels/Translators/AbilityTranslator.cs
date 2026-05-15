@@ -3,7 +3,6 @@ using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.DesignPatterns;
-using PokemonGame.Services.Data.GameData.Move;
 using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
 
