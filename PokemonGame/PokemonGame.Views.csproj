@@ -260,6 +260,7 @@
     <Compile Include="Converters\BackgroundToBackgroundTypeConverter.cs" />
     <Compile Include="Converters\BadgeIdToImageConverter.cs" />
     <Compile Include="Converters\BoolToCloseNextConverter.cs" />
+    <Compile Include="Converters\BoolToThicknessConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\CategoryToImageConverter.cs" />
     <Compile Include="Converters\HpToWidthConverter.cs" />

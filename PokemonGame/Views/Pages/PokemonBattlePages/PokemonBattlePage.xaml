@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uc="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
     Title="PokemonBattlePage"
-    behaviors:FocusBehavior.FocusOnLoad="True"
+    behaviors:FocusBehavior.FocusWhenTrue="True"
     Focusable="True"
     mc:Ignorable="d">
 
@@ -18,13 +18,24 @@
         <!--  Logger advance  -->
         <KeyBinding Key="Space" Command="{Binding BattleMenu.LoggerNextCommand}" />
         <KeyBinding Key="Enter" Command="{Binding BattleMenu.LoggerNextCommand}" />
-
-        <!--  Open FIGHT menu  -->
-        <KeyBinding Key="A" Command="{Binding BattleMenu.OpenMenuCommand}" />
-
-        <!--  Back  -->
-        <KeyBinding Key="Escape" Command="{Binding BattleMenu.BackCommand}" />
-
+        <KeyBinding
+            Key="Left"
+            Command="{Binding BattleMenu.MoveSelectCommand}"
+            CommandParameter="Left" />
+        <KeyBinding
+            Key="Right"
+            Command="{Binding BattleMenu.MoveSelectCommand}"
+            CommandParameter="Right" />
+        <KeyBinding
+            Key="Up"
+            Command="{Binding BattleMenu.MoveSelectCommand}"
+            CommandParameter="Up" />
+        <KeyBinding
+            Key="Down"
+            Command="{Binding BattleMenu.MoveSelectCommand}"
+            CommandParameter="Down" />
+        <KeyBinding Key="Z" Command="{Binding BattleMenu.ConfirmMoveCommand}" />
+        <KeyBinding Key="Enter" Command="{Binding BattleMenu.ConfirmMoveCommand}" />
     </Page.InputBindings>
 
     <Page.Resources>
@@ -41,8 +52,7 @@
             Height="533"
             FocusManager.FocusedElement="{Binding ElementName=FocusTarget}"
             FocusManager.IsFocusScope="True"
-            Focusable="True"
-           >
+            Focusable="True">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />

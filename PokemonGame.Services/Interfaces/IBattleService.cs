@@ -54,6 +54,7 @@ namespace PokemonGame.Services.Interfaces
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
         public int PP { get; set; }
+        public int MaxPP { get; set; }
         public int? Power { get; set; }
         public int? Accuracy { get; set; }
     }

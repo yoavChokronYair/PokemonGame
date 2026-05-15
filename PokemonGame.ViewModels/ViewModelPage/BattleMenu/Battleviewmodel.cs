@@ -112,6 +112,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public ICommand NewGameCommand { get; }
         public ICommand BackCommand { get; }
         public ICommand RematchCommand { get; }
+    
 
         public event EventHandler<BattleResultAction> CloseRequested;
 
@@ -168,7 +169,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         // ── Move chosen ───────────────────────────────────────────────────────
-        private async void OnMoveChosen(int moveIndex)
+        private async Task OnMoveChosen(int moveIndex)
         {
             if (_isOnline)
             {
@@ -193,6 +194,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 if (_manager.HasBotFainted)
                 {
                     EnemyStatus.CurrentHP = 0;
+
                 }
                 await EnemyStatus.WaitForHpAnimation();
                 if (_manager.BotActive.IsFainted) SyncEnemyPokemon();
@@ -323,7 +325,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                         Index = i,
                         Name = (m as MoveState)?.Name ?? "-",
                         Type = (m as MoveState)?.Element.ToString() ?? string.Empty,
-                        PP = (m as MoveState)?.PP ?? 0
+                        PP = (m as MoveState)?.PP ?? 0,
+                        MaxPP = (m as MoveState)?.MaxPP ?? 0  // ← add this
                     }).ToList());
 
                 var allEntries = _manager.logger.BattleLog;
@@ -370,6 +373,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                     Name = ms?.Name ?? "???",
                     Type = ms?.Element.ToString() ?? "Normal",
                     PP = ms?.PP ?? 0,
+                    MaxPP = ms?.MaxPP ?? 0,
                     Power = ms?.Category == MoveCategory.Status ? null : 0,
                     Accuracy = 100
                 };
@@ -470,20 +474,72 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     public class BattlePokemonMovesetChooserViewModel : ViewModelBase
     {
         private readonly Action<int> _onMoveClicked;
-        private readonly Action<IMove?> _onMoveHovered;
 
         public MoveSlotViewModel Move0 { get; }
         public MoveSlotViewModel Move1 { get; }
         public MoveSlotViewModel Move2 { get; }
         public MoveSlotViewModel Move3 { get; }
+        private int _selectedIndex = 0;
+        public int SelectedIndex
+        {
+            get => _selectedIndex;
+            set
+            {
+                var slots = Slots;
+                _selectedIndex = MathHelper.Clamp(value, 0, 3);
+                for (int i = 0; i < slots.Length; i++)
+                    slots[i].IsSelected = i == _selectedIndex;
+                // fire hover for the newly selected slot
+                _onMoveHovered(slots[_selectedIndex].Snapshot);
+                OnPropertyChanged(nameof(SelectedIndex));
+            }
+        }
+
+        private MoveSlotViewModel[] Slots => new[] { Move0, Move1, Move2, Move3 };
+
+        public void MoveSelection(int dx, int dy)
+        {
+
+            int col = _selectedIndex % 2;
+            int row = _selectedIndex / 2;
+
+            if (dx == 1 && col == 1)
+            {
+                _onBack();
+                return;
+            }
+            _onBackCleared();  // clear back selection whenever navigating moves
+
+            col = (col + dx + 2) % 2;
+            row = (row + dy + 2) % 2;
+            SelectedIndex = row * 2 + col;
+        }
+
+        public void ConfirmSelection()
+        {
+            var slot = Slots[_selectedIndex];
+            if (slot.IsEnabled)
+                slot.ClickCommand.Execute(null);
+        }
+
+        public void ResetSelection() => SelectedIndex = 0;
+
+        private readonly Action<MoveSnapshot?> _onMoveHovered;
+        private readonly Action _onBack;
+        private readonly Action _onBackCleared;
+
 
         public BattlePokemonMovesetChooserViewModel(
             Action<int> onMoveClicked,
-            Action<IMove?> onMoveHovered,
+            Action<MoveSnapshot?> onMoveHovered,
+            Action onBack,
+            Action onBackCleared,
             BattleLoggerViewModel logger)
         {
+            _onBack = onBack;
             _onMoveClicked = onMoveClicked;
             _onMoveHovered = onMoveHovered;
+            _onBackCleared = onBackCleared;
 
             Move0 = new MoveSlotViewModel(0, onMoveClicked, onMoveHovered, logger);
             Move1 = new MoveSlotViewModel(1, onMoveClicked, onMoveHovered, logger);
@@ -507,7 +563,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     {
         private readonly int _index;
         private readonly Action<int> _onClick;
-        private readonly Action<IMove?> _onHover;
+        private readonly Action<MoveSnapshot?> _onHover;
         private readonly BattleLoggerViewModel _logger;
 
         private string _moveName = "-";
@@ -521,6 +577,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         public bool IsEnabled => _hasMove && _logger.AreActionsUnlocked;
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetProperty(ref _isSelected, value);
+        }
 
         public ICommand ClickCommand { get; }
         public ICommand HoverCommand { get; }
@@ -529,7 +591,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public MoveSlotViewModel(
             int index,
             Action<int> onClick,
-            Action<IMove?> onHover,
+            Action<MoveSnapshot?> onHover,
             BattleLoggerViewModel logger)
         {
             _index = index;
@@ -538,7 +600,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             _logger = logger;
 
             ClickCommand = new RelayCommand(() => _onClick(_index), () => IsEnabled);
-            HoverCommand = new RelayCommand(() => _onHover(_move));
+            HoverCommand = new RelayCommand(() => _onHover(_snapshot));
             LeaveCommand = new RelayCommand(() => _onHover(null));
 
             _logger.PropertyChanged += (_, e) =>
@@ -551,14 +613,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             };
         }
 
+        private MoveSnapshot? _snapshot;
+
         public void SetMoveFromSnapshot(MoveSnapshot snap)
         {
             _move = null;
+            _snapshot = snap;
             MoveName = snap.Name;
             _hasMove = true;
             OnPropertyChanged(nameof(IsEnabled));
             ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
         }
+
+        public MoveSnapshot? Snapshot => _snapshot;
 
         public void SetMove(IMove move)
         {

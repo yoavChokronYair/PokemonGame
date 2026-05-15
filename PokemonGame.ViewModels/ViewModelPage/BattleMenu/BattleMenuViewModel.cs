@@ -20,10 +20,12 @@ public class BattleMenuViewModel : ViewModelBase
     public bool IsMenuActive => UiState == BattleUiState.Menu;
     public bool IsMovesetActive => UiState == BattleUiState.Moveset;
 
-    private readonly Action<int> _onMoveChosen;
+    private readonly Func<int, Task> _onMoveChosen;
     private readonly Action<int> _onSwitchChosen;
     private readonly Action _onForfeit;
     private readonly BattleLoggerViewModel _logger;
+    public ICommand MoveKeyCommand { get; }
+
     public ICommand LoggerNextCommand { get; }
     private bool _isWaitingForLog = false;
     private bool _waitingForOpponent = false;
@@ -44,7 +46,7 @@ public class BattleMenuViewModel : ViewModelBase
     }
     public ICommand OpenMenuCommand { get; }
     public ICommand BackCommand { get; }
-
+    public ICommand FightKeyCommand { get; }
     public bool IsMainMenuVisible =>
      !IsMovesetVisible &&
      !_isWaitingForLog &&
@@ -63,13 +65,13 @@ public class BattleMenuViewModel : ViewModelBase
 
     public BattlePokemonMovesetChooserViewModel MovesetChooser { get; }
 
-    private IMove? _selectedMove;
-    public IMove? SelectedMove
+    private MoveSnapshot? _selectedSnapshot;
+    public MoveSnapshot? SelectedSnapshot
     {
-        get => _selectedMove;
+        get => _selectedSnapshot;
         set
         {
-            if (SetProperty(ref _selectedMove, value))
+            if (SetProperty(ref _selectedSnapshot, value))
             {
                 OnPropertyChanged(nameof(SelectedMovePP));
                 OnPropertyChanged(nameof(SelectedMoveType));
@@ -77,8 +79,8 @@ public class BattleMenuViewModel : ViewModelBase
         }
     }
 
-    public string SelectedMovePP => SelectedMove is MoveState ms ? $"PP {ms.PP}/{ms.MaxPP}" : "PP --/--";
-    public string SelectedMoveType => SelectedMove is MoveState ms2 ? $"TYPE/ {ms2.Element}" : "TYPE/ --";
+    public string SelectedMovePP => _selectedSnapshot is MoveSnapshot s ? $"PP {s.PP}/{s.MaxPP}" : "PP --/--";
+    public string SelectedMoveType => _selectedSnapshot is MoveSnapshot s2 ? $"TYPE/ {s2.Type}" : "TYPE/ --";
 
     public bool ActionsLocked => _waitingForOpponent || !_logger.AreActionsUnlocked;
     public bool AreInputsEnabled => !_isInputLocked && _logger.AreActionsUnlocked && !_waitingForOpponent;
@@ -93,14 +95,41 @@ public class BattleMenuViewModel : ViewModelBase
                 NotifyInputChanged();
         }
     }
+    private int _menuSelectedIndex = 0;
+    public int MenuSelectedIndex
+    {
+        get => _menuSelectedIndex;
+        set
+        {
+            _menuSelectedIndex = (value + 4) % 4;
+            OnPropertyChanged(nameof(MenuSelectedIndex));
+            OnPropertyChanged(nameof(IsFightSelected));
+            OnPropertyChanged(nameof(IsPokemonSelected));
+            OnPropertyChanged(nameof(IsRunSelected));
+        }
+    }
 
+    public bool IsFightSelected => MenuSelectedIndex == 0;
+    public bool IsPokemonSelected => MenuSelectedIndex == 2;
+    public bool IsRunSelected => MenuSelectedIndex == 3;
+    private bool _isBackSelected;
+    public bool IsBackSelected
+    { 
+        get => _isBackSelected;
+        set => SetProperty(ref _isBackSelected, value);
+    }
+
+    public ICommand MenuNavigateCommand { get; }
+    public ICommand MenuConfirmCommand { get; }
     public ICommand OpenMovesetCommand { get; }
     public ICommand CloseMovesetCommand { get; }
     public ICommand ForfeitCommand { get; }
     public ICommand OpenSwitchCommand { get; }
+    public ICommand MoveSelectCommand { get; }
+    public ICommand ConfirmMoveCommand { get; }
 
     public BattleMenuViewModel(
-        Action<int> onMoveChosen,
+        Func<int, Task> onMoveChosen,
         Action<int> onSwitchChosen,
         Action onForfeit,
         Action onSwitch,
@@ -114,6 +143,8 @@ public class BattleMenuViewModel : ViewModelBase
         MovesetChooser = new BattlePokemonMovesetChooserViewModel(
             OnMoveButtonClicked,
             OnMoveHovered,
+            () => IsBackSelected = true,
+            () => IsBackSelected = false,
             logger);
 
         OpenMovesetCommand = new RelayCommand(
@@ -123,7 +154,9 @@ public class BattleMenuViewModel : ViewModelBase
         CloseMovesetCommand = new RelayCommand(() =>
         {
             IsMovesetVisible = false;
-            SelectedMove = null;
+            _selectedSnapshot = null;
+            OnPropertyChanged(nameof(SelectedMovePP));
+            OnPropertyChanged(nameof(SelectedMoveType));
         });
         LoggerNextCommand = new RelayCommand(_logger.ShowNext,() => logger.HasMore);
         ForfeitCommand = new RelayCommand(
@@ -133,10 +166,71 @@ public class BattleMenuViewModel : ViewModelBase
         OpenSwitchCommand = new RelayCommand(
             () => onSwitch(),
             () => AreInputsEnabled);
+        // RUN - no CanExecute guard
         OpenMenuCommand = new RelayCommand(() =>
         {
+            IsMovesetVisible = true;
+            MovesetChooser.ResetSelection();
             SetState(BattleUiState.Moveset);
         }, () => AreInputsEnabled);
+        MoveSelectCommand = new RelayCommand<string>(param =>
+        {
+            if (IsMovesetVisible)
+            {
+                switch (param)
+                {
+                    case "Left": MovesetChooser.MoveSelection(-1, 0); break;
+                    case "Right": MovesetChooser.MoveSelection(1, 0); break;
+                    case "Up": MovesetChooser.MoveSelection(0, -1); break;
+                    case "Down": MovesetChooser.MoveSelection(0, 1); break;
+                }
+            }
+            else if (AreInputsEnabled)
+            {
+                MenuNavigateCommand.Execute(param);
+            }
+        });
+        MenuNavigateCommand = new RelayCommand<string>(param =>
+        {
+            if (IsMovesetVisible || !AreInputsEnabled) return;
+            // 2x2: FIGHT=0, BAG=1, POKEMON=2, RUN=3
+            int dx = param == "Right" ? 1 : param == "Left" ? -1 : 0;
+            int dy = param == "Down" ? 1 : param == "Up" ? -1 : 0;
+            int col = (_menuSelectedIndex % 2 + dx + 2) % 2;
+            int row = (_menuSelectedIndex / 2 + dy + 2) % 2;
+            MenuSelectedIndex = row * 2 + col;
+        });
+
+        MenuConfirmCommand = new RelayCommand(() =>
+        {
+            if (IsMovesetVisible || !AreInputsEnabled) return;
+            switch (MenuSelectedIndex)
+            {
+                case 0: OpenMenuCommand.Execute(null); break;
+                case 2: OpenSwitchCommand.Execute(null); break;
+                case 3: ForfeitCommand.Execute(null); break;
+            }
+        });
+        ConfirmMoveCommand = new RelayCommand(() =>
+        {
+            if (IsMovesetVisible)
+            {
+                if (IsBackSelected)
+                    CloseMovesetCommand.Execute(null);
+                else
+                    MovesetChooser.ConfirmSelection();
+            }
+            else if (AreInputsEnabled)
+                MenuConfirmCommand.Execute(null);
+            else if (_logger.HasMore)
+                _logger.ShowNext();
+        });
+
+        FightKeyCommand = new RelayCommand(() =>
+        {
+            if (!AreInputsEnabled) return;
+            SetState(BattleUiState.Moveset);
+        });
         BackCommand = new RelayCommand(() =>
         {
             switch (UiState)
@@ -150,6 +244,11 @@ public class BattleMenuViewModel : ViewModelBase
                     break;
             }
         });
+        MoveKeyCommand = new RelayCommand<string>(param =>
+        {
+            if (int.TryParse(param, out int index))
+                ExecuteMoveKey(index);
+        });
         _logger.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(BattleLoggerViewModel.AreActionsUnlocked))
@@ -159,10 +258,19 @@ public class BattleMenuViewModel : ViewModelBase
                 OnPropertyChanged(nameof(IsMainMenuVisible));
 
                 RefreshCommands();
+                CommandManager.InvalidateRequerySuggested(); // ← add this
             }
         };
         SetState(BattleUiState.Logger);
         RefreshCommands();
+    }
+    public void ExecuteMoveKey(int index)
+    {
+        if (!IsMovesetVisible) return;
+        var slots = new[] { MovesetChooser.Move0, MovesetChooser.Move1, MovesetChooser.Move2, MovesetChooser.Move3 };
+        var slot = slots[index];
+        if (slot.IsEnabled)
+            slot.ClickCommand.Execute(null);
     }
 
     public void SetWaitingForOpponent(bool waiting)
@@ -186,20 +294,14 @@ public class BattleMenuViewModel : ViewModelBase
     private async void OnMoveButtonClicked(int index)
     {
         IsMovesetVisible = false;
-        SelectedMove = null;
-
+        SelectedSnapshot = null;
         _isWaitingForLog = true;
+        OnPropertyChanged(nameof(IsMainMenuVisible));
 
-        SetState(BattleUiState.Logger);
-
-        _onMoveChosen(index);
-
-        // wait until logger finishes typing EVERYTHING
-        await _logger.WaitUntilQueueEmpty();
+        await _onMoveChosen(index);  // ← awaited properly now
 
         _isWaitingForLog = false;
-
-        SetState(BattleUiState.Menu);
+        OnPropertyChanged(nameof(IsMainMenuVisible));
     }
 
     private void SetState(BattleUiState state)
@@ -210,8 +312,12 @@ public class BattleMenuViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsMenuActive));
         OnPropertyChanged(nameof(IsMovesetActive));
     }
-    private void OnMoveHovered(IMove? move) => SelectedMove = move;
-
+    private void OnMoveHovered(MoveSnapshot? snap)
+    {
+        _selectedSnapshot = snap;
+        OnPropertyChanged(nameof(SelectedMovePP));
+        OnPropertyChanged(nameof(SelectedMoveType));
+    }
     private void NotifyInputChanged()
     {
         OnPropertyChanged(nameof(AreInputsEnabled));

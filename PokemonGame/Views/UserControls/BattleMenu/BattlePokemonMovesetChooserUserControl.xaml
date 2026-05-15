@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
+    xmlns:converter="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
@@ -10,75 +11,48 @@
     d:DesignHeight="150"
     d:DesignWidth="455"
     mc:Ignorable="d">
-
+    <UserControl.Resources>
+        <converter:BoolToThicknessConverter x:Key="BoolToThickness" />
+    </UserControl.Resources>
     <Grid>
         <controls:BoardBackground HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <UniformGrid Columns="2" Rows="2">
-
-                <!--  Move 0  -->
-                <Button
-                    Command="{Binding ClickCommand}"
-                    Content="{Binding MoveName}"
-                    DataContext="{Binding Move0}"
-                    IsEnabled="{Binding IsEnabled}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseEnter">
-                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="MouseLeave">
-                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Button>
-
-                <!--  Move 1  -->
-                <Button
-                    Command="{Binding ClickCommand}"
-                    Content="{Binding MoveName}"
-                    DataContext="{Binding Move1}"
-                    IsEnabled="{Binding IsEnabled}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseEnter">
-                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="MouseLeave">
-                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Button>
-
-                <!--  Move 2  -->
-                <Button
-                    Command="{Binding ClickCommand}"
-                    Content="{Binding MoveName}"
-                    DataContext="{Binding Move2}"
-                    IsEnabled="{Binding IsEnabled}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseEnter">
-                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="MouseLeave">
-                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Button>
-
-                <!--  Move 3  -->
-                <Button
-                    Command="{Binding ClickCommand}"
-                    Content="{Binding MoveName}"
-                    DataContext="{Binding Move3}"
-                    IsEnabled="{Binding IsEnabled}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseEnter">
-                            <i:InvokeCommandAction Command="{Binding HoverCommand}" />
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="MouseLeave">
-                            <i:InvokeCommandAction Command="{Binding LeaveCommand}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Button>
-
+                <Border
+                    Padding="2"
+                    BorderBrush="White"
+                    BorderThickness="{Binding Move0.IsSelected, Converter={StaticResource BoolToThickness}}">
+                    <Button
+                        Command="{Binding Move0.ClickCommand}"
+                        Content="{Binding Move0.MoveName}"
+                        IsEnabled="{Binding Move0.IsEnabled}" />
+                </Border>
+                <Border
+                    Padding="2"
+                    BorderBrush="White"
+                    BorderThickness="{Binding Move1.IsSelected, Converter={StaticResource BoolToThickness}}">
+                    <Button
+                        Command="{Binding Move1.ClickCommand}"
+                        Content="{Binding Move1.MoveName}"
+                        IsEnabled="{Binding Move1.IsEnabled}" />
+                </Border>
+                <Border
+                    Padding="2"
+                    BorderBrush="White"
+                    BorderThickness="{Binding Move2.IsSelected, Converter={StaticResource BoolToThickness}}">
+                    <Button
+                        Command="{Binding Move2.ClickCommand}"
+                        Content="{Binding Move2.MoveName}"
+                        IsEnabled="{Binding Move2.IsEnabled}" />
+                </Border>
+                <Border
+                    Padding="2"
+                    BorderBrush="White"
+                    BorderThickness="{Binding Move3.IsSelected, Converter={StaticResource BoolToThickness}}">
+                    <Button
+                        Command="{Binding Move3.ClickCommand}"
+                        Content="{Binding Move3.MoveName}"
+                        IsEnabled="{Binding Move3.IsEnabled}" />
+                </Border>
             </UniformGrid>
         </controls:BoardBackground>
     </Grid>

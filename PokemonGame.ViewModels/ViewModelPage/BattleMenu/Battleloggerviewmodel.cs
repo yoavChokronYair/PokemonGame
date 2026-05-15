@@ -33,13 +33,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             get => _hasMore;
             set
-{
-    if (SetProperty(ref _hasMore, value))
-    {
-        OnPropertyChanged(nameof(AreActionsUnlocked));
-        OnPropertyChanged(nameof(IsTexting));
-    }
-}
+            {
+                if (SetProperty(ref _hasMore, value))
+                {
+                    OnPropertyChanged(nameof(AreActionsUnlocked));
+                    OnPropertyChanged(nameof(IsTexting));
+                }
+            }
         }
         private bool _isTyping;
 
@@ -101,7 +101,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
         public Task WaitUntilQueueEmpty()
         {
-            if (!HasMore)
+            if (!HasMore && !IsTyping)
                 return Task.CompletedTask;
 
             _waitTcs = new TaskCompletionSource<bool>();
@@ -129,16 +129,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
         private async void ApplyEntry(BattleLogEntry entry)
         {
-
             PhaseLabel = FormatPhaseLabel(entry);
-
             IsTyping = true;
-
             CurrentMessage = "";
-
-
             _isTypingAnimation = true;
-
             OnPropertyChanged(nameof(IsTexting));
 
             foreach (char c in entry.Message)
@@ -146,11 +140,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 CurrentMessage += c;
                 await Task.Delay(18);
             }
+
             _isTypingAnimation = false;
             OnPropertyChanged(nameof(IsTexting));
-
             IsTyping = false;
+
             ((RelayCommand)NextCommand).NotifyCanExecuteChanged();
+
+            // Only complete here, after typing is done AND queue is empty
+            if (!HasMore)
+                _waitTcs?.TrySetResult(true);
         }
 
         private static string FormatPhaseLabel(BattleLogEntry entry) =>
