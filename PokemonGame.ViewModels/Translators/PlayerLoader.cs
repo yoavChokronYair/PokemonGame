@@ -45,35 +45,44 @@ namespace PokemonGame.ViewModels.Translators
         }
         private static void SeedFakeInventory(PlayerDomain player)
         {
-            // Only seed if bag is empty so it doesn't duplicate on reload
             if (player.trainerItemDomain.BagInventory.Count > 0)
                 return;
 
-            // ── TM / Move item ────────────────────────────────────────────────────
-            var tmFlamethrower = new itemsDomain
+            // ── TM (reusable, Gen 5+ style) ───────────────────────────────────
+            var tmFlamethrower = new TmHmState(
+                name: "TM35 Flamethrower",
+                move: null!,          // swap in a real MoveState when available
+                isHm: false,
+                description: "Teaches Flamethrower to a compatible Pokémon.")
             {
                 Id = 1001,
-                Name = "TM35 Flamethrower",
-                Type = ItemType.Hm,
-                Description = "Teaches Flamethrower to a compatible Pokémon.",
-                UsableInBattle = false,
-                UsableInField = true,
                 Price = 3000,
             };
 
-            // ── Poké Ball ─────────────────────────────────────────────────────────
-            var pokeBall = new itemsDomain
+            // ── HM ────────────────────────────────────────────────────────────
+            var hmSurf = new TmHmState(
+                name: "HM03 Surf",
+                move: null!,
+                isHm: true,
+                description: "Lets a Pokémon surf across water.")
+            {
+                Id = 1002,
+                Price = 0,
+            };
+
+            // ── Poké Ball ─────────────────────────────────────────────────────
+            var pokeBall = new PokeballState(
+                name: "Poké Ball",
+                caughtEffect: null!,
+                condition: null!,
+                multiplier: 1f,
+                description: "A device for catching wild Pokémon.")
             {
                 Id = 2001,
-                Name = "Poké Ball",
-                Type = ItemType.Pokeball,
-                Description = "A device for catching wild Pokémon.",
-                UsableInBattle = true,
-                UsableInField = false,
                 Price = 200,
             };
 
-            // ── Heal item ─────────────────────────────────────────────────────────
+            // ── Consumable heal item ───────────────────────────────────────────
             var potion = new itemsDomain
             {
                 Id = 3001,
@@ -85,9 +94,23 @@ namespace PokemonGame.ViewModels.Translators
                 Price = 300,
             };
 
+            // ── Key item ──────────────────────────────────────────────────────
+            var townMap = new KeyItemState(
+                usageEffect: null!,
+                condition: null!,
+                registerable: false)
+            {
+                Id = 4001,
+                Name = "Town Map",
+                Description = "A map that shows your current location.",
+                Price = 0,
+            };
+
             player.trainerItemDomain.BagInventory[tmFlamethrower] = 1;
+            player.trainerItemDomain.BagInventory[hmSurf] = 1;
             player.trainerItemDomain.BagInventory[pokeBall] = 10;
             player.trainerItemDomain.BagInventory[potion] = 5;
+            player.trainerItemDomain.BagInventory[townMap] = 1;
         }
         private static void ApplyParty(
             List<StoryPlayerPokemonData> party,
