@@ -1,9 +1,8 @@
-﻿using PokemonGame.Model.Domain.Move;
+﻿using PokemonGame.Model.Domain.Item;
+using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
-using PokemonGame.Model.Interface;
-using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
@@ -36,6 +35,7 @@ namespace PokemonGame.ViewModels.Translators
             ApplyProgressFlags(save, player);
             ApplyBadges(save.Badges, player);
             ApplyBagInventory(save.BagInventory, player);
+            SeedFakeInventory(player); // ← add this after ApplyBagInventory
             ApplyPokedex(save.Pokedex, player);
 
             // CHANGED
@@ -43,7 +43,52 @@ namespace PokemonGame.ViewModels.Translators
 
             return player;
         }
+        private static void SeedFakeInventory(PlayerDomain player)
+        {
+            // Only seed if bag is empty so it doesn't duplicate on reload
+            if (player.trainerItemDomain.BagInventory.Count > 0)
+                return;
 
+            // ── TM / Move item ────────────────────────────────────────────────────
+            var tmFlamethrower = new itemsDomain
+            {
+                Id = 1001,
+                Name = "TM35 Flamethrower",
+                Type = ItemType.Hm,
+                Description = "Teaches Flamethrower to a compatible Pokémon.",
+                UsableInBattle = false,
+                UsableInField = true,
+                Price = 3000,
+            };
+
+            // ── Poké Ball ─────────────────────────────────────────────────────────
+            var pokeBall = new itemsDomain
+            {
+                Id = 2001,
+                Name = "Poké Ball",
+                Type = ItemType.Pokeball,
+                Description = "A device for catching wild Pokémon.",
+                UsableInBattle = true,
+                UsableInField = false,
+                Price = 200,
+            };
+
+            // ── Heal item ─────────────────────────────────────────────────────────
+            var potion = new itemsDomain
+            {
+                Id = 3001,
+                Name = "Potion",
+                Type = ItemType.Consumable,
+                Description = "Restores 20 HP to a Pokémon.",
+                UsableInBattle = true,
+                UsableInField = true,
+                Price = 300,
+            };
+
+            player.trainerItemDomain.BagInventory[tmFlamethrower] = 1;
+            player.trainerItemDomain.BagInventory[pokeBall] = 10;
+            player.trainerItemDomain.BagInventory[potion] = 5;
+        }
         private static void ApplyParty(
             List<StoryPlayerPokemonData> party,
             PlayerDomain player)

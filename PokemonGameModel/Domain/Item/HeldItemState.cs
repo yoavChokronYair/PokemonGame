@@ -7,6 +7,8 @@ namespace PokemonGame.Model.Domain.Item
     {
         HeldItem,
         Consumable,
+        Hm,
+        Pokeball,
         KeyItem
     }
     public class itemsDomain
@@ -19,6 +21,10 @@ namespace PokemonGame.Model.Domain.Item
         public bool UsableInBattle { get; set; }
         public bool UsableInField { get; set; }
         public int Price { get; set; } = 0;
+        public override bool Equals(object? obj) =>
+        obj is itemsDomain other && Id == other.Id;
+
+        public override int GetHashCode() => Id.GetHashCode();
     }
     public class KeyItemState :itemsDomain
     {
