@@ -181,10 +181,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 }
                 else
                 {
-                    playerRoster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
+                    // Build roster in pick-order, not team-order
+                    var allPokemon = Enumerable.Range(0, fullTeam.getAllPokemonCount())
                         .Select(i => fullTeam.GetPokemonAt(i))
-                        .Where(p => selectedIds.Contains(p.PokedexId))
                         .ToList();
+
+                    playerRoster = selectedIds
+                        .Select(id => allPokemon.FirstOrDefault(p => p.PokedexId == id))
+                        .Where(p => p != null)
+                        .ToList()!;
                 }
 
                 while (playerRoster.Count < 6)
