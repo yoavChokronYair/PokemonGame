@@ -61,6 +61,10 @@
             <DataTemplate DataType="{x:Type battleviewmodel:BattleViewModel}">
                 <battleview:PokemonBattlePage />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type battleviewmodel:WildBattleViewModel}">
+                <battleview:PokemonBattlePage />
+            </DataTemplate>
+
             <DataTemplate DataType="{x:Type battleviewmodel:TeamSelectionViewModel}">
                 <battleview:TeamSelectionPage />
             </DataTemplate>

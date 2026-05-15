@@ -168,7 +168,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 _userStore.BattleSesion.SelectedPokemonIds = selectedIds;
                 _userStore.BattleSesion.BotDifficulty = BotDifficulty;
 
-                var translator = new TeamTranslator(_userStore);
+                var translator = new TeamTranslator();
                 var fullTeam = translator.LoadTeamByID(_userStore.BattlePlayerID);
 
                 List<PokemonState> playerRoster;

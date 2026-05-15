@@ -4,9 +4,11 @@ using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Map;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.Services.Services;
 using PokemonGame.ViewModels.Store;
 
@@ -15,10 +17,15 @@ namespace PokemonGame.ViewModels.Translators
     public sealed class MapLoader
     {
         private readonly IMapService _mapService;
+        private readonly IPokemonService _pokemonService;
         private static readonly Dictionary<string, MapDomain> _sessionCache = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<int, MapDomain> _cycleCache = new();
 
-        public MapLoader(IMapService mapService) => _mapService = mapService;
+        public MapLoader(IMapService mapService, IPokemonService pokemonService)
+        {
+            _mapService = mapService;
+            _pokemonService = pokemonService;
+        }
 
         // ── Map Loading ───────────────────────────────────────────────────────
 
@@ -51,6 +58,7 @@ namespace PokemonGame.ViewModels.Translators
                 Blocks = BuildTiles(bundle.Tiles, TileLayerType.Objects),
                 CollisionObjects = BuildCollisionObjects(bundle.Collisions),
                 ConnectedMaps = new List<ConnectedMapDomain>(),
+                Encounters = new List<EncounterDomain>(),
                 Wraps = new List<WrapDomain>(),
                 Npc = new List<NpcObjectDomain>(),
             };
@@ -74,7 +82,39 @@ namespace PokemonGame.ViewModels.Translators
                     Margin = conn.Margin,
                 });
             }
+            foreach (var encounter in bundle.Encounters)
+            {
+                var pokemon = _pokemonService.GenerateWildPokemon(encounter);
+                TeamTranslator translator = new();
+                if (pokemon == null)
+                    continue;
 
+                domain.Encounters.Add(new EncounterDomain
+                {
+                    Pokemon = translator.TranslateToDomain(pokemon),
+
+                    MinLevel = encounter.MinLevel,
+                    MaxLevel = encounter.MaxLevel,
+
+                    CatchChance = encounter.CatchChance,
+                    Rate = encounter.Rate,
+
+                    evYield =
+                        encounter.EvYieldAmount > 0
+                            ? ((Stat)encounter.EvYieldStat,
+                               encounter.EvYieldAmount)
+                            : null,
+
+                    BaseExpYield = encounter.BaseExpYield,
+                    BaseFriendshipYield = encounter.BaseFriendshipYield,
+
+                    CatchRate = encounter.CatchRate,
+
+                    femaleRatio = encounter.FemaleRatio,
+
+                    GrowthRate = GrowthRateType.MediumFast,
+                });
+            }
             foreach (var wrap in bundle.Wraps)
             {
                 var tb = _mapService.GetMap(wrap.TargetMapId);

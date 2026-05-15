@@ -1,10 +1,12 @@
-﻿using PokemonGame.Model.Config;
+﻿using PokemonGame.Core.Model.Helper.MathHelper;
+using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Player;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Map;
 
-public class MapManager
+public partial class MapManager
 {
     // ── Coordinate convention (see MapDomain for full spec) ──────────────────
     //   Tile-space  : x = tileCol,   y = tileRow
@@ -259,4 +261,28 @@ public class MapManager
 
     private (int row, int col) CurrentSquare()
         => _squareMapState.TileToSquare(_player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
+}
+public partial class MapManager
+{
+    /// <summary>
+    /// Call this after <see cref="TryMove"/> returns
+    /// <c>WildEncounterTriggered == true</c>.
+    ///
+    /// Picks a random encounter from the current map's encounter table and
+    /// constructs a fully-initialised <see cref="WildPokemonDomain"/>.
+    /// Returns <c>null</c> when the map has no encounter table.
+    /// </summary>
+    public WildPokemonDomain? GetWildEncounter()
+    {
+        var encounters = ActiveMap.Encounters;
+        if (encounters == null || encounters.Count == 0)
+            return null;
+
+        // Use existing RNGHelper — weighted random pick from the table
+        EncounterDomain? encounter = RNGHelper.PickWildEncounter(encounters);
+        if (encounter == null)
+            return null;
+
+        return new WildPokemonDomain(encounter);
+    }
 }

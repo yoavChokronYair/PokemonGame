@@ -80,6 +80,7 @@ ViewModelPage/BattleMenu/
  PokemonBagViewModel.cs
  PokemonStatusViewModel.cs
  TeamSelectionViewModel.cs
+ WildBattleViewModel.cs
 ViewModelPage/
  Dialogue/DialogueViewModel.cs
  Map/Command/

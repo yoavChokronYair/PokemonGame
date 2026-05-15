@@ -166,7 +166,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
         {
             _navigationStore = navigationStore; 
             _player = PlayerDomain.Instance;
-            _mapLoader = new MapLoader(new MapService());
+            _mapLoader = new MapLoader(new MapService(),UserStore.Instance.Resolver.GetPokemonService());
             PlayerName = _player.trainerInfo.Name;
             InitCommands();
             Dialogue.FocusRequested += () => _focusCallback?.Invoke();
@@ -401,6 +401,19 @@ namespace PokemonGame.ViewModels.ViewModelPage
             _movement.HasQueued = true;
         }
 
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Replace the ProcessMovementTick method in MapViewModel (Movement partial).
+        //
+        // Changes vs. your original:
+        //   • After a successful move, checks result.WildEncounterTriggered.
+        //   • If true, calls _mapManager.GetWildEncounter() to roll the table.
+        //   • Pauses the clock and navigates to WildBattleViewModel.
+        //   • WildBattleViewModel.CreateMapViewModel factory re-creates MapViewModel
+        //     so the map is alive again when the player returns.
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        // ── Place this inside the Movement partial of MapViewModel ──────────────────
+
         private void ProcessMovementTick()
         {
             if (Dialogue.IsOpen) return;
@@ -416,8 +429,17 @@ namespace PokemonGame.ViewModels.ViewModelPage
             {
                 LastMoveResult = $"Moved {direction}";
                 RebuildGrid();
-                if (result.WildEncounterTriggered) LastMoveResult += " + Wild Encounter!";
-                if (result.SpottedByNpcId != 0) LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
+
+                // ── Wild encounter ────────────────────────────────────────────────
+                if (result.WildEncounterTriggered)
+                {
+                    LastMoveResult += " + Wild Encounter!";
+                    TryTriggerWildBattle();
+                    return;                 // don't process NPC-spotted while entering battle
+                }
+
+                if (result.SpottedByNpcId != 0)
+                    LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
             }
             else
             {
@@ -425,6 +447,35 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 LastMoveResult = $"Blocked moving {direction}: {result.SquareType}";
                 RefreshOverlays();
             }
+        }
+
+        /// <summary>
+        /// Rolls the encounter table; if a wild Pokémon is generated, pauses
+        /// the clock and navigates to <see cref="WildBattleViewModel"/>.
+        /// </summary>
+        private void TryTriggerWildBattle()
+        {
+            var wild = _mapManager.GetWildEncounter();
+            if (wild == null) return;                       // table empty — no battle
+
+            // Pause map tick while in battle
+            ClockManager.Instance.Pause();
+
+            var playerTeam = PokemonConversionService.ToBattleTeam(_player.Team);
+
+            // The factory passed to WildBattleViewModel re-creates MapViewModel
+            // (same pattern used by the trainer-card and pokédex pages).
+
+            _navigationStore.CurrentViewModel = new WildBattleViewModel(
+                wild,
+                playerTeam,
+                _navigationStore,
+                createMapViewModel: () =>
+                {
+                    // Resume clock now that the player is back on the map
+                    ClockManager.Instance.Resume();
+                    return this;        // re-use the same instance (clock already running)
+                });
         }
     }
     //Rendering
