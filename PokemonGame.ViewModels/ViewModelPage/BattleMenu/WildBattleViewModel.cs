@@ -12,6 +12,7 @@
 //    7. TryTriggerTrainerBattle stub for future trainer spotted flow.
 // =============================================================================
 
+using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Item;
@@ -31,7 +32,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     // =========================================================================
     //  WildBattleViewModel
     // =========================================================================
-    public class WildBattleViewModel : ViewModelBase
+    public class WildBattleViewModel : ViewModelBase,IDisposable
     {
         // ── Core state ────────────────────────────────────────────────────────
         private readonly BattleManager _manager;
@@ -45,6 +46,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public EnemyBattleStatusViewModel EnemyStatus { get; }
         public BattleMenuViewModel BattleMenu { get; }
         public BattleLoggerViewModel Logger { get; }
+        private bool _disposed;
+        private CancellationTokenSource _cts = new();
 
         // ── State ─────────────────────────────────────────────────────────────
         private int _logCursor;
@@ -64,7 +67,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             get => _outcomeTitle;
             private set => SetProperty(ref _outcomeTitle, value);
         }
-
+        
         private string _outcomeDetail = string.Empty;
         public string OutcomeDetail
         {
@@ -72,7 +75,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             private set => SetProperty(ref _outcomeDetail, value);
         }
 
-        public ICommand ContinueCommand { get; }
 
         // ── Constructor ───────────────────────────────────────────────────────
         public WildBattleViewModel(
@@ -101,7 +103,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 OnFlee,
                 OnOpenSwitch,
                 Logger);
-            ContinueCommand = new RelayCommand(ReturnToMap);
 
             // Register wild Pokémon as "seen" in the Pokédex
             RegisterPokedexSeen(_wildPokemon.pokemonState.PokedexId,
@@ -138,13 +139,49 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         // ── Flee ──────────────────────────────────────────────────────────────
-        private void OnFlee()
+        private async void OnFlee()
         {
-            if (_isBattleOverHandled) return;
+            if (_disposed || _isBattleOverHandled)
+                return;
+
             _isBattleOverHandled = true;
+
             Logger.EnqueueStringEntries(new[] { "Got away safely!" });
-            _ = Task.Delay(800).ContinueWith(_ =>
-                System.Windows.Application.Current.Dispatcher.Invoke(ReturnToMap));
+
+            await Logger.WaitUntilQueueEmpty();
+
+            if (_disposed)
+                return;
+
+            ReturnToMap();
+        }
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+
+            // Cancel pending async operations
+            _cts.Cancel();
+            _cts.Dispose();
+
+            // Dispose battle manager if supported
+            if (_manager is IDisposable disposableManager)
+                disposableManager.Dispose();
+
+            // Dispose logger if supported
+            if (Logger is IDisposable disposableLogger)
+                disposableLogger.Dispose();
+
+            // Dispose menu if supported
+            if (BattleMenu is IDisposable disposableMenu)
+                disposableMenu.Dispose();
+
+            // Clear navigation references
+            _navigationStore.CurrentViewModel = null!;
+
+            GC.SuppressFinalize(this);
         }
 
         // ── Catch ─────────────────────────────────────────────────────────────
@@ -243,8 +280,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             _navigationStore.CurrentViewModel = new WildBattleBagViewModel(
                 _navigationStore,
-                returnToWild: () => this,
+                returnToWild: ReturnSelf,
                 onBallThrown: ball => TryThrowBall(ball));
+        }
+        private ViewModelBase ReturnSelf()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(WildBattleViewModel));
+
+            return this;
         }
 
         // ── Open switch ───────────────────────────────────────────────────────
@@ -350,6 +394,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 HealTeamAfterBlackout();
                 ShowOutcome("You blacked out!", "You were taken to the nearest Pokémon Center.");
             }
+            await Task.Delay(1500);
+
+            ReturnToMap();
         }
 
         private BattleReward BuildWildReward()
@@ -415,8 +462,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
         private void ReturnToMap()
         {
-            _navigationStore.CurrentViewModel = _createMapViewModel();
+            if (_disposed)
+                return;
+
+            var next = _createMapViewModel();
+
+            Dispose();
+
+            _navigationStore.CurrentViewModel = next;
         }
+
     }
 
     // =========================================================================

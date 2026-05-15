@@ -434,7 +434,7 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 if (result.WildEncounterTriggered)
                 {
                     LastMoveResult += " + Wild Encounter!";
-                    TryTriggerWildBattle();
+                    //TryTriggerWildBattle();
                     return;                 // don't process NPC-spotted while entering battle
                 }
 
@@ -455,27 +455,29 @@ namespace PokemonGame.ViewModels.ViewModelPage
         /// </summary>
         private void TryTriggerWildBattle()
         {
-            var wild = _mapManager.GetWildEncounter();
-            if (wild == null) return;                       // table empty — no battle
+            var wild = _mapManager.GetWildEncounter(); // NEW object every call
 
-            // Pause map tick while in battle
+            if (wild == null)
+                return;
+
             ClockManager.Instance.Pause();
 
-            var playerTeam = PokemonConversionService.ToBattleTeam(_player.Team);
+            var playerTeam =
+                PokemonConversionService.ToBattleTeam(_player.Team);
 
-            // The factory passed to WildBattleViewModel re-creates MapViewModel
-            // (same pattern used by the trainer-card and pokédex pages).
+            _navigationStore.CurrentViewModel =
+                new WildBattleViewModel(
+                    wild,
+                    playerTeam,
+                    _navigationStore,
+                    createMapViewModel: ReturnFromBattle);
+        }
 
-            _navigationStore.CurrentViewModel = new WildBattleViewModel(
-                wild,
-                playerTeam,
-                _navigationStore,
-                createMapViewModel: () =>
-                {
-                    // Resume clock now that the player is back on the map
-                    ClockManager.Instance.Resume();
-                    return this;        // re-use the same instance (clock already running)
-                });
+        private ViewModelBase ReturnFromBattle()
+        {
+            ClockManager.Instance.Resume();
+
+            return this;
         }
     }
     //Rendering

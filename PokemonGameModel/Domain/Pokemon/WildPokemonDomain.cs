@@ -21,16 +21,29 @@ namespace PokemonGame.Model.Domain.Pokemon
         public GrowthRateType GrowthRate { get; set; }
         public WildPokemonDomain(EncounterDomain encounter)
         {
-            RNGHelper rNGHelper = RNGHelper.GenerateRandomPokemonIdentity(PlayerDomain.Instance.trainerInfo.TrainerID);
-            this.pokemonState = encounter.Pokemon;
+            RNGHelper rNGHelper =
+                RNGHelper.GenerateRandomPokemonIdentity(
+                    PlayerDomain.Instance.trainerInfo.TrainerID);
+
+            // CREATE A NEW INSTANCE
+            pokemonState = encounter.Pokemon.Clone();
+
             EvYield = encounter.evYield;
-            pokemonState.Level = RandomHelper.Next(encounter.MinLevel, encounter.MaxLevel + 1);
+
+            pokemonState.Level =
+                RandomHelper.Next(
+                    encounter.MinLevel,
+                    encounter.MaxLevel + 1);
+
             BaseExpYield = encounter.BaseExpYield;
             BaseFriendshipYield = encounter.BaseFriendshipYield;
             CatchRate = encounter.CatchRate;
+
             pokemonState.Nature = RNGHelper.GenerateNature();
             pokemonState.IsShiny = rNGHelper.IsShiny();
-            pokemonState.gender = rNGHelper.IsFemale(encounter.femaleRatio);
+            pokemonState.gender =
+                rNGHelper.IsFemale(encounter.femaleRatio);
+
             BotLevel = BotLevel.Easy;
             GrowthRate = encounter.GrowthRate;
         }
