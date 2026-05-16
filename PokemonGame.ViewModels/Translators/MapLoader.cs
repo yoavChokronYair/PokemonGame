@@ -1,4 +1,5 @@
-﻿using PokemonGame.Model.Domain.Item;
+﻿using PokemonGame.Model.Config;
+using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
@@ -183,14 +184,17 @@ namespace PokemonGame.ViewModels.Translators
             return new NpcObjectDomain
             {
                 NpcInfo = new NpcDomain { Id = spawn.NpcId },
-                Location = (spawn.X, spawn.Y),
+                Location = (
+                    spawn.X * MapConstants.TilesPerSquare,
+                    spawn.Y * MapConstants.TilesPerSquare
+                ),
                 CollisionType = SafeCast(spawn.CollisionType, CollisionType.Blocked, nameof(spawn.CollisionType), spawn.Id),
                 MovementType = SafeCast(spawn.MovementType, MovementType.Stationary, nameof(spawn.MovementType), spawn.Id),
-                direction = SafeCast(spawn.FacingDirection, FacingDirection.Down, nameof(spawn.FacingDirection), spawn.Id),
+                Direction = SafeCast(spawn.FacingDirection, FacingDirection.Down, nameof(spawn.FacingDirection), spawn.Id),
                 DirectionA = SafeCast(spawn.DirectionA, FacingDirection.Down, nameof(spawn.DirectionA), spawn.Id),
                 DirectionB = SafeCast(spawn.DirectionB, FacingDirection.Up, nameof(spawn.DirectionB), spawn.Id),
                 StepsPerLeg = spawn.StepsPerLeg,
-                visionRange = spawn.VisionRange,
+                VisionRange = spawn.VisionRange,
                 VisionType = SafeCast(spawn.VisionType, VisionType.Normal, nameof(spawn.VisionType), spawn.Id),
             };
         }
@@ -200,7 +204,7 @@ namespace PokemonGame.ViewModels.Translators
         public void Save(IStoryPlayerService storyPlayerService)
         {
             var player = PlayerDomain.Instance;
-            storyPlayerService.SaveAll(BuildSaveTree(player),UserStore.Instance.PlayerID);
+            storyPlayerService.SaveAll(BuildSaveTree(player), UserStore.Instance.PlayerID);
         }
 
         private static StorySaveTree BuildSaveTree(PlayerDomain player) => new()

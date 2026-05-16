@@ -88,19 +88,22 @@ namespace PokemonGame.Model.Domain.Map
     public class NpcObjectDomain
     {
         public NpcDomain NpcInfo { get; set; }
-        public NpcSpriteDomain? Sprite { get; set; }
+
         public (int x, int y) Location { get; set; }
 
         public CollisionType CollisionType { get; set; } = CollisionType.Blocked;
         public MovementType MovementType { get; set; }
-        public FacingDirection direction { get; set; }
-        public FacingDirection DirectionA { get; set; }
-        public FacingDirection DirectionB { get; set; }
-        public int StepsPerLeg { get; set; }
-        public int StepsWalked { get; set; }
+
+        public FacingDirection Direction { get; set; }
+        public FacingDirection? DirectionA { get; set; }
+        public FacingDirection? DirectionB { get; set; }
+
+        public int? StepsPerLeg { get; set; }
+
         public bool DefaultState { get; set; }
         public bool IsDisappearing { get; set; }
-        public int visionRange { get; set; } = 0;
+
+        public int VisionRange { get; set; } = 0;
         public VisionType VisionType { get; set; }
     }
 }

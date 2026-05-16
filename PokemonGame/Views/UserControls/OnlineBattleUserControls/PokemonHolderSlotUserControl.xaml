@@ -4,133 +4,143 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.OnlineBattleUserControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="52"
-    d:DesignWidth="400"
+    Width="396"
+    Height="74"
+    d:DesignHeight="74"
+    d:DesignWidth="396"
+    Focusable="False"
+    IsTabStop="False"
     mc:Ignorable="d">
+
     <UserControl.Resources>
-        <converters:HpToWidthConverter x:Key="HpToWidthConverter" />
         <converters:PokemonIdToImageConverter x:Key="PokedexIdToSpriteConverter" />
+
+        <Style x:Key="PokemonContentStyle" TargetType="Canvas">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MaxHp}" Value="0">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding PokedexId}" Value="0">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.Style>
-            <Style TargetType="Grid">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/PokemonHolderNotSelected.png" Stretch="Fill" />
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/PokemonHolderSelected.png" Stretch="Fill" />
-                            </Setter.Value>
-                        </Setter>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
+    <Grid
+        Width="396"
+        Height="74"
+        ClipToBounds="True"
+        RenderOptions.BitmapScalingMode="NearestNeighbor">
 
-        <!--  Content  -->
-        <Grid Margin="48,4,8,4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <!--  Background only  -->
+        <Image
+            Width="396"
+            Height="74"
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            Stretch="Fill">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Setter Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/PokemonHolderNotSelected.png" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/PokemonHolderSelected.png" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
 
-            <!--  Pokemon sprite  -->
+        <!--  Fixed drawing layer  -->
+        <Canvas
+            Width="396"
+            Height="74"
+            Style="{StaticResource PokemonContentStyle}">
+
+            <!--  Sprite  -->
             <Image
-                Grid.Column="0"
+                Canvas.Left="35"
+                Canvas.Top="13"
                 Width="40"
                 Height="40"
-                Margin="-44,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
+                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                Stretch="Uniform">
                 <Image.Source>
                     <Binding Converter="{StaticResource PokedexIdToSpriteConverter}" Path="PokedexId" />
                 </Image.Source>
             </Image>
 
-            <!--  Name + Level  -->
+            <!--  NAME + LEVEL TOGETHER  -->
             <StackPanel
-                Grid.Column="0"
-                Margin="4,0,0,0"
-                VerticalAlignment="Center">
+                Canvas.Left="92"
+                Canvas.Top="10"
+                Height="14"
+                Orientation="Horizontal">
+
                 <TextBlock
+                    MaxWidth="110"
                     FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
-                    FontSize="10"
+                    FontSize="7"
                     Foreground="Black"
-                    Text="{Binding PokemonName}" />
+                    Text="{Binding PokemonName}"
+                    TextTrimming="CharacterEllipsis" />
+
                 <TextBlock
+                    Padding="6,0,0,0"
                     FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
-                    FontSize="8"
+                    FontSize="7"
                     Foreground="Black"
                     Text="{Binding LevelText}" />
+
             </StackPanel>
 
-            <!--  HP section  -->
-            <Grid
-                Grid.Column="1"
-                Width="140"
-                VerticalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            <!--  HP fill only  -->
+            <Rectangle
+                Canvas.Left="282"
+                Canvas.Top="25"
+                Height="6"
+                MinWidth="1"
+                Fill="{Binding HPColor}"
+                RadiusX="1"
+                RadiusY="1">
+                <Rectangle.Width>
+                    <Binding Path="HolderHpFillWidth" />
+                </Rectangle.Width>
+            </Rectangle>
 
-                <!--  HP bar track  -->
-                <Grid
-                    Grid.Row="1"
-                    Width="120"
-                    Height="7"
-                    Margin="16,1,0,1"
-                    HorizontalAlignment="Left">
-                    <Rectangle
-                        Fill="#383030"
-                        RadiusX="2"
-                        RadiusY="2" />
-                    <Rectangle
-                        HorizontalAlignment="Left"
-                        Fill="{Binding HPColor}"
-                        RadiusX="2"
-                        RadiusY="2"
-                        RenderTransformOrigin="0,0.5">
-                        <Rectangle.Width>
-                            <MultiBinding Converter="{StaticResource HpToWidthConverter}" ConverterParameter="120">
-                                <Binding Path="CurrentHp" />
-                                <Binding Path="MaxHp" />
-                            </MultiBinding>
-                        </Rectangle.Width>
-                    </Rectangle>
-                </Grid>
+            <!--  HP numbers  -->
+            <TextBlock
+                Canvas.Left="310"
+                Canvas.Top="55"
+                Width="60"
+                Height="10"
+                FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
+                FontSize="6"
+                Foreground="Black"
+                Text="{Binding HpText}"
+                TextAlignment="Right" />
 
-                <!--  HP numbers  -->
-                <TextBlock
-                    Grid.Row="2"
-                    HorizontalAlignment="Right"
-                    FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
-                    FontSize="8"
-                    Foreground="Black"
-                    Text="{Binding HpText}" />
-            </Grid>
-        </Grid>
+        </Canvas>
 
-        <!--  Full-area click overlay — last child = on top  -->
+        <!--  Invisible click layer  -->
         <Button
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            Width="396"
+            Height="74"
             Panel.ZIndex="99"
+            Background="Transparent"
+            BorderThickness="0"
             Command="{Binding SelectCommand}"
-            Cursor="Hand">
+            Cursor="Hand"
+            Focusable="False">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Border Background="Transparent" />
                 </ControlTemplate>
             </Button.Template>
         </Button>
+
     </Grid>
 </UserControl>

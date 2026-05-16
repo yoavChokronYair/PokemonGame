@@ -165,9 +165,9 @@ namespace PokemonGame.Services.Data.Map
 
         public int StepsPerLeg { get; set; }
 
-        public bool DefaultState { get; set; }
+        public int DefaultState { get; set; }
 
-        public bool IsDisappearing { get; set; }
+        public int IsDisappearing { get; set; }
 
         public int VisionRange { get; set; }
 

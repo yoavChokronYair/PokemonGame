@@ -21,6 +21,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     }
     public class PokemonSlotViewModel : ViewModelBase
     {
+        private const double MainHpBarMaxWidth = 150.0;
+        private const double HolderHpBarMaxWidth = 148.0;
 
         private string _pokemonName = "";
         public string PokemonName
@@ -33,7 +35,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public int Level
         {
             get => _level;
-            set => SetProperty(ref _level, value);
+            set
+            {
+                if (SetProperty(ref _level, value))
+                    OnPropertyChanged(nameof(LevelText));
+            }
         }
 
         public string LevelText => $"Lv{Level}";
@@ -45,11 +51,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             set
             {
                 if (SetProperty(ref _currentHp, value))
-                {
-                    OnPropertyChanged(nameof(HpText));
-                    OnPropertyChanged(nameof(HpPercentage));
-                    OnPropertyChanged(nameof(HPColor));
-                }
+                    NotifyHpChanged();
             }
         }
 
@@ -60,26 +62,63 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             set
             {
                 if (SetProperty(ref _maxHp, value))
-                {
-                    OnPropertyChanged(nameof(HpText));
-                    OnPropertyChanged(nameof(HpPercentage));
-                    OnPropertyChanged(nameof(HPColor));
-                }
+                    NotifyHpChanged();
             }
         }
 
         public string HpText => $"{CurrentHp}/ {MaxHp}";
 
-        public double HpPercentage => MaxHp > 0
-            ? MathHelper.Clamp((double)CurrentHp / MaxHp, 0, 1)
-            : 0;
+        public double HpPercentage
+        {
+            get
+            {
+                if (MaxHp <= 0)
+                    return 0;
+
+                double ratio = (double)CurrentHp / MaxHp;
+
+                if (ratio < 0)
+                    return 0;
+
+                if (ratio > 1)
+                    return 1;
+
+                return ratio;
+            }
+        }
+
+        public double MainHpFillWidth
+        {
+            get
+            {
+                if (IsEmpty || MaxHp <= 0 || CurrentHp <= 0)
+                    return 0;
+
+                return Math.Max(1, HpPercentage * MainHpBarMaxWidth);
+            }
+        }
+
+        public double HolderHpFillWidth
+        {
+            get
+            {
+                if (IsEmpty || MaxHp <= 0 || CurrentHp <= 0)
+                    return 0;
+
+                return Math.Max(1, HpPercentage * HolderHpBarMaxWidth);
+            }
+        }
 
         public Brush HPColor
         {
             get
             {
-                if (HpPercentage > 0.5) return new SolidColorBrush(Color.FromRgb(104, 208, 64));
-                if (HpPercentage > 0.2) return new SolidColorBrush(Color.FromRgb(248, 208, 48));
+                if (HpPercentage > 0.5)
+                    return new SolidColorBrush(Color.FromRgb(104, 208, 64));
+
+                if (HpPercentage > 0.2)
+                    return new SolidColorBrush(Color.FromRgb(248, 208, 48));
+
                 return new SolidColorBrush(Color.FromRgb(240, 64, 48));
             }
         }
@@ -102,7 +141,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         public bool IsEmpty
         {
             get => _isEmpty;
-            set => SetProperty(ref _isEmpty, value);
+            set
+            {
+                if (SetProperty(ref _isEmpty, value))
+                    NotifyHpChanged();
+            }
         }
 
         private string _gender = "";
@@ -123,6 +166,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 if (!IsEmpty)
                     onSelected(this);
             });
+        }
+
+        private void NotifyHpChanged()
+        {
+            OnPropertyChanged(nameof(HpText));
+            OnPropertyChanged(nameof(HpPercentage));
+            OnPropertyChanged(nameof(MainHpFillWidth));
+            OnPropertyChanged(nameof(HolderHpFillWidth));
+            OnPropertyChanged(nameof(HPColor));
         }
     }
 

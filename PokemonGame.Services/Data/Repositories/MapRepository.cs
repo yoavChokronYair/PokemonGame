@@ -191,22 +191,73 @@ namespace PokemonGame.Services.Data.Repositories
     }
     internal class NpcSpawnRepository : DbRepository<int, NpcSpawnData>
     {
-        internal NpcSpawnRepository(IDbConnectionService db) : base(db) { }
+        internal NpcSpawnRepository(IDbConnectionService db) : base(db)
+        {
+        }
 
-        public NpcSpawnData? GetNpcSpawnById(int id) =>
-            GetCached(id, () =>
-                _db.QuerySingle<NpcSpawnData>(
-                    "SELECT * FROM NpcSpawns WHERE Id = @id",
-                    new { id }));
-
-        public List<NpcSpawnData> GetNpcSpawnsForMap(int mapId) =>
-            _db.Query<NpcSpawnData>(
+        public NpcSpawnData? GetNpcSpawnById(int id)
+        {
+            return _db.QuerySingle<NpcSpawnData>(
                 @"
-                SELECT *
-                FROM NpcSpawns
-                WHERE MapId = @mapId
-                ",
+            SELECT
+                Id,
+                MapId,
+                NpcId,
+                X,
+                Y,
+                CollisionType,
+                MovementType,
+                FacingDirection,
+                COALESCE(DirectionA, 0) AS DirectionA,
+                COALESCE(DirectionB, 0) AS DirectionB,
+                COALESCE(StepsPerLeg, 0) AS StepsPerLeg,
+                DefaultState,
+                IsDisappearing,
+                VisionRange,
+                VisionType
+            FROM NpcSpawns
+            WHERE Id = @id
+            ",
+                new { id });
+        }
+
+        public List<NpcSpawnData> GetNpcSpawnsForMap(int mapId)
+        {
+            var result = _db.Query<NpcSpawnData>(
+                @"
+            SELECT
+                Id,
+                MapId,
+                NpcId,
+                X,
+                Y,
+                CollisionType,
+                MovementType,
+                FacingDirection,
+                COALESCE(DirectionA, 0) AS DirectionA,
+                COALESCE(DirectionB, 0) AS DirectionB,
+                COALESCE(StepsPerLeg, 0) AS StepsPerLeg,
+                DefaultState,
+                IsDisappearing,
+                VisionRange,
+                VisionType
+            FROM NpcSpawns
+            WHERE MapId = @mapId
+            ORDER BY Id
+            ",
                 new { mapId });
+
+            System.Diagnostics.Debug.WriteLine(
+                $"[NpcSpawnRepository] mapId={mapId}, loaded={result.Count}");
+
+            foreach (var npc in result)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[NpcSpawnRepository] SpawnId={npc.Id}, MapId={npc.MapId}, NpcId={npc.NpcId}, X={npc.X}, Y={npc.Y}");
+            }
+
+            return result;
+        }
     }
 
 

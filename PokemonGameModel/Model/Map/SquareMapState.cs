@@ -1,4 +1,4 @@
-﻿    using PokemonGame.Core.Model.Helper.MathHelper;
+﻿using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Dialogue;
 using PokemonGame.Model.Domain.Map;
@@ -12,11 +12,18 @@ namespace PokemonGame.Model.Model.Map
     public class InspectResult
     {
         public InspectResultType Type { get; set; }
+
         public string Message { get; set; } = string.Empty;
+
         public int TargetRow { get; set; }
+
         public int TargetCol { get; set; }
+
         public DialogueSet? DialogueSet { get; set; }
+
         public string NpcName { get; set; } = string.Empty;
+
+        public HMMoves RequiredHm { get; set; } = HMMoves.None;
     }
 
     public class MoveResult
@@ -180,54 +187,45 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Inspect ──────────────────────────────────────────────────────────
 
-        public InspectResult TryInspect(int fromRow, int fromCol, FacingDirection facing)
+       public InspectResult TryInspect(int fromRow, int fromCol, FacingDirection facing)
         {
             var (targetRow, targetCol) = Step(fromRow, fromCol, facing);
 
             var npc = GetNpcAt(targetRow, targetCol);
+
             if (npc != null)
             {
                 var set = npc.NpcInfo.GetDialogue(TriggerType.Interact);
+
                 if (set != null)
+                {
                     return new InspectResult
                     {
                         Type = InspectResultType.NpcDialogue,
                         DialogueSet = set,
                         NpcName = npc.NpcInfo.Name ?? string.Empty,
                     };
+                }
             }
 
-            var square = GetSquare(targetRow, targetCol);
+            var currentSquare = GetSquare(fromRow, fromCol);
+            var targetSquare = GetSquare(targetRow, targetCol);
 
-            if (square?.SquareType == CollisionType.HM)
+            if (targetSquare == null)
             {
-                var futureSquare = GetSquare(
-                    Step(targetRow, targetCol, facing).row,
-                    Step(targetRow, targetCol, facing).col);
+                return new InspectResult
+                {
+                    Type = InspectResultType.Nothing,
+                    Message = "There is nothing here."
+                };
+            }
 
-                HMMoves requiredHm = HMMoves.None;
-
-                // entering water
-                if (!PlayerDomain.Instance.trainerMapLocDomain.IsSurfing &&
-                    futureSquare?.TileType == TileType.Water)
-                {
-                    requiredHm = HMMoves.Surf;
-                }
-                // waterfall while surfing
-                else if (PlayerDomain.Instance.trainerMapLocDomain.IsSurfing)
-                {
-                    requiredHm = HMMoves.Waterfall;
-                }
-                // cave interaction
-                else if (GetSquare(fromRow, fromCol)?.TileType == TileType.Cave)
-                {
-                    requiredHm = HMMoves.Strength;
-                }
-                // fallback
-                else
-                {
-                    requiredHm = HMMoves.Cut;
-                }
+            if (targetSquare.SquareType == CollisionType.HM)
+            {
+                HMMoves requiredHm = ResolveRequiredHm(
+                    currentSquare,
+                    targetSquare,
+                    PlayerDomain.Instance.trainerMapLocDomain.IsSurfing);
 
                 bool hasHm =
                     PlayerDomain.Instance.Team.AnyPokemonKnows(requiredHm.ToString());
@@ -238,11 +236,16 @@ namespace PokemonGame.Model.Model.Map
                     {
                         Type = InspectResultType.NeedHm,
                         Message = $"You need {requiredHm} here.",
+                        TargetRow = targetRow,
+                        TargetCol = targetCol,
+                        RequiredHm = requiredHm
                     };
                 }
 
                 if (requiredHm == HMMoves.Surf)
+                {
                     PlayerDomain.Instance.trainerMapLocDomain.IsSurfing = true;
+                }
 
                 return new InspectResult
                 {
@@ -250,14 +253,36 @@ namespace PokemonGame.Model.Model.Map
                     Message = $"Used {requiredHm}!",
                     TargetRow = targetRow,
                     TargetCol = targetCol,
+                    RequiredHm = requiredHm
                 };
             }
+
             return new InspectResult
             {
-                Type = InspectResultType.Nothing
+                Type = InspectResultType.Nothing,
+                Message = "There is nothing special here."
             };
         }
+        private static HMMoves ResolveRequiredHm(
+        SquareDomain? currentSquare,
+        SquareDomain targetSquare,
+        bool isSurfing)
+        {
+            if (targetSquare.TileType == TileType.Water)
+            {
+                return isSurfing
+                    ? HMMoves.Waterfall
+                    : HMMoves.Surf;
+            }
 
+            if (targetSquare.TileType == TileType.Cave ||
+                currentSquare?.TileType == TileType.Cave)
+            {
+                return HMMoves.Strength;
+            }
+
+            return HMMoves.Cut;
+        }
         // ── NPC queries ──────────────────────────────────────────────────────
 
         public NpcObjectDomain? GetNpcAt(int squareRow, int squareCol)
@@ -278,12 +303,12 @@ namespace PokemonGame.Model.Model.Map
             Array.Clear(_visionLayer, 0, _visionLayer.Length);
             foreach (var npc in _map.Npc)
             {
-                if (npc.visionRange <= 0) continue;
+                if (npc.VisionRange <= 0) continue;
                 var (r, c) = NpcSquare(npc);
                 switch (npc.VisionType)
                 {
                     case VisionType.Normal: PaintLineVision(npc, r, c); break;
-                    case VisionType.circular: PaintCircularVision(npc, r, c); break;
+                    case VisionType.Circular: PaintCircularVision(npc, r, c); break;
                 }
             }
         }
@@ -381,10 +406,10 @@ namespace PokemonGame.Model.Model.Map
 
         private void PaintLineVision(NpcObjectDomain npc, int npcRow, int npcCol)
         {
-            var (dRow, dCol) = Delta(npc.direction);
+            var (dRow, dCol) = Delta(npc.Direction);
             if (dRow == 0 && dCol == 0) return;
 
-            for (int step = 1; step <= npc.visionRange; step++)
+            for (int step = 1; step <= npc.VisionRange; step++)
             {
                 int r = npcRow + dRow * step;
                 int c = npcCol + dCol * step;
@@ -397,10 +422,10 @@ namespace PokemonGame.Model.Model.Map
 
         private void PaintCircularVision(NpcObjectDomain npc, int npcRow, int npcCol)
         {
-            for (int dr = -npc.visionRange; dr <= npc.visionRange; dr++)
-                for (int dc = -npc.visionRange; dc <= npc.visionRange; dc++)
+            for (int dr = -npc.VisionRange; dr <= npc.VisionRange; dr++)
+                for (int dc = -npc.VisionRange; dc <= npc.VisionRange; dc++)
                 {
-                    if (Math.Max(Math.Abs(dr), Math.Abs(dc)) > npc.visionRange) continue;
+                    if (Math.Max(Math.Abs(dr), Math.Abs(dc)) > npc.VisionRange) continue;
                     int r = npcRow + dr;
                     int c = npcCol + dc;
                     if (InBounds(r, c) && HasLineOfSight(npcRow, npcCol, r, c))

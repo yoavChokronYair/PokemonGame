@@ -21,6 +21,7 @@ namespace PokemonGame.Model.Model.Map
             Height = height;
         }
     }
+
     public class MapState
     {
         private MapDomain _activeMap;
@@ -45,55 +46,97 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Viewport ──────────────────────────────────────────────────────────
 
-        public (int[,] background, int[,] foreground, int[,] vision, SpriteOverlay player) BuildViewPort(
-    PlayerDomain player, SquareMapState squareMap)
+        public (int[,] background, int[,] foreground, int[,] vision,
+                List<SpriteOverlay> npcs, SpriteOverlay player) BuildViewPort(
+            PlayerDomain player, SquareMapState squareMap)
         {
             var bg = BuildLayerViewport(player.trainerMapLocDomain.playerLoc, isForeground: false);
             var fg = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
             var vision = BuildVisionViewport(player.trainerMapLocDomain.playerLoc, squareMap);
+            var npcs = BuildNpcOverlays(player.trainerMapLocDomain.playerLoc);
 
-            StampNpcs(fg, player.trainerMapLocDomain.playerLoc);
-
-            // Player is always dead center of the viewport, but 24px tall instead of 16px
-            // so we shift it up by 8px (one extra row) so feet align with collision square
-            int tileSize = MapConstants.TileSize;          // e.g. 16
+            int tileSize = MapConstants.TileSize;
             int centerX = (MapConstants.ViewColSize / 2) * tileSize;
             int centerY = (MapConstants.ViewRowSize / 2) * tileSize;
+
             var playerSprite = new SpriteOverlay(
-                imagePath: PlayerSprites.GetFrame(player.trainerMapLocDomain.FacingDirection, player.AnimationTick, player.IsMoving),
+                imagePath: PlayerSprites.GetFrame(
+                    player.trainerMapLocDomain.FacingDirection,
+                    player.AnimationTick,
+                    player.IsMoving),
                 pixelX: centerX,
-                pixelY: centerY - (24 - tileSize),   // shift up so feet sit on collision row
+                pixelY: centerY - (24 - tileSize),
                 width: 16,
                 height: 24
             );
 
-            return (bg, fg, vision, playerSprite);
+            return (bg, fg, vision, npcs, playerSprite);
+        }
+
+        // ── NPC overlays — mirrors the player sprite exactly ──────────────────
+
+        private List<SpriteOverlay> BuildNpcOverlays((int x, int y) pos)
+        {
+            int tileSize = MapConstants.TileSize;
+
+            int halfRows = MapConstants.ViewRowSize / 2;
+            int halfCols = MapConstants.ViewColSize / 2;
+
+            var overlays = new List<SpriteOverlay>();
+
+            foreach (var npc in _activeMap.Npc)
+            {
+                int relRow = npc.Location.y - pos.y + halfRows;
+                int relCol = npc.Location.x - pos.x + halfCols;
+
+                if (relRow < 0 || relRow >= MapConstants.ViewRowSize ||
+                    relCol < 0 || relCol >= MapConstants.ViewColSize)
+                {
+                    continue;
+                }
+
+                int pixelX = relCol * tileSize;
+                int pixelY = relRow * tileSize - (24 - tileSize);
+
+                overlays.Add(new SpriteOverlay(
+                    imagePath: NpcSprites.GetFrame(
+                        npc.NpcInfo.SpriteId ?? 1,
+                        npc.Direction,
+                        0,
+                        false
+                    ),
+                    pixelX: pixelX,
+                    pixelY: pixelY,
+                    width: 16,
+                    height: 24
+                ));
+            }
+
+            return overlays;
         }
 
         // ── Private — viewport building ───────────────────────────────────────
 
         private int[,] BuildLayerViewport((int x, int y) pos, bool isForeground)
         {
-            // pos.x = tileCol, pos.y = tileRow
             int halfRows = MapConstants.ViewRowSize / 2;
             int halfCols = MapConstants.ViewColSize / 2;
             var view = new int[MapConstants.ViewRowSize, MapConstants.ViewColSize];
 
             for (int r = 0; r < MapConstants.ViewRowSize; r++)
                 for (int c = 0; c < MapConstants.ViewColSize; c++)
-                    view[r, c] = SampleTile(pos.y - halfRows + r,   // tileRow
-                                            pos.x - halfCols + c,   // tileCol
+                    view[r, c] = SampleTile(pos.y - halfRows + r,
+                                            pos.x - halfCols + c,
                                             isForeground);
             return view;
         }
 
         private int[,] BuildVisionViewport((int x, int y) pos, SquareMapState squareMap)
         {
-            // pos.x = tileCol, pos.y = tileRow
             int vRows = MapConstants.ViewRowSize / MapConstants.TilesPerSquare;
             int vCols = MapConstants.ViewColSize / MapConstants.TilesPerSquare;
             var view = new int[vRows, vCols];
-            var (psr, psc) = squareMap.TileToSquare(pos.y, pos.x);   // (tileRow, tileCol)
+            var (psr, psc) = squareMap.TileToSquare(pos.y, pos.x);
             int halfRows = vRows / 2;
             int halfCols = vCols / 2;
 
@@ -108,33 +151,6 @@ namespace PokemonGame.Model.Model.Map
                 }
 
             return view;
-        }
-
-
-        private void StampNpcs(int[,] fg, (int playerRow, int playerCol) pos)
-        {
-            // pos.x = tileCol, pos.y = tileRow
-            int halfRows = MapConstants.ViewRowSize / 2;
-            int halfCols = MapConstants.ViewColSize / 2;
-
-            foreach (var npc in _activeMap.Npc)
-            {
-                if (npc.Sprite == null) continue;
-                var sprite = npc.Sprite.GetSprite(npc.direction);
-                if (sprite == null) continue;
-
-                // npc.Location.y = tileRow, npc.Location.x = tileCol
-                int r = npc.Location.y - pos.playerRow + halfRows - 1;
-                int c = npc.Location.x - pos.playerCol + halfCols - 1;
-
-                if (r < 0 || r + 1 >= fg.GetLength(0) ||
-                    c < 0 || c + 1 >= fg.GetLength(1)) continue;
-
-                fg[r, c] = sprite.Value.TL;
-                fg[r, c + 1] = sprite.Value.TR;
-                fg[r + 1, c] = sprite.Value.BL;
-                fg[r + 1, c + 1] = sprite.Value.BR;
-            }
         }
 
         // ── Private — neighbor-aware tile sampling ────────────────────────────
@@ -161,10 +177,6 @@ namespace PokemonGame.Model.Model.Map
                 : 0;
         }
 
-        // ── Bug #7 fix: Margin applied to tile coords but Margin is square units
-        //
-        // FindNeighbor was adding Margin (square units) directly to tileRow/tileCol
-        // (tile units). Must convert: tileMargin = Margin * TilesPerSquare.
         private (MapDomain map, int row, int col)? FindNeighbor(int tileRow, int tileCol, int mapRows, int mapCols)
         {
             int tps = MapConstants.TilesPerSquare;
@@ -201,8 +213,6 @@ namespace PokemonGame.Model.Model.Map
         private ConnectedMapDomain? GetNeighbor(ConnectionDirection direction)
             => _activeMap.ConnectedMaps.FirstOrDefault(c => c.ConnectionDirection == direction);
 
-        // ── Private — cache helpers ───────────────────────────────────────────
-
         private (int[,] bg, int[,] fg) GetCachedTiles(MapDomain map)
         {
             if (_mapCache.TryGetValue(map, out var cached)) return cached;
@@ -225,7 +235,6 @@ namespace PokemonGame.Model.Model.Map
             var tiles = new int[map.Height, map.Width];
             foreach (var tile in blocks)
             {
-                // tile.Y = tileRow, tile.X = tileCol
                 if ((uint)tile.Y < (uint)map.Height &&
                     (uint)tile.X < (uint)map.Width)
                     tiles[tile.Y, tile.X] = tile.Tileid;

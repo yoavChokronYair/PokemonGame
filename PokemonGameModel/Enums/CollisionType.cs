@@ -12,6 +12,7 @@ namespace PokemonGame.Model.Enums
     public enum FacingDirection { None,Up, Down, Left, Right }
     public enum InspectResultType
     {
+
         Nothing,
         NpcDialogue,
         ItemPickup,
@@ -19,6 +20,6 @@ namespace PokemonGame.Model.Enums
         NeedHm,
     }
     public enum MovementType { Stationary, Walking}
-    public enum VisionType { Normal, circular}
+    public enum VisionType { Normal, Circular}
 
 }

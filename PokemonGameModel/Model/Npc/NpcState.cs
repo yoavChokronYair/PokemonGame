@@ -44,7 +44,7 @@ namespace PokemonGame.Model.Model.Npc
         }
 
         public bool IsDefeated() =>
-            PlayerDomain.Instance.ProgressFlags.DefeatedTrainers.Contains(_trainerInfo.id);
+            PlayerDomain.Instance.ProgressFlags.DefeatedTrainers.Contains(_trainerInfo.Id);
 
         public virtual void OnBattleWon()
         {
@@ -63,7 +63,7 @@ namespace PokemonGame.Model.Model.Npc
         }
 
         protected void MarkDefeated() =>
-            PlayerDomain.Instance.ProgressFlags.DefeatedTrainers.Add(_trainerInfo.id);
+            PlayerDomain.Instance.ProgressFlags.DefeatedTrainers.Add(_trainerInfo.Id);
 
         public int CalculateReward(PokemonTeam team)
         {

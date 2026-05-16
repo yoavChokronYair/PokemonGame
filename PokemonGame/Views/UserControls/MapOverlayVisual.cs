@@ -65,21 +65,7 @@ namespace PokemonGame.Views.UserControls
                                               t + (cell - ft.Height) / 2));
                 }
 
-                if (item.IsDebug)
-                {
-                    if (item.DebugTintColor != null && item.DebugTintColor.Length > 1)
-                    {
-                        var tint = BrushCache.Get(item.DebugTintColor);
-                        if (tint != null)
-                            dc.DrawRectangle(tint, null, new Rect(l, t, cell, cell));
-                    }
-                    if (item.DebugText != null)
-                    {
-                        var ft = MakeText(item.DebugText, DebugTypeface, DebugTextBrush, 8);
-                        dc.DrawText(ft, new Point(l + (cell - ft.Width) / 2,
-                                                  t + (cell - ft.Height) / 2));
-                    }
-                }
+               
             }
         }
 

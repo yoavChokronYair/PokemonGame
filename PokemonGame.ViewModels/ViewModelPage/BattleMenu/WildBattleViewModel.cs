@@ -101,6 +101,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 OnMoveChosen,
                 OnSwitchChosen,
                 OnFlee,
+                OnOpenBag,
                 OnOpenSwitch,
                 Logger);
 
@@ -201,28 +202,40 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             if (caught)
             {
-                Logger.EnqueueStringEntries(new[] { "1...", "2...", "3...",
-                    $"{_wildPokemon.pokemonState.Name} was caught!" });
+                Logger.EnqueueStringEntries(new[]
+                {
+        "1...",
+        "2...",
+        "3...",
+        $"{_wildPokemon.pokemonState.Name} was caught!"
+    });
+
                 await Logger.WaitUntilQueueEmpty();
 
                 _isBattleOverHandled = true;
 
-                var caught_pokemon = PokemonConversionService.FromWildCatch(
+                var caughtPokemon = PokemonConversionService.FromWildCatch(
                     _wildPokemon,
                     _player.trainerMapLocDomain.CurrentMap.Name,
                     ball.BallType);
 
-                _player.AddPokemon(caught_pokemon);
+                _player.AddPokemon(caughtPokemon);
 
-                // Register caught in Pokédex
-                RegisterPokedexCaught(_wildPokemon.pokemonState.PokedexId,
-                                      _wildPokemon.pokemonState.Name);
+                RegisterPokedexCaught(
+                    _wildPokemon.pokemonState.PokedexId,
+                    _wildPokemon.pokemonState.Name);
 
                 ShowOutcome(
                     "Gotcha!",
                     IsPartyFull()
                         ? $"{_wildPokemon.pokemonState.Name} was sent to a Box!"
                         : $"{_wildPokemon.pokemonState.Name} was added to your team!");
+
+                await Task.Delay(1500);
+
+                ReturnToMap();
+
+                return;
             }
             else
             {
@@ -563,7 +576,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
 
             // Navigate back to battle FIRST, then let the throw animate
-            _navigationStore.CurrentViewModel = _returnToWild();
+            var battleVm = _returnToWild();
+
+            _navigationStore.CurrentViewModel = battleVm;
+
             await _onBallThrown(entry.Ball);
         }
 
