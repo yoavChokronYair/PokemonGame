@@ -31,7 +31,7 @@ namespace PokemonGame.ViewModels.Translators
             var save = _playerService.LoadAll(UserStore.Instance.UserID);
 
             var player = PlayerDomain.Instance;
-
+                
             ApplyTrainerInfo(save.TrainerInfo, player);
             ApplyMapLoc(save.TrainerInfo, player);
             ApplyProgressFlags(save, player);
