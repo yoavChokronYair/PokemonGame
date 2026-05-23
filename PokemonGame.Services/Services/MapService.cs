@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using PokemonGame.Services.Data.ConnectionsService;
+using System.Linq;
 using PokemonGame.Services.Data.Map;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 
 namespace PokemonGame.Services.Services
 {
-    // ── Result types the VM works with ──────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // RESULT TYPES
+    // ─────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Everything the VM needs to render and interact with one map.
-    /// </summary>
     public sealed class MapBundle
     {
         public MapData Map { get; set; } = null!;
@@ -24,63 +22,46 @@ namespace PokemonGame.Services.Services
         public IReadOnlyList<WrapData> Wraps { get; set; } = new List<WrapData>();
         public IReadOnlyList<EncounterData> Encounters { get; set; } = new List<EncounterData>();
         public IReadOnlyList<NpcSpawnData> NpcSpawns { get; set; } = new List<NpcSpawnData>();
+
+        // ── NPC SYSTEM ─────────────────────────────
+        public IReadOnlyList<NpcDefinitionsData> NpcDefinitions { get; set; } = new List<NpcDefinitionsData>();
+        public IReadOnlyList<DialogueSetsData> DialogueSets { get; set; } = new List<DialogueSetsData>();
+        public IReadOnlyList<DialogueNodesData> DialogueNodes { get; set; } = new List<DialogueNodesData>();
+        public IReadOnlyList<DialogueEdgesData> DialogueEdges { get; set; } = new List<DialogueEdgesData>();
     }
 
-    /// <summary>
-    /// Tile data split by layer, ready for the viewport builder.
-    /// </summary>
     public sealed class MapLayers
     {
         public IReadOnlyList<MapTileData> Background { get; set; } = new List<MapTileData>();
         public IReadOnlyList<MapTileData> Foreground { get; set; } = new List<MapTileData>();
     }
 
-    // ── Interface ────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // INTERFACE
+    // ─────────────────────────────────────────────────────────────
 
     public interface IMapService
     {
-        /// <summary>Loads the full bundle for a map by id.</summary>
         MapBundle? GetMap(int mapId);
-
-        /// <summary>Loads the full bundle for a map by name.</summary>
         MapBundle? GetMap(string mapName);
-
-        /// <summary>Returns background and foreground tile lists for a map.</summary>
         MapLayers GetLayers(int mapId);
-
-        /// <summary>Returns collision objects for a map.</summary>
         IReadOnlyList<MapCollisionObjectData> GetCollisions(int mapId);
-
-        /// <summary>Returns all connected-map descriptors for a map.</summary>
         IReadOnlyList<ConnectedMapData> GetConnections(int mapId);
-
-        /// <summary>Returns all warps defined on a map.</summary>
         IReadOnlyList<WrapData> GetWraps(int mapId);
-
-        /// <summary>Returns wild encounter table for a map.</summary>
         IReadOnlyList<EncounterData> GetEncounters(int mapId);
-
-        /// <summary>Returns NPC spawn records for a map.</summary>
         IReadOnlyList<NpcSpawnData> GetNpcSpawns(int mapId);
 
-        /// <summary>
-        /// Returns the tile-metadata lookup for every tile in a tileset,
-        /// keyed by TileId. Useful for collision/type lookups in the VM.
-        /// </summary>
         IReadOnlyDictionary<int, TileMetadataData> GetTileMetaLookup(int tilesetId);
-
-        /// <summary>Returns a flat list of all maps (for map-select screens, etc.).</summary>
         IReadOnlyList<MapData> GetAllMaps();
-
-        /// <summary>Checks whether a map with the given id exists.</summary>
         bool MapExists(int mapId);
     }
 
-    // ── Implementation ───────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // IMPLEMENTATION
+    // ─────────────────────────────────────────────────────────────
 
     public sealed class MapService : IMapService
     {
-        // Layer values stored in MapTileData.LayerType
         private const int LayerBackground = 0;
         private const int LayerForeground = 1;
 
@@ -94,9 +75,16 @@ namespace PokemonGame.Services.Services
         private readonly EncounterRepository _encounters;
         private readonly NpcSpawnRepository _npcSpawns;
 
+        // ── NPC SYSTEM REPOS ─────────────────────────────
+        private readonly NpcDefinitionsRepository _npcDefinitions;
+        private readonly DialogueSetsRepository _dialogueSets;
+        private readonly DialogueNodesRepository _dialogueNodes;
+        private readonly DialogueEdgesRepository _dialogueEdges;
+
         public MapService()
         {
-            ServiceFactory factory = ServiceFactory.Instance;
+            var factory = ServiceFactory.Instance;
+
             _maps = factory.MapRepository;
             _tilesets = factory.TilesetRepository;
             _tileMeta = factory.TileMetadataRepository;
@@ -106,9 +94,17 @@ namespace PokemonGame.Services.Services
             _wraps = factory.WrapRepository;
             _encounters = factory.EncounterRepository;
             _npcSpawns = factory.NpcSpawnRepository;
+
+            // NPC SYSTEM
+            _npcDefinitions = factory.NpcDefinitionsRepository;
+            _dialogueSets = factory.DialogueSetsRepository;
+            _dialogueNodes = factory.DialogueNodesRepository;
+            _dialogueEdges = factory.DialogueEdgesRepository;
         }
 
-        // ── IMapService ──────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────
+        // PUBLIC API
+        // ─────────────────────────────────────────────────────────────
 
         public MapBundle? GetMap(int mapId)
         {
@@ -155,18 +151,39 @@ namespace PokemonGame.Services.Services
         public bool MapExists(int mapId) =>
             _maps.MapExists(mapId);
 
-        // ── Private helpers ──────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────
+        // BUILD FULL MAP
+        // ─────────────────────────────────────────────────────────────
 
-        /// Assembles a full <see cref="MapBundle"/> from a known <see cref="MapData"/>.
         private MapBundle BuildBundle(MapData map)
         {
-            // Tiles carry TilesetId — grab the first one we find (maps typically
-            // use a single tileset; extend here if multi-tileset support is needed).
             var tiles = _mapTiles.GetTilesForMap(map.Id);
             var tileset = ResolveTileset(tiles);
+
             var meta = tileset is null
                 ? new List<TileMetadataData>()
                 : _tileMeta.GetMetadataForTileset(tileset.Id);
+
+            var npcSpawns = _npcSpawns.GetNpcSpawnsForMap(map.Id);
+
+            var npcIds = npcSpawns.Select(n => n.NpcId).Distinct().ToList();
+
+            var npcs = npcIds
+                .Select(id => _npcDefinitions.Load(id))
+                .Where(n => n != null)
+                .ToList()!;
+
+            var sets = npcs
+                .SelectMany(n => _dialogueSets.LoadByNpc(n.Id))
+                .ToList();
+
+            var nodes = sets
+                .SelectMany(s => _dialogueNodes.LoadBySet(s.Id))
+                .ToList();
+
+            var edges = nodes
+                .SelectMany(n => _dialogueEdges.LoadByFromNode(n.Id))
+                .ToList();
 
             return new MapBundle
             {
@@ -178,17 +195,20 @@ namespace PokemonGame.Services.Services
                 Connections = _connections.GetConnectionsForMap(map.Id),
                 Wraps = _wraps.GetWrapsForMap(map.Id),
                 Encounters = _encounters.GetEncountersForMap(map.Id),
-                NpcSpawns = _npcSpawns.GetNpcSpawnsForMap(map.Id),
+                NpcSpawns = npcSpawns,
+
+                // NPC SYSTEM
+                NpcDefinitions = npcs,
+                DialogueSets = sets,
+                DialogueNodes = nodes,
+                DialogueEdges = edges
             };
         }
 
-        /// Picks the tileset used by the map's tile data.
         private TilesetData? ResolveTileset(IReadOnlyList<MapTileData> tiles)
         {
             if (tiles.Count == 0) return null;
 
-            // Use the tileset referenced by the first background tile, falling
-            // back to any tile if no background tile exists.
             var representative =
                 tiles.FirstOrDefault(t => t.LayerType == LayerBackground)
                 ?? tiles[0];
@@ -197,4 +217,3 @@ namespace PokemonGame.Services.Services
         }
     }
 }
-

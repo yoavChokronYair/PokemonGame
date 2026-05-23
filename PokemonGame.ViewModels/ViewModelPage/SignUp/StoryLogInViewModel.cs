@@ -29,7 +29,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.SignUp
             _navigationStore = navigationStore;
             _createMapViewModel = createMapViewModel;
             _service = ServiceFactory.Instance.StoryPlayerService;
-            _playerLoader = new PlayerLoader(_service, new MapLoader(new MapService()));
+            _playerLoader = new PlayerLoader(_service, new MapLoader(new MapService(), UserStore.Instance.Resolver.GetPokemonService()));
 
             var summaries = _service.GetSummaries(UserStore.Instance.UserID);
             foreach (var s in summaries)

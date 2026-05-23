@@ -2,7 +2,6 @@
     x:Class="PokemonGame.Views.UserControls.BattleMenu.BattleSelectionMenuUserControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:behaviors="clr-namespace:PokemonGame.View.Behaviors"
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:converter="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,6 +18,25 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <converter:MultiBoolToVisibilityConverter x:Key="MultiBoolToVis" />
         <converter:BoolToThicknessConverter x:Key="BoolToThickness" />
+
+        <!--  Same look for FIGHT / BAG / POKEMON / RUN  -->
+        <Style x:Key="BattleMenuItemBorderStyle" TargetType="Border">
+            <Setter Property="Margin" Value="6" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="BorderBrush" Value="#202020" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <Style x:Key="BattleMenuItemTextStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#202020" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -42,51 +60,70 @@
             </controls:BoardBackground.Visibility>
 
             <UniformGrid Columns="2" Rows="2">
-                <Border BorderBrush="White" BorderThickness="{Binding IsFightSelected, Converter={StaticResource BoolToThickness}}">
-                    <Button
-                        Command="{Binding OpenMenuCommand}"
-                        Content="FIGHT"
-                        Focusable="False" />
+
+                <!--  FIGHT  -->
+                <Border BorderThickness="{Binding IsFightSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource BattleMenuItemBorderStyle}">
+                    <TextBlock Style="{StaticResource BattleMenuItemTextStyle}" Text="FIGHT" />
                 </Border>
-                <Border BorderBrush="White" BorderThickness="{Binding IsBagSelected, Converter={StaticResource BoolToThickness}}">
-                    <Button Content="BAG" Focusable="False" />
+
+                <!--  BAG  -->
+                <Border BorderThickness="{Binding IsBagSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource BattleMenuItemBorderStyle}">
+                    <TextBlock Style="{StaticResource BattleMenuItemTextStyle}" Text="BAG" />
                 </Border>
-                <Border BorderBrush="White" BorderThickness="{Binding IsPokemonSelected, Converter={StaticResource BoolToThickness}}">
-                    <Button
-                        Command="{Binding OpenSwitchCommand}"
-                        Content="POKEMON"
-                        Focusable="False" />
+
+                <!--  POKEMON  -->
+                <Border BorderThickness="{Binding IsPokemonSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource BattleMenuItemBorderStyle}">
+                    <TextBlock Style="{StaticResource BattleMenuItemTextStyle}" Text="POKEMON" />
                 </Border>
-                <Border BorderBrush="White" BorderThickness="{Binding IsRunSelected, Converter={StaticResource BoolToThickness}}">
-                    <Button
-                        Command="{Binding ForfeitCommand}"
-                        Content="RUN"
-                        Focusable="False" />
+
+                <!--  RUN  -->
+                <Border BorderThickness="{Binding IsRunSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource BattleMenuItemBorderStyle}">
+                    <TextBlock Style="{StaticResource BattleMenuItemTextStyle}" Text="RUN" />
                 </Border>
+
             </UniformGrid>
         </controls:BoardBackground>
 
-        <!--  Move info panel (PP / TYPE + BACK button)  -->
+        <!--  Move info panel  -->
         <controls:BoardBackground Grid.Column="1" Visibility="{Binding IsMovesetVisible, Converter={StaticResource BoolToVis}}">
+
             <StackPanel Margin="10" VerticalAlignment="Center">
-                <TextBlock FontSize="14" Text="{Binding SelectedMovePP}" />
+
+                <TextBlock
+                    FontFamily="Consolas"
+                    FontSize="14"
+                    Text="{Binding SelectedMovePP}" />
+
                 <TextBlock
                     Margin="0,5,0,0"
+                    FontFamily="Consolas"
                     FontSize="14"
                     Text="{Binding SelectedMoveType}" />
-                <Border BorderBrush="White" BorderThickness="{Binding IsBackSelected, Converter={StaticResource BoolToThickness}}">
-                    <Button
-                        Margin="0,10,0,0"
-                        Command="{Binding CloseMovesetCommand}"
-                        Content="BACK" />
+
+                <Border
+                    Margin="0,10,0,0"
+                    Padding="8,4"
+                    BorderBrush="#202020"
+                    BorderThickness="{Binding IsBackSelected, Converter={StaticResource BoolToThickness}}"
+                    CornerRadius="2">
+
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontFamily="Consolas"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Text="BACK" />
+
                 </Border>
+
             </StackPanel>
         </controls:BoardBackground>
 
-        <!--  Moveset chooser — DataContext passed down to MovesetChooser child VM  -->
+        <!--  Moveset chooser  -->
         <local:BattlePokemonMovesetChooserUserControl
             Grid.Column="0"
             DataContext="{Binding MovesetChooser}"
             Visibility="{Binding DataContext.IsMovesetVisible, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}" />
+
     </Grid>
 </UserControl>

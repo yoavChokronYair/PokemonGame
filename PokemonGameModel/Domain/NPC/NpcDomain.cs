@@ -5,65 +5,88 @@ using PokemonGame.Model.Enums;
 
 namespace PokemonGame.Model.Domain.Npc
 {
-    public class NpcSpriteDomain
-    {
-        public Dictionary<FacingDirection, (int TL, int TR, int BL, int BR)> Tiles { get; set; } = new();
-
-        public (int TL, int TR, int BL, int BR)? GetSprite(FacingDirection direction)
-            => Tiles.TryGetValue(direction, out var sprite) ? sprite : null;
-    }
     public class NpcDomain
     {
         private readonly List<NpcDialogueState> _dialogueStates = new();
 
         public IReadOnlyList<NpcDialogueState> DialogueStates => _dialogueStates;
 
-        public void AddDialogueState(NpcDialogueState state) =>
-            _dialogueStates.Add(state ?? throw new ArgumentNullException(nameof(state)));
+        public int Id { get; set; }
 
-        public DialogueSet? GetDialogue(TriggerType trigger) =>
-            _dialogueStates.FirstOrDefault(d => d.IsMatch(trigger))?.DialogueSet;
+        public string? Name { get; set; }
+
+        public NpcType? Type { get; set; }
+
+        public int? SpriteId { get; set; }
+
+        public void AddDialogueState(NpcDialogueState state)
+        {
+            _dialogueStates.Add(
+                state ?? throw new ArgumentNullException(nameof(state)));
+        }
+
+        public DialogueSet? GetDialogue(TriggerType trigger)
+        {
+            return _dialogueStates
+                .FirstOrDefault(d => d.IsMatch(trigger))
+                ?.DialogueSet;
+        }
+
         public virtual void OnDialogueFinishedTrue()
         {
-
         }
+
         public virtual void OnDialogueFinishedFalse()
         {
-
         }
-
-        public NpcType? Type;
-        public string? Name;    
-        public int Id;
     }
+
     public class ItemGivingDomain
     {
         private readonly itemsDomain _item;
-        public int id;
+
         private bool _hasBeenGiven;
 
-        public bool IsAvailable() => !_hasBeenGiven;
+        public int Id { get; set; }
+
+        public ItemGivingDomain(itemsDomain item)
+        {
+            _item = item ?? throw new ArgumentNullException(nameof(item));
+        }
+
+        public bool IsAvailable()
+        {
+            return !_hasBeenGiven;
+        }
 
         public void Give()
         {
             if (_hasBeenGiven)
+            {
                 throw new InvalidOperationException(
                     "Item has already been given.");
+            }
 
             _hasBeenGiven = true;
-            if(!PlayerDomain.Instance.trainerItemDomain.BagInventory.TryGetValue(_item, out int currentCount))
+
+            if (!PlayerDomain.Instance.trainerItemDomain.BagInventory
+                    .TryGetValue(_item, out int currentCount))
             {
                 PlayerDomain.Instance.trainerItemDomain.BagInventory[_item] = 0;
             }
+
             PlayerDomain.Instance.trainerItemDomain.BagInventory[_item]++;
         }
     }
 
     public class TrainerDomain
     {
-        public int id { get; set; }
-        public BotLevel AiType;
-        public int BaseMoney;
-        public TrainerClass TrainerClass;
+        public int Id { get; set; }
+
+        public BotLevel AiType { get; set; }
+
+        public int BaseMoney { get; set; }
+
+        public TrainerClass TrainerClass { get; set; }
     }
 }

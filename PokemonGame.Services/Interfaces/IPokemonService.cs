@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Services.Data.GameData.Pokemon;
 using PokemonGame.Services.Data.GameData.PokemonData;
+using PokemonGame.Services.Data.Map;
 
 namespace PokemonGame.Services.Interfaces
 {
@@ -9,6 +10,8 @@ namespace PokemonGame.Services.Interfaces
         PokemonLoadResult GetPokemonFromInstance(BattlerPokemon battler);
         List<PokemonLoadResult> LoadTeamResults(int battlePlayerId);
         List<PokemonLoadResult> GenerateRandomTeam(int count = 6, int level = 50);
+        PokemonLoadResult GenerateWildPokemon(EncounterData encounter);
+
     }
     public class PokemonLoadResult
     {

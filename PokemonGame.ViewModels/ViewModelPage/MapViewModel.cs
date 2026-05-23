@@ -1,4 +1,4 @@
-﻿
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -25,28 +25,38 @@ namespace PokemonGame.ViewModels.ViewModelPage
     {
         void RegisterFocusCallback(Action focus);
     }
+
     public class CanvasOverlayItem
     {
         public double Left { get; set; }
         public double Top { get; set; }
+
         public bool IsPlayer { get; set; }
         public bool IsNpc { get; set; }
         public bool IsTrainer { get; set; }
         public bool IsVision { get; set; }
         public bool HasCollision { get; set; }
+
         public string CollisionColor { get; set; } = "Transparent";
-        public string NpcSymbol { get; set; }
-        public string Tooltip { get; set; }
-        public bool IsDebug { get; set; }
-        public string DebugText { get; set; }
-        public string DebugTintColor { get; set; } = "Transparent";
+        public string NpcSymbol { get; set; } = string.Empty;
+        public string Tooltip { get; set; } = string.Empty;
     }
 
-    //just fields propertys,constructor, and InitializeAsync
+    public class NpcImageOverlayItem
+    {
+        public ImageSource Image { get; set; }
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public double Width { get; set; } = 48;
+        public double Height { get; set; } = 72;
+        public int NpcId { get; set; }
+        public string Tooltip { get; set; } = string.Empty;
+    }
+
     public partial class MapViewModel : ViewModelBase, IDisposable, IFocusTarget
     {
         private readonly NavigationStore _navigationStore;
-        private readonly Func<ViewModelBase> _createTrainerCardViewModel;   
+        private readonly Func<ViewModelBase> _createTrainerCardViewModel;
         private readonly Func<ViewModelBase> _createpokedexPageViewModel;
         private readonly Func<ViewModelBase> _createGameModChooser;
 
@@ -59,101 +69,35 @@ namespace PokemonGame.ViewModels.ViewModelPage
         private static readonly int HalfSqCols = ViewSqCols / 2;
 
         private static readonly string PlayerSpritePath =
-            @"C:\Users\yoav\source\repos\PokemonGame\PokemonGame\Assets\Images\Player\";
+            @"C:\Users\yoav\source\repos\PokemonGame\PokemonGame\Assets\Images\Player";
 
-        // ── Fields ───────────────────────────────────────────────────────────
+        private static readonly string NpcSpritePath =
+            @"C:\Users\yoav\source\repos\PokemonGame\PokemonGame\Assets\Images\Npc";
+
         private readonly PlayerDomain _player;
         private readonly MapLoader _mapLoader;
         private MapManager _mapManager;
 
         private readonly Dictionary<string, BitmapImage> _mapImageCache = new();
         private readonly Dictionary<string, ImageSource> _spriteCache = new();
-        private readonly Dictionary<(int, int, int, int), CroppedBitmap> _cropCache = new();
         private Dictionary<(int row, int col), int> _npcSquareMap = new();
 
         private bool _disposed;
         private bool _pendingOverlayRebuild;
+
         private EventHandler _npcTickHandler;
         private EventHandler _playerTickHandler;
+
         private readonly MovementState _movement = new();
+
         private Action _dialogueOpenedHandler;
         private Action _dialogueClosedHandler;
+
         private NpcObjectDomain _activeNpc;
 
-        // ── Observable properties ─────────────────────────────────────────────
-        private string _playerName;
-        public string PlayerName
-        {
-            get => _playerName;
-            private set => SetProperty(ref _playerName, value);
-        }
-        private ImageSource _mapImageSource;
-        public ImageSource MapImageSource
-        {
-            get => _mapImageSource;
-            private set => SetProperty(ref _mapImageSource, value);
-        }
-
-        private double _imageDisplayWidth;
-        private double _imageDisplayHeight;
-        private double _imageOffsetX;
-        private double _imageOffsetY;
-        public double ImageDisplayWidth { get => _imageDisplayWidth; private set => SetProperty(ref _imageDisplayWidth, value); }
-        public double ImageDisplayHeight { get => _imageDisplayHeight; private set => SetProperty(ref _imageDisplayHeight, value); }
-        public double ImageOffsetX { get => _imageOffsetX; private set => SetProperty(ref _imageOffsetX, value); }
-        public double ImageOffsetY { get => _imageOffsetY; private set => SetProperty(ref _imageOffsetY, value); }
-
-        private ImageSource _playerImage;
-        public ImageSource PlayerImage
-        {
-            get => _playerImage;
-            private set => SetProperty(ref _playerImage, value);
-        }
-
-        private bool _isReady;
-        public bool IsReady { get => _isReady; private set => SetProperty(ref _isReady, value); }
-
-        private bool _isDebugMode;
-        public bool IsDebugMode { get => _isDebugMode; set => SetProperty(ref _isDebugMode, value); }
-
-        private bool _isShowingBackground = true;
-        private bool _isShowingForeground;
-        public bool IsShowingBackground { get => _isShowingBackground; private set => SetProperty(ref _isShowingBackground, value); }
-        public bool IsShowingForeground { get => _isShowingForeground; private set => SetProperty(ref _isShowingForeground, value); }
-
-        private string _collisionAtCursor = string.Empty;
-        private string _lastMoveResult = string.Empty;
-        private string _inspectResult = string.Empty;
-        public string CollisionAtCursor { get => _collisionAtCursor; private set => SetProperty(ref _collisionAtCursor, value); }
-        public string LastMoveResult { get => _lastMoveResult; private set => SetProperty(ref _lastMoveResult, value); }
-        public string InspectResult { get => _inspectResult; private set => SetProperty(ref _inspectResult, value); }
-
-        private IReadOnlyList<CanvasOverlayItem> _overlaySnapshot = Array.Empty<CanvasOverlayItem>();
-        public IReadOnlyList<CanvasOverlayItem> OverlaySnapshot
-        {
-            get => _overlaySnapshot;
-            private set => SetProperty(ref _overlaySnapshot, value);
-        }
-
-        // ── Computed ──────────────────────────────────────────────────────────
-        private SquareMapState SquareMap => _mapManager.SquareMap;
-        public string MapName => _mapManager?.ActiveMap.Name ?? string.Empty;
-        public int MapWidth => _mapManager?.ActiveMap.Width ?? 0;
-        public int MapHeight => _mapManager?.ActiveMap.Height ?? 0;
-        public int SquareRows => _mapManager != null ? SquareMap.SquareRows : 0;
-        public int SquareCols => _mapManager != null ? SquareMap.SquareCols : 0;
-        public string FacingText => _player.trainerMapLocDomain.FacingDirection.ToString();
-        public int PlayerSquareRow => _mapManager != null ? SquareMap.TileToSquare(_player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x).row : 0;
-        public int PlayerSquareCol => _mapManager != null ? SquareMap.TileToSquare(_player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x).col : 0;
-        public double PlayerPixelX => HalfSqCols * CellPx;
-        public double PlayerPixelY => HalfSqRows * CellPx;
-        public double ViewportWidthPx => ViewSqCols * CellPx;
-        public double ViewportHeightPx => ViewSqRows * CellPx;
+        private Action _focusCallback;
 
         public DialogueViewModel Dialogue { get; } = new();
-
-        private Action _focusCallback;
-        public void RegisterFocusCallback(Action focus) => _focusCallback = focus;
 
         private sealed class MovementState
         {
@@ -161,14 +105,26 @@ namespace PokemonGame.ViewModels.ViewModelPage
             public int QueuedDirection;
         }
 
-        // ── Constructor ───────────────────────────────────────────────────────
-        public MapViewModel(NavigationStore navigationStore, Func<ViewModelBase> createTrainerCardViewModel, Func<ViewModelBase> createPokedexPageViewModel, Func<ViewModelBase> createGameModChoosercreatePokedexPageViewModel)
+        public MapViewModel(
+            NavigationStore navigationStore,
+            Func<ViewModelBase> createTrainerCardViewModel,
+            Func<ViewModelBase> createPokedexPageViewModel,
+            Func<ViewModelBase> createGameModChooser)
         {
-            _navigationStore = navigationStore; 
+            _navigationStore = navigationStore;
             _player = PlayerDomain.Instance;
-            _mapLoader = new MapLoader(new MapService());
+            _mapLoader = new MapLoader(
+                new MapService(),
+                UserStore.Instance.Resolver.GetPokemonService());
+
+            _createTrainerCardViewModel = createTrainerCardViewModel;
+            _createpokedexPageViewModel = createPokedexPageViewModel;
+            _createGameModChooser = createGameModChooser;
+
             PlayerName = _player.trainerInfo.Name;
+
             InitCommands();
+
             Dialogue.FocusRequested += () => _focusCallback?.Invoke();
 
             _ = InitializeAsync().ContinueWith(t =>
@@ -176,27 +132,31 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 if (t.IsFaulted)
                     System.Diagnostics.Debug.WriteLine("InitializeAsync failed: " + t.Exception);
             });
-            _createTrainerCardViewModel = createTrainerCardViewModel;
-            _createpokedexPageViewModel = createPokedexPageViewModel;
-            _createGameModChooser = createGameModChoosercreatePokedexPageViewModel;
+        }
+
+        public void RegisterFocusCallback(Action focus)
+        {
+            _focusCallback = focus;
         }
 
         private async Task InitializeAsync()
         {
-
             await Task.Run(() =>
             {
                 var currentMapName = _player.trainerMapLocDomain?.CurrentMap?.Name;
+
                 if (string.IsNullOrEmpty(currentMapName))
                 {
-                    // fallback — player wasn't loaded yet (e.g. dev startup)
                     var loader = new PlayerLoader(
                         ServiceFactory.Instance.StoryPlayerService,
                         _mapLoader);
+
                     loader.Load();
                 }
             });
+
             _mapManager = new MapManager(_player);
+
             _mapManager.TrainerSpotted += OnPlayerSpotted;
             _mapManager.NpcInteracted += OnNpcInteracted;
 
@@ -205,8 +165,13 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 Application.Current?.Dispatcher.BeginInvoke(() =>
                 {
                     if (_disposed) return;
+
+                    if (Dialogue.IsOpen || IsInspectPopupOpen || IsMenuOpen)
+                        return;
+
                     _mapManager.TickNpcs();
                     RebuildNpcMap();
+
                     if (!_pendingOverlayRebuild)
                         RefreshOverlays();
                 });
@@ -221,45 +186,67 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 });
             };
 
-            _dialogueOpenedHandler = () => ClockManager.Instance.Pause();
+            _dialogueOpenedHandler = () =>
+            {
+                ClockManager.Instance.Pause();
+            };
+
             _dialogueClosedHandler = () =>
             {
-                ClockManager.Instance.Resume();
                 if (_activeNpc != null)
                 {
                     _mapManager.OnNpcDialogueFinished(_activeNpc);
                     _activeNpc = null;
                     RebuildNpcMap();
                 }
+
                 _pendingOverlayRebuild = true;
                 RefreshOverlays();
                 _pendingOverlayRebuild = false;
+
+                if (!IsInspectPopupOpen && !IsMenuOpen)
+                    ClockManager.Instance.Resume();
             };
 
             ClockManager.Instance.NpcTick += _npcTickHandler;
             ClockManager.Instance.PlayerTick += _playerTickHandler;
+
             Dialogue.DialogueOpened += _dialogueOpenedHandler;
             Dialogue.DialogueClosed += _dialogueClosedHandler;
 
             ClockManager.Instance.Start();
+
             RebuildGrid();
+
             IsReady = true;
-            _focusCallback?.Invoke();  
+
+            _focusCallback?.Invoke();
         }
 
         public void Dispose()
         {
             if (_disposed) return;
+
             _disposed = true;
-            if (_playerTickHandler != null) ClockManager.Instance.PlayerTick -= _playerTickHandler;
-            if (_npcTickHandler != null) ClockManager.Instance.NpcTick -= _npcTickHandler;
-            if (_dialogueOpenedHandler != null) Dialogue.DialogueOpened -= _dialogueOpenedHandler;
-            if (_dialogueClosedHandler != null) Dialogue.DialogueClosed -= _dialogueClosedHandler;
+
+            if (_playerTickHandler != null)
+                ClockManager.Instance.PlayerTick -= _playerTickHandler;
+
+            if (_npcTickHandler != null)
+                ClockManager.Instance.NpcTick -= _npcTickHandler;
+
+            if (_dialogueOpenedHandler != null)
+                Dialogue.DialogueOpened -= _dialogueOpenedHandler;
+
+            if (_dialogueClosedHandler != null)
+                Dialogue.DialogueClosed -= _dialogueClosedHandler;
+
             if (_mapManager != null)
             {
                 _mapManager.TrainerSpotted -= OnPlayerSpotted;
                 _mapManager.NpcInteracted -= OnNpcInteracted;
             }
+
             ClockManager.Instance.Stop();
         }
 
@@ -275,28 +262,220 @@ namespace PokemonGame.ViewModels.ViewModelPage
             OnPropertyChanged(nameof(PlayerSquareCol));
         }
     }
-    //commands
+
+    public partial class MapViewModel
+    {
+        private string _playerName = string.Empty;
+        public string PlayerName
+        {
+            get => _playerName;
+            private set => SetProperty(ref _playerName, value);
+        }
+
+        private ImageSource _mapImageSource;
+        public ImageSource MapImageSource
+        {
+            get => _mapImageSource;
+            private set => SetProperty(ref _mapImageSource, value);
+        }
+
+        private ImageSource _playerImage;
+        public ImageSource PlayerImage
+        {
+            get => _playerImage;
+            private set => SetProperty(ref _playerImage, value);
+        }
+
+        private double _imageDisplayWidth;
+        public double ImageDisplayWidth
+        {
+            get => _imageDisplayWidth;
+            private set => SetProperty(ref _imageDisplayWidth, value);
+        }
+
+        private double _imageDisplayHeight;
+        public double ImageDisplayHeight
+        {
+            get => _imageDisplayHeight;
+            private set => SetProperty(ref _imageDisplayHeight, value);
+        }
+
+        private double _imageOffsetX;
+        public double ImageOffsetX
+        {
+            get => _imageOffsetX;
+            private set => SetProperty(ref _imageOffsetX, value);
+        }
+
+        private double _imageOffsetY;
+        public double ImageOffsetY
+        {
+            get => _imageOffsetY;
+            private set => SetProperty(ref _imageOffsetY, value);
+        }
+
+        private double _playerImageLeft;
+        public double PlayerImageLeft
+        {
+            get => _playerImageLeft;
+            private set => SetProperty(ref _playerImageLeft, value);
+        }
+
+        private double _playerImageTop;
+        public double PlayerImageTop
+        {
+            get => _playerImageTop;
+            private set => SetProperty(ref _playerImageTop, value);
+        }
+
+        private double _playerImageWidth = 48;
+        public double PlayerImageWidth
+        {
+            get => _playerImageWidth;
+            private set => SetProperty(ref _playerImageWidth, value);
+        }
+
+        private double _playerImageHeight = 72;
+        public double PlayerImageHeight
+        {
+            get => _playerImageHeight;
+            private set => SetProperty(ref _playerImageHeight, value);
+        }
+
+        private bool _isReady;
+        public bool IsReady
+        {
+            get => _isReady;
+            private set => SetProperty(ref _isReady, value);
+        }
+
+
+        private bool _isShowingBackground = true;
+        public bool IsShowingBackground
+        {
+            get => _isShowingBackground;
+            private set => SetProperty(ref _isShowingBackground, value);
+        }
+
+        private bool _isShowingForeground;
+        public bool IsShowingForeground
+        {
+            get => _isShowingForeground;
+            private set => SetProperty(ref _isShowingForeground, value);
+        }
+
+        private string _collisionAtCursor = string.Empty;
+        public string CollisionAtCursor
+        {
+            get => _collisionAtCursor;
+            private set => SetProperty(ref _collisionAtCursor, value);
+        }
+
+        private string _lastMoveResult = string.Empty;
+        public string LastMoveResult
+        {
+            get => _lastMoveResult;
+            private set => SetProperty(ref _lastMoveResult, value);
+        }
+
+        private string _inspectResult = string.Empty;
+        public string InspectResult
+        {
+            get => _inspectResult;
+            private set => SetProperty(ref _inspectResult, value);
+        }
+
+        private IReadOnlyList<CanvasOverlayItem> _overlaySnapshot = Array.Empty<CanvasOverlayItem>();
+        public IReadOnlyList<CanvasOverlayItem> OverlaySnapshot
+        {
+            get => _overlaySnapshot;
+            private set => SetProperty(ref _overlaySnapshot, value);
+        }
+
+        private IReadOnlyList<NpcImageOverlayItem> _npcImageOverlays = Array.Empty<NpcImageOverlayItem>();
+        public IReadOnlyList<NpcImageOverlayItem> NpcImageOverlays
+        {
+            get => _npcImageOverlays;
+            private set => SetProperty(ref _npcImageOverlays, value);
+        }
+
+        private bool _isInspectPopupOpen;
+        public bool IsInspectPopupOpen
+        {
+            get => _isInspectPopupOpen;
+            private set => SetProperty(ref _isInspectPopupOpen, value);
+        }
+
+        private string _inspectPopupTitle = string.Empty;
+        public string InspectPopupTitle
+        {
+            get => _inspectPopupTitle;
+            private set => SetProperty(ref _inspectPopupTitle, value);
+        }
+
+        private string _inspectPopupText = string.Empty;
+        public string InspectPopupText
+        {
+            get => _inspectPopupText;
+            private set => SetProperty(ref _inspectPopupText, value);
+        }
+
+        private SquareMapState SquareMap => _mapManager.SquareMap;
+
+        public string MapName => _mapManager?.ActiveMap.Name ?? string.Empty;
+        public int MapWidth => _mapManager?.ActiveMap.Width ?? 0;
+        public int MapHeight => _mapManager?.ActiveMap.Height ?? 0;
+        public int SquareRows => _mapManager != null ? SquareMap.SquareRows : 0;
+        public int SquareCols => _mapManager != null ? SquareMap.SquareCols : 0;
+
+        public string FacingText => _player.trainerMapLocDomain.FacingDirection.ToString();
+
+        public int PlayerSquareRow =>
+            _mapManager != null
+                ? SquareMap.TileToSquare(
+                    _player.trainerMapLocDomain.playerLoc.y,
+                    _player.trainerMapLocDomain.playerLoc.x).row
+                : 0;
+
+        public int PlayerSquareCol =>
+            _mapManager != null
+                ? SquareMap.TileToSquare(
+                    _player.trainerMapLocDomain.playerLoc.y,
+                    _player.trainerMapLocDomain.playerLoc.x).col
+                : 0;
+
+        public double ViewportWidthPx => ViewSqCols * CellPx;
+        public double ViewportHeightPx => ViewSqRows * CellPx;
+    }
+
     public partial class MapViewModel
     {
         public ShowLayerCommand ShowBackgroundCommand { get; private set; }
         public ShowLayerCommand ShowForegroundCommand { get; private set; }
+
         public MoveCommand MoveUpCommand { get; private set; }
         public MoveCommand MoveDownCommand { get; private set; }
         public MoveCommand MoveLeftCommand { get; private set; }
         public MoveCommand MoveRightCommand { get; private set; }
+
         public InspectCommand InspectCommand { get; private set; }
+
         public ICommand ToggleDebugCommand { get; private set; }
         public ICommand ToggleMenuCommand { get; private set; }
+
         public ICommand PickChoice1Command { get; private set; }
         public ICommand PickChoice2Command { get; private set; }
         public ICommand PickChoice3Command { get; private set; }
+
         public ICommand MenuUpCommand { get; private set; }
         public ICommand MenuDownCommand { get; private set; }
         public ICommand MenuConfirmCommand { get; private set; }
+
         public ICommand OpenPokedexCommand { get; private set; }
         public ICommand OpenBagCommand { get; private set; }
         public ICommand OpenPokemonCommand { get; private set; }
         public ICommand OpenPlayerCommand { get; private set; }
+
         public ICommand SaveCommand { get; private set; }
         public ICommand ExitCommand { get; private set; }
 
@@ -309,32 +488,68 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 CanSwitch = true,
                 IsUsingUserStore = false
             };
+
             ShowBackgroundCommand = new ShowLayerCommand(this, background: true);
             ShowForegroundCommand = new ShowLayerCommand(this, background: false);
+
             InspectCommand = new InspectCommand(this);
+
             MoveUpCommand = new MoveCommand(this, FacingDirection.Up);
             MoveDownCommand = new MoveCommand(this, FacingDirection.Down);
             MoveLeftCommand = new MoveCommand(this, FacingDirection.Left);
             MoveRightCommand = new MoveCommand(this, FacingDirection.Right);
-            ToggleDebugCommand = new RelayCommand(() => ToggleDebug());
-            ToggleMenuCommand = new RelayCommand(() => ToggleMenu());
+
+
+            ToggleMenuCommand = new RelayCommand(ToggleMenu);
+
             PickChoice1Command = new RelayCommand(() => Dialogue.PickChoice(0));
             PickChoice2Command = new RelayCommand(() => Dialogue.PickChoice(1));
             PickChoice3Command = new RelayCommand(() => Dialogue.PickChoice(2));
-            MenuUpCommand = new RelayCommand(() => MenuUp());
-            MenuDownCommand = new RelayCommand(() => MenuDown());
-            MenuConfirmCommand = new RelayCommand(() => MenuConfirm());
-            OpenPokedexCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createpokedexPageViewModel(); });
-            OpenBagCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = new PokemonBagViewModel(_navigationStore, () => this); });
-   
 
-            OpenPokemonCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = new TeamSelectionViewModel(UserStore.Instance, _navigationStore,() => this,team); });
-            OpenPlayerCommand = new RelayCommand(() => { _navigationStore.CurrentViewModel = _createTrainerCardViewModel(); });
-            SaveCommand = new RelayCommand(() => { _mapLoader.Save(ServiceFactory.Instance.StoryPlayerService);IsMenuOpen = false;});
-            ExitCommand = new RelayCommand(() => _navigationStore.CurrentViewModel = _createGameModChooser());
+            MenuUpCommand = new RelayCommand(MenuUp);
+            MenuDownCommand = new RelayCommand(MenuDown);
+            MenuConfirmCommand = new RelayCommand(MenuConfirm);
+
+            OpenPokedexCommand = new RelayCommand(() =>
+            {
+                _navigationStore.CurrentViewModel = _createpokedexPageViewModel();
+            });
+
+            OpenBagCommand = new RelayCommand(() =>
+            {
+                _navigationStore.CurrentViewModel =
+                    new PokemonBagViewModel(_navigationStore, () => this);
+            });
+
+            OpenPokemonCommand = new RelayCommand(() =>
+            {
+                _navigationStore.CurrentViewModel =
+                    new TeamSelectionViewModel(
+                        UserStore.Instance,
+                        _navigationStore,
+                        () => this,
+                        team);
+            });
+
+            OpenPlayerCommand = new RelayCommand(() =>
+            {
+                _navigationStore.CurrentViewModel = _createTrainerCardViewModel();
+            });
+
+            SaveCommand = new RelayCommand(() =>
+            {
+                _mapLoader.Save(ServiceFactory.Instance.StoryPlayerService);
+                IsMenuOpen = false;
+                ClockManager.Instance.Resume();
+            });
+
+            ExitCommand = new RelayCommand(() =>
+            {
+                _navigationStore.CurrentViewModel = _createGameModChooser();
+            });
         }
     }
-    //menu
+
     public partial class MapViewModel
     {
         private bool _isMenuOpen;
@@ -353,10 +568,16 @@ namespace PokemonGame.ViewModels.ViewModelPage
 
         public void ToggleMenu()
         {
+            if (Dialogue.IsOpen || IsInspectPopupOpen)
+                return;
+
             IsMenuOpen = !IsMenuOpen;
             MenuIndex = 0;
-            if (IsMenuOpen) ClockManager.Instance.Pause();
-            else ClockManager.Instance.Resume();
+
+            if (IsMenuOpen)
+                ClockManager.Instance.Pause();
+            else
+                ClockManager.Instance.Resume();
         }
 
         public void MenuUp()
@@ -374,50 +595,92 @@ namespace PokemonGame.ViewModels.ViewModelPage
         public void MenuConfirm()
         {
             if (!IsMenuOpen) return;
+
             switch (MenuIndex)
             {
-                case 0: OpenPokedexCommand.Execute(null); break;
-                case 1: OpenBagCommand.Execute(null); break;
-                case 2: OpenPokemonCommand.Execute(null); break;
-                case 3: OpenPlayerCommand.Execute(null); break;
-                case 4: SaveCommand.Execute(null); break;
-                case 5: ExitCommand.Execute(null); break;
+                case 0:
+                    OpenPokedexCommand.Execute(null);
+                    break;
+
+                case 1:
+                    OpenBagCommand.Execute(null);
+                    break;
+
+                case 2:
+                    OpenPokemonCommand.Execute(null);
+                    break;
+
+                case 3:
+                    OpenPlayerCommand.Execute(null);
+                    break;
+
+                case 4:
+                    SaveCommand.Execute(null);
+                    break;
+
+                case 5:
+                    ExitCommand.Execute(null);
+                    break;
             }
         }
     }
-    //Movement
+
     public partial class MapViewModel
     {
         public void Move(FacingDirection direction)
         {
-            if (Dialogue.IsOpen) return;
+            if (Dialogue.IsOpen || IsInspectPopupOpen)
+                return;
+
             if (IsMenuOpen)
             {
-                if (direction == FacingDirection.Up) MenuUp();
-                if (direction == FacingDirection.Down) MenuDown();
+                if (direction == FacingDirection.Up)
+                    MenuUp();
+
+                if (direction == FacingDirection.Down)
+                    MenuDown();
+
                 return;
             }
+
             _movement.QueuedDirection = (int)direction;
             _movement.HasQueued = true;
         }
 
         private void ProcessMovementTick()
         {
-            if (Dialogue.IsOpen) return;
-            if (!_movement.HasQueued) return;
+            if (Dialogue.IsOpen || IsInspectPopupOpen || IsMenuOpen)
+                return;
+
+            if (!_movement.HasQueued)
+            {
+                _player.IsMoving = false;
+                return;
+            }
+
             _movement.HasQueued = false;
 
             var direction = (FacingDirection)_movement.QueuedDirection;
+
             _player.IsMoving = true;
             _player.AdvanceAnimation();
 
             var result = _mapManager.TryMove(direction);
+
             if (result.Success)
             {
                 LastMoveResult = $"Moved {direction}";
                 RebuildGrid();
-                if (result.WildEncounterTriggered) LastMoveResult += " + Wild Encounter!";
-                if (result.SpottedByNpcId != 0) LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
+
+                if (result.WildEncounterTriggered)
+                {
+                    LastMoveResult += " + Wild Encounter!";
+                     TryTriggerWildBattle();
+                    return;
+                }
+
+                if (result.SpottedByNpcId != 0)
+                    LastMoveResult += $" + Spotted by NPC {result.SpottedByNpcId}!";
             }
             else
             {
@@ -426,132 +689,297 @@ namespace PokemonGame.ViewModels.ViewModelPage
                 RefreshOverlays();
             }
         }
+
+        private void TryTriggerWildBattle()
+        {
+            var wild = _mapManager.GetWildEncounter();
+
+            if (wild == null)
+                return;
+
+            ClockManager.Instance.Pause();
+
+            var playerTeam =
+                PokemonConversionService.ToBattleTeam(_player.Team);
+
+            _navigationStore.CurrentViewModel =
+                new WildBattleViewModel(
+                    wild,
+                    playerTeam,
+                    _navigationStore,
+                    createMapViewModel: ReturnFromBattle);
+        }
+
+        private ViewModelBase ReturnFromBattle()
+        {
+            ClockManager.Instance.Resume();
+            return this;
+        }
     }
-    //Rendering
+
     public partial class MapViewModel
     {
         public void RebuildGrid()
         {
-            var (_, _, _, playerSprite) = _mapManager.GetViewport();
-            if (playerSprite != null)
-                PlayerImage = LoadSprite(playerSprite.ImagePath);
+            var (_, _, _, npcSprites, playerSprite) =
+                _mapManager.GetViewport();
 
+            if (playerSprite != null)
+            {
+                PlayerImage = LoadPlayerSprite(playerSprite.ImagePath);
+
+                double scale = CellPx / MapConstants.SquareSize;
+
+                PlayerImageLeft = playerSprite.PixelX * scale;
+                PlayerImageTop = playerSprite.PixelY * scale;
+                PlayerImageWidth = playerSprite.Width * scale;
+                PlayerImageHeight = playerSprite.Height * scale;
+            }
+
+            RebuildNpcImages(npcSprites);
             RebuildNpcMap();
             UpdateMapImageSource();
 
             var vl = SquareMap.VisionLayer;
-            var (psr, psc) = SquareMap.TileToSquare(_player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
+
+            var (psr, psc) =
+                SquareMap.TileToSquare(
+                    _player.trainerMapLocDomain.playerLoc.y,
+                    _player.trainerMapLocDomain.playerLoc.x);
+
             var cellData = BuildCellData(psr, psc, vl);
 
             RebuildOverlaysFromData(cellData, ViewSqRows, ViewSqCols);
-            CollisionAtCursor = SquareMap.GetCollision(psr, psc).ToString();
+
+            CollisionAtCursor =
+                SquareMap.GetCollision(psr, psc).ToString();
+
             NotifyHeaderProperties();
         }
 
         public void RefreshOverlays()
         {
+            var (_, _, _, npcSprites, _) =
+                _mapManager.GetViewport();
+
+            RebuildNpcImages(npcSprites);
+
             var vl = SquareMap.VisionLayer;
-            var (psr, psc) = SquareMap.TileToSquare(_player.trainerMapLocDomain.playerLoc.y, _player.trainerMapLocDomain.playerLoc.x);
-            RebuildOverlaysFromData(BuildCellData(psr, psc, vl), ViewSqRows, ViewSqCols);
+
+            var (psr, psc) =
+                SquareMap.TileToSquare(
+                    _player.trainerMapLocDomain.playerLoc.y,
+                    _player.trainerMapLocDomain.playerLoc.x);
+
+            RebuildOverlaysFromData(
+                BuildCellData(psr, psc, vl),
+                ViewSqRows,
+                ViewSqCols);
         }
 
         private List<(int sqRow, int sqCol, bool isPlayer, int npcId, int visionId, CollisionType col)>
             BuildCellData(int psr, int psc, int[,] vl)
         {
-            var cellData = new List<(int, int, bool, int, int, CollisionType)>(ViewSqRows * ViewSqCols);
+            var cellData =
+                new List<(int, int, bool, int, int, CollisionType)>(
+                    ViewSqRows * ViewSqCols);
+
             for (int r = 0; r < ViewSqRows; r++)
             {
                 for (int c = 0; c < ViewSqCols; c++)
                 {
                     int mapSqRow = psr - HalfSqRows + r;
                     int mapSqCol = psc - HalfSqCols + c;
-                    _npcSquareMap.TryGetValue((mapSqRow, mapSqCol), out int npcId);
+
+                    _npcSquareMap.TryGetValue(
+                        (mapSqRow, mapSqCol),
+                        out int npcId);
+
                     int visionId = 0;
+
                     if ((uint)mapSqRow < (uint)vl.GetLength(0) &&
                         (uint)mapSqCol < (uint)vl.GetLength(1))
+                    {
                         visionId = vl[mapSqRow, mapSqCol];
+                    }
+
                     cellData.Add((
-                        mapSqRow, mapSqCol,
+                        mapSqRow,
+                        mapSqCol,
                         r == HalfSqRows && c == HalfSqCols,
-                        npcId, visionId,
-                        SquareMap.GetSquare(mapSqRow, mapSqCol)?.SquareType ?? CollisionType.None
-                    ));
+                        npcId,
+                        visionId,
+                        SquareMap.GetSquare(mapSqRow, mapSqCol)?.SquareType
+                            ?? CollisionType.None));
                 }
             }
+
             return cellData;
         }
 
         private void RebuildOverlaysFromData(
             List<(int sqRow, int sqCol, bool isPlayer, int npcId, int visionId, CollisionType col)> cellData,
-            int viewRows, int viewCols)
+            int viewRows,
+            int viewCols)
         {
             var newItems = new List<CanvasOverlayItem>(viewRows * viewCols * 2);
+
             for (int r = 0; r < viewRows; r++)
             {
                 for (int c = 0; c < viewCols; c++)
                 {
-                    var (sqRow, sqCol, isPlayer, npcId, visionId, collision) = cellData[r * viewCols + c];
+                    var (sqRow, sqCol, isPlayer, npcId, visionId, collision) =
+                        cellData[r * viewCols + c];
+
                     bool isNpc = npcId != 0;
                     bool isVision = visionId != 0;
-                    string tooltip = $"[{sqRow},{sqCol}]  {collision}" +
-                                     (isNpc ? $"  NPC:{npcId}" : string.Empty) +
-                                     (isVision ? $"  seen-by:{visionId}" : string.Empty);
+
+                    string tooltip =
+                        $"[{sqRow},{sqCol}]  {collision}" +
+                        (isNpc ? $"  NPC:{npcId}" : string.Empty) +
+                        (isVision ? $"  seen-by:{visionId}" : string.Empty);
+
                     double left = c * CellPx;
                     double top = r * CellPx;
 
-                    var (colColor, showCol) = CollisionDebugColor(collision);
-                    if (showCol)
-                        newItems.Add(new CanvasOverlayItem { Left = left, Top = top, HasCollision = true, CollisionColor = colColor, Tooltip = tooltip });
-
                     if (isVision && !isPlayer && !isNpc)
-                        newItems.Add(new CanvasOverlayItem { Left = left, Top = top, IsVision = true, Tooltip = tooltip });
+                    {
+                        newItems.Add(new CanvasOverlayItem
+                        {
+                            Left = left,
+                            Top = top,
+                            IsVision = true,
+                            Tooltip = tooltip
+                        });
+                    }
 
                     if (isPlayer)
-                        newItems.Add(new CanvasOverlayItem { Left = left, Top = top, IsPlayer = true });
+                    {
+                        newItems.Add(new CanvasOverlayItem
+                        {
+                            Left = left,
+                            Top = top,
+                            IsPlayer = true
+                        });
+                    }
 
                     if (isNpc)
-                        newItems.Add(new CanvasOverlayItem { Left = left, Top = top, IsNpc = true, IsTrainer = npcId % 2 != 0, NpcSymbol = npcId % 2 != 0 ? "T" : "N", Tooltip = tooltip });
-
-                    if (_isDebugMode)
-                        newItems.Add(new CanvasOverlayItem { Left = left, Top = top, IsDebug = true, DebugText = $"{sqRow},{sqCol}", DebugTintColor = CollisionToDebugColor(collision) });
+                    {
+                        newItems.Add(new CanvasOverlayItem
+                        {
+                            Left = left,
+                            Top = top,
+                            IsNpc = true,
+                            IsTrainer = npcId % 2 != 0,
+                            NpcSymbol = npcId % 2 != 0 ? "T" : "N",
+                            Tooltip = tooltip
+                        });
+                    }
                 }
             }
+
             OverlaySnapshot = newItems;
         }
 
         private void RebuildNpcMap()
         {
             _npcSquareMap.Clear();
+
             foreach (var npc in _mapManager.ActiveMap.Npc)
             {
-                var (r, c) = SquareMap.TileToSquare(npc.Location.y, npc.Location.x);
+                var (r, c) =
+                    SquareMap.TileToSquare(
+                        npc.Location.y,
+                        npc.Location.x);
+
                 _npcSquareMap[(r, c)] = npc.NpcInfo.Id;
             }
         }
 
-        private ImageSource LoadSprite(string filename)
+        private void RebuildNpcImages(List<SpriteOverlay> npcSprites)
         {
-            string fullPath = PlayerSpritePath + _player.trainerInfo.Gender.ToString() + @"\" + filename;
-            if (_spriteCache.TryGetValue(fullPath, out var cached)) return cached;
+            var result = new List<NpcImageOverlayItem>();
+
+            double scale = CellPx / MapConstants.SquareSize;
+
+            foreach (var npcSprite in npcSprites)
+            {
+                var image = LoadNpcSprite(npcSprite.ImagePath);
+
+                if (image == null)
+                    continue;
+
+                result.Add(new NpcImageOverlayItem
+                {
+                    Image = image,
+                    Left = npcSprite.PixelX * scale,
+                    Top = npcSprite.PixelY * scale,
+                    Width = npcSprite.Width * scale,
+                    Height = npcSprite.Height * scale,
+                    Tooltip = npcSprite.ImagePath
+                });
+            }
+
+            NpcImageOverlays = result;
+        }
+
+        private ImageSource LoadPlayerSprite(string filename)
+        {
+            string fullPath =
+                Path.Combine(
+                    PlayerSpritePath,
+                    _player.trainerInfo.Gender.ToString(),
+                    filename);
+
+            return LoadImageFromFullPath(fullPath);
+        }
+
+        private ImageSource LoadNpcSprite(string filename)
+        {
+            string fullPath =
+                Path.Combine(NpcSpritePath, filename);
+
+            return LoadImageFromFullPath(fullPath);
+        }
+
+        private ImageSource LoadImageFromFullPath(string fullPath)
+        {
+            if (_spriteCache.TryGetValue(fullPath, out var cached))
+                return cached;
+
+            if (!File.Exists(fullPath))
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[Sprite Missing] {fullPath}");
+
+                return null;
+            }
+
             try
             {
                 var bmp = new BitmapImage();
+
                 bmp.BeginInit();
                 bmp.UriSource = new Uri(fullPath, UriKind.Absolute);
                 bmp.CacheOption = BitmapCacheOption.OnLoad;
                 bmp.EndInit();
+
                 bmp.Freeze();
+
                 _spriteCache[fullPath] = bmp;
+
                 return bmp;
             }
-            catch { return null; }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[Sprite Load Failed] {fullPath}");
+
+                return null;
+            }
         }
 
-        public void ToggleDebug()
-        {
-            IsDebugMode = !IsDebugMode;
-            RebuildGrid();
-        }
+
 
         internal void SwitchLayer(bool background)
         {
@@ -559,44 +987,33 @@ namespace PokemonGame.ViewModels.ViewModelPage
             IsShowingForeground = !background;
             RebuildGrid();
         }
-
-        private static (string color, bool show) CollisionDebugColor(CollisionType c) => c switch
-        {
-            CollisionType.Blocked => ("#99FF2222", true),
-            CollisionType.WildGrass => ("#9922CC44", true),
-            CollisionType.HM => ("#992255FF", true),
-            CollisionType.JumpLeft => ("#99FFCC00", true),
-            CollisionType.JumpRight => ("#99FFCC00", true),
-            CollisionType.JumpUp => ("#99FFCC00", true),
-            CollisionType.JumpDown => ("#99FFCC00", true),
-            CollisionType.None => (string.Empty, false),
-            _ => ("#99FF00FF", true),
-        };
-
-        private static string CollisionToDebugColor(CollisionType c) => c switch
-        {
-            CollisionType.Blocked => "#55FF0000",
-            CollisionType.WildGrass => "#5500FF00",
-            CollisionType.HM => "#550000FF",
-            CollisionType.JumpLeft or CollisionType.JumpRight
-                or CollisionType.JumpDown or CollisionType.JumpUp => "#55FFFF00",
-            _ => "#00000000",
-        };
     }
-    //MapImage
+
+
     public partial class MapViewModel
     {
         private void UpdateMapImageSource()
         {
             var sheet = GetMapBitmap();
-            if (sheet == null) { MapImageSource = null; return; }
+
+            if (sheet == null)
+            {
+                MapImageSource = null;
+                return;
+            }
 
             int tps = MapConstants.TilesPerSquare;
+
             int viewTileCols = ViewSqCols * tps;
             int viewTileRows = ViewSqRows * tps;
 
-            int originTileCol = _player.trainerMapLocDomain.playerLoc.x - viewTileCols / 2;
-            int originTileRow = _player.trainerMapLocDomain.playerLoc.y - viewTileRows / 2;
+            int originTileCol =
+                _player.trainerMapLocDomain.playerLoc.x -
+                viewTileCols / 2;
+
+            int originTileRow =
+                _player.trainerMapLocDomain.playerLoc.y -
+                viewTileRows / 2;
 
             int px = originTileCol * MapTilePx;
             int py = originTileRow * MapTilePx;
@@ -604,20 +1021,30 @@ namespace PokemonGame.ViewModels.ViewModelPage
             int ph = viewTileRows * MapTilePx;
 
             double scale = CellPx / (tps * MapTilePx);
+
             int canvasW = (int)(pw * scale);
             int canvasH = (int)(ph * scale);
 
             var drawingVisual = new DrawingVisual();
+
             using (var ctx = drawingVisual.RenderOpen())
             {
                 DrawMap(ctx, sheet, px, py, pw, ph, scale);
+
                 DrawNeighbor(ctx, ConnectionDirection.North, px, py, pw, ph, scale, sheet.PixelWidth, sheet.PixelHeight, tps);
                 DrawNeighbor(ctx, ConnectionDirection.South, px, py, pw, ph, scale, sheet.PixelWidth, sheet.PixelHeight, tps);
                 DrawNeighbor(ctx, ConnectionDirection.West, px, py, pw, ph, scale, sheet.PixelWidth, sheet.PixelHeight, tps);
                 DrawNeighbor(ctx, ConnectionDirection.East, px, py, pw, ph, scale, sheet.PixelWidth, sheet.PixelHeight, tps);
             }
 
-            var rt = new RenderTargetBitmap(canvasW, canvasH, 96, 96, PixelFormats.Pbgra32);
+            var rt =
+                new RenderTargetBitmap(
+                    canvasW,
+                    canvasH,
+                    96,
+                    96,
+                    PixelFormats.Pbgra32);
+
             rt.Render(drawingVisual);
             rt.Freeze();
 
@@ -628,37 +1055,79 @@ namespace PokemonGame.ViewModels.ViewModelPage
             ImageOffsetY = 0;
         }
 
-        private void DrawMap(DrawingContext ctx, BitmapSource sheet,
-            int px, int py, int pw, int ph, double scale)
+        private void DrawMap(
+            DrawingContext ctx,
+            BitmapSource sheet,
+            int px,
+            int py,
+            int pw,
+            int ph,
+            double scale)
         {
             int cropX = Math.Max(0, px);
             int cropY = Math.Max(0, py);
+
             int cropW = Math.Min(pw, sheet.PixelWidth - cropX);
             int cropH = Math.Min(ph, sheet.PixelHeight - cropY);
+
             int offX = Math.Max(0, -px);
             int offY = Math.Max(0, -py);
-            if (cropW <= 0 || cropH <= 0) return;
+
+            if (cropW <= 0 || cropH <= 0)
+                return;
+
             var crop = GetCrop(sheet, cropX, cropY, cropW, cropH);
+
             if (crop != null)
-                ctx.DrawImage(crop, new Rect(offX * scale, offY * scale, cropW * scale, cropH * scale));
+            {
+                ctx.DrawImage(
+                    crop,
+                    new Rect(
+                        offX * scale,
+                        offY * scale,
+                        cropW * scale,
+                        cropH * scale));
+            }
         }
 
-        private void DrawNeighbor(DrawingContext ctx, ConnectionDirection dir,
-            int px, int py, int pw, int ph, double scale, int mapW, int mapH, int tps)
+        private void DrawNeighbor(
+            DrawingContext ctx,
+            ConnectionDirection dir,
+            int px,
+            int py,
+            int pw,
+            int ph,
+            double scale,
+            int mapW,
+            int mapH,
+            int tps)
         {
-            var conn = _mapManager.ActiveMap.ConnectedMaps
-                .FirstOrDefault(c => c.ConnectionDirection == dir);
-            if (conn == null) return;
+            var conn =
+                _mapManager.ActiveMap.ConnectedMaps
+                    .FirstOrDefault(c => c.ConnectionDirection == dir);
+
+            if (conn == null)
+                return;
 
             var nb = GetMapBitmap(conn.ConnectedMap.Name);
-            if (nb == null) return;
+
+            if (nb == null)
+                return;
 
             int marginPx = conn.Margin * tps * MapTilePx;
-            int nSrcX, nSrcY, nSrcW, nSrcH, nDstX, nDstY;
+
+            int nSrcX;
+            int nSrcY;
+            int nSrcW;
+            int nSrcH;
+            int nDstX;
+            int nDstY;
 
             switch (dir)
             {
-                case ConnectionDirection.North when py >= 0: return;
+                case ConnectionDirection.North when py >= 0:
+                    return;
+
                 case ConnectionDirection.North:
                     nSrcX = Math.Max(0, px + marginPx);
                     nSrcY = nb.PixelHeight + py;
@@ -668,7 +1137,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     nSrcH = Math.Min(-py, nb.PixelHeight - nSrcY);
                     break;
 
-                case ConnectionDirection.South when py + ph <= mapH: return;
+                case ConnectionDirection.South when py + ph <= mapH:
+                    return;
+
                 case ConnectionDirection.South:
                     nSrcX = Math.Max(0, px + marginPx);
                     nSrcY = 0;
@@ -678,7 +1149,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     nSrcH = Math.Min(py + ph - mapH, nb.PixelHeight);
                     break;
 
-                case ConnectionDirection.West when px >= 0: return;
+                case ConnectionDirection.West when px >= 0:
+                    return;
+
                 case ConnectionDirection.West:
                     nSrcX = nb.PixelWidth + px;
                     nSrcY = Math.Max(0, py + marginPx);
@@ -688,7 +1161,9 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     nSrcH = Math.Min(ph, nb.PixelHeight - nSrcY);
                     break;
 
-                case ConnectionDirection.East when px + pw <= mapW: return;
+                case ConnectionDirection.East when px + pw <= mapW:
+                    return;
+
                 case ConnectionDirection.East:
                     nSrcX = 0;
                     nSrcY = Math.Max(0, py + marginPx);
@@ -698,79 +1173,276 @@ namespace PokemonGame.ViewModels.ViewModelPage
                     nSrcH = Math.Min(ph, nb.PixelHeight - nSrcY);
                     break;
 
-                default: return;
+                default:
+                    return;
             }
 
-            if (nSrcW <= 0 || nSrcH <= 0 || nSrcX < 0 || nSrcY < 0) return;
+            if (nSrcW <= 0 ||
+                nSrcH <= 0 ||
+                nSrcX < 0 ||
+                nSrcY < 0)
+            {
+                return;
+            }
+
             var crop = GetCrop(nb, nSrcX, nSrcY, nSrcW, nSrcH);
+
             if (crop != null)
-                ctx.DrawImage(crop, new Rect(nDstX, nDstY, nSrcW * scale, nSrcH * scale));
+            {
+                ctx.DrawImage(
+                    crop,
+                    new Rect(
+                        nDstX,
+                        nDstY,
+                        nSrcW * scale,
+                        nSrcH * scale));
+            }
+        }
+
+        private BitmapImage GetMapBitmap()
+        {
+            return GetMapBitmap(
+                PlayerDomain.Instance.trainerMapLocDomain.CurrentMap.Name);
         }
 
         private BitmapImage GetMapBitmap(string mapName)
         {
-            string path = $@"C:\Users\yoav\source\repos\PokemonGame\PokemonGame\Assets\Images\Map\{mapName}.png";
-            if (_mapImageCache.TryGetValue(path, out var cached)) return cached;
+            string path =
+                $@"C:\Users\yoav\source\repos\PokemonGame\PokemonGame\Assets\Images\Map\{mapName}.png";
+
+            if (_mapImageCache.TryGetValue(path, out var cached))
+                return cached;
+
+            if (!File.Exists(path))
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[Map Image Missing] {path}");
+
+                return null;
+            }
+
             try
             {
                 var bmp = new BitmapImage();
+
                 bmp.BeginInit();
                 bmp.UriSource = new Uri(path, UriKind.Absolute);
                 bmp.CacheOption = BitmapCacheOption.OnLoad;
                 bmp.EndInit();
+
                 bmp.Freeze();
+
                 _mapImageCache[path] = bmp;
+
                 return bmp;
             }
-            catch { return null; }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[Map Image Load Failed] {path}");
+
+                return null;
+            }
         }
 
-        private BitmapImage GetMapBitmap() => GetMapBitmap(PlayerDomain.Instance.trainerMapLocDomain.CurrentMap.Name);
-
-        private CroppedBitmap GetCrop(BitmapSource src, int x, int y, int w, int h)
+        private CroppedBitmap GetCrop(
+            BitmapSource src,
+            int x,
+            int y,
+            int w,
+            int h)
         {
             try
             {
-                var crop = new CroppedBitmap(src, new Int32Rect(x, y, w, h));
+                var crop =
+                    new CroppedBitmap(
+                        src,
+                        new Int32Rect(x, y, w, h));
+
                 crop.Freeze();
+
                 return crop;
             }
-            catch { return null; }
+            catch
+            {
+                return null;
+            }
         }
     }
-    //Npc
+
     public partial class MapViewModel
     {
-        public void Inspect()
+        private void OpenInspectPopup(string message, string title = "Inspect")
         {
-            if (IsMenuOpen) { MenuConfirm(); return; }
-            if (Dialogue.IsOpen) { Dialogue.Advance(); return; }
+            if (string.IsNullOrWhiteSpace(message))
+                return;
 
-            _mapManager.TryInteractWithNpc();
-            if (Dialogue.IsOpen) return;
+            InspectPopupTitle = title;
+            InspectPopupText = message;
+            IsInspectPopupOpen = true;
 
-            var result = _mapManager.TryInspect();
-            InspectResult = result.Message;
-
-            if (result.Type == InspectResultType.ItemPickup ||
-                result.Type == InspectResultType.HmUsed)
-                RebuildGrid();
-
-            if (result.Type == InspectResultType.NpcDialogue && result.DialogueSet != null)
-                Dialogue.Open(result.DialogueSet, result.NpcName);
+            ClockManager.Instance.Pause();
         }
 
+        private void CloseInspectPopup()
+        {
+            IsInspectPopupOpen = false;
+            InspectPopupTitle = string.Empty;
+            InspectPopupText = string.Empty;
+
+            if (!Dialogue.IsOpen && !IsMenuOpen)
+                ClockManager.Instance.Resume();
+
+            _focusCallback?.Invoke();
+        }
+
+        public void Inspect()
+        {
+            if (IsMenuOpen)
+            {
+                MenuConfirm();
+                return;
+            }
+
+            if (Dialogue.IsOpen)
+            {
+                Dialogue.Advance();
+                return;
+            }
+
+            if (IsInspectPopupOpen)
+            {
+                CloseInspectPopup();
+                return;
+            }
+
+            _mapManager.TryInteractWithNpc();
+
+            if (Dialogue.IsOpen)
+                return;
+
+            var result = _mapManager.TryInspect();
+
+            InspectResult = result.Message;
+
+            if (result.Type == InspectResultType.Nothing)
+            {
+                return;
+            }
+
+            if (result.Type == InspectResultType.NpcDialogue &&
+                result.DialogueSet != null)
+            {
+                Dialogue.Open(
+                    result.DialogueSet,
+                    result.NpcName);
+
+                return;
+            }
+
+            if (result.Type == InspectResultType.HmUsed)
+            {
+                HandleHmResult(result);
+                return;
+            }
+
+            if (result.Type == InspectResultType.NeedHm)
+            {
+                OpenInspectPopup(
+                    result.Message,
+                    result.RequiredHm.ToString());
+
+                return;
+            }
+
+            if (result.Type == InspectResultType.ItemPickup)
+            {
+                RebuildGrid();
+
+                if (!string.IsNullOrWhiteSpace(result.Message))
+                {
+                    OpenInspectPopup(
+                        result.Message,
+                        "Item");
+                }
+
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(result.Message))
+            {
+                OpenInspectPopup(
+                    result.Message,
+                    result.Type.ToString());
+            }
+        }
+        private void HandleHmResult(InspectResult result)
+        {
+            switch (result.RequiredHm)
+            {
+                case HMMoves.Cut:
+                    _mapManager.ConfirmCutUse(
+                        result.TargetRow,
+                        result.TargetCol,
+                        _player.trainerMapLocDomain.FacingDirection);
+
+                    RebuildGrid();
+
+                    OpenInspectPopup(result.Message, "Cut");
+                    break;
+
+                case HMMoves.Surf:
+                    _mapManager.ConfirmSurfUse(
+                        result.TargetRow,
+                        result.TargetCol,
+                        _player.trainerMapLocDomain.FacingDirection);
+
+                    RebuildGrid();
+
+                    OpenInspectPopup(result.Message, "Surf");
+                    break;
+
+                case HMMoves.Waterfall:
+                    _mapManager.ConfirmSurfUse(
+                        result.TargetRow,
+                        result.TargetCol,
+                        _player.trainerMapLocDomain.FacingDirection);
+
+                    RebuildGrid();
+
+                    OpenInspectPopup(result.Message, "Waterfall");
+                    break;
+
+                case HMMoves.Strength:
+                    OpenInspectPopup(result.Message, "Strength");
+                    break;
+
+                default:
+                    OpenInspectPopup(result.Message, "HM");
+                    break;
+            }
+        }
         private void OnPlayerSpotted(NpcObjectDomain npc)
         {
-            if (Dialogue.IsOpen) return;
+            if (Dialogue.IsOpen || IsInspectPopupOpen)
+                return;
+
             var set = npc.NpcInfo.GetDialogue(TriggerType.Spotted);
-            if (set != null) Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
+
+            if (set != null)
+            {
+                _activeNpc = npc;
+                Dialogue.Open(set, npc.NpcInfo.Name ?? string.Empty);
+            }
         }
 
         private void OnNpcInteracted(NpcObjectDomain npc)
         {
-            if (Dialogue.IsOpen) return;
+            if (Dialogue.IsOpen || IsInspectPopupOpen)
+                return;
+
             var set = npc.NpcInfo.GetDialogue(TriggerType.Interact);
+
             if (set != null)
             {
                 _activeNpc = npc;

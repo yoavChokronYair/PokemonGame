@@ -5,54 +5,115 @@
     xmlns:controls="clr-namespace:PokemonGame.Views.Controls"
     xmlns:converter="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.BattleMenu"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="150"
     d:DesignWidth="455"
+    Focusable="False"
+    IsTabStop="False"
     mc:Ignorable="d">
+
     <UserControl.Resources>
         <converter:BoolToThicknessConverter x:Key="BoolToThickness" />
+
+        <!--
+            Invisible button style:
+            keeps Command support, removes ugly default WPF button colors
+        -->
+        <Style x:Key="MoveButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.35" />
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MoveSlotBorderStyle" TargetType="Border">
+            <Setter Property="Margin" Value="6" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Background" Value="#FFF8E8" />
+            <Setter Property="BorderBrush" Value="#202020" />
+        </Style>
+
+        <Style x:Key="MoveNameTextStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#202020" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
     </UserControl.Resources>
+
     <Grid>
         <controls:BoardBackground HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <UniformGrid Columns="2" Rows="2">
-                <Border
-                    Padding="2"
-                    BorderBrush="White"
-                    BorderThickness="{Binding Move0.IsSelected, Converter={StaticResource BoolToThickness}}">
+
+            <UniformGrid
+                Margin="4"
+                Columns="2"
+                Rows="2">
+
+                <!--  Move 0  -->
+                <Border BorderThickness="{Binding Move0.IsSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource MoveSlotBorderStyle}">
                     <Button
                         Command="{Binding Move0.ClickCommand}"
-                        Content="{Binding Move0.MoveName}"
-                        IsEnabled="{Binding Move0.IsEnabled}" />
+                        IsEnabled="{Binding Move0.IsEnabled}"
+                        Style="{StaticResource MoveButtonStyle}">
+                        <TextBlock Style="{StaticResource MoveNameTextStyle}" Text="{Binding Move0.MoveName}" />
+                    </Button>
                 </Border>
-                <Border
-                    Padding="2"
-                    BorderBrush="White"
-                    BorderThickness="{Binding Move1.IsSelected, Converter={StaticResource BoolToThickness}}">
+
+                <!--  Move 1  -->
+                <Border BorderThickness="{Binding Move1.IsSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource MoveSlotBorderStyle}">
                     <Button
                         Command="{Binding Move1.ClickCommand}"
-                        Content="{Binding Move1.MoveName}"
-                        IsEnabled="{Binding Move1.IsEnabled}" />
+                        IsEnabled="{Binding Move1.IsEnabled}"
+                        Style="{StaticResource MoveButtonStyle}">
+                        <TextBlock Style="{StaticResource MoveNameTextStyle}" Text="{Binding Move1.MoveName}" />
+                    </Button>
                 </Border>
-                <Border
-                    Padding="2"
-                    BorderBrush="White"
-                    BorderThickness="{Binding Move2.IsSelected, Converter={StaticResource BoolToThickness}}">
+
+                <!--  Move 2  -->
+                <Border BorderThickness="{Binding Move2.IsSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource MoveSlotBorderStyle}">
                     <Button
                         Command="{Binding Move2.ClickCommand}"
-                        Content="{Binding Move2.MoveName}"
-                        IsEnabled="{Binding Move2.IsEnabled}" />
+                        IsEnabled="{Binding Move2.IsEnabled}"
+                        Style="{StaticResource MoveButtonStyle}">
+                        <TextBlock Style="{StaticResource MoveNameTextStyle}" Text="{Binding Move2.MoveName}" />
+                    </Button>
                 </Border>
-                <Border
-                    Padding="2"
-                    BorderBrush="White"
-                    BorderThickness="{Binding Move3.IsSelected, Converter={StaticResource BoolToThickness}}">
+
+                <!--  Move 3  -->
+                <Border BorderThickness="{Binding Move3.IsSelected, Converter={StaticResource BoolToThickness}}" Style="{StaticResource MoveSlotBorderStyle}">
                     <Button
                         Command="{Binding Move3.ClickCommand}"
-                        Content="{Binding Move3.MoveName}"
-                        IsEnabled="{Binding Move3.IsEnabled}" />
+                        IsEnabled="{Binding Move3.IsEnabled}"
+                        Style="{StaticResource MoveButtonStyle}">
+                        <TextBlock Style="{StaticResource MoveNameTextStyle}" Text="{Binding Move3.MoveName}" />
+                    </Button>
                 </Border>
+
             </UniformGrid>
         </controls:BoardBackground>
     </Grid>

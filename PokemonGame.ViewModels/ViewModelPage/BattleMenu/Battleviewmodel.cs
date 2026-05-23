@@ -155,17 +155,25 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             PlayerStatus = new PokemonBattleStatusViewModel();
             EnemyStatus = new EnemyBattleStatusViewModel();
             BattleMenu = new BattleMenuViewModel(
-                OnMoveChosen,
-                OnSwitchChosen,
-                OnForfeit,
-                OnOpenSwitch,
-                Logger);
+                 OnMoveChosen,
+                 OnSwitchChosen,
+                 OnForfeit,
+                 OnOpenBag,
+                 OnOpenSwitch,
+                 Logger);
 
             NewGameCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.NewGame));
             BackCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.Back));
             RematchCommand = new RelayCommand(() => CloseRequested?.Invoke(this, BattleResultAction.Rematch));
 
             SyncAll(flushSetup: true);
+        }
+        private void OnOpenBag()
+        {
+            Logger.EnqueueStringEntries(new[]
+            {
+                "You cannot use the Bag in this battle."
+            });
         }
 
         // ── Move chosen ───────────────────────────────────────────────────────

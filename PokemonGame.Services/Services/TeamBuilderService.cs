@@ -191,7 +191,7 @@ namespace PokemonGame.Services.Handler
         // ── Item list ─────────────────────────────────────────────────────────
 
         public List<ItemData> GetHeldItems() =>
-           _items.GetAllHeldItems();
+           _items.GetAllItems();
 
         // ── Team members ──────────────────────────────────────────────────────
 

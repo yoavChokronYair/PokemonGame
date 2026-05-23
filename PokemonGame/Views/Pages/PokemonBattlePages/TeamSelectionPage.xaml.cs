@@ -24,5 +24,7 @@ namespace PokemonGame.Views.Pages.PokemonBattlePages
         {
             InitializeComponent();
         }
+
+
     }
 }

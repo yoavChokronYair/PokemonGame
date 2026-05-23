@@ -1,6 +1,7 @@
 ﻿using PokemonGame.Core.Config;
 using PokemonGame.Enums;
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Interface;
@@ -162,7 +163,69 @@ namespace PokemonGame.Model.Domain.Pokemon
             LastDamageTaken = Math.Min(amount, CurrentHP);
             CurrentHP = Math.Max(0, CurrentHP - amount);
         }
+        public PokemonState Clone()
+        {
+            return new PokemonState
+            {
+                // Identity
+                Name = Name,
+                PokedexId = PokedexId,
+                PrimaryType = PrimaryType,
+                SecondaryType = SecondaryType,
+                Ability = Ability,
+                HeldItem = HeldItem,
+                Level = Level,
+                gender = gender,
+                IsShiny = IsShiny,
+                Nature = Nature,
+                Evolution = Evolution,
 
+                // Base stats
+                Base = new BaseStats(
+                    Base.HP,
+                    Base.Attack,
+                    Base.Defense,
+                    Base.SpecialAttack,
+                    Base.SpecialDefense,
+                    Base.Speed
+                ),
+
+                MaxHP = MaxHP,
+                BaseAttack = BaseAttack,
+                BaseDefense = BaseDefense,
+                BaseSpecialAttack = BaseSpecialAttack,
+                BaseSpecialDefense = BaseSpecialDefense,
+                BaseSpeed = BaseSpeed,
+
+                // IVs / EVs
+                IVs = (int[])IVs.Clone(),
+                EVs = (int[])EVs.Clone(),
+
+                // Battle state
+                CurrentHP = CurrentHP,
+
+                // Status
+                Status = Status,
+                ToxicCounter = ToxicCounter,
+                SleepTurns = SleepTurns,
+
+                // Moves
+                Moves = Moves
+                    .Select(m => (IMove)((MoveState)m).Clone())
+                    .ToList(),
+
+                Learnset = Learnset
+                    .Select(l => new LearnableMove
+                    {
+                        Level = l.Level,
+                        Move = l.Move
+                    })
+                    .ToList(),
+
+                // Runtime
+                turnsActive = turnsActive
+            };
+        }
         public void ChangeStatStage(Stat stat, int stages)
         {
             if (PreventStatReduction.IsBlocked(this, stat, stages))

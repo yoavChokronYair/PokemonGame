@@ -1,5 +1,6 @@
 ﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
 
 namespace PokemonGame.Model.Domain.Item
@@ -145,6 +146,7 @@ namespace PokemonGame.Model.Domain.Item
         /// (e.g. Net Ball only boosts on Water/Bug types).
         /// </summary>
         private readonly ICondition<BattleState> _condition;
+        public PokeBallType BallType { get; set; }
 
         /// <summary>
         /// Maps to pokeballs.multiplier — catch-rate multiplier

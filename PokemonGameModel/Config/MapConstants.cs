@@ -34,4 +34,38 @@ namespace PokemonGame.Model.Config
             return frames[frame];
         }
     }
+
+    public static class NpcSprites
+    {
+        private static readonly Dictionary<FacingDirection, string[]> Frames = new()
+        {
+            [FacingDirection.Down] = new[] { "sprite_0.png", "sprite_1.png", "sprite_2.png" },
+            [FacingDirection.Up] = new[] { "sprite_3.png", "sprite_4.png", "sprite_5.png" },
+            [FacingDirection.Left] = new[] { "sprite_6.png", "sprite_7.png", "sprite_8.png" },
+            [FacingDirection.Right] = new[] { "sprite_9.png", "sprite_10.png", "sprite_11.png" },
+        };
+
+        private static readonly int[] WalkCycle = { 0, 1, 2, 1 };
+
+        public static string GetFrame(
+            int spriteId,
+            FacingDirection direction,
+            int tick,
+            bool isMoving)
+        {
+            if (spriteId <= 0)
+                spriteId = 1;
+
+            if (!Frames.TryGetValue(direction, out var frames))
+                frames = Frames[FacingDirection.Down];
+
+            int frameIndex = isMoving
+                ? WalkCycle[tick % WalkCycle.Length]
+                : 1;
+
+            int folderNumber = spriteId + 1;
+
+            return $@"row_{folderNumber}\{frames[frameIndex]}";
+        }
+    }
 }

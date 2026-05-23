@@ -14,179 +14,228 @@
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <Style x:Key="PartyActionButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="26" />
+            <Setter Property="Padding" Value="8,2" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontFamily" Value="/PokemonGame;component/Assets/Fonts/#Pokemon GB" />
+            <Setter Property="FontSize" Value="8" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style
+            x:Key="SwitchActionButtonStyle"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSwitchSelected}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="MoveActionButtonStyle"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMoveSelected}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="SummaryActionButtonStyle"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSummarySelected}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="CancelActionButtonStyle"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsCancelSelected}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="SwitchActionButtonStyleInList"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsSwitchSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="MoveActionButtonStyleInList"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsMoveSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="SummaryActionButtonStyleInList"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsSummarySelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="CancelActionButtonStyleInList"
+            BasedOn="{StaticResource PartyActionButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsCancelSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
+                    <Setter Property="Foreground" Value="#FFE860" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="PartyActionMenuBorderBaseStyle" TargetType="Border">
+            <Setter Property="Width" Value="116" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="Background" Value="#E8202020" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Panel.ZIndex" Value="999" />
+        </Style>
     </Page.Resources>
+
     <Page.InputBindings>
+        <KeyBinding Key="W" Command="{Binding SelectPreviousSlotCommand}" />
+        <KeyBinding Key="S" Command="{Binding SelectNextSlotCommand}" />
+        <KeyBinding Key="A" Command="{Binding SelectLeftCommand}" />
+        <KeyBinding Key="D" Command="{Binding SelectRightCommand}" />
 
-        <KeyBinding Key="W" Command="{Binding SelectNextSlotCommand}" />
-        <KeyBinding Key="S" Command="{Binding SelectPreviousSlotCommand}" />
-        <KeyBinding Key="A" Command="{Binding SelectRightCommand}" />
-        <KeyBinding Key="D" Command="{Binding SelectLeftCommand}" />
-
-        <KeyBinding Key="Down" Command="{Binding SelectNextSlotCommand}" />
         <KeyBinding Key="Up" Command="{Binding SelectPreviousSlotCommand}" />
-        <KeyBinding Key="Left" Command="{Binding SelectRightCommand}" />
-        <KeyBinding Key="Right" Command="{Binding SelectLeftCommand}" />
+        <KeyBinding Key="Down" Command="{Binding SelectNextSlotCommand}" />
+        <KeyBinding Key="Left" Command="{Binding SelectLeftCommand}" />
+        <KeyBinding Key="Right" Command="{Binding SelectRightCommand}" />
 
         <KeyBinding Key="Z" Command="{Binding ConfirmCurrentSelectionCommand}" />
         <KeyBinding Key="Enter" Command="{Binding ConfirmCurrentSelectionCommand}" />
+
         <KeyBinding Key="X" Command="{Binding CancelCommand}" />
         <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
     </Page.InputBindings>
-    <Grid>
 
-        <!--  BACKGROUND  -->
+    <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/Background.png" Stretch="Fill" />
         </Grid.Background>
+
         <Viewbox Stretch="Uniform">
-            <Grid
-                Width="560"
-                Height="380"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+            <Canvas
+                Width="800"
+                Height="533"
+                ClipToBounds="True"
+                RenderOptions.BitmapScalingMode="NearestNeighbor">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <!--  MAIN SLOT  -->
-                <!--  MAIN SLOT  -->
+                <!--  MAIN SELECTED POKEMON CARD  -->
                 <Grid
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="0,62,0,140">
+                    Canvas.Left="40"
+                    Canvas.Top="78"
+                    Width="302"
+                    Height="244">
 
                     <local:MainPokemonSlotUserControl DataContext="{Binding Slots[0]}" />
 
-                    <!--  ACTION MENU  -->
-                    <Grid Panel.ZIndex="999" IsHitTestVisible="True">
+                    <!--  Action menu for slot 0  -->
+                    <Border Canvas.Left="180" Canvas.Top="70">
+                        <Border.Style>
+                            <Style BasedOn="{StaticResource PartyActionMenuBorderBaseStyle}" TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Slots[0].IsSelected}" Value="True" />
+                                            <Condition Binding="{Binding IsActionMenuOpen}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
 
-                        <Border
-                            Width="120"
-                            Padding="4"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Background="#FF202020"
-                            BorderBrush="White"
-                            BorderThickness="2"
-                            CornerRadius="4">
+                        <StackPanel>
+                            <Button
+                                Command="{Binding SwitchCommand}"
+                                CommandParameter="{Binding Slots[0]}"
+                                Content="SWITCH"
+                                Style="{StaticResource SwitchActionButtonStyle}"
+                                Visibility="{Binding Options.CanSwitch, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                            <Button
+                                Command="{Binding MovePokemonCommand}"
+                                CommandParameter="{Binding Slots[0]}"
+                                Content="MOVE"
+                                Style="{StaticResource MoveActionButtonStyle}"
+                                Visibility="{Binding Options.CanMove, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                                    <Style.Triggers>
+                            <Button
+                                Command="{Binding OpenSummaryCommand}"
+                                CommandParameter="{Binding Slots[0]}"
+                                Content="SUMMARY"
+                                Style="{StaticResource SummaryActionButtonStyle}"
+                                Visibility="{Binding Options.CanSummary, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-
-                                                <Condition Binding="{Binding Slots[0].IsSelected}" Value="True" />
-
-                                                <Condition Binding="{Binding IsActionMenuOpen}" Value="True" />
-
-                                            </MultiDataTrigger.Conditions>
-
-                                            <Setter Property="Visibility" Value="Visible" />
-
-                                        </MultiDataTrigger>
-
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-
-                            <StackPanel>
-
-                                <Button
-                                    Command="{Binding SwitchCommand}"
-                                    CommandParameter="{Binding Slots[0]}"
-                                    Content="SWITCH"
-                                    Visibility="{Binding Options.CanSwitch, Converter={StaticResource BoolToVisibilityConverter}}">
-
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsSwitchSelected}" Value="True">
-                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                    <Setter Property="Foreground" Value="Yellow" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-
-                                </Button>
-
-                                <Button
-                                    Command="{Binding MovePokemonCommand}"
-                                    CommandParameter="{Binding Slots[0]}"
-                                    Content="MOVE"
-                                    Visibility="{Binding Options.CanMove, Converter={StaticResource BoolToVisibilityConverter}}">
-
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsMoveSelected}" Value="True">
-                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                    <Setter Property="Foreground" Value="Yellow" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-
-                                </Button>
-
-                                <Button
-                                    Command="{Binding OpenSummaryCommand}"
-                                    CommandParameter="{Binding Slots[0]}"
-                                    Content="SUMMARY"
-                                    Visibility="{Binding Options.CanSummary, Converter={StaticResource BoolToVisibilityConverter}}">
-
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsSummarySelected}" Value="True">
-                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                    <Setter Property="Foreground" Value="Yellow" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-
-                                </Button>
-
-                                <Button Command="{Binding CloseActionMenuCommand}" Content="CANCEL">
-
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsCancelSelected}" Value="True">
-                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                    <Setter Property="Foreground" Value="Yellow" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-
-                                </Button>
-
-                            </StackPanel>
-
-                        </Border>
-
-                    </Grid>
-
+                            <Button
+                                Command="{Binding CloseActionMenuCommand}"
+                                Content="CANCEL"
+                                Style="{StaticResource CancelActionButtonStyle}" />
+                        </StackPanel>
+                    </Border>
                 </Grid>
 
                 <!--  TEAM LIST  -->
                 <ItemsControl
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="0,4,4,4"
+                    Canvas.Left="360"
+                    Canvas.Top="22"
+                    Width="396"
+                    Height="410"
+                    ClipToBounds="False"
                     ItemsSource="{Binding Slots}">
 
                     <ItemsControl.ItemsPanel>
@@ -195,266 +244,129 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-
-                            <Grid>
-
-                                <!--  SLOT  -->
-                                <Grid>
-
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-
-                                            <Setter Property="IsHitTestVisible" Value="True" />
-
-                                            <Style.Triggers>
-
-                                                <!--  disable all slots while menu open  -->
-                                                <DataTrigger Binding="{Binding DataContext.IsActionMenuOpen, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
-
-                                                    <Setter Property="IsHitTestVisible" Value="False" />
-
-                                                </DataTrigger>
-
-                                                <!--  EXCEPT selected slot  -->
-                                                <MultiDataTrigger>
-
-                                                    <MultiDataTrigger.Conditions>
-
-                                                        <Condition Binding="{Binding IsSelected}" Value="True" />
-
-                                                        <Condition Binding="{Binding DataContext.IsActionMenuOpen, RelativeSource={RelativeSource AncestorType=Page}}" Value="True" />
-
-                                                    </MultiDataTrigger.Conditions>
-
-                                                    <Setter Property="IsHitTestVisible" Value="True" />
-
-                                                </MultiDataTrigger>
-
-                                            </Style.Triggers>
-
-                                        </Style>
-                                    </Grid.Style>
-
-                                    <local:PokemonHolderSlotUserControl Margin="0,2" DataContext="{Binding}" />
-
-                                </Grid>
-
-                                <!--  ACTION MENU  -->
-                                <Grid Panel.ZIndex="999" IsHitTestVisible="True">
-
-                                    <Border
-                                        Width="120"
-                                        Padding="4"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Background="#FF202020"
-                                        BorderBrush="White"
-                                        BorderThickness="2"
-                                        CornerRadius="4">
-
-                                        <Border.Style>
-
-                                            <Style TargetType="Border">
-
-                                                <Setter Property="Visibility" Value="Collapsed" />
-
-                                                <Style.Triggers>
-
-                                                    <MultiDataTrigger>
-
-                                                        <MultiDataTrigger.Conditions>
-
-                                                            <Condition Binding="{Binding IsSelected}" Value="True" />
-
-                                                            <Condition Binding="{Binding DataContext.IsActionMenuOpen, RelativeSource={RelativeSource AncestorType=Page}}" Value="True" />
-
-                                                        </MultiDataTrigger.Conditions>
-
-                                                        <Setter Property="Visibility" Value="Visible" />
-
-                                                    </MultiDataTrigger>
-
-                                                </Style.Triggers>
-
-                                            </Style>
-
-                                        </Border.Style>
-
-                                        <StackPanel>
-                                            <Button
-                                                Command="{Binding DataContext.SwitchCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                                CommandParameter="{Binding}"
-                                                Content="SWITCH"
-                                                Visibility="{Binding DataContext.Options.CanSwitch, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                <Button.Style>
-                                                    <Style TargetType="Button">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.IsSwitchSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
-                                                                <Setter Property="FontWeight" Value="Bold" />
-                                                                <Setter Property="Foreground" Value="Yellow" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-                                            </Button>
-
-                                            <Button
-                                                Command="{Binding DataContext.MovePokemonCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                                CommandParameter="{Binding}"
-                                                Content="MOVE"
-                                                Visibility="{Binding DataContext.Options.CanMove, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                <Button.Style>
-                                                    <Style TargetType="Button">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.IsMoveSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
-                                                                <Setter Property="FontWeight" Value="Bold" />
-                                                                <Setter Property="Foreground" Value="Yellow" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-                                            </Button>
-
-                                            <Button
-                                                Command="{Binding DataContext.OpenSummaryCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                                CommandParameter="{Binding}"
-                                                Content="SUMMARY"
-                                                Visibility="{Binding DataContext.Options.CanSummary, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                <Button.Style>
-                                                    <Style TargetType="Button">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.IsSummarySelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
-                                                                <Setter Property="FontWeight" Value="Bold" />
-                                                                <Setter Property="Foreground" Value="Yellow" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-                                            </Button>
-
-                                            <Button Command="{Binding DataContext.CloseActionMenuCommand, RelativeSource={RelativeSource AncestorType=Page}}" Content="CANCEL">
-                                                <Button.Style>
-                                                    <Style TargetType="Button">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.IsCancelSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
-                                                                <Setter Property="FontWeight" Value="Bold" />
-                                                                <Setter Property="Foreground" Value="Yellow" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Button.Style>
-                                            </Button>
-                                        </StackPanel>
-
-                                    </Border>
-
-                                </Grid>
-
-                            </Grid>
-
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-
-                    <!--  HIDE SLOT 0  -->
                     <ItemsControl.ItemContainerStyle>
-
-                        <Style>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Width" Value="396" />
+                            <Setter Property="Height" Value="80" />
 
                             <Style.Triggers>
-
+                                <!--  Hide slot 0 because it is displayed as the big card  -->
                                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
-
-                                    <Setter Property="UIElement.Visibility" Value="Collapsed" />
-
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Setter Property="Height" Value="0" />
                                 </DataTrigger>
-
                             </Style.Triggers>
-
                         </Style>
-
                     </ItemsControl.ItemContainerStyle>
 
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="396" Height="74">
+                                <local:PokemonHolderSlotUserControl DataContext="{Binding}" />
+
+                                <!--  Action menu for list slots  -->
+                                <Border HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style BasedOn="{StaticResource PartyActionMenuBorderBaseStyle}" TargetType="Border">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding IsSelected}" Value="True" />
+                                                        <Condition Binding="{Binding DataContext.IsActionMenuOpen, RelativeSource={RelativeSource AncestorType=Page}}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <StackPanel>
+                                        <Button
+                                            Command="{Binding DataContext.SwitchCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                            CommandParameter="{Binding}"
+                                            Content="SWITCH"
+                                            Style="{StaticResource SwitchActionButtonStyleInList}"
+                                            Visibility="{Binding DataContext.Options.CanSwitch, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                        <Button
+                                            Command="{Binding DataContext.MovePokemonCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                            CommandParameter="{Binding}"
+                                            Content="MOVE"
+                                            Style="{StaticResource MoveActionButtonStyleInList}"
+                                            Visibility="{Binding DataContext.Options.CanMove, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                        <Button
+                                            Command="{Binding DataContext.OpenSummaryCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                            CommandParameter="{Binding}"
+                                            Content="SUMMARY"
+                                            Style="{StaticResource SummaryActionButtonStyleInList}"
+                                            Visibility="{Binding DataContext.Options.CanSummary, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                                        <Button
+                                            Command="{Binding DataContext.CloseActionMenuCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                            Content="CANCEL"
+                                            Style="{StaticResource CancelActionButtonStyleInList}" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!--  BOTTOM BAR  -->
-                <Grid
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Height="50">
-                    <Grid.Style>
-                        <Style TargetType="Grid">
+                <!--  BOTTOM TEXT BOX  -->
+                <Border
+                    Canvas.Left="50"
+                    Canvas.Top="438"
+                    Width="320"
+                    Height="42"
+                    Background="#F0F0F0"
+                    BorderBrush="#208020"
+                    BorderThickness="2"
+                    CornerRadius="2">
 
-                            <Setter Property="IsHitTestVisible" Value="True" />
-                            <Style.Triggers>
-
-                                <DataTrigger Binding="{Binding IsActionMenuOpen}" Value="True">
-
-                                    <Setter Property="IsHitTestVisible" Value="False" />
-
-                                </DataTrigger>
-
-                            </Style.Triggers>
-
-                        </Style>
-
-                    </Grid.Style>
-                    <!--  TEXT  -->
-                    <Image
-                        Margin="8,0,0,0"
-                        HorizontalAlignment="Left"
-                        Source="/PokemonGame;component/Assets/Images/TeamSelection/BackgoundText.png"
-                        Stretch="None" />
-
-                    <!--  CANCEL BUTTON  -->
-                    <Button
-                        Margin="0,0,8,0"
-                        HorizontalAlignment="Right"
+                    <TextBlock
+                        Padding="14,0"
                         VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding CancelCommand}"
-                        Cursor="Hand">
+                        FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
+                        FontSize="9"
+                        Foreground="#202020"
+                        Text="Choose a POKéMON." />
+                </Border>
 
-                        <Button.Template>
+                <!--  CANCEL BUTTON  -->
+                <Button
+                    Canvas.Left="560"
+                    Canvas.Top="438"
+                    Width="112"
+                    Height="42"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding CancelCommand}"
+                    Cursor="Hand"
+                    Focusable="False">
 
-                            <ControlTemplate TargetType="Button">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Image
+                                x:Name="CancelImg"
+                                Source="/PokemonGame;component/Assets/Images/TeamSelection/CancelNotSelected.png"
+                                Stretch="Uniform" />
 
-                                <Image
-                                    x:Name="CancelImg"
-                                    Source="/PokemonGame;component/Assets/Images/TeamSelection/CancelNotSelected.png"
-                                    Stretch="None" />
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="CancelImg" Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/CancelSelected.png" />
+                                </Trigger>
 
-                                <ControlTemplate.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="CancelImg" Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/CancelSelected.png" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
 
-                                    <Trigger Property="IsMouseOver" Value="True">
-
-                                        <Setter TargetName="CancelImg" Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/CancelSelected.png" />
-
-                                    </Trigger>
-
-                                    <Trigger Property="IsPressed" Value="True">
-
-                                        <Setter TargetName="CancelImg" Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/CancelSelected.png" />
-
-                                    </Trigger>
-
-                                </ControlTemplate.Triggers>
-
-                            </ControlTemplate>
-
-                        </Button.Template>
-
-                    </Button>
-
-                </Grid>
-
-            </Grid>
-
+            </Canvas>
         </Viewbox>
-
     </Grid>
-
 </Page>

@@ -1,12 +1,15 @@
-﻿using PokemonGame.Model.Domain.Item;
+﻿using PokemonGame.Model.Config;
+using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Map;
 using PokemonGame.Model.Domain.Npc;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
+using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Map;
 using PokemonGame.Services.Handler;
+using PokemonGame.Services.Interfaces;
 using PokemonGame.Services.Services;
 using PokemonGame.ViewModels.Store;
 
@@ -15,10 +18,15 @@ namespace PokemonGame.ViewModels.Translators
     public sealed class MapLoader
     {
         private readonly IMapService _mapService;
+        private readonly IPokemonService _pokemonService;
         private static readonly Dictionary<string, MapDomain> _sessionCache = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<int, MapDomain> _cycleCache = new();
 
-        public MapLoader(IMapService mapService) => _mapService = mapService;
+        public MapLoader(IMapService mapService, IPokemonService pokemonService)
+        {
+            _mapService = mapService;
+            _pokemonService = pokemonService;
+        }
 
         // ── Map Loading ───────────────────────────────────────────────────────
 
@@ -51,6 +59,7 @@ namespace PokemonGame.ViewModels.Translators
                 Blocks = BuildTiles(bundle.Tiles, TileLayerType.Objects),
                 CollisionObjects = BuildCollisionObjects(bundle.Collisions),
                 ConnectedMaps = new List<ConnectedMapDomain>(),
+                Encounters = new List<EncounterDomain>(),
                 Wraps = new List<WrapDomain>(),
                 Npc = new List<NpcObjectDomain>(),
             };
@@ -74,7 +83,39 @@ namespace PokemonGame.ViewModels.Translators
                     Margin = conn.Margin,
                 });
             }
+            foreach (var encounter in bundle.Encounters)
+            {
+                var pokemon = _pokemonService.GenerateWildPokemon(encounter);
+                TeamTranslator translator = new();
+                if (pokemon == null)
+                    continue;
 
+                domain.Encounters.Add(new EncounterDomain
+                {
+                    Pokemon = translator.TranslateToDomain(pokemon),
+
+                    MinLevel = encounter.MinLevel,
+                    MaxLevel = encounter.MaxLevel,
+
+                    CatchChance = encounter.CatchChance,
+                    Rate = encounter.Rate,
+
+                    evYield =
+                        encounter.EvYieldAmount > 0
+                            ? ((Stat)encounter.EvYieldStat,
+                               encounter.EvYieldAmount)
+                            : null,
+
+                    BaseExpYield = encounter.BaseExpYield,
+                    BaseFriendshipYield = encounter.BaseFriendshipYield,
+
+                    CatchRate = encounter.CatchRate,
+
+                    femaleRatio = encounter.FemaleRatio,
+
+                    GrowthRate = GrowthRateType.MediumFast,
+                });
+            }
             foreach (var wrap in bundle.Wraps)
             {
                 var tb = _mapService.GetMap(wrap.TargetMapId);
@@ -143,14 +184,17 @@ namespace PokemonGame.ViewModels.Translators
             return new NpcObjectDomain
             {
                 NpcInfo = new NpcDomain { Id = spawn.NpcId },
-                Location = (spawn.X, spawn.Y),
+                Location = (
+                    spawn.X * MapConstants.TilesPerSquare,
+                    spawn.Y * MapConstants.TilesPerSquare
+                ),
                 CollisionType = SafeCast(spawn.CollisionType, CollisionType.Blocked, nameof(spawn.CollisionType), spawn.Id),
                 MovementType = SafeCast(spawn.MovementType, MovementType.Stationary, nameof(spawn.MovementType), spawn.Id),
-                direction = SafeCast(spawn.FacingDirection, FacingDirection.Down, nameof(spawn.FacingDirection), spawn.Id),
+                Direction = SafeCast(spawn.FacingDirection, FacingDirection.Down, nameof(spawn.FacingDirection), spawn.Id),
                 DirectionA = SafeCast(spawn.DirectionA, FacingDirection.Down, nameof(spawn.DirectionA), spawn.Id),
                 DirectionB = SafeCast(spawn.DirectionB, FacingDirection.Up, nameof(spawn.DirectionB), spawn.Id),
                 StepsPerLeg = spawn.StepsPerLeg,
-                visionRange = spawn.VisionRange,
+                VisionRange = spawn.VisionRange,
                 VisionType = SafeCast(spawn.VisionType, VisionType.Normal, nameof(spawn.VisionType), spawn.Id),
             };
         }
@@ -160,7 +204,7 @@ namespace PokemonGame.ViewModels.Translators
         public void Save(IStoryPlayerService storyPlayerService)
         {
             var player = PlayerDomain.Instance;
-            storyPlayerService.SaveAll(BuildSaveTree(player),UserStore.Instance.PlayerID);
+            storyPlayerService.SaveAll(BuildSaveTree(player), UserStore.Instance.PlayerID);
         }
 
         private static StorySaveTree BuildSaveTree(PlayerDomain player) => new()

@@ -4,147 +4,159 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:PokemonGame.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:PokemonGame.Views.UserControls.OnlineBattleUserControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="180"
-    d:DesignWidth="220"
+    Width="302"
+    Height="244"
+    d:DesignHeight="244"
+    d:DesignWidth="302"
+    Focusable="False"
+    IsTabStop="False"
     mc:Ignorable="d">
+
     <UserControl.Resources>
         <converters:HpToWidthConverter x:Key="HpToWidthConverter" />
         <converters:PokemonIdToImageConverter x:Key="PokedexIdToSpriteConverter" />
+
+        <!--
+            Hide only the content when the slot is empty.
+            The card background stays visible.
+        -->
+        <Style x:Key="PokemonContentStyle" TargetType="Canvas">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MaxHp}" Value="0">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding PokedexId}" Value="0">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
-    <!--  Background swaps between selected / not selected image  -->
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="91*" />
-            <RowDefinition Height="62*" />
-            <RowDefinition Height="27*" />
-        </Grid.RowDefinitions>
-        <Grid.Style>
-            <Style TargetType="Grid">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/MainPokemonNotSelected.png" Stretch="Fill" />
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <ImageBrush ImageSource="/PokemonGame;component/Assets/Images/TeamSelection/MainPokemonSelected.png" Stretch="Fill" />
-                            </Setter.Value>
-                        </Setter>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
 
-        <Button
-            Grid.RowSpan="3"
-            Command="{Binding SelectCommand}"
-            Opacity="0" />
+    <Grid
+        Width="302"
+        Height="244"
+        ClipToBounds="True"
+        RenderOptions.BitmapScalingMode="NearestNeighbor">
 
-        <Grid Grid.RowSpan="2" Margin="60,20,10,10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <!--  Name  -->
-                <RowDefinition Height="Auto" />
-                <!--  Level  -->
-                <RowDefinition Height="Auto" />
-                <!--  HP label  -->
-                <RowDefinition Height="Auto" />
-                <!--  HP bar  -->
-                <RowDefinition Height="Auto" />
-                <!--  HP numbers  -->
-            </Grid.RowDefinitions>
+        <!--  Card background only  -->
+        <Image
+            Width="302"
+            Height="244"
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            Stretch="Fill">
 
-            <!--  Pokemon sprite (top-left of card)  -->
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Setter Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/MainPokemonNotSelected.png" />
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter Property="Source" Value="/PokemonGame;component/Assets/Images/TeamSelection/MainPokemonSelected.png" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+
+        <!--  Fixed drawing layer  -->
+        <Canvas
+            Width="302"
+            Height="244"
+            Style="{StaticResource PokemonContentStyle}">
+
+            <!--  Pokémon sprite  -->
             <Image
-                Grid.Row="0"
-                Grid.RowSpan="5"
-                Width="64"
-                Height="64"
-                Margin="-55,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                RenderOptions.BitmapScalingMode="NearestNeighbor">
+                Canvas.Left="42"
+                Canvas.Top="56"
+                Width="58"
+                Height="58"
+                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                Stretch="Uniform">
+
                 <Image.Source>
                     <Binding Converter="{StaticResource PokedexIdToSpriteConverter}" Path="PokedexId" />
                 </Image.Source>
             </Image>
 
-            <!--  Name  -->
-            <TextBlock
-                Grid.Row="0"
-                FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
-                FontSize="11"
-                Foreground="Black"
-                Text="{Binding PokemonName}" />
-
-            <!--  Level  -->
-            <TextBlock
-                Grid.Row="1"
-                FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
-                FontSize="9"
-                Foreground="Black"
-                Text="{Binding LevelText}" />
-
-
-
-            <!--  HP bar track  -->
-            <Grid
-                Grid.Row="3"
-                Height="8"
-                Margin="0,2,0,2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <!--  "HP" label  -->
-                    <ColumnDefinition Width="*" />
-                    <!--  bar area  -->
-                </Grid.ColumnDefinitions>
+            <!--
+                Name + level together.
+                Level will always stay directly after the name.
+            -->
+            <StackPanel
+                Canvas.Left="50"
+                Canvas.Top="140"
+                Height="16"
+                Orientation="Horizontal">
 
                 <TextBlock
-                    Grid.Column="0"
-                    Margin="0,0,4,0"
-                    VerticalAlignment="Center"
+                    MaxWidth="92"
                     FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
-                    FontSize="7"
+                    FontSize="16"
                     Foreground="Black"
-                    Text="HP" />
+                    Text="{Binding PokemonName}"
+                    TextTrimming="CharacterEllipsis" />
 
-                <!--  Track (background)  -->
-                <Border
-                    Grid.Column="1"
-                    Height="8"
-                    VerticalAlignment="Center"
-                    Background="#383030"
-                    CornerRadius="2" />
+                <TextBlock
+                    Margin="60,0,0,0"
+                    Padding="6,0,0,0"
+                    FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
+                    FontSize="16"
+                    Foreground="Black"
+                    Text="{Binding LevelText}" />
+            </StackPanel>
 
-                <!--  Fill  -->
-                <Rectangle
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Bottom"
-                    Fill="{Binding HPColor}"
-                    RadiusX="2"
-                    RadiusY="2">
-                    <Rectangle.Width>
-                        <MultiBinding Converter="{StaticResource HpToWidthConverter}">
-                            <Binding Path="CurrentHp" />
-                            <Binding Path="MaxHp" />
-                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}" />
-                        </MultiBinding>
-                    </Rectangle.Width>
-                </Rectangle>
-            </Grid>
+            <!--
+                HP fill only.
+                The background image already has the HP frame.
+            -->
+            <Rectangle
+                Canvas.Left="110"
+                Canvas.Top="175"
+                Height="7"
+                MinWidth="1"
+                Fill="{Binding HPColor}"
+                RadiusX="1"
+                RadiusY="1">
 
-            <!--  HP numbers  -->
+                <Rectangle.Width>
+                    <Binding Path="MainHpFillWidth" />
+                </Rectangle.Width>
+            </Rectangle>
+
+            <!--  HP numbers bottom-right  -->
             <TextBlock
-                Grid.Row="4"
-                HorizontalAlignment="Right"
+                Canvas.Left="150"
+                Canvas.Top="195"
+                Width="68"
+                Height="14"
                 FontFamily="/PokemonGame;component/Assets/Fonts/#Pokemon GB"
-                FontSize="9"
+                FontSize="16"
                 Foreground="Black"
-                Text="{Binding HpText}" />
-        </Grid>
+                Text="{Binding HpText}"
+                TextAlignment="Right" />
+
+        </Canvas>
+
+        <!--  Invisible click layer  -->
+        <Button
+            Width="302"
+            Height="244"
+            Panel.ZIndex="99"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding SelectCommand}"
+            Cursor="Hand"
+            Focusable="False">
+
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="Transparent" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
     </Grid>
 </UserControl>

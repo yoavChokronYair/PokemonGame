@@ -83,6 +83,24 @@ namespace PokemonGame.Services.Factory
         internal PartyRepository PartyRepository { get; }
         internal StoryPlayerRepository StoryPlayerRepository { get; }
         internal StoryPlayerPokemonRepository StoryPlayerPokemonRepository { get; }
+        // ── NPC SYSTEM REPOSITORIES ───────────────────────────────────────────────
+        internal TrainerTableRepository TrainerTableRepository { get; }
+        internal NpcDefinitionsRepository NpcDefinitionsRepository { get; }
+        internal NpcItemGivingRepository NpcItemGivingRepository { get; }
+        internal NpcShopInventoryRepository NpcShopInventoryRepository { get; }
+        internal NpcPokemonTradeRepository NpcPokemonTradeRepository { get; }
+        internal NpcGymLeaderRepository NpcGymLeaderRepository { get; }
+        internal NpcGauntletRepository NpcGauntletRepository { get; }
+        internal NpcGiovanniRepository NpcGiovanniRepository { get; }
+        internal NpcItemRewardTrainerRepository NpcItemRewardTrainerRepository { get; }
+        internal PokeballRepository PokeballRepository { get; }
+        internal TmHmRepository TmHmRepository { get; }
+        internal KeyItemRepository KeyItemRepository { get; }
+        internal HeldItemRepository HeldItemRepository { get; }
+
+        internal DialogueSetsRepository DialogueSetsRepository { get; }
+        internal DialogueNodesRepository DialogueNodesRepository { get; }
+        internal DialogueEdgesRepository DialogueEdgesRepository { get; }
 
         // ── Constructor ───────────────────────────────────────────────────────
         public ServiceFactory(IDbConnectionService db)
@@ -135,6 +153,19 @@ namespace PokemonGame.Services.Factory
             PartyRepository = new PartyRepository(db);
             StoryPlayerRepository = new StoryPlayerRepository(db);
             StoryPlayerPokemonRepository = new StoryPlayerPokemonRepository(db);
+            TrainerTableRepository = new TrainerTableRepository(db);
+            NpcDefinitionsRepository = new NpcDefinitionsRepository(db);
+            NpcItemGivingRepository = new NpcItemGivingRepository(db);
+            NpcShopInventoryRepository = new NpcShopInventoryRepository(db);
+            NpcPokemonTradeRepository = new NpcPokemonTradeRepository(db);
+            NpcGymLeaderRepository = new NpcGymLeaderRepository(db);
+            NpcGauntletRepository = new NpcGauntletRepository(db);
+            NpcGiovanniRepository = new NpcGiovanniRepository(db);
+            NpcItemRewardTrainerRepository = new NpcItemRewardTrainerRepository(db);
+
+            DialogueSetsRepository = new DialogueSetsRepository(db);
+            DialogueNodesRepository = new DialogueNodesRepository(db);
+            DialogueEdgesRepository = new DialogueEdgesRepository(db);
 
             UserService = new LocalUserService(UserRepository);
             ProfileService = new LocalProfileService(OnlinePlayerRepository, BattlePlayerSettingsRepository,
@@ -171,7 +202,8 @@ namespace PokemonGame.Services.Factory
                 AbilityRepository, ConditionRepository, EffectRepository, NumberRepository);
 
             ItemService = new LocalItemService(
-                ItemRepository, ConditionRepository, EffectRepository, NumberRepository);
+                ItemRepository, ConditionRepository, EffectRepository, NumberRepository,
+                PokeballRepository, TmHmRepository, KeyItemRepository, HeldItemRepository);
             StoryPlayerService = new LocalStoryPlayerService(
                 TrainerInfoRepository,
                 BadgeRepository,

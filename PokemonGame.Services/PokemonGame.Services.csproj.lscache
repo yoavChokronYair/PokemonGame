@@ -88,33 +88,35 @@ Data/GameData/
   BattlePlayerData.cs
   StoryPlayerData.cs
   UserData.cs
-Data/
- Map/MapData.cs
- Repositories/
-  AbilityRepository.cs
-  BattlePlayerSettingsRepository.cs
-  BattlePlayerStatsRepository.cs
-  BattleRepository.cs
-  BattlerPokemonRepository.cs
-  BattleTeamSnapshotRepository.cs
-  BreedingRepository.cs
-  DbRepository.cs
-  ItemRepository.cs
-  MapRepository.cs
-  MoveLearnsetRepository.cs
-  MoveRepositories.cs
-  OnlinePlayerRepository .cs
-  ParticipantRepository.cs
-  PokedexEntryRepository.cs
-  PokemonRepository.cs
-  PokemonStatsRepository.cs
-  TeamMemberRepository.cs
-  TeamRepository.cs
-  TrainerRepository.cs
-  UserRepository.cs
- Sync/
-  DbSyncService.cs
-  SyncTableRule.cs
+Data/Map/
+ MapData.cs
+ TrainerTableData.cs
+Data/Repositories/
+ AbilityRepository.cs
+ BattlePlayerSettingsRepository.cs
+ BattlePlayerStatsRepository.cs
+ BattleRepository.cs
+ BattlerPokemonRepository.cs
+ BattleTeamSnapshotRepository.cs
+ BreedingRepository.cs
+ DbRepository.cs
+ ItemRepository.cs
+ MapRepository.cs
+ MoveLearnsetRepository.cs
+ MoveRepositories.cs
+ OnlinePlayerRepository .cs
+ ParticipantRepository.cs
+ PokedexEntryRepository.cs
+ PokemonRepository.cs
+ PokemonStatsRepository.cs
+ TeamMemberRepository.cs
+ TeamRepository.cs
+ TrainerRepository.cs
+ TrainerTableRepository.cs
+ UserRepository.cs
+Data/Sync/
+ DbSyncService.cs
+ SyncTableRule.cs
 Factory/
  ServiceFactory.cs
  ServiceResolver.cs

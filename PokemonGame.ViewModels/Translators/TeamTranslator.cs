@@ -13,12 +13,12 @@ namespace PokemonGame.ViewModels.Translators
         private readonly ItemTranslator _itemTranslator;
         private readonly TeamCreationManager _teamCreator;
 
-        public TeamTranslator(UserStore userStore)
+        public TeamTranslator()
         {
             _moveTranslator = new MoveTranslator();
             _abilityTranslator = new AbilityTranslator();
             _itemTranslator = new ItemTranslator();
-            _pokemonService = userStore.Resolver.GetPokemonService();
+            _pokemonService = UserStore.Instance.Resolver.GetPokemonService();
             _teamCreator = new TeamCreationManager();
         }
 

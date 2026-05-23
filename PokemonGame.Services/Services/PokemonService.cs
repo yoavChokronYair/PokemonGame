@@ -1,4 +1,5 @@
 ﻿using PokemonGame.Services.Data.GameData.Pokemon;
+using PokemonGame.Services.Data.Map;
 using PokemonGame.Services.Data.Repositories;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Interfaces;
@@ -151,6 +152,97 @@ namespace PokemonGame.Services.Handler
             return results;
         }
 
+        public PokemonLoadResult GenerateWildPokemon(EncounterData encounter)
+        {
+            var random = new Random();
+
+            var pokemonData = _pokemonRepo.GetPokemonById(encounter.PokemonId);
+            if (pokemonData == null)
+                throw new InvalidOperationException($"Pokemon {encounter.PokemonId} not found.");
+
+            // ── Level from encounter ─────────────────────────
+            int level = random.Next(encounter.MinLevel, encounter.MaxLevel + 1);
+
+            // ── Ability selection ────────────────────────────
+            var abilityPool = new List<int?>
+            {
+                pokemonData.FirstAbilityID,
+                pokemonData.SecondAbilityID,
+                pokemonData.HiddenAbilityID
+            }
+            .Where(a => a.HasValue)
+            .Select(a => a!.Value)
+            .ToList();
+
+            if (abilityPool.Count == 0)
+                throw new InvalidOperationException($"Pokemon {encounter.PokemonId} has no abilities.");
+
+            int abilityId = abilityPool[random.Next(abilityPool.Count)];
+
+            // ── Moves (based on level) ───────────────────────
+            var learnset = _moveLearnsetRepository.GetLevelUpMoves(encounter.PokemonId);
+
+            var moves = learnset
+                .Where(m => m.Level <= level)
+                .OrderBy(m => m.Level)
+                .Select(m => m.MoveID)
+                .Distinct()
+                .Reverse()
+                .Take(4)
+                .ToList();
+
+            // ── fallback moves if needed ─────────────────────
+            while (moves.Count < 4)
+            {
+                var fallback = _moveLearnsetRepository
+                    .GetRandomMoveIdForPokemon(encounter.PokemonId);
+
+                if (!moves.Contains(fallback))
+                    moves.Add(fallback);
+            }
+
+            // ── Build battler ───────────────────────────────
+            var battler = new BattlerPokemon
+            {
+                PokedexID = encounter.PokemonId,
+                Level = level,
+                AbilityID = abilityId,
+
+                Iv_hp = RandomIV(),
+                Iv_atk = RandomIV(),
+                Iv_def = RandomIV(),
+                Iv_spAtk = RandomIV(),
+                Iv_spDef = RandomIV(),
+                Iv_speed = RandomIV(),
+
+                Nature = GetRandomNature(),
+
+                Move1ID = moves[0],
+                Move2ID = moves[1],
+                Move3ID = moves[2],
+                Move4ID = moves[3],
+            };
+
+            return GetPokemonFromInstance(battler);
+        }
+        private static readonly string[] Natures =
+        {
+            "Hardy", "Adamant", "Modest", "Jolly", "Timid",
+            "Bold", "Calm", "Impish", "Careful"
+        };
+
+        private static int RandomIV()
+        {
+            Random random = new Random();
+            return random.Next(0, 32); // 0–31
+        }
+
+        private static string GetRandomNature()
+        {
+            Random random = new Random();
+
+            return Natures[random.Next(Natures.Length)];
+        }
         private static IEnumerable<int> GetMoveIds(BattlerPokemon b)
         {
             yield return b.Move1ID;
