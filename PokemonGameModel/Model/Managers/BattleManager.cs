@@ -88,7 +88,7 @@ namespace PokemonGame.Model.Model.Managers
 
                 _state.UpdateActivePair(PlayerActive, BotActive);
                 new BeginTurn().Run(_state);
-                new SwitchIn(PlayerActive).Run(_state);
+                new SwitchIn(PlayerActive, _state.AttackerSide).Run(_state);
 
                 if (pendingBotMove != null && !BotActive.IsFainted)
                 {
@@ -116,7 +116,7 @@ namespace PokemonGame.Model.Model.Managers
             if (botAction.Type == BotAction.ActionType.Switch)
             {
                 _botTeam.SwitchTo(botAction.SwitchSlot!.Value);
-                new SwitchIn(BotActive).Run(_state);
+                new SwitchIn(BotActive, _state.DefenderSide).Run(_state);
                 _state.UpdateActivePair(PlayerActive, BotActive);
             }
 
@@ -152,7 +152,7 @@ namespace PokemonGame.Model.Model.Managers
                 return false;
 
             _state.UpdateActivePair(PlayerActive, BotActive);
-            new SwitchIn(PlayerActive).Run(_state);
+            new SwitchIn(PlayerActive, _state.AttackerSide).Run(_state);
 
             return true;
         }
@@ -176,7 +176,7 @@ namespace PokemonGame.Model.Model.Managers
 
                 _state.UpdateActivePair(PlayerActive, BotActive);
                 new BeginTurn().Run(_state);
-                new SwitchIn(PlayerActive).Run(_state);
+                new SwitchIn(PlayerActive, _state.AttackerSide).Run(_state);
 
                 // Opponent still attacks after player switches
                 if (opponentAction == BattleAction.Move)
@@ -206,8 +206,7 @@ namespace PokemonGame.Model.Model.Managers
                     return false;
 
                 _state.UpdateActivePair(PlayerActive, BotActive);
-                new SwitchIn(BotActive).Run(_state);
-
+                new SwitchIn(BotActive, _state.DefenderSide).Run(_state);
                 // Player still attacks after opponent switches
                 if (playerAction == BattleAction.Move)
                 {
@@ -278,14 +277,14 @@ namespace PokemonGame.Model.Model.Managers
                 HasBotFainted = true;
                 BotAction forcedSwitch = _botManager.PickAction();
                 _botTeam.SwitchTo(forcedSwitch.SwitchSlot!.Value);
-                new SwitchIn(BotActive).Run(_state);
+                new SwitchIn(BotActive, _state.DefenderSide).Run(_state);
                 _state.UpdateActivePair(PlayerActive, BotActive);
             }
             if (PlayerActive.IsFainted)
             {
                 HasTrainerFainted = true;
                 _playerTeam.SwitchToNextAvailable();
-                new SwitchIn(PlayerActive).Run(_state);
+                new SwitchIn(PlayerActive, _state.AttackerSide).Run(_state);
                 _state.UpdateActivePair(PlayerActive, BotActive);
             }
         }

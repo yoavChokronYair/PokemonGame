@@ -146,8 +146,8 @@ namespace PokemonGame.Model.Model.DesignPatterns
             var user = _healTarget.Resolve(battle);
             int baseAmount = (int)_drainAmount.Evaluate(battle);
             int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle, baseAmount);
-            user.TakeDamage(amount);
-            victim.RestoreHP(amount);
+            user.RestoreHP(amount / 8);
+            victim.TakeDamage(amount);
         }
     }
     public class PowerUpMove : IEffect

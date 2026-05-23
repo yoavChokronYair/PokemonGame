@@ -1,4 +1,5 @@
-﻿using PokemonGame.Model.Domain.Battle;
+﻿using System.Xml.Linq;
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Move;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
@@ -19,30 +20,148 @@ namespace PokemonGame.Model.Interface
         {
             state.Logger.LogSetup("A battle has Started!");
             // Trigger switch-in effects for the starting two
-            new SwitchIn(state.Attacker).Run(state);
-            new SwitchIn(state.Defender).Run(state);
+            new SwitchIn(state.Attacker, state.AttackerSide).Run(state);
+            new SwitchIn(state.Defender, state.DefenderSide).Run(state);
            
         }
     }
 
-    // ── 2. Switch In ─────────────────────────────────────────────────
-    // Triggered at start of battle OR when a fainted Pokemon is replaced
     public class SwitchIn : IPhase
     {
         private readonly PokemonState _incoming;
-        public SwitchIn(PokemonState incoming) => _incoming = incoming;
+        private readonly BattleSideState _sideState;
+
+        public SwitchIn(PokemonState incoming, BattleSideState sideState)
+        {
+            _incoming = incoming;
+            _sideState = sideState;
+        }
 
         public void Run(BattleState state)
         {
-            state.Logger.Log($"{_incoming.Name} entered the battle!");
+            state.Logger.LogSwitch($"{_incoming.Name} entered the battle!");
 
-            // This is where Intimidate or Drizzle would go
+            ApplyEntryHazards(state);
+
+            if (_incoming.IsFainted)
+                return;
+
             if (_incoming.Ability is OnSwitchIn switchAbility)
             {
                 switchAbility.Apply(state);
             }
         }
+
+        private void ApplyEntryHazards(BattleState state)
+        {
+            ApplyStealthRock(state);
+            ApplySpikes(state);
+            ApplyToxicSpikes(state);
+            ApplyStickyWeb(state);
+        }
+
+        private void ApplyStealthRock(BattleState state)
+        {
+            int layers = _sideState.GetHazardLayers(Hazard.StealthRock);
+
+            if (layers <= 0)
+                return;
+
+            int damage = Math.Max(1, _incoming.MaxHP / 8);
+
+            _incoming.TakeDamage(damage);
+
+            state.Logger.LogSwitch($"Pointed stones dug into {_incoming.Name}!");
+        }
+
+        private void ApplySpikes(BattleState state)
+        {
+            int layers = _sideState.GetHazardLayers(Hazard.Spikes);
+
+            if (layers <= 0)
+                return;
+
+            if (IsGroundImmune())
+                return;
+
+            int damage = layers switch
+            {
+                1 => Math.Max(1, _incoming.MaxHP / 8),
+                2 => Math.Max(1, _incoming.MaxHP / 6),
+                _ => Math.Max(1, _incoming.MaxHP / 4)
+            };
+
+            _incoming.TakeDamage(damage);
+
+            state.Logger.LogSwitch($"{_incoming.Name} was hurt by Spikes!");
+        }
+
+        private void ApplyToxicSpikes(BattleState state)
+        {
+            int layers = _sideState.GetHazardLayers(Hazard.ToxicSpikes);
+
+            if (layers <= 0)
+                return;
+
+            if (IsGroundImmune())
+                return;
+
+            if (_incoming.HasType(PokemonType.Poison))
+            {
+                _sideState.RemoveHazard(Hazard.ToxicSpikes);
+
+                state.Logger.LogSwitch($"{_incoming.Name} absorbed the Toxic Spikes!");
+                return;
+            }
+
+            if (_incoming.HasType(PokemonType.Steel))
+                return;
+
+            if (layers == 1)
+            {
+                _incoming.ApplyStatus(StatusCondition.Poison);
+
+                state.Logger.LogStatus(
+                    $"{_incoming.Name} was poisoned by Toxic Spikes!");
+            }
+            else
+            {
+                // If you do not have BadlyPoisoned yet, keep Poison here.
+                _incoming.ApplyStatus(StatusCondition.Poison);
+
+                state.Logger.LogStatus(
+                    $"{_incoming.Name} was badly poisoned by Toxic Spikes!");
+            }
+        }
+
+        private void ApplyStickyWeb(BattleState state)
+        {
+            int layers = _sideState.GetHazardLayers(Hazard.StickyWeb);
+
+            if (layers <= 0)
+                return;
+
+            if (IsGroundImmune())
+                return;
+
+            _incoming.ChangeStatStage(Stat.Speed, -1);
+
+            state.Logger.LogSwitch($"{_incoming.Name}'s Speed fell because of Sticky Web!");
+        }
+
+        private bool IsGroundImmune()
+        {
+            return _incoming.HasType(PokemonType.Flying)
+                   || IsAbility("Levitate");
+        }
+
+        private bool IsAbility(string abilityName)
+        {
+            return _incoming.Ability is AbilityState ability &&
+                   ability.Name == abilityName;
+        }
     }
+
 
     // ── 3. Begin Turn ────────────────────────────────────────────────
     public class BeginTurn : IPhase
