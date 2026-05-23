@@ -12,6 +12,7 @@
 //    7. TryTriggerTrainerBattle stub for future trainer spotted flow.
 // =============================================================================
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
@@ -501,21 +502,71 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private readonly Func<PokeballState, Task> _onBallThrown;
         private readonly PlayerDomain _player;
 
-        public System.Collections.ObjectModel.ObservableCollection<WildBagBallEntry> Balls { get; } = new();
+        private readonly List<PokeballState> _ballsByRow = new();
 
-        private int _selectedIndex;
-        public int SelectedIndex
+        private const int VisibleCount = 5;
+        private int _scrollIndex = 0;
+        private int _selectedIndex = 0;
+
+        public ObservableCollection<BagItemEntryViewModel> PokemonEntries { get; } = new();
+
+        public string CurrentCategoryName => "Poké Balls";
+
+        public BagItemEntryViewModel? SelectedEntry =>
+            PokemonEntries.ElementAtOrDefault(_selectedIndex);
+
+        public string SelectedDescription =>
+            SelectedEntry?.Description ?? string.Empty;
+
+        public double ScrollOffset => _scrollIndex * 64;
+
+        private bool _isActionMenuOpen;
+        public bool IsActionMenuOpen
         {
-            get => _selectedIndex;
-            set => SetProperty(ref _selectedIndex, value);
+            get => _isActionMenuOpen;
+            set
+            {
+                if (SetProperty(ref _isActionMenuOpen, value))
+                {
+                    OnPropertyChanged(nameof(IsUseSelected));
+                    OnPropertyChanged(nameof(IsDeleteSelected));
+                    OnPropertyChanged(nameof(IsCancelSelected));
+                }
+            }
         }
 
-        public WildBagBallEntry? SelectedBall => Balls.ElementAtOrDefault(_selectedIndex);
+        private int _actionMenuIndex;
+        public int ActionMenuIndex
+        {
+            get => _actionMenuIndex;
+            set
+            {
+                if (SetProperty(ref _actionMenuIndex, value))
+                {
+                    OnPropertyChanged(nameof(IsUseSelected));
+                    OnPropertyChanged(nameof(IsDeleteSelected));
+                    OnPropertyChanged(nameof(IsCancelSelected));
+                }
+            }
+        }
 
-        public ICommand ThrowCommand { get; }
-        public ICommand CancelCommand { get; }
+        private const int ActionCount = 3;
+        private const int UseIndex = 0;
+        private const int DeleteIndex = 1;
+        private const int CancelIndex = 2;
+
+        public bool IsUseSelected => IsActionMenuOpen && ActionMenuIndex == UseIndex;
+        public bool IsDeleteSelected => IsActionMenuOpen && ActionMenuIndex == DeleteIndex;
+        public bool IsCancelSelected => IsActionMenuOpen && ActionMenuIndex == CancelIndex;
+
         public ICommand SelectNextCommand { get; }
         public ICommand SelectPreviousCommand { get; }
+        public ICommand CategoryLeftCommand { get; }
+        public ICommand CategoryRightCommand { get; }
+        public ICommand ConfirmCommand { get; }
+        public ICommand CancelCommand { get; }
+        public ICommand UseCommand { get; }
+        public ICommand DeleteCommand { get; }
 
         public WildBattleBagViewModel(
             NavigationStore navigationStore,
@@ -527,72 +578,194 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             _onBallThrown = onBallThrown;
             _player = PlayerDomain.Instance;
 
-            ThrowCommand = new RelayCommand(async () => await OnThrow());
+            SelectNextCommand = new RelayCommand(SelectNext);
+            SelectPreviousCommand = new RelayCommand(SelectPrevious);
+
+            // Wild battle bag only shows Poké Balls,
+            // but the XAML expects category commands.
+            CategoryLeftCommand = new RelayCommand(() => { });
+            CategoryRightCommand = new RelayCommand(() => { });
+
+            ConfirmCommand = new RelayCommand(OnConfirm);
             CancelCommand = new RelayCommand(OnCancel);
-            SelectNextCommand = new RelayCommand(() =>
-            {
-                if (Balls.Count > 0) SelectedIndex = (SelectedIndex + 1) % Balls.Count;
-            });
-            SelectPreviousCommand = new RelayCommand(() =>
-            {
-                if (Balls.Count > 0)
-                    SelectedIndex = (SelectedIndex - 1 + Balls.Count) % Balls.Count;
-            });
+            UseCommand = new RelayCommand(async () => await OnUse());
+            DeleteCommand = new RelayCommand(OnDelete);
 
             LoadBalls();
         }
 
-        // Pull all PokeballState items that have qty > 0 from the real bag
         private void LoadBalls()
         {
-            Balls.Clear();
+            PokemonEntries.Clear();
+            _ballsByRow.Clear();
+
+            _selectedIndex = 0;
+            _scrollIndex = 0;
+
             var bag = _player.trainerItemDomain.BagInventory;
-            foreach (var kv in bag)
+
+            foreach (var kv in bag
+                         .Where(kv => kv.Value > 0 && kv.Key is PokeballState)
+                         .OrderBy(kv => kv.Key.Name))
             {
-                if (kv.Value <= 0) continue;
-                if (kv.Key is PokeballState ball)
+                var ball = (PokeballState)kv.Key;
+
+                _ballsByRow.Add(ball);
+
+                PokemonEntries.Add(new BagItemEntryViewModel
                 {
-                    Balls.Add(new WildBagBallEntry
-                    {
-                        Ball = ball,
-                        Count = kv.Value,
-                        DisplayName = ball.Name ?? ball.BallType.ToString()
-                    });
-                }
+                    Name = ball.Name ?? ball.BallType.ToString(),
+                    Amount = kv.Value,
+                    Description = ball.Description
+                });
             }
+
+            RefreshSelection();
+            NotifyScrollAndSelection();
         }
 
-        private async Task OnThrow()
+        private void SelectNext()
         {
-            var entry = SelectedBall;
-            if (entry == null || entry.Count <= 0) return;
-
-            // Consume one ball from the real inventory
-            var bag = _player.trainerItemDomain.BagInventory;
-            if (bag.TryGetValue(entry.Ball, out int qty))
+            if (IsActionMenuOpen)
             {
-                if (qty <= 1) bag.Remove(entry.Ball);
-                else bag[entry.Ball] = qty - 1;
+                ActionMenuIndex = (ActionMenuIndex + 1) % ActionCount;
+                return;
             }
 
-            // Navigate back to battle FIRST, then let the throw animate
-            var battleVm = _returnToWild();
+            if (PokemonEntries.Count == 0)
+                return;
 
-            _navigationStore.CurrentViewModel = battleVm;
+            _selectedIndex = MathHelper.Clamp(
+                _selectedIndex + 1,
+                0,
+                PokemonEntries.Count - 1);
 
-            await _onBallThrown(entry.Ball);
+            _scrollIndex = MathHelper.Clamp(
+                _scrollIndex + 1,
+                0,
+                Math.Max(0, PokemonEntries.Count - VisibleCount));
+
+            RefreshSelection();
+            NotifyScrollAndSelection();
+        }
+
+        private void SelectPrevious()
+        {
+            if (IsActionMenuOpen)
+            {
+                ActionMenuIndex = (ActionMenuIndex - 1 + ActionCount) % ActionCount;
+                return;
+            }
+
+            if (PokemonEntries.Count == 0)
+                return;
+
+            _selectedIndex = MathHelper.Clamp(
+                _selectedIndex - 1,
+                0,
+                PokemonEntries.Count - 1);
+
+            _scrollIndex = MathHelper.Clamp(
+                _scrollIndex - 1,
+                0,
+                Math.Max(0, PokemonEntries.Count - VisibleCount));
+
+            RefreshSelection();
+            NotifyScrollAndSelection();
+        }
+
+        private void OnConfirm()
+        {
+            if (IsActionMenuOpen)
+            {
+                switch (ActionMenuIndex)
+                {
+                    case UseIndex:
+                        _ = OnUse();
+                        break;
+
+                    case DeleteIndex:
+                        OnDelete();
+                        break;
+
+                    case CancelIndex:
+                        CloseActionMenu();
+                        break;
+                }
+
+                return;
+            }
+
+            if (SelectedEntry == null)
+                return;
+
+            ActionMenuIndex = UseIndex;
+            IsActionMenuOpen = true;
         }
 
         private void OnCancel()
         {
+            if (IsActionMenuOpen)
+            {
+                CloseActionMenu();
+                return;
+            }
+
             _navigationStore.CurrentViewModel = _returnToWild();
         }
-    }
 
-    public class WildBagBallEntry
-    {
-        public PokeballState Ball { get; set; } = null!;
-        public int Count { get; set; }
-        public string DisplayName { get; set; } = string.Empty;
+        private void CloseActionMenu()
+        {
+            IsActionMenuOpen = false;
+            ActionMenuIndex = UseIndex;
+        }
+
+        private async Task OnUse()
+        {
+            if (_selectedIndex < 0 || _selectedIndex >= _ballsByRow.Count)
+                return;
+
+            var ball = _ballsByRow[_selectedIndex];
+
+            var bag = _player.trainerItemDomain.BagInventory;
+
+            if (!bag.TryGetValue(ball, out int qty) || qty <= 0)
+                return;
+
+            if (qty <= 1)
+                bag.Remove(ball);
+            else
+                bag[ball] = qty - 1;
+
+            CloseActionMenu();
+
+            var battleVm = _returnToWild();
+
+            _navigationStore.CurrentViewModel = battleVm;
+
+            await _onBallThrown(ball);
+        }
+
+        private void OnDelete()
+        {
+            // In wild battle, DELETE should not really be used.
+            // Keep it harmless because the shared XAML expects it.
+            CloseActionMenu();
+        }
+
+        private void RefreshSelection()
+        {
+            for (int i = 0; i < PokemonEntries.Count; i++)
+            {
+                PokemonEntries[i].IsSelected = i == _selectedIndex;
+            }
+        }
+
+        private void NotifyScrollAndSelection()
+        {
+            OnPropertyChanged(nameof(ScrollOffset));
+            OnPropertyChanged(nameof(SelectedEntry));
+            OnPropertyChanged(nameof(SelectedDescription));
+        }
     }
 }

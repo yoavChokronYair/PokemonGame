@@ -148,6 +148,7 @@ namespace PokemonGame.Services.Data.Repositories
             _db.Execute(
                 "INSERT OR REPLACE INTO BagInventory (PlayerID, ItemId, Quantity) VALUES (@PlayerID, @ItemId, @Quantity)",
                 new { item.PlayerID, item.ItemId, item.Quantity });
+
             StoreAndReturn(item.ItemId, () => item);
         }
 

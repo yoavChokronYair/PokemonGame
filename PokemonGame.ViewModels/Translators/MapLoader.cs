@@ -8,6 +8,7 @@ using PokemonGame.Model.Enums;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Data.GameData.User;
 using PokemonGame.Services.Data.Map;
+using PokemonGame.Services.Factory;
 using PokemonGame.Services.Handler;
 using PokemonGame.Services.Interfaces;
 using PokemonGame.Services.Services;
@@ -41,12 +42,10 @@ namespace PokemonGame.ViewModels.Translators
             return domain;
         }
 
-        public static void InvalidateCache(string mapName) => _sessionCache.Remove(mapName);
-        public static void InvalidateAll() => _sessionCache.Clear();
-
         private MapDomain BuildDomain(MapBundle bundle)
         {
-            if (_cycleCache.TryGetValue(bundle.Map.Id, out var existing)) return existing;
+            if (_cycleCache.TryGetValue(bundle.Map.Id, out var existing))
+                return existing;
 
             var domain = new MapDomain
             {
@@ -66,33 +65,57 @@ namespace PokemonGame.ViewModels.Translators
 
             _cycleCache[bundle.Map.Id] = domain;
 
+            // ── Connected maps ─────────────────────────────────────────────
             foreach (var conn in bundle.Connections)
             {
-                var nb = _mapService.GetMap(conn.ConnectedMapId);
-                if (nb == null) continue;
+                var connectedBundle = _mapService.GetMap(conn.ConnectedMapId);
+
+                if (connectedBundle == null)
+                    continue;
+
                 if (!Enum.IsDefined(typeof(ConnectionDirection), conn.Direction))
                 {
                     System.Diagnostics.Debug.WriteLine(
                         $"[MapLoader] Skipping connection id={conn.Id}: unknown Direction={conn.Direction}");
+
                     continue;
                 }
+
                 domain.ConnectedMaps.Add(new ConnectedMapDomain
                 {
-                    ConnectedMap = BuildDomain(nb),
+                    ConnectedMap = BuildDomain(connectedBundle),
                     ConnectionDirection = (ConnectionDirection)conn.Direction,
                     Margin = conn.Margin,
                 });
             }
+
+            // ── Encounters ─────────────────────────────────────────────────
+            // BUG-098 fix:
+            // Create the translator once, not inside every encounter loop.
+            var moveTranslator = new MoveTranslator(ServiceFactory.Instance.MoveService);
+            var abilityTranslator = new AbilityTranslator(ServiceFactory.Instance.AbilityService);
+            var itemTranslator = new ItemTranslator(
+                ServiceFactory.Instance.ItemService,
+                moveTranslator);
+
+            var teamTranslator = new TeamTranslator(
+                _pokemonService,
+                moveTranslator,
+                abilityTranslator,
+                itemTranslator);
+
             foreach (var encounter in bundle.Encounters)
             {
                 var pokemon = _pokemonService.GenerateWildPokemon(encounter);
-                TeamTranslator translator = new();
+
                 if (pokemon == null)
                     continue;
 
+                PokemonState pokemonState = teamTranslator.TranslateToDomain(pokemon);
+
                 domain.Encounters.Add(new EncounterDomain
                 {
-                    Pokemon = translator.TranslateToDomain(pokemon),
+                    Pokemon = pokemonState,
 
                     MinLevel = encounter.MinLevel,
                     MaxLevel = encounter.MaxLevel,
@@ -102,20 +125,23 @@ namespace PokemonGame.ViewModels.Translators
 
                     evYield =
                         encounter.EvYieldAmount > 0
-                            ? ((Stat)encounter.EvYieldStat,
-                               encounter.EvYieldAmount)
+                            ? ((Stat)encounter.EvYieldStat, encounter.EvYieldAmount)
                             : null,
 
                     BaseExpYield = encounter.BaseExpYield,
                     BaseFriendshipYield = encounter.BaseFriendshipYield,
 
                     CatchRate = encounter.CatchRate,
-
                     femaleRatio = encounter.FemaleRatio,
 
+                    // TODO:
+                    // BUG-097 cannot be fully fixed until GrowthRate exists
+                    // in encounter/species data. Keep the fallback explicit.
                     GrowthRate = GrowthRateType.MediumFast,
                 });
             }
+
+            // ── Warps / wraps ──────────────────────────────────────────────
             foreach (var wrap in bundle.Wraps)
             {
                 var tb = _mapService.GetMap(wrap.TargetMapId);
@@ -128,8 +154,11 @@ namespace PokemonGame.ViewModels.Translators
                 });
             }
 
+            // ── NPCs ───────────────────────────────────────────────────────
             foreach (var spawn in bundle.NpcSpawns)
+            {
                 domain.Npc.Add(BuildNpc(spawn));
+            }
 
             return domain;
         }
@@ -223,8 +252,11 @@ namespace PokemonGame.ViewModels.Translators
 
         private static StoryPlayerData BuildStoryPlayer(PlayerDomain player) => new()
         {
-            PlayerID = player.trainerInfo.TrainerID,
-            UserID = player.trainerInfo.TrainerID,
+            // BUG-095:
+            // PlayerID and UserID are account/save identifiers.
+            // TrainerID is the in-game trainer number.
+            PlayerID = UserStore.Instance.PlayerID,
+            UserID = UserStore.Instance.UserID,
         };
 
         private static TrainerInfoData BuildTrainerInfo(PlayerDomain player) => new()
@@ -233,7 +265,7 @@ namespace PokemonGame.ViewModels.Translators
             TrainerID = player.trainerInfo.TrainerID,
             Name = player.trainerInfo.Name,
             Money = player.trainerInfo.Money,
-            TimePlayed = player.trainerInfo.TimePlayed.ToString(@"hh\:mm\:ss"),
+            TimePlayed = player.trainerInfo.TimePlayed.TimeOfDay.ToString(@"hh\:mm\:ss"),
             Gender = (int)player.trainerInfo.Gender,
             HallOfFameDebut = player.trainerInfo.HallOfFameDebut,
             FacingDirection = (int)player.trainerMapLocDomain.FacingDirection,
@@ -300,127 +332,6 @@ namespace PokemonGame.ViewModels.Translators
                     Affection = p.Affection,
                 })
                 .ToList();
-        }
-
-        // ── Load ─────────────────────────────────────────────────────────────
-
-        public void Load(IStoryPlayerService storyPlayerService, int userId)
-        {
-            var save = storyPlayerService.LoadAll(userId);
-            ApplySaveTree(save);
-        }
-
-        private void ApplySaveTree(StorySaveTree save)
-        {
-            var player = PlayerDomain.Instance;
-            ApplyTrainerInfo(player, save.TrainerInfo);
-            ApplyBadges(player, save.Badges);
-            ApplyProgressFlags(player, save);
-            ApplyBagInventory(player, save.BagInventory);
-            ApplyPokedex(player, save.Pokedex);
-            ApplyParty(player, save.Party);
-        }
-
-        private void ApplyTrainerInfo(PlayerDomain player, TrainerInfoData data)
-        {
-            player.trainerInfo.TrainerID = data.TrainerID;
-            player.trainerInfo.Name = data.Name;
-            player.trainerInfo.Money = data.Money;
-            player.trainerInfo.Gender = (Gender)data.Gender;
-            player.trainerInfo.HallOfFameDebut = data.HallOfFameDebut;
-
-            if (TimeSpan.TryParse(data.TimePlayed, out var ts))
-                player.trainerInfo.TimePlayed = DateTime.Today.Add(ts);
-
-            player.trainerMapLocDomain.FacingDirection = (FacingDirection)data.FacingDirection;
-            player.trainerMapLocDomain.playerLoc = (data.PlayerLocX, data.PlayerLocY);
-            player.trainerMapLocDomain.IsSurfing = data.IsSurfing == 1;
-
-            if (!string.IsNullOrEmpty(data.CurrentMap))
-                player.trainerMapLocDomain.CurrentMap = Load(data.CurrentMap);
-
-            if (!string.IsNullOrEmpty(data.LastMapVisited))
-                player.trainerMapLocDomain.LastMapVisited = Load(data.LastMapVisited);
-
-            player.trainerItemDomain.HasRunningShoes = data.HasRunningShoes == 1;
-        }
-
-        private static void ApplyBadges(PlayerDomain player, List<BadgeData> badges)
-        {
-            player.Badges.Clear();
-            foreach (var b in badges)
-                player.Badges.Add(new BadgeDomain { Id = b.Id, IsObtained = b.IsObtained == 1 });
-        }
-
-        private static void ApplyProgressFlags(PlayerDomain player, StorySaveTree save)
-        {
-            player.ProgressFlags.StoryFlags.Clear();
-            foreach (var f in save.StoryFlags)
-                player.ProgressFlags.StoryFlags.Add(f);
-
-            player.ProgressFlags.DefeatedTrainers.Clear();
-            foreach (var t in save.DefeatedTrainers)
-                player.ProgressFlags.DefeatedTrainers.Add(t);
-
-            player.ProgressFlags.ItemTaken.Clear();
-            foreach (var i in save.ItemsTaken)
-                player.ProgressFlags.ItemTaken.Add(i);
-
-            player.ProgressFlags.TradedPokemon.Clear();
-            foreach (var p in save.TradedPokemon)
-                player.ProgressFlags.TradedPokemon.Add(p);
-        }
-
-        private static void ApplyBagInventory(PlayerDomain player, List<BagInventoryData> inventory)
-        {
-            player.trainerItemDomain.BagInventory.Clear();
-            foreach (var entry in inventory)
-            {
-                var item = new itemsDomain { Id = entry.ItemId };
-                player.trainerItemDomain.BagInventory[item] = entry.Quantity;
-            }
-        }
-
-        private static void ApplyPokedex(PlayerDomain player, List<PokedexData> pokedex)
-        {
-            player.Pokedex.Clear();
-            foreach (var entry in pokedex)
-            {
-                player.Pokedex[entry.PokedexId] = (
-                    seen: entry.Seen == 1,
-                    caught: entry.Caught == 1,
-                    name: entry.PokedexId.ToString() // replace with species name lookup
-                );
-            }
-        }
-
-        private static void ApplyParty(PlayerDomain player, List<StoryPlayerPokemonData> party)
-        {
-            player.Team = new PlayerTeamDomain();
-            foreach (var data in party)
-            {
-                var pokemon = new PokemonPlayerDomain
-                {
-                    PokemonUID = data.PokemonUID,
-                    Nickname = data.Nickname,
-                    OriginalTrainerID = data.OriginalTrainerID,
-                    OriginalTrainerName = data.OriginalTrainerName,
-                    ObtainMethod = (ObtainMethodType)data.ObtainMethod,
-                    ObtainedAtRoute = data.ObtainedAtRoute,
-                    ObtainedAt = data.ObtainedAt,
-                    ObtainedAtLevel = data.ObtainedAtLevel,
-                    CaughtWithBall = (PokeBallType)data.CaughtWithBall,
-                    MetLocationText = data.MetLocationText,
-                    Experience = data.Experience,
-                    GrowthRate = Enum.TryParse<GrowthRateType>(data.GrowthRate, out var gr)
-                                            ? gr : GrowthRateType.MediumFast,
-                    CurrentHP = data.CurrentHP,
-                    PersistentStatus = (StatusCondition)data.StatusId,
-                    Friendship = data.Friendship,
-                    Affection = data.Affection,
-                };
-                player.Team.TryAdd(pokemon);
-            }
         }
     }
 }

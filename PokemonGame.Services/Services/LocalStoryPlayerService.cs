@@ -161,7 +161,6 @@ namespace PokemonGame.Services.Handler
 
             // ── 3. Everything else ───────────────────────────────────────────
             _badgeRepo.SaveAll(save.Badges);
-            _bagInventoryRepo.SaveAll(save.BagInventory);
             _pokedexRepo.SaveAll(save.Pokedex);
 
             _partyRepo.Clear(pid);

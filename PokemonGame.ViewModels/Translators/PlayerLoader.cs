@@ -32,7 +32,7 @@ namespace PokemonGame.ViewModels.Translators
 
             var player = PlayerDomain.Instance;
                 
-            ApplyTrainerInfo(save.TrainerInfo, player);
+            ApplyTrainerInfo(player, save.TrainerInfo);
             ApplyMapLoc(save.TrainerInfo, player);
             ApplyProgressFlags(save, player);
             ApplyBadges(save.Badges, player);
@@ -69,17 +69,28 @@ namespace PokemonGame.ViewModels.Translators
         // APPLY HELPERS: DATA → DOMAIN
         // ─────────────────────────────────────────────────────────────
 
-        private static void ApplyTrainerInfo(TrainerInfoData d, PlayerDomain player)
+        private void ApplyTrainerInfo(PlayerDomain player, TrainerInfoData data)
         {
-            player.trainerInfo = new TrainerInfoDomain
-            {
-                TrainerID = d.TrainerID,
-                Name = d.Name,
-                Money = d.Money,
-                TimePlayed = DateTime.Today + TimeSpan.Parse(d.TimePlayed),
-                Gender = (Gender)d.Gender,
-                HallOfFameDebut = d.HallOfFameDebut,
-            };
+            player.trainerInfo.TrainerID = data.TrainerID;
+            player.trainerInfo.Name = data.Name;
+            player.trainerInfo.Money = data.Money;
+            player.trainerInfo.Gender = (Gender)data.Gender;
+            player.trainerInfo.HallOfFameDebut = data.HallOfFameDebut;
+
+            if (TimeSpan.TryParse(data.TimePlayed, out var ts))
+                player.trainerInfo.TimePlayed = DateTime.Today.Add(ts);
+
+            player.trainerMapLocDomain.FacingDirection = (FacingDirection)data.FacingDirection;
+            player.trainerMapLocDomain.playerLoc = (data.PlayerLocX, data.PlayerLocY);
+            player.trainerMapLocDomain.IsSurfing = data.IsSurfing == 1;
+
+            if (!string.IsNullOrEmpty(data.CurrentMap))
+                player.trainerMapLocDomain.CurrentMap = _mapLoader.Load(data.CurrentMap);
+
+            if (!string.IsNullOrEmpty(data.LastMapVisited))
+                player.trainerMapLocDomain.LastMapVisited = _mapLoader.Load(data.LastMapVisited);
+
+            player.trainerItemDomain.HasRunningShoes = data.HasRunningShoes == 1;
         }
 
         private void ApplyMapLoc(TrainerInfoData d, PlayerDomain player)
@@ -174,13 +185,32 @@ namespace PokemonGame.ViewModels.Translators
 
         private static void ApplyPokedex(List<PokedexData> entries, PlayerDomain player)
         {
+            var pokemonService = ServiceFactory.Instance.PokemonService;
+
             player.Pokedex = entries.ToDictionary(
                 e => e.PokedexId,
-                e => (
-                    seen: e.Seen == 1,
-                    caught: e.Caught == 1,
-                    name: "test"
-                ));
+                e =>
+                {
+                    string name = $"#{e.PokedexId}";
+
+                    try
+                    {
+                        var pokemon = pokemonService.LoadPokemon(e.PokedexId);
+
+                        if (pokemon?.Battler?.Name != null)
+                            name = pokemon.Battler.Name;
+                    }
+                    catch
+                    {
+                        // Keep fallback name.
+                    }
+
+                    return (
+                        seen: e.Seen == 1,
+                        caught: e.Caught == 1,
+                        name: name
+                    );
+                });
         }
 
         private static void ApplyParty(
@@ -211,7 +241,13 @@ namespace PokemonGame.ViewModels.Translators
                     translator.TranslateToDomain(result);
 
                 state.CurrentHP = slot.CurrentHP;
+                if (Enum.IsDefined(typeof(StatusCondition), slot.StatusId))
+                {
+                    var savedStatus = (StatusCondition)slot.StatusId;
 
+                    if (savedStatus != StatusCondition.None)
+                        state.ApplyStatus(savedStatus);
+                }
                 var pokemon = new PokemonPlayerDomain
                 {
                     // Identity
