@@ -25,6 +25,8 @@
             <Setter Property="FontSize" Value="8" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Focusable" Value="False" />
+            <Setter Property="Cursor" Value="Hand" />
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -88,6 +90,10 @@
             x:Key="SwitchActionButtonStyleInList"
             BasedOn="{StaticResource PartyActionButtonStyle}"
             TargetType="Button">
+            <Setter Property="Height" Value="16" />
+            <Setter Property="FontSize" Value="7" />
+            <Setter Property="Padding" Value="6,0" />
+
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsSwitchSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
                     <Setter Property="Foreground" Value="#FFE860" />
@@ -100,6 +106,10 @@
             x:Key="MoveActionButtonStyleInList"
             BasedOn="{StaticResource PartyActionButtonStyle}"
             TargetType="Button">
+            <Setter Property="Height" Value="16" />
+            <Setter Property="FontSize" Value="7" />
+            <Setter Property="Padding" Value="6,0" />
+
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsMoveSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
                     <Setter Property="Foreground" Value="#FFE860" />
@@ -112,6 +122,10 @@
             x:Key="SummaryActionButtonStyleInList"
             BasedOn="{StaticResource PartyActionButtonStyle}"
             TargetType="Button">
+            <Setter Property="Height" Value="16" />
+            <Setter Property="FontSize" Value="7" />
+            <Setter Property="Padding" Value="6,0" />
+
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsSummarySelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
                     <Setter Property="Foreground" Value="#FFE860" />
@@ -124,6 +138,10 @@
             x:Key="CancelActionButtonStyleInList"
             BasedOn="{StaticResource PartyActionButtonStyle}"
             TargetType="Button">
+            <Setter Property="Height" Value="16" />
+            <Setter Property="FontSize" Value="7" />
+            <Setter Property="Padding" Value="6,0" />
+
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsCancelSelected, RelativeSource={RelativeSource AncestorType=Page}}" Value="True">
                     <Setter Property="Foreground" Value="#FFE860" />
@@ -174,7 +192,7 @@
                 RenderOptions.BitmapScalingMode="NearestNeighbor">
 
                 <!--  MAIN SELECTED POKEMON CARD  -->
-                <Grid
+                <Canvas
                     Canvas.Left="40"
                     Canvas.Top="78"
                     Width="302"
@@ -186,13 +204,16 @@
                     <Border Canvas.Left="180" Canvas.Top="70">
                         <Border.Style>
                             <Style BasedOn="{StaticResource PartyActionMenuBorderBaseStyle}" TargetType="Border">
+
                                 <Setter Property="Visibility" Value="Collapsed" />
+
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding Slots[0].IsSelected}" Value="True" />
                                             <Condition Binding="{Binding IsActionMenuOpen}" Value="True" />
                                         </MultiDataTrigger.Conditions>
+
                                         <Setter Property="Visibility" Value="Visible" />
                                     </MultiDataTrigger>
                                 </Style.Triggers>
@@ -227,7 +248,7 @@
                                 Style="{StaticResource CancelActionButtonStyle}" />
                         </StackPanel>
                     </Border>
-                </Grid>
+                </Canvas>
 
                 <!--  TEAM LIST  -->
                 <ItemsControl
@@ -261,20 +282,29 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Width="396" Height="74">
+                            <Grid
+                                Width="396"
+                                Height="74"
+                                ClipToBounds="False">
+
                                 <local:PokemonHolderSlotUserControl DataContext="{Binding}" />
 
                                 <!--  Action menu for list slots  -->
                                 <Border HorizontalAlignment="Right" VerticalAlignment="Center">
+
                                     <Border.Style>
                                         <Style BasedOn="{StaticResource PartyActionMenuBorderBaseStyle}" TargetType="Border">
+
                                             <Setter Property="Visibility" Value="Collapsed" />
+                                            <Setter Property="Padding" Value="2" />
+
                                             <Style.Triggers>
                                                 <MultiDataTrigger>
                                                     <MultiDataTrigger.Conditions>
                                                         <Condition Binding="{Binding IsSelected}" Value="True" />
                                                         <Condition Binding="{Binding DataContext.IsActionMenuOpen, RelativeSource={RelativeSource AncestorType=Page}}" Value="True" />
                                                     </MultiDataTrigger.Conditions>
+
                                                     <Setter Property="Visibility" Value="Visible" />
                                                 </MultiDataTrigger>
                                             </Style.Triggers>
@@ -282,6 +312,7 @@
                                     </Border.Style>
 
                                     <StackPanel>
+
                                         <Button
                                             Command="{Binding DataContext.SwitchCommand, RelativeSource={RelativeSource AncestorType=Page}}"
                                             CommandParameter="{Binding}"
@@ -307,6 +338,7 @@
                                             Command="{Binding DataContext.CloseActionMenuCommand, RelativeSource={RelativeSource AncestorType=Page}}"
                                             Content="CANCEL"
                                             Style="{StaticResource CancelActionButtonStyleInList}" />
+
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -334,7 +366,7 @@
                         Text="Choose a POKéMON." />
                 </Border>
 
-                <!--  CANCEL BUTTON  -->
+                <!--  BOTTOM CANCEL BUTTON  -->
                 <Button
                     Canvas.Left="560"
                     Canvas.Top="438"

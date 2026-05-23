@@ -30,10 +30,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
         private const int STARTING_ELO = 1525;
 
-        public PokemonBattleStatusViewModel PlayerStatus { get; }
-        public EnemyBattleStatusViewModel EnemyStatus { get; }
-        public BattleMenuViewModel BattleMenu { get; }
-        public BattleLoggerViewModel Logger { get; }
+        public readonly PokemonBattleStatusViewModel PlayerStatus;
+        public readonly EnemyBattleStatusViewModel EnemyStatus;
+        public readonly BattleMenuViewModel BattleMenu;
+        public readonly BattleLoggerViewModel Logger;
 
         private int _logCursor = 0;
         private bool _isBattleOverHandled = false;

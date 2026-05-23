@@ -1,11 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
-using PokemonGame.Model.Helper;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -177,13 +175,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             OnPropertyChanged(nameof(HPColor));
         }
     }
-
     public class TeamSelectionViewModel : ViewModelBase
     {
         private readonly UserStore _userStore;
         private readonly NavigationStore _navigationStore;
         private readonly Func<ViewModelBase> _createCancelViewModel;
-        private readonly bool _switchImmediately;
         private TeamSelectionOptions _options;
         public TeamSelectionOptions Options { get => _options; set => SetProperty(ref _options, value);}
 
@@ -278,7 +274,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             _createCancelViewModel = createCancelViewModel;
 
             _onSwitchChosen = onSwitchChosen;
-            _switchImmediately = switchImmediately;
 
             CancelCommand = new RelayCommand(() =>
             {
@@ -334,6 +329,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private void OnMovePokemon(PokemonSlotViewModel? slot)
         {
             if (slot == null) return;
+
             IsActionMenuOpen = false;
             StartMove(slot);
         }
@@ -736,8 +732,20 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             if (slot == null)
                 return;
 
-            // Normal team management mode
             IsActionMenuOpen = false;
+
+            // Battle switch mode
+            if (_onSwitchChosen != null)
+            {
+                _onSwitchChosen.Invoke(slot.SlotIndex);
+
+                _navigationStore.CurrentViewModel =
+                    _createCancelViewModel();
+
+                return;
+            }
+
+            // If no battle callback exists, treat SWITCH like party-management move
             StartMove(slot);
         }
 

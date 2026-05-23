@@ -204,11 +204,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             {
                 Logger.EnqueueStringEntries(new[]
                 {
-        "1...",
-        "2...",
-        "3...",
-        $"{_wildPokemon.pokemonState.Name} was caught!"
-    });
+                    "1...",
+                    "2...",
+                    "3...",
+                    $"{_wildPokemon.pokemonState.Name} was caught!"
+                });
 
                 await Logger.WaitUntilQueueEmpty();
 

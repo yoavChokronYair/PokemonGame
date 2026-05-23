@@ -231,17 +231,6 @@ namespace PokemonGame.Model.Model.Managers
             HandlePostTurnFaints();
             return true;
         }
-
-        private bool PlayerSwitch(int slotIndex)
-        {
-            if (!_playerTeam.SwitchTo(slotIndex))
-                return false;
-
-            _state.UpdateActivePair(PlayerActive, BotActive);
-            new SwitchIn(PlayerActive).Run(_state);
-            return true;
-        }
-
         public bool playerUseItem(int itemIndex)
         {
             _state.Logger.LogSetup("Item usage not implemented yet.");

@@ -162,7 +162,10 @@ namespace PokemonGame.Services.Factory
             NpcGauntletRepository = new NpcGauntletRepository(db);
             NpcGiovanniRepository = new NpcGiovanniRepository(db);
             NpcItemRewardTrainerRepository = new NpcItemRewardTrainerRepository(db);
-
+            PokeballRepository = new PokeballRepository(db);
+            TmHmRepository = new TmHmRepository(db);
+            KeyItemRepository = new KeyItemRepository(db);
+            HeldItemRepository = new HeldItemRepository(db);
             DialogueSetsRepository = new DialogueSetsRepository(db);
             DialogueNodesRepository = new DialogueNodesRepository(db);
             DialogueEdgesRepository = new DialogueEdgesRepository(db);
