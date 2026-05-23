@@ -21,8 +21,8 @@ namespace PokemonGame.Model.Model.Managers
         private readonly PokemonTeam _botTeam;
         private readonly BattleState _state;
         private readonly BattleBotManager _botManager;
-        public bool HasBotFainted = false;
-        public bool HasTrainerFainted = false;
+        public bool HasBotFainted { get; private set; } = false;
+        public bool HasTrainerFainted{ get; private set; } = false;
         public PokemonState PlayerActive => _playerTeam.Active;
         public PokemonState BotActive => _botTeam.Active;
 
@@ -30,7 +30,7 @@ namespace PokemonGame.Model.Model.Managers
         public PokemonTeam BotTeam => _botTeam;
 
         public PokemonTeam? Winner { get; private set; }
-        public BattleLogger logger;
+        public readonly BattleLogger logger;
         public PokemonTeam? Loser { get; private set; }
 
         public BattleManager(PokemonTeam playerTeam, PokemonTeam botTeam, BotLevel botLevel)
@@ -137,7 +137,25 @@ namespace PokemonGame.Model.Model.Managers
             HandlePostTurnFaints();
             return true;
         }
+        public void LogSwitchPromptAfterBotFaint()
+        {
+            logger.LogSwitch($"Enemy is about to send out {BotActive.Name}.");
+            logger.LogSwitch("Will you switch Pokémon?");
+        }
 
+        public bool FreeSwitchPlayer(int slotIndex)
+        {
+            if (Winner != null)
+                return false;
+
+            if (!_playerTeam.SwitchTo(slotIndex))
+                return false;
+
+            _state.UpdateActivePair(PlayerActive, BotActive);
+            new SwitchIn(PlayerActive).Run(_state);
+
+            return true;
+        }
         // ── NEW: PvP turn — both move indices come from human players ─────────
         // Used by ServerBattleSession.RunPvPTurn() so the server never consults
         // the bot AI during an online match.  The "player" side maps to Player 1

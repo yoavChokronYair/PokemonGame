@@ -55,7 +55,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
         }
 
-        public bool AreActionsUnlocked => !HasMore && !IsTyping;
+        public bool AreActionsUnlocked => !HasMore && !IsTyping && !IsQuestionOpen; 
         public ICommand NextCommand { get; }
 
         public BattleLoggerViewModel()
@@ -154,16 +154,90 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
         private static string FormatPhaseLabel(BattleLogEntry entry) =>
             entry.Phase switch
+        {
+            BattleLogPhase.Setup => "Start",
+            BattleLogPhase.TurnStart => $"Turn {entry.Turn}",
+            BattleLogPhase.Action => $"Turn {entry.Turn} · Action",
+            BattleLogPhase.StatusEffect => $"Turn {entry.Turn} · Status",
+            BattleLogPhase.Faint => $"Turn {entry.Turn} · Faint",
+            BattleLogPhase.Switch => $"Turn {entry.Turn} · Switch",
+            BattleLogPhase.Weather => $"Turn {entry.Turn} · Weather",
+            BattleLogPhase.BattleEnd => "End",
+            _ => string.Empty
+        };
+        private bool _isQuestionOpen;
+        public bool IsQuestionOpen
+        {
+            get => _isQuestionOpen;
+            private set
             {
-                BattleLogPhase.Setup => "Start",
-                BattleLogPhase.TurnStart => $"Turn {entry.Turn}",
-                BattleLogPhase.Action => $"Turn {entry.Turn} · Action",
-                BattleLogPhase.StatusEffect => $"Turn {entry.Turn} · Status",
-                BattleLogPhase.Faint => $"Turn {entry.Turn} · Faint",
-                BattleLogPhase.Switch => $"Turn {entry.Turn} · Switch",
-                BattleLogPhase.Weather => $"Turn {entry.Turn} · Weather",
-                BattleLogPhase.BattleEnd => "End",
-                _ => string.Empty
-            };
+                if (SetProperty(ref _isQuestionOpen, value))
+                {
+                    OnPropertyChanged(nameof(AreActionsUnlocked));
+                }
+            }
+        }
+
+        public bool IsWaitingForQuestionAnswer => IsQuestionOpen;
+
+        public ICommand? QuestionYesCommand { get; private set; }
+        public ICommand? QuestionNoCommand { get; private set; }
+
+        private Action? _onQuestionYes;
+        private Action? _onQuestionNo;
+        public void AskYesNoQuestion(
+    Action onYes,
+    Action onNo)
+        {
+            _onQuestionYes = onYes;
+            _onQuestionNo = onNo;
+
+            QuestionYesCommand = new RelayCommand(AnswerYes);
+            QuestionNoCommand = new RelayCommand(AnswerNo);
+
+            OnPropertyChanged(nameof(QuestionYesCommand));
+            OnPropertyChanged(nameof(QuestionNoCommand));
+
+            IsQuestionOpen = true;
+        }
+
+        private void AnswerYes()
+        {
+            if (!IsQuestionOpen)
+                return;
+
+            Action? yesAction = _onQuestionYes;
+
+            CloseQuestion();
+
+            yesAction?.Invoke();
+        }
+
+        private void AnswerNo()
+        {
+            if (!IsQuestionOpen)
+                return;
+
+            Action? noAction = _onQuestionNo;
+
+            CloseQuestion();
+
+            noAction?.Invoke();
+        }
+
+        private void CloseQuestion()
+        {
+            IsQuestionOpen = false;
+
+            _onQuestionYes = null;
+            _onQuestionNo = null;
+
+            QuestionYesCommand = null;
+            QuestionNoCommand = null;
+
+            OnPropertyChanged(nameof(QuestionYesCommand));
+            OnPropertyChanged(nameof(QuestionNoCommand));
+        }
+
     }
 }

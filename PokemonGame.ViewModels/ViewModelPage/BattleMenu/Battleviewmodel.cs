@@ -30,10 +30,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
         private const int STARTING_ELO = 1525;
 
-        public readonly PokemonBattleStatusViewModel PlayerStatus;
-        public readonly EnemyBattleStatusViewModel EnemyStatus;
-        public readonly BattleMenuViewModel BattleMenu;
-        public readonly BattleLoggerViewModel Logger;
+        public PokemonBattleStatusViewModel PlayerStatus { get; set; }
+        public EnemyBattleStatusViewModel EnemyStatus { get; set; }
+        public BattleMenuViewModel BattleMenu { get; set; }
+        public BattleLoggerViewModel Logger { get; set; }
 
         private int _logCursor = 0;
         private bool _isBattleOverHandled = false;
@@ -214,7 +214,78 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 if (_manager.PlayerActive.IsFainted) SyncPlayerPokemon();
 
                 SyncAll();
+                if (_manager.HasBotFainted && _manager.Winner == null)
+                {
+                    _manager.LogSwitchPromptAfterBotFaint();
+
+                    var questionMessages = _manager.logger.Entries
+                        .Skip(_logCursor)
+                        .Select(e => e.Message);
+
+                    Logger.EnqueueStringEntries(questionMessages);
+                    _logCursor = _manager.logger.Entries.Count;
+
+                    await Logger.WaitUntilQueueEmpty();
+
+                    Logger.AskYesNoQuestion(
+                        onYes: OpenFreeSwitchAfterBotFaint,
+                        onNo: () =>
+                        {
+                            SyncAll();
+                        });
+                }
             }
+        }
+        private void OpenFreeSwitchAfterBotFaint()
+        {
+            _navigationStore.CurrentViewModel = new TeamSelectionViewModel(
+                _playerUserStore,
+                _navigationStore,
+                () =>
+                {
+                    SyncPlayerPokemon();
+                    SyncEnemyPokemon();
+                    SyncBattleStateOnly();
+                    return this;
+                },
+                new TeamSelectionOptions
+                {
+                    CanSwitch = true,
+                    CanMove = false,
+                    CanSummary = true,
+                    AutoConfirmSelection = false,
+                    IsUsingUserStore = true
+                },
+                OnFreeSwitchAfterBotFaintChosen,
+                true);
+        }
+        private async void OnFreeSwitchAfterBotFaintChosen(int slotIndex)
+        {
+            if (_isOnline)
+                return;
+
+            bool switched = _manager!.FreeSwitchPlayer(slotIndex);
+
+            if (!switched)
+            {
+                SyncPlayerPokemon();
+                SyncEnemyPokemon();
+                SyncBattleStateOnly();
+                return;
+            }
+
+            var newMessages = _manager.logger.Entries
+                .Skip(_logCursor)
+                .Select(e => e.Message);
+
+            Logger.EnqueueStringEntries(newMessages);
+            _logCursor = _manager.logger.Entries.Count;
+
+            await Logger.WaitUntilQueueEmpty();
+
+            SyncPlayerPokemon();
+            SyncEnemyPokemon();
+            SyncBattleStateOnly();
         }
 
         // ── Switch chosen ─────────────────────────────────────────────────────
