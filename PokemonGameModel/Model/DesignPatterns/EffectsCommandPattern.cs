@@ -92,7 +92,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
         {
             var defender = _target.Resolve(battle);
             int baseAmount = (int)_power.Evaluate(battle);
-            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle, baseAmount);
+            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCalculator(battle, baseAmount);
             defender.TakeDamage(amount);
             battle.Attacker.RegisterDamageDealt(amount);
             battle.LastDamageDealt = amount;
@@ -145,7 +145,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             var victim = _damageTarget.Resolve(battle);
             var user = _healTarget.Resolve(battle);
             int baseAmount = (int)_drainAmount.Evaluate(battle);
-            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCaculator(battle, baseAmount);
+            int amount = PokemonStatCalculatorHelper.PokemonDamageFormulaCalculator(battle, baseAmount);
             user.RestoreHP(amount / 8);
             victim.TakeDamage(amount);
         }

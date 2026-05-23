@@ -152,9 +152,27 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             return new RNGHelper(pid, tid, sid);
         }
 
-        public static double getCritModifier(BattleLogger logger)
+        public static double GetCritModifier(
+            BattleLogger logger,
+            int pokemonCritStage = 0,
+            int moveCritStage = 0)
         {
-            bool isCrit = RandomHelper.Next(0, 24) == 0;
+            int totalCritStage = PokemonGame.Model.Helper.MathHelper.Clamp(
+                pokemonCritStage + moveCritStage,
+                0,
+                4);
+
+            int critChanceDenominator = totalCritStage switch
+            {
+                0 => 24, // normal crit rate
+                1 => 8,
+                2 => 2,
+                3 => 1,
+                4 => 1,
+                _ => 24
+            };
+
+            bool isCrit = RandomHelper.Next(0, critChanceDenominator) == 0;
 
             if (isCrit)
             {
@@ -185,7 +203,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
                     return entry;
             }
 
-            return list[1]; // fallback — should never reach here
+            return list[0]; // fallback — should never reach here
         }
     }
 }

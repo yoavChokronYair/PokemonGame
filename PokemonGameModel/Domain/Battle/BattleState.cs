@@ -58,6 +58,5 @@ namespace PokemonGame.Model.Domain.Battle
         public void IncrementTurn() => TurnNumber++;
         public void ResetDamage() => LastDamageDealt = 0;
         public bool IsBattleOver => Attacker.IsFainted || Defender.IsFainted;
-        public PokemonState? Winner => Attacker.IsFainted ? Defender : Defender.IsFainted ? Attacker : null;
     }
 }

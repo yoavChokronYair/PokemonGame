@@ -149,6 +149,22 @@ namespace PokemonGame.Model.Domain.Pokemon
         public void ClearStatus() { Status = StatusCondition.None; ToxicCounter = 0; SleepTurns = 0; }
         public void ApplyToxicByOne() => ToxicCounter++;
         public int GetToxicCounter() => ToxicCounter;
+        public bool TickSleep()
+        {
+            if (Status != StatusCondition.Sleep)
+                return false;
+
+            if (SleepTurns > 0)
+                SleepTurns--;
+
+            if (SleepTurns <= 0)
+            {
+                ClearStatus();
+                return true;
+            }
+
+            return false;
+        }
         public StatusCondition PokemonStatusCondition() => Status;
 
         // ── Volatile Status ───────────────────────────────────────────────────
@@ -275,9 +291,8 @@ namespace PokemonGame.Model.Domain.Pokemon
                 _ => 1
             };
 
-            if (stat == Stat.Speed && Status == StatusCondition.Paralysis) baseStat /= 2;
-            if (stat == Stat.Attack && Status == StatusCondition.Burn) baseStat /= 2;
-
+            if (stat == Stat.Attack && Status == StatusCondition.Burn)
+                baseStat /= 2;
             int stage = StatStages[stat];
             double multiplier = stage switch
             {

@@ -142,7 +142,24 @@ namespace PokemonGame.Model.Model.Managers
             logger.LogSwitch($"Enemy is about to send out {BotActive.Name}.");
             logger.LogSwitch("Will you switch Pokémon?");
         }
+        private bool CanSwitchOut(PokemonState pokemon)
+        {
+            if (pokemon.HasVolatileStatus(VolatileStatus.Trapped))
+            {
+                _state.Logger.LogStatus($"{pokemon.Name} can't escape!");
+                return false;
+            }
 
+            if (pokemon.Ability is AbilityState ability &&
+                ability.Name.Equals("Shadow Tag", StringComparison.OrdinalIgnoreCase))
+            {
+                // This is only an example. Real Shadow Tag belongs on the opponent,
+                // not the switching Pokémon.
+                return false;
+            }
+
+            return true;
+        }
         public bool FreeSwitchPlayer(int slotIndex)
         {
             if (Winner != null)
@@ -171,7 +188,7 @@ namespace PokemonGame.Model.Model.Managers
             // ── PLAYER SWITCH ─────────────────────────────────────────────────
             if (playerAction == BattleAction.Switch)
             {
-                if (!_playerTeam.SwitchTo(playerIndex))
+                if (!_playerTeam.SwitchTo(playerIndex) || !CanSwitchOut(PlayerActive))
                     return false;
 
                 _state.UpdateActivePair(PlayerActive, BotActive);

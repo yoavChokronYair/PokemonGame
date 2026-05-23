@@ -2,6 +2,7 @@
 // Layer: Model/Helper/MathHelper — Gen 3+ stat formula (HP and non-HP stats, nature modifier).
 // CANONICAL stat calculator — PokemonDomain delegates to this class (no duplicate formulas elsewhere).
 // Uses NatureHelper.GetNatureModifiers for nature modifier lookups.
+using System.Collections;
 using PokemonGame.Enums;
 using PokemonGame.Model.Config;
 using PokemonGame.Model.Domain.Battle;
@@ -14,13 +15,7 @@ using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Core.Model.Helper.MathHelper
 {
-    public class DamageResult
-    {
-        public int Damage { get; set; }
-        public bool IsCrit { get; set; }
-        public double Effectiveness { get; set; }
-        public double RandomFactor { get; set; }
-    }
+
     public class PokemonStatCalculatorHelper
     {
         public static double Multiplyer = 1;
@@ -86,7 +81,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             int baseValue = ((2 * baseStat + iv + evContribution) * level) / 100 + 5;
             return (int)Math.Floor(baseValue * natureModifier);
         }
-        public static int PokemonDamageFormulaCaculator(BattleState Battle, int basePower)
+        public static int PokemonDamageFormulaCalculator(BattleState Battle, int basePower)
         {
             var move = (MoveState)Battle.LastUsedMove;
             var attacker = Battle.Attacker;
@@ -94,7 +89,7 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
 
             double modifier = getStabBonus(attacker, move.Element) *
                 TypeEffectivenessChartConst.GetTotalMoveEffectiveness(move.Element, defender.GetPokemonTypes(), Battle.Logger) *
-                RNGHelper.getCritModifier(Battle.Logger) *
+                RNGHelper.GetCritModifier(Battle.Logger, attacker.GetCritStage(), move.CritStage) *
                 RandomHelper.NextDouble(0.85, 1.0) *
                 GetHeldItemAndAbilityModifier(Battle, move, basePower) *
                 GenderRivalry.GetModifier(attacker, defender);
@@ -111,72 +106,13 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             double baseDamage = (levelFactor * basePower * statRatio) + 2.0;
             double finalDamage = baseDamage * modifier * Multiplyer;
             Multiplyer = 1;
-            return (int)Math.Floor(PokemonGame.Model.Helper.MathHelper.Clamp(finalDamage, 1, 32678));
+            return (int)Math.Floor(PokemonGame.Model.Helper.MathHelper.Clamp(finalDamage, 0, 32678));
         }
         public static double getStabBonus(PokemonState pokemon, PokemonType moveType)
         {
             return pokemon.HasType(moveType) ? 1.5 : 1.0;
         }
-        public static DamageResult CalculateDamage(BattleState battle, int basePower)
-        {
-            var move = (MoveState)battle.LastUsedMove;
-            var attacker = battle.Attacker;
-            var defender = battle.Defender;
 
-            double stab = getStabBonus(attacker, move.Element);
-
-            double effectiveness =
-                TypeEffectivenessChartConst.GetTotalMoveEffectiveness(
-                    move.Element,
-                    defender.GetPokemonTypes(),
-                    battle.Logger);
-
-            bool isCrit = RNGHelper.getCritModifier(battle.Logger) > 1.0;
-
-            double randomFactor = RandomHelper.NextDouble(0.85, 1.0);
-
-            double abilityItem =
-                GetHeldItemAndAbilityModifier(battle, move, basePower);
-
-            double gender = GenderRivalry.GetModifier(attacker, defender);
-
-            double levelFactor = ((2.0 * attacker.Level) + 10) / 250;
-
-            double statRatio = move.Category switch
-            {
-                MoveCategory.Physical =>
-                    (double)attacker.GetEffectiveStat(Stat.Attack) /
-                    defender.GetEffectiveStat(Stat.Defense),
-
-                MoveCategory.Special =>
-                    (double)attacker.GetEffectiveStat(Stat.SpecialAttack) /
-                    defender.GetEffectiveStat(Stat.SpecialDefense),
-
-                _ => 1.0
-            };
-
-            double baseDamage = (levelFactor * basePower * statRatio) + 2.0;
-
-            double modifier =
-                stab *
-                effectiveness *
-                abilityItem *
-                gender *
-                randomFactor *
-                (isCrit ? 1.5 : 1.0);
-
-            double final = baseDamage * modifier * Multiplyer;
-
-            Multiplyer = 1;
-
-            return new DamageResult
-            {
-                Damage = (int)Math.Floor(PokemonGame.Model.Helper.MathHelper.Clamp(final, 1, 32678)),
-                IsCrit = isCrit,
-                Effectiveness = effectiveness,
-                RandomFactor = randomFactor
-            };
-        }
         public static double GetHeldItemAndAbilityModifier(BattleState battle, MoveState move, double BasePower)
         {
             var attacker = battle.Attacker;

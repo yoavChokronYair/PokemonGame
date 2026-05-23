@@ -181,10 +181,21 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             if (_isOnline)
             {
-                // Lock buttons immediately so player can't change their mind
-                BattleMenu.SetWaitingForOpponent(true);
-                _service!.RunTurn(moveIndex);
-                // UI will update when OnStateUpdated fires from server
+                    try
+                    {
+                        BattleMenu.SetWaitingForOpponent(true);
+                        await _service!.RunTurnAsync(moveIndex);
+                    }
+                    catch (Exception ex)
+                    {
+                        BattleMenu.SetWaitingForOpponent(false);
+                        Logger.EnqueueStringEntries(new[]
+                        {
+                    $"Online action failed: {ex.Message}"
+                });
+                    }
+
+                    return;
             }
             else
             {
@@ -293,7 +304,19 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         {
             if (_isOnline)
             {
-                _service!.RunTurn(slotIndex, "Switch");
+                try
+                {
+                    await _service!.RunTurnAsync(slotIndex, "Switch");
+                }
+                catch (Exception ex)
+                {
+                    Logger.EnqueueStringEntries(new[]
+                    {
+                        $"Online switch failed: {ex.Message}"
+                    });
+                }
+
+                return;
             }
             else
             {
@@ -315,10 +338,24 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         }
 
         // ── Forfeit ───────────────────────────────────────────────────────────
-        private void OnForfeit()
+        private async void OnForfeit()
         {
             if (_isOnline)
-                _service!.Forfeit();
+            {
+                try
+                {
+                    await _service!.ForfeitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Logger.EnqueueStringEntries(new[]
+                    {
+                        $"Forfeit failed: {ex.Message}"
+                    });
+                }
+
+                return;
+            }
             else
             {
                 _manager!.ForceWinner(_manager.BotTeam);

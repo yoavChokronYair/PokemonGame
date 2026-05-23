@@ -66,9 +66,21 @@ namespace PokemonGame.Model.Domain.Move
         }
         public MoveState Clone()
         {
-            return new MoveState(
-                _attempt, Name, Element, Category, PP, Target, Tag, Priority, CritStage, Description);
+            var clone = new MoveState(
+                _attempt,
+                Name,
+                Element,
+                Category,
+                MaxPP,
+                Target,
+                Tag,
+                Priority,
+                CritStage,
+                Description);
 
+            clone.PP = PP;
+
+            return clone;
         }
     }
 }

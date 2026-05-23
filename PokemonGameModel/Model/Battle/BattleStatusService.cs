@@ -1,9 +1,4 @@
-﻿// Design: Aggregate Root for a single battle (holds both sides, weather, turn count).
-// Layer: Domain — processed battle state; no SQLite, no UI.
-// OOP: Encapsulation — all mutation through public methods; sides exposed as read-only.
-// Note: All enums (Weather, Screen, Stat, etc.) live in Enums/Battle/BattleEnums.cs.
-// BattleSideState is kept here as it is tightly coupled to BattleDomain.
-
+﻿using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
@@ -15,57 +10,108 @@ namespace PokemonGame.Model.Model.Battle
     {
         private readonly BattleLogger _logger;
 
-        public BattleStatusService(BattleLogger logger) => _logger = logger;
-
-        public void ApplyEndOfTurnStatus(PokemonState pokemon)
+        public BattleStatusService(BattleLogger logger)
         {
-            var status = pokemon.PokemonStatusCondition();
-            bool magicGuard = BlockIndirectDamage.IsActive(null!, pokemon);
+            _logger = logger;
+        }
+
+        public void ApplyEndOfTurnStatus(BattleState battle, PokemonState pokemon)
+        {
+            if (pokemon == null)
+                return;
+
+            if (pokemon.IsFainted)
+                return;
+
+            StatusCondition status = pokemon.PokemonStatusCondition();
 
             switch (status)
             {
                 case StatusCondition.Sleep:
-                    if (RandomHelper.Next(0, 3) == 0)
-                    {
-                        pokemon.ClearStatus();
-                        _logger.Log($"{pokemon.Name} woke up!");
-                    }
+                    ApplySleep(pokemon);
                     break;
 
                 case StatusCondition.Freeze:
-                    if (RandomHelper.Next(0, 5) == 0)
-                    {
-                        pokemon.ClearStatus();
-                        _logger.Log($"{pokemon.Name} thawed out!");
-                    }
+                    ApplyFreeze(pokemon);
                     break;
 
                 case StatusCondition.Burn:
-                    if (!magicGuard)
-                    {
-                        pokemon.TakeDamage(pokemon.MaxHP / 8);
-                        _logger.Log($"{pokemon.Name} is hurt by its burn!");
-                    }
+                    ApplyBurn(battle, pokemon);
                     break;
 
                 case StatusCondition.Poison:
-                    if (!magicGuard)
-                    {
-                        pokemon.TakeDamage(pokemon.MaxHP / 8);
-                        _logger.Log($"{pokemon.Name} is hurt by poison!");
-                    }
+                    ApplyPoison(battle, pokemon);
                     break;
 
                 case StatusCondition.Toxic:
-                    if (!magicGuard)
-                    {
-                        pokemon.ApplyToxicByOne();
-                        int damage = pokemon.MaxHP * pokemon.ToxicCounter / 16;
-                        pokemon.TakeDamage(damage);
-                        _logger.Log($"{pokemon.Name} is hurt by bad poison!");
-                    }
+                    ApplyToxic(battle, pokemon);
                     break;
             }
+        }
+
+        private void ApplySleep(PokemonState pokemon)
+        {
+
+            bool wokeUp = pokemon.TickSleep();
+
+            if (wokeUp)
+            {
+                _logger.LogStatus($"{pokemon.Name} woke up!");
+            }
+        }
+
+        private void ApplyFreeze(PokemonState pokemon)
+        {
+            if (RandomHelper.Next(0, 5) == 0)
+            {
+                pokemon.ClearStatus();
+                _logger.LogStatus($"{pokemon.Name} thawed out!");
+            }
+        }
+
+        private void ApplyBurn(BattleState battle, PokemonState pokemon)
+        {
+            if (IsIndirectDamageBlocked(battle, pokemon))
+                return;
+
+            int damage = Math.Max(1, pokemon.MaxHP / 8);
+
+            pokemon.TakeDamage(damage);
+
+            _logger.LogStatus($"{pokemon.Name} is hurt by its burn!");
+        }
+
+        private void ApplyPoison(BattleState battle, PokemonState pokemon)
+        {
+            if (IsIndirectDamageBlocked(battle, pokemon))
+                return;
+
+            int damage = Math.Max(1, pokemon.MaxHP / 8);
+
+            pokemon.TakeDamage(damage);
+
+            _logger.LogStatus($"{pokemon.Name} is hurt by poison!");
+        }
+
+        private void ApplyToxic(BattleState battle, PokemonState pokemon)
+        {
+       
+            pokemon.ApplyToxicByOne();
+
+            if (IsIndirectDamageBlocked(battle, pokemon))
+                return;
+
+            int damage = Math.Max(1, pokemon.MaxHP * pokemon.GetToxicCounter() / 16);
+
+            pokemon.TakeDamage(damage);
+
+            _logger.LogStatus($"{pokemon.Name} is hurt by bad poison!");
+        }
+
+        private static bool IsIndirectDamageBlocked(BattleState battle, PokemonState pokemon)
+        {
+          
+            return BlockIndirectDamage.IsActive(battle, pokemon);
         }
     }
 }

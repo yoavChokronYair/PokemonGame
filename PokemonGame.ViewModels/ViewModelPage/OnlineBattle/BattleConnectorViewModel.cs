@@ -248,7 +248,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         // ── Matchmaking callbacks ─────────────────────────────────────────────
 
-        private void OnMatchFound(MatchFoundData data)
+        private async void OnMatchFound(MatchFoundData data)
         {
             _userStore.ActiveSessionId = data.SessionId;
 
@@ -260,6 +260,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 data.SessionId,
                 _userStore.BattlePlayerID,
                 _serverBaseUrl);
+            await _userStore.BattleService.ConnectAsync();
 
             // Switch to the battle screen on the UI thread
             System.Windows.Application.Current.Dispatcher.Invoke(() =>

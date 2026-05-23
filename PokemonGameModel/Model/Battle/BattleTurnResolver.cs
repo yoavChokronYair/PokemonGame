@@ -5,7 +5,11 @@ namespace PokemonGame.Model.Model.Battle
 {
     public class BattleTurnResolver
     {
-        public bool AttackerMovesFirst(PokemonState attacker, PokemonState defender, int attackerPriority, int defenderPriority)
+        public bool AttackerMovesFirst(
+            PokemonState attacker,
+            PokemonState defender,
+            int attackerPriority,
+            int defenderPriority)
         {
             if (attackerPriority != defenderPriority)
             {
@@ -25,15 +29,18 @@ namespace PokemonGame.Model.Model.Battle
 
         private static int GetModifiedSpeed(PokemonState pokemon)
         {
-            double multiplier = 1.0;
+            int speed = pokemon.GetEffectiveStat(Stat.Speed);
 
-            // Standard Paralysis speed penalty (with your 25% chance logic preserved)
+            // FireRed / Gen III:
+            // Paralysis reduces Speed to 25% of normal.
+            // The 25% "fully paralyzed" chance belongs in move execution,
+            // not in speed calculation.
             if (pokemon.PokemonStatusCondition() == StatusCondition.Paralysis)
             {
-                multiplier = 0.75;
+                speed /= 4;
             }
 
-            return (int)(pokemon.GetEffectiveStat(Stat.Speed) * multiplier);
+            return Math.Max(1, speed);
         }
     }
 }
