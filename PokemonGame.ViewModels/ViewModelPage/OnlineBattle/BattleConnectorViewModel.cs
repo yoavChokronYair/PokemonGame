@@ -17,12 +17,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private readonly NavigationStore _rootNavigationStore;
         private readonly ITeamService _teamService;
         private readonly Func<BattleViewModel> _createBattleViewModel;
+        private readonly Func<OnlineBattleShellViewModel> _createOnlineBattleShellViewModel;
         private readonly IMatchmakingService? _matchmaking;
-
-        // Needed so OnMatchFound can create OnlineBattleService with the right URL
         private readonly string _serverBaseUrl;
 
+        private readonly List<dynamic> _rivalResults = new();
+
         public int RequiredCount { get; }
+
         public string RequiredCountLabel => $"{SelectedCount} / {RequiredCount} selected";
 
         public ObservableCollection<ConnectorSlotEntry> TeamSlots { get; } = new();
@@ -50,23 +52,53 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             get => _botDifficulty;
             set
             {
-                SetProperty(ref _botDifficulty, value);
-                OnPropertyChanged(nameof(IsEasy));
-                OnPropertyChanged(nameof(IsMedium));
-                OnPropertyChanged(nameof(IsHard));
+                if (SetProperty(ref _botDifficulty, value))
+                {
+                    OnPropertyChanged(nameof(IsEasy));
+                    OnPropertyChanged(nameof(IsMedium));
+                    OnPropertyChanged(nameof(IsHard));
+                }
             }
         }
 
-        public bool IsEasy { get => BotDifficulty == BotDifficulty.Easy; set { if (value) BotDifficulty = BotDifficulty.Easy; } }
-        public bool IsMedium { get => BotDifficulty == BotDifficulty.Medium; set { if (value) BotDifficulty = BotDifficulty.Medium; } }
-        public bool IsHard { get => BotDifficulty == BotDifficulty.Hard; set { if (value) BotDifficulty = BotDifficulty.Hard; } }
+        public bool IsEasy
+        {
+            get => BotDifficulty == BotDifficulty.Easy;
+            set
+            {
+                if (value)
+                    BotDifficulty = BotDifficulty.Easy;
+            }
+        }
+
+        public bool IsMedium
+        {
+            get => BotDifficulty == BotDifficulty.Medium;
+            set
+            {
+                if (value)
+                    BotDifficulty = BotDifficulty.Medium;
+            }
+        }
+
+        public bool IsHard
+        {
+            get => BotDifficulty == BotDifficulty.Hard;
+            set
+            {
+                if (value)
+                    BotDifficulty = BotDifficulty.Hard;
+            }
+        }
 
         public int SelectedCount => TeamSlots.Count(s => s.IsSelected);
+
         public bool CanConfirm => SelectedCount == RequiredCount;
+
         public string ConfirmLabel => IsOffline ? "▶  Fight Bot" : "🔍  Find Match";
 
         public RelayCommand<ConnectorSlotEntry> ToggleCommand { get; }
-        public RelayCommand ConfirmCommand { get; }
+        public IAsyncRelayCommand ConfirmCommand { get; }
         public RelayCommand BackCommand { get; }
         public RelayCommand CancelSearchCommand { get; }
 
@@ -80,20 +112,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             _rootNavigationStore = rootNavigationStore;
             _teamService = userStore.Resolver.GetTeamService();
             _createBattleViewModel = createBattleViewModel;
+            _createOnlineBattleShellViewModel = createOnlineBattleShellViewModel;
             _serverBaseUrl = _userStore.ServerBaseUrl;
-
-            // FIX #7: read directly from UserStore.Matchmaking rather than
-            // Resolver.MatchmakingService, which may not exist on the Resolver
-            // class and would cause a compile error or return null silently.
             _matchmaking = userStore.Matchmaking;
 
-            // Subscribe to matchmaking events
-            if (_matchmaking is not null)
-            {
-                _matchmaking.OnMatchFound += OnMatchFound;
-                _matchmaking.OnQueued += OnQueued;
-                _matchmaking.OnCancelled += OnCancelled;
-            }
+            SubscribeToMatchmakingEvents();
 
             var session = _userStore.BattleSesion;
 
@@ -105,174 +128,319 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                 _ => 6
             };
 
-            // ── Load player team slots ────────────────────────────────────────
-            if (session.SelectedTeamId.HasValue)
-            {
-                var members = _teamService.GetTeamMembers(session.SelectedTeamId.Value);
-                foreach (var m in members)
-                {
-                    var slot = new ConnectorSlotEntry(m);
-                    slot.PropertyChanged += (_, _) =>
-                    {
-                        OnPropertyChanged(nameof(SelectedCount));
-                        OnPropertyChanged(nameof(CanConfirm));
-                        OnPropertyChanged(nameof(RequiredCountLabel));
-                        ConfirmCommand?.NotifyCanExecuteChanged();
-                    };
-                    TeamSlots.Add(slot);
-                }
-            }
+            LoadPlayerTeamSlots(session);
+            LoadRivalPreview(session);
 
-            // ── Generate rival preview (offline) / placeholder slots (online) ─
-            var pokemonService = _userStore.Resolver.GetPokemonService();
-            var rivalResults = pokemonService.GenerateRandomTeam(count: RequiredCount, level: 50);
+            ToggleCommand = new RelayCommand<ConnectorSlotEntry>(ToggleSlot);
 
-            session.RivalPokemonIds = rivalResults.Select(r => r.Battler.PokedexID).ToList();
-
-            foreach (var r in rivalResults)
-                RivalSlots.Add(new ConnectorSlotEntry(r.Battler.PokedexID, r.Battler.Name));
-
-            for (int i = RivalSlots.Count; i < 6; i++)
-                RivalSlots.Add(new ConnectorSlotEntry());
-
-            // ── Toggle command ────────────────────────────────────────────────
-            ToggleCommand = new RelayCommand<ConnectorSlotEntry>(slot =>
-            {
-                if (slot == null) return;
-
-                if (slot.IsSelected)
-                {
-                    int removedOrder = slot.PickOrder ?? 0;
-                    slot.IsSelected = false;
-                    slot.PickOrder = null;
-
-                    foreach (var s in TeamSlots.Where(s => s.PickOrder > removedOrder))
-                        s.PickOrder--;
-                }
-                else if (SelectedCount < RequiredCount)
-                {
-                    slot.IsSelected = true;
-                    slot.PickOrder = SelectedCount;
-                }
-            });
-
-            // ── Confirm command ───────────────────────────────────────────────
-            ConfirmCommand = new RelayCommand(() =>
-            {
-                var selectedIds = TeamSlots
-                    .Where(s => s.IsSelected)
-                    .OrderBy(s => s.PickOrder)
-                    .Select(s => s.PokedexId)
-                    .ToList();
-
-                _userStore.BattleSesion.SelectedPokemonIds = selectedIds;
-                _userStore.BattleSesion.BotDifficulty = BotDifficulty;
-
-                var translator = new TeamTranslator();
-                var fullTeam = translator.LoadTeamByID(_userStore.BattlePlayerID);
-
-                List<PokemonState> playerRoster;
-
-                if (session.BattleMode == BattleMode.fullTeam || selectedIds.Count == 0)
-                {
-                    playerRoster = Enumerable.Range(0, fullTeam.getAllPokemonCount())
-                        .Select(i => fullTeam.GetPokemonAt(i))
-                        .ToList();
-                }
-                else
-                {
-                    // Build roster in pick-order, not team-order
-                    var allPokemon = Enumerable.Range(0, fullTeam.getAllPokemonCount())
-                        .Select(i => fullTeam.GetPokemonAt(i))
-                        .ToList();
-
-                    playerRoster = selectedIds
-                        .Select(id => allPokemon.FirstOrDefault(p => p.PokedexId == id))
-                        .Where(p => p != null)
-                        .ToList()!;
-                }
-
-                while (playerRoster.Count < 6)
-                    playerRoster.Add(fullTeam.GetPokemonAt(0));
-
-                _userStore.BattleSesion.ResolvedPlayerTeam = PokemonTeam.Create(playerRoster);
-
-                // Build bot team only in offline mode — server handles it online
-                if (!_userStore.BattleSesion.IsOnlineMode)
-                {
-                    var rivalRoster = session.RivalPokemonIds
-                        .Select(id => translator.TranslateToDomain(
-                            rivalResults.First(r => r.Battler.PokedexID == id)))
-                        .ToList();
-
-                    while (rivalRoster.Count < 6)
-                        rivalRoster.Add(rivalRoster[0]);
-
-                    _userStore.BattleSesion.ResolvedBotTeam = PokemonTeam.Create(rivalRoster);
-                }
-
-                if (_userStore.BattleSesion.IsOnlineMode)
-                {
-                    IsSearching = true;
-
-                    _ = _matchmaking!.FindMatchAsync(new MatchmakingRequest
-                    {
-                        PlayerId = _userStore.BattlePlayerID,
-                        PlayerName = _userStore.Username,
-                        BattleMode = _userStore.BattleSesion.BattleMode.ToString(),
-                        IsOneVOne = _userStore.BattleSesion.IsOneVOne,
-                        TeamId = _userStore.BattleSesion.SelectedTeamId ?? 0,
-                        SelectedPokemonIds = selectedIds
-                    }).ContinueWith(t =>
-                        Console.WriteLine($"[FindMatch] FAILED: {t.Exception?.GetBaseException().Message}"),
-                        TaskContinuationOptions.OnlyOnFaulted);
-                }
-                else
-                {
-                    _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
-                }
-
-            }, () => CanConfirm);
+            ConfirmCommand = new AsyncRelayCommand(
+                ConfirmAsync,
+                () => CanConfirm && !IsSearching);
 
             CancelSearchCommand = new RelayCommand(async () =>
             {
-                await _matchmaking!.CancelAsync(_userStore.BattlePlayerID);
-                IsSearching = false;
+                await CancelSearchAsync();
             });
 
             BackCommand = new RelayCommand(() =>
             {
-                _rootNavigationStore.CurrentViewModel = createOnlineBattleShellViewModel();
+                _rootNavigationStore.CurrentViewModel =
+                    _createOnlineBattleShellViewModel();
             });
         }
 
-        // ── Matchmaking callbacks ─────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────
+        // Setup
+        // ─────────────────────────────────────────────────────────────
+
+        private void SubscribeToMatchmakingEvents()
+        {
+            if (_matchmaking is null)
+                return;
+
+            _matchmaking.OnMatchFound += OnMatchFound;
+            _matchmaking.OnQueued += OnQueued;
+            _matchmaking.OnCancelled += OnCancelled;
+            _matchmaking.OnError += OnMatchmakingError;
+        }
+
+        private void LoadPlayerTeamSlots(BattleSession session)
+        {
+            int teamId;
+
+            if (session.SelectedTeamId.HasValue)
+            {
+                teamId = session.SelectedTeamId.Value;
+            }
+            else
+            {
+                return;
+            }
+
+            var members = _teamService.GetTeamMembers(teamId);
+
+            foreach (var member in members)
+            {
+                var slot = new ConnectorSlotEntry(member);
+
+                slot.PropertyChanged += (_, _) =>
+                {
+                    RefreshSelectionState();
+                };
+
+                TeamSlots.Add(slot);
+            }
+        }
+
+        private void LoadRivalPreview(dynamic session)
+        {
+            var pokemonService = _userStore.Resolver.GetPokemonService();
+
+            var rivalResults = pokemonService
+                .GenerateRandomTeam(count: RequiredCount, level: 50)
+                .ToList();
+
+            _rivalResults.Clear();
+            _rivalResults.AddRange(rivalResults.Cast<dynamic>());
+
+            session.RivalPokemonIds = rivalResults
+                .Select(r => r.Battler.PokedexID)
+                .ToList();
+
+            foreach (var result in rivalResults)
+            {
+                RivalSlots.Add(new ConnectorSlotEntry(
+                    result.Battler.PokedexID,
+                    result.Battler.Name));
+            }
+
+            for (int i = RivalSlots.Count; i < 6; i++)
+            {
+                RivalSlots.Add(new ConnectorSlotEntry());
+            }
+
+            IsRivalReady = true;
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Selection
+        // ─────────────────────────────────────────────────────────────
+
+        private void ToggleSlot(ConnectorSlotEntry? slot)
+        {
+            if (slot == null)
+                return;
+
+            if (slot.IsSelected)
+            {
+                int removedOrder = slot.PickOrder ?? 0;
+
+                slot.IsSelected = false;
+                slot.PickOrder = null;
+
+                foreach (var otherSlot in TeamSlots.Where(s => s.PickOrder > removedOrder))
+                {
+                    otherSlot.PickOrder--;
+                }
+            }
+            else
+            {
+                if (SelectedCount >= RequiredCount)
+                    return;
+
+                slot.IsSelected = true;
+                slot.PickOrder = SelectedCount;
+            }
+
+            RefreshSelectionState();
+        }
+
+        private void RefreshSelectionState()
+        {
+            OnPropertyChanged(nameof(SelectedCount));
+            OnPropertyChanged(nameof(CanConfirm));
+            OnPropertyChanged(nameof(RequiredCountLabel));
+
+            ConfirmCommand.NotifyCanExecuteChanged();
+        }
+
+        private List<int> GetSelectedPokemonIds()
+        {
+            return TeamSlots
+                .Where(s => s.IsSelected)
+                .OrderBy(s => s.PickOrder)
+                .Select(s => s.PokedexId)
+                .ToList();
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Confirm
+        // ─────────────────────────────────────────────────────────────
+
+        private async Task ConfirmAsync()
+        {
+            var selectedIds = GetSelectedPokemonIds();
+
+            _userStore.BattleSesion.SelectedPokemonIds = selectedIds;
+            _userStore.BattleSesion.BotDifficulty = BotDifficulty;
+
+            if (_userStore.BattleSesion.IsOnlineMode)
+            {
+                await ConfirmOnlineAsync(selectedIds);
+                return;
+            }
+
+            ConfirmOffline(selectedIds);
+        }
+
+        private async Task ConfirmOnlineAsync(List<int> selectedIds)
+        {
+            if (_matchmaking == null)
+                return;
+
+            try
+            {
+                IsSearching = true;
+                ConfirmCommand.NotifyCanExecuteChanged();
+
+                await _matchmaking.FindMatchAsync(new MatchmakingRequest
+                {
+                    PlayerId = _userStore.BattlePlayerID,
+                    PlayerName = _userStore.Username,
+                    BattleMode = _userStore.BattleSesion.BattleMode.ToString(),
+                    IsOneVOne = _userStore.BattleSesion.IsOneVOne,
+                    TeamId = _userStore.BattleSesion.SelectedTeamId ?? 0,
+                    SelectedPokemonIds = selectedIds
+                });
+            }
+            catch (Exception ex)
+            {
+                IsSearching = false;
+                ConfirmCommand.NotifyCanExecuteChanged();
+
+                Console.WriteLine($"[FindMatch] FAILED: {ex.Message}");
+            }
+        }
+
+        private void ConfirmOffline(List<int> selectedIds)
+        {
+            var session = _userStore.BattleSesion;
+            var translator = new TeamTranslator();
+
+            var fullTeam = translator.LoadTeamByID(_userStore.BattlePlayerID);
+
+            var playerRoster = BuildPlayerRoster(
+                fullTeam,
+                selectedIds,
+                session.BattleMode);
+
+            session.ResolvedPlayerTeam = PokemonTeam.Create(playerRoster);
+
+            var rivalRoster = BuildRivalRoster(translator);
+
+            session.ResolvedBotTeam = PokemonTeam.Create(rivalRoster);
+
+            _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+        }
+
+        private List<PokemonState> BuildPlayerRoster(
+            PokemonTeam fullTeam,
+            List<int> selectedIds,
+            BattleMode battleMode)
+        {
+            var allPokemon = Enumerable.Range(0, fullTeam.getAllPokemonCount())
+                .Select(fullTeam.GetPokemonAt)
+                .ToList();
+
+            if (battleMode == BattleMode.fullTeam || selectedIds.Count == 0)
+                return allPokemon;
+
+            return selectedIds
+                .Select(id => allPokemon.FirstOrDefault(p => p.PokedexId == id))
+                .Where(p => p != null)
+                .ToList()!;
+        }
+
+        private List<PokemonState> BuildRivalRoster(TeamTranslator translator)
+        {
+            var session = _userStore.BattleSesion;
+            var roster = new List<PokemonState>();
+
+            foreach (int id in session.RivalPokemonIds)
+            {
+                dynamic result = _rivalResults.First(r => r.Battler.PokedexID == id);
+
+                PokemonState pokemon = translator.TranslateToDomain(result);
+
+                roster.Add(pokemon);
+            }
+
+            return roster;
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Cancel / matchmaking callbacks
+        // ─────────────────────────────────────────────────────────────
+
+        private async Task CancelSearchAsync()
+        {
+            if (_matchmaking == null)
+                return;
+
+            try
+            {
+                await _matchmaking.CancelAsync(_userStore.BattlePlayerID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CancelSearch] FAILED: {ex.Message}");
+            }
+            finally
+            {
+                IsSearching = false;
+                ConfirmCommand.NotifyCanExecuteChanged();
+            }
+        }
 
         private async void OnMatchFound(MatchFoundData data)
         {
-            _userStore.ActiveSessionId = data.SessionId;
-
-            // FIX #10 (carried forward): create the battle service here so
-            // BattleViewModel sees a non-null BattleService and enters online mode.
-            // FIX #1 (carried forward): UserStore.BattleService setter now actually
-            // stores the value, so this assignment is no longer silently discarded.
-            _userStore.BattleService = new OnlineBattleService(
-                data.SessionId,
-                _userStore.BattlePlayerID,
-                _serverBaseUrl);
-            await _userStore.BattleService.ConnectAsync();
-
-            // Switch to the battle screen on the UI thread
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                IsSearching = false;
-                _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
-            });
+                _userStore.ActiveSessionId = data.SessionId;
+
+                _userStore.BattleService = new OnlineBattleService(
+                    data.SessionId,
+                    _userStore.BattlePlayerID,
+                    _serverBaseUrl);
+
+                await _userStore.BattleService.ConnectAsync();
+
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    IsSearching = false;
+                    ConfirmCommand.NotifyCanExecuteChanged();
+                    _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    IsSearching = false;
+                    ConfirmCommand.NotifyCanExecuteChanged();
+                });
+
+                Console.WriteLine($"[OnMatchFound] FAILED: {ex.Message}");
+            }
         }
 
         private void OnQueued()
         {
-            // IsSearching is already true — nothing extra needed
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsSearching = true;
+                ConfirmCommand.NotifyCanExecuteChanged();
+            });
         }
 
         private void OnCancelled()
@@ -280,20 +448,43 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 IsSearching = false;
+                ConfirmCommand.NotifyCanExecuteChanged();
             });
         }
 
-        // ── Cleanup ───────────────────────────────────────────────────────────
+        private void OnMatchmakingError(Exception ex)
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsSearching = false;
+                ConfirmCommand.NotifyCanExecuteChanged();
+            });
+
+            Console.WriteLine($"[Matchmaking] ERROR: {ex.Message}");
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Cleanup
+        // ─────────────────────────────────────────────────────────────
+
         public void Dispose()
         {
-            if (_matchmaking is null) return;
+            if (_matchmaking is null)
+                return;
+
             _matchmaking.OnMatchFound -= OnMatchFound;
             _matchmaking.OnQueued -= OnQueued;
             _matchmaking.OnCancelled -= OnCancelled;
+            _matchmaking.OnError -= OnMatchmakingError;
+
+            _ = _matchmaking.DisconnectAsync();
         }
     }
 
-    // ── ConnectorSlotEntry ────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+    // ConnectorSlotEntry
+    // ─────────────────────────────────────────────────────────────
+
     public class ConnectorSlotEntry : ViewModelBase
     {
         public int PokedexId { get; }
@@ -318,14 +509,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             PokedexId = pokemon.PokedexID;
             Name = pokemon.Name ?? $"#{pokemon.PokedexID}";
-            SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemon.PokedexID}.png";
+            SpriteUrl =
+                $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokemon.PokedexID}.png";
         }
 
         public ConnectorSlotEntry(int pokedexId, string name)
         {
             PokedexId = pokedexId;
             Name = name;
-            SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokedexId}.png";
+            SpriteUrl =
+                $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pokedexId}.png";
         }
 
         public ConnectorSlotEntry()
