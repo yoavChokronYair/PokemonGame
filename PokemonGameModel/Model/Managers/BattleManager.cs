@@ -68,7 +68,7 @@ namespace PokemonGame.Model.Model.Managers
         }
 
         // ── Existing offline turn — bot AI picks the opponent move ────────────
-        public bool RunTurn(int playerIndex, BattleAction playerAction = BattleAction.Move)
+        public bool RunTurn(int playerIndex, BattleActionType playerAction = BattleActionType.Move)
         {
             HasBotFainted = false;
             HasTrainerFainted = false;
@@ -81,7 +81,7 @@ namespace PokemonGame.Model.Model.Managers
                     : null;
 
             // PLAYER SWITCH
-            if (playerAction == BattleAction.Switch)
+            if (playerAction == BattleActionType.Switch)
             {
                 if (!_playerTeam.SwitchTo(playerIndex))
                     return false;
@@ -105,7 +105,7 @@ namespace PokemonGame.Model.Model.Managers
             }
 
             // ITEM
-            if (playerAction == BattleAction.Item)
+            if (playerAction == BattleActionType.Item)
                 return playerUseItem(playerIndex);
 
             // NORMAL MOVE
@@ -179,14 +179,14 @@ namespace PokemonGame.Model.Model.Managers
         // and the "bot/opponent" side maps to Player 2 (same team layout as
         // the existing BattleManager; only the source of the move index differs).
         public bool RunTurnPvP(int playerIndex, int opponentIndex,
-                               BattleAction playerAction = BattleAction.Move,
-                               BattleAction opponentAction = BattleAction.Move)
+                               BattleActionType playerAction = BattleActionType.Move,
+                               BattleActionType opponentAction = BattleActionType.Move)
         {
             IMove? pendingPlayerMove = null;
             IMove? pendingOpponentMove = null;
 
             // ── PLAYER SWITCH ─────────────────────────────────────────────────
-            if (playerAction == BattleAction.Switch)
+            if (playerAction == BattleActionType.Switch)
             {
                 if (!_playerTeam.SwitchTo(playerIndex) || !CanSwitchOut(PlayerActive))
                     return false;
@@ -196,7 +196,7 @@ namespace PokemonGame.Model.Model.Managers
                 new SwitchIn(PlayerActive, _state.AttackerSide).Run(_state);
 
                 // Opponent still attacks after player switches
-                if (opponentAction == BattleAction.Move)
+                if (opponentAction == BattleActionType.Move)
                 {
                     pendingOpponentMove = BotActive.Moves[
                         MathHelper.Clamp(opponentIndex, 0, BotActive.Moves.Count - 1)];
@@ -217,7 +217,7 @@ namespace PokemonGame.Model.Model.Managers
             }
 
             // ── OPPONENT SWITCH ───────────────────────────────────────────────
-            if (opponentAction == BattleAction.Switch)
+            if (opponentAction == BattleActionType.Switch)
             {
                 if (!_botTeam.SwitchTo(opponentIndex))
                     return false;
@@ -225,7 +225,7 @@ namespace PokemonGame.Model.Model.Managers
                 _state.UpdateActivePair(PlayerActive, BotActive);
                 new SwitchIn(BotActive, _state.DefenderSide).Run(_state);
                 // Player still attacks after opponent switches
-                if (playerAction == BattleAction.Move)
+                if (playerAction == BattleActionType.Move)
                 {
                     pendingPlayerMove = PlayerActive.Moves[
                         MathHelper.Clamp(playerIndex, 0, PlayerActive.Moves.Count - 1)];

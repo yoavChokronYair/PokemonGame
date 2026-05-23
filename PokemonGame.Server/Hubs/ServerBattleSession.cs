@@ -31,8 +31,8 @@ namespace PokemonGame.Server.Hubs
         public string P1ConnectionId => _p1Conn;
         public string P2ConnectionId => _p2Conn;
 
-        private (string type, int index)? _p1Action;
-        private (string type, int index)? _p2Action;
+        private (BattleActionType type, int index)? _p1Action;
+        private (BattleActionType type, int index)? _p2Action;
 
         private bool _p1Registered;
         private bool _p2Registered;
@@ -74,14 +74,20 @@ namespace PokemonGame.Server.Hubs
         public bool HasConnection(string id) => _p1Conn == id || _p2Conn == id;
         public int GetPlayerByConnection(string id) => _p1Conn == id ? Player1Id : Player2Id;
 
-        public void RecordAction(int playerId, string type, int index)
+        public void RecordAction(int playerId, BattleActionType type, int index)
         {
-            if (IsPlayer1(playerId)) _p1Action = (type, index);
-            else _p2Action = (type, index);
+            if (IsPlayer1(playerId))
+                _p1Action = (type, index);
+            else
+                _p2Action = (type, index);
         }
 
-        public (string type, int index) GetAction(int playerId) =>
-            IsPlayer1(playerId) ? _p1Action!.Value : _p2Action!.Value;
+        public (BattleActionType type, int index) GetAction(int playerId)
+        {
+            return IsPlayer1(playerId)
+                ? _p1Action!.Value
+                : _p2Action!.Value;
+        }
 
         public void ClearActions()
         {
@@ -99,9 +105,15 @@ namespace PokemonGame.Server.Hubs
             var (p1Type, p1Idx) = GetAction(Player1Id);
             var (p2Type, p2Idx) = GetAction(Player2Id);
 
-            // Map the string action type to the BattleAction enum
-            BattleAction p1Action = p1Type == "Switch" ? BattleAction.Switch : BattleAction.Move;
-            BattleAction p2Action = p2Type == "Switch" ? BattleAction.Switch : BattleAction.Move;
+            BattleActionType p1Action =
+                p1Type == BattleActionType.Switch
+                    ? BattleActionType.Switch
+                    : BattleActionType.Move;
+
+            BattleActionType p2Action =
+                p2Type == BattleActionType.Switch
+                    ? BattleActionType.Switch
+                    : BattleActionType.Move;
 
             Manager.RunTurnPvP(p1Idx, p2Idx, p1Action, p2Action);
         }
@@ -161,7 +173,7 @@ namespace PokemonGame.Server.Hubs
             var pokemonService = _serviceFactory.PokemonService;
             var moveTranslator = new MoveTranslator(_serviceFactory.MoveService);
             var abilityTranslator = new AbilityTranslator(_serviceFactory.AbilityService);
-            var itemTranslator = new ItemTranslator(_serviceFactory.ItemService,moveTranslator);
+            var itemTranslator = new ItemTranslator(_serviceFactory.ItemService, moveTranslator);
             var translator = new TeamTranslator(
                 pokemonService, moveTranslator, abilityTranslator, itemTranslator);
 

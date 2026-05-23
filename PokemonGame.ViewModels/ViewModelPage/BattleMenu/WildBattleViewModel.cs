@@ -132,7 +132,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         // ── Switch ────────────────────────────────────────────────────────────
         private async void OnSwitchChosen(int slotIndex)
         {
-            _manager.RunTurn(slotIndex, BattleAction.Switch);
+            _manager.RunTurn(slotIndex, BattleActionType.Switch);
             await FlushLogAndWait();
             SyncPlayerPokemon();
             SyncEnemyPokemon();
@@ -243,7 +243,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 await Logger.WaitUntilQueueEmpty();
 
                 // Wild Pokémon retaliates
-                _manager.RunTurn(0, BattleAction.Item);
+                _manager.RunTurn(0, BattleActionType.Item);
                 await FlushLogAndWait();
 
                 if (_manager.HasTrainerFainted)

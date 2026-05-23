@@ -5,7 +5,7 @@
 namespace PokemonGame.Model.Enums
 {
     public enum Weather { None, Sun, Rain, Sandstorm, Hail, HeavyRain, HarshSunlight, StrongWinds }
-    public enum BattleAction { Move, Switch, Item }
+    public enum BattleActionType { Move, Switch, Item }
     public enum BattleSide { Attacker, Defender }
     public enum Screen { Reflect, LightScreen, AuroraVeil }
     public enum Hazard { Spikes, ToxicSpikes, StealthRock, StickyWeb }

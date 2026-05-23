@@ -6,12 +6,20 @@ namespace PokemonGame.Services.Interfaces
     public interface IBattleService
     {
         event Action? OnStateUpdated;
+        event Action<Exception>? OnError;
 
+        bool IsConnected { get; }
+        bool HasInitialState { get; }
         bool IsOver { get; }
         string? WinnerName { get; }
 
-        void RunTurn(int index, string action = "Move");  // "Move" or "Switch"
-        void Forfeit();
+        Task ConnectAsync();
+        Task RunTurnAsync(int index, string action = "Move");
+        Task ForfeitAsync();
+        Task DisconnectAsync();
+        Task RunMoveAsync(int moveIndex);
+        Task RunSwitchAsync(int slotIndex);
+
         BattleSnapshot GetState();
     }
     public class BattleSnapshot

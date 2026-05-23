@@ -4,15 +4,15 @@ namespace PokemonGame.Services.Interfaces
 {
     public interface IMatchmakingService
     {
-        Task ConnectAsync();
-        Task FindMatchAsync(MatchmakingRequest request);
-        Task CancelAsync(int playerId);
-        void Disconnect();
-
         event Action<MatchFoundData>? OnMatchFound;
         event Action? OnQueued;
         event Action? OnCancelled;
+        event Action<Exception>? OnError;
 
+        Task ConnectAsync();
+        Task FindMatchAsync(MatchmakingRequest request);
+        Task CancelAsync(int playerId);
+        Task DisconnectAsync();
     }
 
     public class MatchmakingRequest

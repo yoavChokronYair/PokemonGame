@@ -19,8 +19,12 @@ namespace PokemonGame.Server
             builder.Services.AddSingleton(serviceFactory.TeamService);
             builder.Services.AddSingleton(serviceFactory.BattleHistoryService);
 
+
             builder.Services.AddSingleton<IServerMatchmakingService, ServerMatchmakingService>();
             builder.Services.AddSingleton<IMatchRegistry, MatchRegistry>();
+            builder.Services.AddSingleton<IMatchRegistry, MatchRegistry>();
+            builder.Services.AddSingleton<IBattleSessionRegistry, InMemoryBattleSessionRegistryService>();
+            builder.Services.AddHostedService<BattleSessionCleanupService>();
             builder.Services.AddControllers();
             builder.Services.AddSignalR();
 

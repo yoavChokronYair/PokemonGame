@@ -1,7 +1,5 @@
 ﻿// Server/Services/MatchmakingService.cs
 
-using PokemonGame.Server.Hubs;
-
 namespace PokemonGame.Server.Services
 {
     public class MatchmakingEntry

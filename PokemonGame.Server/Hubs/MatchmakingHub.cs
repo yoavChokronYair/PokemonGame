@@ -9,9 +9,8 @@ namespace PokemonGame.Server.Hubs
     public class MatchmakingHub : Hub
     {
         private readonly IServerMatchmakingService _matchmaking;
-        private readonly IMatchRegistry _matchRegistry;   // FIX #5: inject registry
+        private readonly IMatchRegistry _matchRegistry;
 
-        // Maps playerId → connectionId so we can push to waiting players
         private static readonly Dictionary<int, string> _connections = new();
         private static readonly object _connLock = new();
 
@@ -23,46 +22,74 @@ namespace PokemonGame.Server.Hubs
             _matchRegistry = matchRegistry;
         }
 
-        // Called by client when they enter the queue
         public async Task FindMatch(MatchmakingEntry entry)
         {
-            lock (_connLock)
-                _connections[entry.PlayerId] = Context.ConnectionId;
+            if (entry == null)
+                throw new HubException("Matchmaking entry cannot be null.");
 
-            var sessionId = _matchmaking.TryMatch(entry, out var opponent);
+            if (entry.PlayerId <= 0)
+                throw new HubException("Invalid player id.");
+
+            entry.SelectedPokemonIds ??= new List<int>();
+
+            lock (_connLock)
+            {
+                _connections[entry.PlayerId] = Context.ConnectionId;
+            }
+
+            string? sessionId = _matchmaking.TryMatch(entry, out var opponent);
 
             if (sessionId is not null && opponent is not null)
             {
-                // FIX #5: Store match in registry BEFORE notifying clients so
-                // BattleHub.JoinSession can retrieve the entries immediately.
+                opponent.SelectedPokemonIds ??= new List<int>();
+
+                // This is the important server-side preservation point.
+                // BattleHub must later read these entries from the registry.
                 _matchRegistry.StoreMatch(sessionId, entry, opponent);
 
-                var matchData = new MatchFoundMessage
+                var callerMatchData = new MatchFoundMessage
                 {
                     SessionId = sessionId,
+                    OpponentId = opponent.PlayerId,
+                    OpponentName = opponent.PlayerName,
                     BattleMode = entry.BattleMode,
-                    IsOneVOne = entry.IsOneVOne
+                    IsOneVOne = entry.IsOneVOne,
+
+                    // The current player's selected Pokémon.
+                    YourSelectedPokemonIds = entry.SelectedPokemonIds.ToList(),
+
+                    // The opponent's selected Pokémon.
+                    OpponentSelectedPokemonIds = opponent.SelectedPokemonIds.ToList()
                 };
 
-                // Notify the player who just triggered the match
-                await Clients.Caller.SendAsync("MatchFound", matchData with
-                {
-                    OpponentId = opponent.PlayerId,
-                    OpponentName = opponent.PlayerName
-                });
+                await Clients.Caller.SendAsync("MatchFound", callerMatchData);
 
-                // Notify the opponent who was already waiting
                 string? opponentConnectionId;
+
                 lock (_connLock)
+                {
                     _connections.TryGetValue(opponent.PlayerId, out opponentConnectionId);
+                }
 
                 if (opponentConnectionId is not null)
                 {
-                    await Clients.Client(opponentConnectionId).SendAsync("MatchFound", matchData with
+                    var opponentMatchData = new MatchFoundMessage
                     {
+                        SessionId = sessionId,
                         OpponentId = entry.PlayerId,
-                        OpponentName = entry.PlayerName
-                    });
+                        OpponentName = entry.PlayerName,
+                        BattleMode = entry.BattleMode,
+                        IsOneVOne = entry.IsOneVOne,
+
+                        // From the opponent client's perspective, this is their own selection.
+                        YourSelectedPokemonIds = opponent.SelectedPokemonIds.ToList(),
+
+                        // And this is the player who just triggered the match.
+                        OpponentSelectedPokemonIds = entry.SelectedPokemonIds.ToList()
+                    };
+
+                    await Clients.Client(opponentConnectionId)
+                        .SendAsync("MatchFound", opponentMatchData);
                 }
             }
             else
@@ -76,27 +103,43 @@ namespace PokemonGame.Server.Hubs
             _matchmaking.Dequeue(playerId);
 
             lock (_connLock)
+            {
                 _connections.Remove(playerId);
+            }
 
             await Clients.Caller.SendAsync("SearchCancelled");
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
+            int? disconnectedPlayerId = null;
+
             lock (_connLock)
             {
-                var entry = _connections.FirstOrDefault(kv => kv.Value == Context.ConnectionId);
-                if (entry.Value is not null)
+                foreach (var pair in _connections)
                 {
-                    _matchmaking.Dequeue(entry.Key);
-                    _connections.Remove(entry.Key);
+                    if (pair.Value == Context.ConnectionId)
+                    {
+                        disconnectedPlayerId = pair.Key;
+                        break;
+                    }
+                }
+
+                if (disconnectedPlayerId.HasValue)
+                {
+                    _connections.Remove(disconnectedPlayerId.Value);
                 }
             }
+
+            if (disconnectedPlayerId.HasValue)
+            {
+                _matchmaking.Dequeue(disconnectedPlayerId.Value);
+            }
+
             return base.OnDisconnectedAsync(exception);
         }
     }
 
-    // FIX #4: same shape as client-side MatchFoundData
     public record MatchFoundMessage
     {
         public string SessionId { get; init; } = string.Empty;
@@ -104,7 +147,8 @@ namespace PokemonGame.Server.Hubs
         public string OpponentName { get; init; } = string.Empty;
         public string BattleMode { get; init; } = string.Empty;
         public bool IsOneVOne { get; init; }
+
+        public List<int> YourSelectedPokemonIds { get; init; } = new();
+        public List<int> OpponentSelectedPokemonIds { get; init; } = new();
     }
 }
-
-   
