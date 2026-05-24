@@ -6,7 +6,9 @@
 //      chosen move indices are used instead of running the bot AI.
 //      Everything else is identical to the file you already have.
 
+using PokemonGame.Core.Model.Helper.MathHelper;
 using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
@@ -15,6 +17,12 @@ using PokemonGame.Model.Model.Battle;
 
 namespace PokemonGame.Model.Model.Managers
 {
+    public class CatchAttemptResult
+    {
+        public bool Caught { get; set; }
+        public int ShakeCount { get; set; }
+        public PokeBallType BallType { get; set; }
+    }
     public class BattleManager
     {
         private readonly PokemonTeam _playerTeam;
@@ -32,6 +40,7 @@ namespace PokemonGame.Model.Model.Managers
         public PokemonTeam? Winner { get; private set; }
         public readonly BattleLogger logger;
         public PokemonTeam? Loser { get; private set; }
+        private int fleeAttempts = 0;
 
         public BattleManager(PokemonTeam playerTeam, PokemonTeam botTeam, BotLevel botLevel)
         {
@@ -49,7 +58,132 @@ namespace PokemonGame.Model.Model.Managers
             _state.Logger.LogSetup($"Enemy sent out {_botTeam.Active.Name}!");
             _state.Logger.LogSetup($"Go! {_playerTeam.Active.Name}!");
         }
+        public CatchAttemptResult TryThrowBall(
+            WildPokemonDomain wildPokemon,
+            PokeballState ball)
+        {
+            if (wildPokemon == null)
+                throw new ArgumentNullException(nameof(wildPokemon));
 
+            if (ball == null)
+                throw new ArgumentNullException(nameof(ball));
+
+            HasBotFainted = false;
+            HasTrainerFainted = false;
+
+            _state.Logger.Log($"You threw a {ball.Name}!");
+
+            var roll = RNGHelper.RollCatch(
+                wildPokemon,
+                ball,
+                _state);
+
+            if (roll.Caught)
+            {
+                _state.Logger.Log("1...");
+                _state.Logger.Log("2...");
+                _state.Logger.Log("3...");
+                _state.Logger.Log($"{wildPokemon.pokemonState.Name} was caught!");
+
+                // BUG-105:
+                // Apply special ball caught effect.
+                ball.ApplyCaughtEffect(_state);
+
+                return new CatchAttemptResult
+                {
+                    Caught = true,
+                    ShakeCount = roll.ShakeCount,
+                    BallType = ball.BallType
+                };
+            }
+
+            foreach (string message in BuildBreakFreeMessages(roll.ShakeCount))
+            {
+                _state.Logger.Log(message);
+            }
+
+            // BUG-102:
+            // Failed catch consumes the player's action,
+            // then the wild Pokémon retaliates normally.
+            RunWildRetaliationTurn();
+
+            return new CatchAttemptResult
+            {
+                Caught = false,
+                ShakeCount = roll.ShakeCount,
+                BallType = ball.BallType
+            };
+        }
+        public bool RunWildRetaliationTurn()
+        {
+            if (Winner != null)
+                return false;
+
+            BotAction botAction = _botManager.PickAction();
+
+            IMove? pendingBotMove =
+                botAction.Type == BotAction.ActionType.Attack
+                    ? botAction.Move
+                    : null;
+
+            if (pendingBotMove == null)
+                return false;
+
+            _state.UpdateActivePair(PlayerActive, BotActive);
+
+            new BeginTurn().Run(_state);
+
+            if (!BotActive.IsFainted)
+            {
+                new MoveExecution(
+                    pendingBotMove,
+                    BotActive,
+                    PlayerActive).Run(_state);
+            }
+
+            new HandleFaints(PlayerActive, BotActive).Run(_state);
+            new EndTurn().Run(_state);
+
+            HandlePostTurnFaints();
+
+            return true;
+        }
+        private static string[] BuildBreakFreeMessages(int shakeCount)
+        {
+            return shakeCount switch
+            {
+                0 => new[]
+                {
+                    "Oh no! The Pokémon broke free!"
+                },
+
+                        1 => new[]
+                        {
+                    "1...",
+                    "Aww! It appeared to be caught!"
+                },
+
+                        2 => new[]
+                        {
+                    "1...",
+                    "2...",
+                    "Aargh! Almost had it!"
+                },
+
+                        3 => new[]
+                        {
+                    "1...",
+                    "2...",
+                    "3...",
+                    "Shoot! It was so close, too!"
+                },
+
+                        _ => new[]
+                        {
+                    "Oh no! The Pokémon broke free!"
+                }
+            };
+        }
         public void ForceWinner(PokemonTeam winner)
         {
             PokemonTeam loser = (winner == _playerTeam) ? _botTeam : _playerTeam;
@@ -136,6 +270,20 @@ namespace PokemonGame.Model.Model.Managers
             new EndTurn().Run(_state);
             HandlePostTurnFaints();
             return true;
+        }
+        public bool TryFlee()
+        {
+            fleeAttempts++;
+            bool canFlee = RNGHelper.CanEscapeWildEncounter(PlayerActive, BotActive, fleeAttempts);
+            if (canFlee)
+            {
+                _state.Logger.LogBattleEnd("Got away safely!");
+            }
+            else
+            {
+                _state.Logger.LogBattleEnd("Couldn't escape!");
+            }
+            return canFlee;
         }
         public void LogSwitchPromptAfterBotFaint()
         {

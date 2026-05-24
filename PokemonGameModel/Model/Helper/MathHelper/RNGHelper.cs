@@ -3,7 +3,10 @@
 // Uses RandomHelper for all random number generation — no inline new Random() here.
 // Instance holds PID/TID/SID for shiny and gender checks.
 using PokemonGame.Enums;
+using PokemonGame.Model.Domain.Battle;
+using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Map;
+using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Model.Battle;
@@ -204,6 +207,140 @@ namespace PokemonGame.Core.Model.Helper.MathHelper
             }
 
             return list[0]; // fallback — should never reach here
+        }
+        public static bool CanEscapeWildEncounter(PokemonState pokemon, PokemonState wildPokemon, int attempt)
+        {
+            int escapeChance = ((pokemon.BaseSpeed * 128) / wildPokemon.BaseSpeed) + 30 * attempt;
+            return RandomHelper.Next(0, 256) < escapeChance;
+        }
+        public class CatchResult
+        {
+            public bool Caught { get; set; }
+            public int ShakeCount { get; set; }
+            public double A { get; set; }
+            public double B { get; set; }
+            public double BallMultiplier { get; set; }
+            public double StatusModifier { get; set; }
+        }
+
+        public static CatchResult RollCatch(
+            WildPokemonDomain wildPokemon,
+            PokeballState ball,
+            BattleState battle)
+        {
+            if (wildPokemon == null)
+                throw new ArgumentNullException(nameof(wildPokemon));
+
+            if (ball == null)
+                throw new ArgumentNullException(nameof(ball));
+
+            var pokemon = wildPokemon.pokemonState;
+
+            int catchRate = wildPokemon.CatchRate;
+            int maxHp = pokemon.MaxHP;
+            int currentHp = pokemon.CurrentHP;
+
+            if (catchRate <= 0 || maxHp <= 0)
+            {
+                return new CatchResult
+                {
+                    Caught = false,
+                    ShakeCount = 0,
+                    A = 0,
+                    B = 0,
+                    BallMultiplier = 0,
+                    StatusModifier = 1.0
+                };
+            }
+
+            currentHp = PokemonGame.Model.Helper.MathHelper.Clamp(
+                currentHp,
+                1,
+                maxHp);
+
+            double ballMultiplier = ball.GetEffectiveMultiplier(battle);
+
+            double statusModifier = pokemon.Status switch
+            {
+                StatusCondition.Sleep or StatusCondition.Freeze => 2.0,
+
+                StatusCondition.Paralysis
+                    or StatusCondition.Burn
+                    or StatusCondition.Poison
+                    or StatusCondition.Toxic => 1.5,
+
+                _ => 1.0
+            };
+
+            double a =
+                ((3.0 * maxHp - 2.0 * currentHp)
+                 * catchRate
+                 * ballMultiplier
+                 * statusModifier)
+                / (3.0 * maxHp);
+
+            // BUG-103 fix:
+            // Do NOT clamp minimum to 1.
+            // If a <= 0, catch is impossible.
+            if (a <= 0)
+            {
+                return new CatchResult
+                {
+                    Caught = false,
+                    ShakeCount = 0,
+                    A = a,
+                    B = 0,
+                    BallMultiplier = ballMultiplier,
+                    StatusModifier = statusModifier
+                };
+            }
+
+            // Gen III/IV rule:
+            // a >= 255 means guaranteed catch.
+            if (a >= 255)
+            {
+                return new CatchResult
+                {
+                    Caught = true,
+                    ShakeCount = 4,
+                    A = a,
+                    B = 65535,
+                    BallMultiplier = ballMultiplier,
+                    StatusModifier = statusModifier
+                };
+            }
+
+            double b = 65536.0 / Math.Pow(255.0 / a, 0.1875);
+
+            int shakes = 0;
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (RandomHelper.Next(0, 65536) >= (int)b)
+                {
+                    return new CatchResult
+                    {
+                        Caught = false,
+                        ShakeCount = shakes,
+                        A = a,
+                        B = b,
+                        BallMultiplier = ballMultiplier,
+                        StatusModifier = statusModifier
+                    };
+                }
+
+                shakes++;
+            }
+
+            return new CatchResult
+            {
+                Caught = true,
+                ShakeCount = 4,
+                A = a,
+                B = b,
+                BallMultiplier = ballMultiplier,
+                StatusModifier = statusModifier
+            };
         }
     }
 }

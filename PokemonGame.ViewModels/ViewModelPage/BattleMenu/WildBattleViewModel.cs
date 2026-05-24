@@ -14,6 +14,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Item;
@@ -146,14 +147,30 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             if (_disposed || _isBattleOverHandled)
                 return;
 
-            _isBattleOverHandled = true;
+            bool fled = _manager.TryFlee();
 
-            Logger.EnqueueStringEntries(new[] { "Got away safely!" });
-
-            await Logger.WaitUntilQueueEmpty();
+            await FlushLogAndWait();
 
             if (_disposed)
                 return;
+
+            if (!fled)
+            {
+                _manager.RunWildRetaliationTurn();
+
+                await FlushLogAndWait();
+
+                if (_manager.HasTrainerFainted)
+                {
+                    PlayerStatus.CurrentHP = 0;
+                    await PlayerStatus.WaitForHpAnimation();
+                }
+
+                SyncAll();
+                return;
+            }
+
+            _isBattleOverHandled = true;
 
             ReturnToMap();
         }
@@ -194,31 +211,25 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         /// </summary>
         public async Task TryThrowBall(PokeballState ball)
         {
-            if (_isBattleOverHandled) return;
+            if (_isBattleOverHandled)
+                return;
 
-            Logger.EnqueueStringEntries(new[] { $"You threw a {ball.Name}!" });
-            await Logger.WaitUntilQueueEmpty();
+            var catchResult = _manager.TryThrowBall(
+                _wildPokemon,
+                ball);
 
-            bool caught = RunCatchFormula(ball);
+            await FlushLogAndWait();
 
-            if (caught)
+            if (catchResult.Caught)
             {
-                Logger.EnqueueStringEntries(new[]
-                {
-                    "1...",
-                    "2...",
-                    "3...",
-                    $"{_wildPokemon.pokemonState.Name} was caught!"
-                });
-
-                await Logger.WaitUntilQueueEmpty();
-
                 _isBattleOverHandled = true;
+
+                bool wasPartyFullBeforeCatch = IsPartyFull();
 
                 var caughtPokemon = PokemonConversionService.FromWildCatch(
                     _wildPokemon,
                     _player.trainerMapLocDomain.CurrentMap.Name,
-                    ball.BallType);
+                    catchResult.BallType);
 
                 _player.AddPokemon(caughtPokemon);
 
@@ -228,8 +239,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
                 ShowOutcome(
                     "Gotcha!",
-                    IsPartyFull()
-                        ? $"{_wildPokemon.pokemonState.Name} was sent to a Box!"
+                    wasPartyFullBeforeCatch
+                        ? $"{_wildPokemon.pokemonState.Name} was caught! Box storage is not implemented yet."
                         : $"{_wildPokemon.pokemonState.Name} was added to your team!");
 
                 await Task.Delay(1500);
@@ -238,57 +249,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
                 return;
             }
-            else
+
+            if (_manager.HasTrainerFainted)
             {
-                Logger.EnqueueStringEntries(new[] { "Oh no! The Pokémon broke free!" });
-                await Logger.WaitUntilQueueEmpty();
-
-                // Wild Pokémon retaliates
-                _manager.RunTurn(0, BattleActionType.Item);
-                await FlushLogAndWait();
-
-                if (_manager.HasTrainerFainted)
-                {
-                    PlayerStatus.CurrentHP = 0;
-                    await PlayerStatus.WaitForHpAnimation();
-                }
-
-                SyncAll();
+                PlayerStatus.CurrentHP = 0;
+                await PlayerStatus.WaitForHpAnimation();
             }
+
+            SyncAll();
         }
-
-        // Gen III/IV shake formula using the ball's Multiplier
-        private bool RunCatchFormula(PokeballState ball)
-        {
-            int catchRate = _wildPokemon.CatchRate;
-            int maxHp = _wildPokemon.pokemonState.MaxHP;
-            int currentHp = _wildPokemon.pokemonState.CurrentHP;
-            double ballMult = ball.Multiplier;
-
-            double statusMod = _wildPokemon.pokemonState.Status switch
-            {
-                StatusCondition.Sleep or StatusCondition.Freeze => 2.0,
-                StatusCondition.Paralysis or StatusCondition.Burn
-                    or StatusCondition.Poison or StatusCondition.Toxic => 1.5,
-                _ => 1.0
-            };
-
-            double a = (3.0 * maxHp - 2.0 * currentHp)
-                       * catchRate * ballMult
-                       / (3.0 * maxHp)
-                       * statusMod;
-
-            a = MathHelper.Clamp(a, 1, 255);
-            double b = 65536.0 / Math.Pow(255.0 / a, 0.1875);
-
-            for (int i = 0; i < 4; i++)
-            {
-                if (RandomHelper.Next(0, 65536) >= (int)b)
-                    return false;
-            }
-            return true;
-        }
-
         // ── Bag ───────────────────────────────────────────────────────────────
         private void OnOpenBag()
         {

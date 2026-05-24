@@ -154,17 +154,21 @@ namespace PokemonGame.Model.Domain.Item
         /// </summary>
         public float Multiplier { get; set; }
 
-        public PokeballState(string name,
-                             IEffect caughtEffect,
-                             ICondition<BattleState> condition,
-                             float multiplier = 1f,
-                             string description = "")
+        public PokeballState(
+            string name,
+            IEffect caughtEffect,
+            ICondition<BattleState> condition,
+            float multiplier = 1f,
+            string description = "",
+            PokeBallType ballType = PokeBallType.PokeBall)
         {
             Name = name;
             CaughtEffect = caughtEffect;
             _condition = condition;
             Multiplier = multiplier;
             Description = description;
+            BallType = ballType;
+
             Type = ItemType.Pokeball;
             UsableInBattle = true;
             UsableInField = false;
