@@ -162,7 +162,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 _service = playerUserStore.BattleService!;
 
                 _service.OnStateUpdated += () =>
-                    System.Windows.Application.Current.Dispatcher.Invoke(SyncAll);
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        SyncAll();
+                    });
 
                 _service.OnError += ex =>
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
