@@ -33,6 +33,7 @@ namespace PokemonGame.Model.Model.Managers
         public bool HasTrainerFainted{ get; private set; } = false;
         public PokemonState PlayerActive => _playerTeam.Active;
         public PokemonState BotActive => _botTeam.Active;
+        private readonly HashSet<PokemonState> _eligibleRewardRecipients = new();
 
         public PokemonTeam PlayerTeam => _playerTeam;
         public PokemonTeam BotTeam => _botTeam;
@@ -49,9 +50,24 @@ namespace PokemonGame.Model.Model.Managers
             _state = new BattleState(playerTeam.Active, botTeam.Active);
             _botManager = new BattleBotManager(botLevel, _botTeam);
             logger = _state.Logger;
-            StartBattle();
-        }
 
+            StartBattle();
+
+            RegisterRewardParticipant(PlayerActive);
+        }
+        private void RegisterRewardParticipant(PokemonState pokemon)
+        {
+            if (pokemon == null)
+                return;
+
+            if (pokemon.IsFainted)
+                return;
+
+            if (_playerTeam.Members.Contains(pokemon))
+                _eligibleRewardRecipients.Add(pokemon);
+        }
+        public IReadOnlyCollection<PokemonState> EligibleRewardRecipients =>
+            _eligibleRewardRecipients;
         private void StartBattle()
         {
             new StartBattle().Run(_state);
@@ -221,6 +237,7 @@ namespace PokemonGame.Model.Model.Managers
                     return false;
 
                 _state.UpdateActivePair(PlayerActive, BotActive);
+                RegisterRewardParticipant(PlayerActive);
                 new BeginTurn().Run(_state);
                 new SwitchIn(PlayerActive, _state.AttackerSide).Run(_state);
 
@@ -241,7 +258,7 @@ namespace PokemonGame.Model.Model.Managers
             // ITEM
             if (playerAction == BattleActionType.Item)
                 return playerUseItem(playerIndex);
-
+            RegisterRewardParticipant(PlayerActive);
             // NORMAL MOVE
             pendingPlayerMove =
                 PlayerActive.Moves[
@@ -274,7 +291,12 @@ namespace PokemonGame.Model.Model.Managers
         public bool TryFlee()
         {
             fleeAttempts++;
-            bool canFlee = RNGHelper.CanEscapeWildEncounter(PlayerActive, BotActive, fleeAttempts);
+
+            bool canFlee = RNGHelper.CanEscapeWildEncounter(
+                PlayerActive,
+                BotActive,
+                fleeAttempts);
+
             if (canFlee)
             {
                 _state.Logger.LogBattleEnd("Got away safely!");
@@ -283,6 +305,7 @@ namespace PokemonGame.Model.Model.Managers
             {
                 _state.Logger.LogBattleEnd("Couldn't escape!");
             }
+
             return canFlee;
         }
         public void LogSwitchPromptAfterBotFaint()
@@ -317,6 +340,7 @@ namespace PokemonGame.Model.Model.Managers
                 return false;
 
             _state.UpdateActivePair(PlayerActive, BotActive);
+            RegisterRewardParticipant(PlayerActive);
             new SwitchIn(PlayerActive, _state.AttackerSide).Run(_state);
 
             return true;

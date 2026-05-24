@@ -174,33 +174,30 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             ReturnToMap();
         }
+
         public void Dispose()
+        {
+            CleanupResources();
+            GC.SuppressFinalize(this);
+        }
+        private void CleanupResources()
         {
             if (_disposed)
                 return;
 
             _disposed = true;
 
-            // Cancel pending async operations
             _cts.Cancel();
             _cts.Dispose();
 
-            // Dispose battle manager if supported
             if (_manager is IDisposable disposableManager)
                 disposableManager.Dispose();
 
-            // Dispose logger if supported
             if (Logger is IDisposable disposableLogger)
                 disposableLogger.Dispose();
 
-            // Dispose menu if supported
             if (BattleMenu is IDisposable disposableMenu)
                 disposableMenu.Dispose();
-
-            // Clear navigation references
-            _navigationStore.CurrentViewModel = null!;
-
-            GC.SuppressFinalize(this);
         }
 
         // ── Catch ─────────────────────────────────────────────────────────────
@@ -214,7 +211,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             if (_isBattleOverHandled)
                 return;
 
-            var catchResult = _manager.TryThrowBall(
+            CatchAttemptResult catchResult = _manager.TryThrowBall(
                 _wildPokemon,
                 ball);
 
@@ -224,14 +221,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             {
                 _isBattleOverHandled = true;
 
-                bool wasPartyFullBeforeCatch = IsPartyFull();
-
                 var caughtPokemon = PokemonConversionService.FromWildCatch(
                     _wildPokemon,
                     _player.trainerMapLocDomain.CurrentMap.Name,
                     catchResult.BallType);
 
-                _player.AddPokemon(caughtPokemon);
+                bool addedToParty = _player.AddPokemon(caughtPokemon);
 
                 RegisterPokedexCaught(
                     _wildPokemon.pokemonState.PokedexId,
@@ -239,11 +234,11 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
                 ShowOutcome(
                     "Gotcha!",
-                    wasPartyFullBeforeCatch
-                        ? $"{_wildPokemon.pokemonState.Name} was caught! Box storage is not implemented yet."
-                        : $"{_wildPokemon.pokemonState.Name} was added to your team!");
+                    addedToParty
+                        ? $"{_wildPokemon.pokemonState.Name} was added to your team!"
+                        : $"{_wildPokemon.pokemonState.Name} was sent to Box storage!");
 
-                await Task.Delay(1500);
+                await DelayOrCancelAsync(1500);
 
                 ReturnToMap();
 
@@ -257,6 +252,17 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
 
             SyncAll();
+        }
+        private async Task DelayOrCancelAsync(int milliseconds)
+        {
+            try
+            {
+                await Task.Delay(milliseconds, _cts.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                // ViewModel was disposed. Ignore.
+            }
         }
         // ── Bag ───────────────────────────────────────────────────────────────
         private void OnOpenBag()
@@ -373,33 +379,81 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
             else
             {
-                // Heal the team and show black-out screen
+                int moneyLost = ApplyBlackoutPenalty();
+
                 HealTeamAfterBlackout();
-                ShowOutcome("You blacked out!", "You were taken to the nearest Pokémon Center.");
+
+                ShowOutcome(
+                    "You blacked out!",
+                    moneyLost > 0
+                        ? $"You dropped ₪{moneyLost}. Your team was healed."
+                        : "Your team was healed.");
             }
-            await Task.Delay(1500);
+
+            await DelayOrCancelAsync(1500);
 
             ReturnToMap();
+        }
+        private int ApplyBlackoutPenalty()
+        {
+            int currentMoney = Math.Max(0, _player.trainerInfo.Money);
+
+            if (currentMoney <= 0)
+                return 0;
+
+            int moneyLost = Math.Max(1, currentMoney / 10);
+
+            _player.trainerInfo.Money = Math.Max(
+                0,
+                currentMoney - moneyLost);
+
+            return moneyLost;
         }
 
         private BattleReward BuildWildReward()
         {
-            var reward = new BattleReward { FriendshipTick = 1, MoneyAwarded = 0 };
-            int participants = Math.Max(
-                _manager.PlayerTeam.Members.Count(p => !p.IsFainted), 1);
-            int expShare = _wildPokemon.BaseExpYield / participants;
+            var reward = new BattleReward
+            {
+                FriendshipTick = 1,
+                MoneyAwarded = 0
+            };
 
-            foreach (var pokemon in _manager.PlayerTeam.Members)
-                reward.ExpGains.Add(new ExpGain { Target = pokemon, Amount = expShare });
+            var eligible = _manager.EligibleRewardRecipients
+                .Where(p => p != null && !p.IsFainted)
+                .Distinct()
+                .ToList();
 
-            if (_wildPokemon.EvYield.HasValue)
-                foreach (var pokemon in _manager.PlayerTeam.Members)
+            if (eligible.Count == 0)
+            {
+                var active = _manager.PlayerActive;
+
+                if (active != null && !active.IsFainted)
+                    eligible.Add(active);
+            }
+
+            if (eligible.Count == 0)
+                return reward;
+
+            int expShare = Math.Max(1, _wildPokemon.BaseExpYield / eligible.Count);
+
+            foreach (var pokemon in eligible)
+            {
+                reward.ExpGains.Add(new ExpGain
+                {
+                    Target = pokemon,
+                    Amount = expShare
+                });
+
+                if (_wildPokemon.EvYield.HasValue)
+                {
                     reward.EvGains.Add(new EvGain
                     {
                         Target = pokemon,
                         Stat = _wildPokemon.EvYield.Value.stat,
                         Amount = _wildPokemon.EvYield.Value.amount
                     });
+                }
+            }
 
             return reward;
         }
@@ -448,11 +502,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             if (_disposed)
                 return;
 
-            var next = _createMapViewModel();
+            CleanupResources();
 
-            Dispose();
-
-            _navigationStore.CurrentViewModel = next;
+            _navigationStore.CurrentViewModel = _createMapViewModel();
         }
 
     }
