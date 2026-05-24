@@ -38,7 +38,7 @@ namespace PokemonGame.Model.Model.Managers
             ApplyPersistentMapChanges();
             if (_npcState == null)
             {
-                _npcState = new MapNpc(map, _squareMapState);
+                _npcState = new MapNpc(map, _squareMapState,_player);
 
                 _npcState.SetSpottedHandler(
                     npc => TrainerSpotted?.Invoke(npc));

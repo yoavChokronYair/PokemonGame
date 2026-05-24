@@ -76,14 +76,19 @@ namespace PokemonGame.Model.Model.Map
         public CollisionType GetCollision(int row, int col)
         {
             var square = GetSquare(row, col);
-            if (square == null) return CollisionType.Blocked;
-            if (HasStationaryBlockerAt(row, col)) return CollisionType.Blocked;
+
+            if (square == null)
+                return CollisionType.Blocked;
+
+            if (HasBlockingNpcAt(row, col))
+                return CollisionType.Blocked;
+
             return square.SquareType;
         }
 
         public bool CanMoveTo(int row, int col, FacingDirection direction)
         {
-            if (HasStationaryBlockerAt(row, col) || HasWalkingNpcAt(row, col))
+            if (HasBlockingNpcAt(row, col))
                 return false;
 
             return GetCollision(row, col) switch
@@ -187,7 +192,10 @@ namespace PokemonGame.Model.Model.Map
 
         // ── Inspect ──────────────────────────────────────────────────────────
 
-       public InspectResult TryInspect(int fromRow, int fromCol, FacingDirection facing)
+        public InspectResult TryInspect(
+     int fromRow,
+     int fromCol,
+     FacingDirection facing)
         {
             var (targetRow, targetCol) = Step(fromRow, fromCol, facing);
 
@@ -203,7 +211,7 @@ namespace PokemonGame.Model.Model.Map
                     {
                         Type = InspectResultType.NpcDialogue,
                         DialogueSet = set,
-                        NpcName = npc.NpcInfo.Name ?? string.Empty,
+                        NpcName = npc.NpcInfo.Name ?? string.Empty
                     };
                 }
             }
@@ -220,37 +228,28 @@ namespace PokemonGame.Model.Model.Map
                 };
             }
 
-            if (targetSquare.SquareType == CollisionType.HM)
-            {
-                HMMoves requiredHm = ResolveRequiredHm(
+            if (!TryResolveRequiredHm(
                     currentSquare,
                     targetSquare,
-                    PlayerDomain.Instance.trainerMapLocDomain.IsSurfing);
-
-                bool hasHm =
-                    PlayerDomain.Instance.Team.AnyPokemonKnows(requiredHm.ToString());
-
-                if (!hasHm)
-                {
-                    return new InspectResult
-                    {
-                        Type = InspectResultType.NeedHm,
-                        Message = $"You need {requiredHm} here.",
-                        TargetRow = targetRow,
-                        TargetCol = targetCol,
-                        RequiredHm = requiredHm
-                    };
-                }
-
-                if (requiredHm == HMMoves.Surf)
-                {
-                    PlayerDomain.Instance.trainerMapLocDomain.IsSurfing = true;
-                }
-
+                    PlayerDomain.Instance.trainerMapLocDomain.IsSurfing,
+                    out HMMoves requiredHm))
+            {
                 return new InspectResult
                 {
-                    Type = InspectResultType.HmUsed,
-                    Message = $"Used {requiredHm}!",
+                    Type = InspectResultType.Nothing,
+                    Message = "There is nothing special here."
+                };
+            }
+
+            bool hasHm =
+                PlayerDomain.Instance.Team?.AnyPokemonKnows(requiredHm.ToString()) == true;
+
+            if (!hasHm)
+            {
+                return new InspectResult
+                {
+                    Type = InspectResultType.NeedHm,
+                    Message = $"You need {requiredHm} here.",
                     TargetRow = targetRow,
                     TargetCol = targetCol,
                     RequiredHm = requiredHm
@@ -259,29 +258,45 @@ namespace PokemonGame.Model.Model.Map
 
             return new InspectResult
             {
-                Type = InspectResultType.Nothing,
-                Message = "There is nothing special here."
+                Type = InspectResultType.HmUsed,
+                Message = $"Use {requiredHm}?",
+                TargetRow = targetRow,
+                TargetCol = targetCol,
+                RequiredHm = requiredHm
             };
         }
-        private static HMMoves ResolveRequiredHm(
-        SquareDomain? currentSquare,
-        SquareDomain targetSquare,
-        bool isSurfing)
+        private static bool TryResolveRequiredHm(
+            SquareDomain? currentSquare,
+            SquareDomain targetSquare,
+            bool isSurfing,
+            out HMMoves requiredHm)
         {
-            if (targetSquare.TileType == TileType.Water)
+            requiredHm = HMMoves.None;
+
+            if (targetSquare.SquareType == CollisionType.CutTree)
             {
-                return isSurfing
+                requiredHm = HMMoves.Cut;
+                return true;
+            }
+
+            if (targetSquare.SquareType == CollisionType.HM &&
+                targetSquare.TileType == TileType.Water)
+            {
+                requiredHm = isSurfing
                     ? HMMoves.Waterfall
                     : HMMoves.Surf;
+
+                return true;
             }
 
-            if (targetSquare.TileType == TileType.Cave ||
-                currentSquare?.TileType == TileType.Cave)
+            if (targetSquare.SquareType == CollisionType.HM &&
+                targetSquare.TileType == TileType.Cave)
             {
-                return HMMoves.Strength;
+                requiredHm = HMMoves.Strength;
+                return true;
             }
 
-            return HMMoves.Cut;
+            return false;
         }
         // ── NPC queries ──────────────────────────────────────────────────────
 
@@ -331,122 +346,269 @@ namespace PokemonGame.Model.Model.Map
 
             var grid = new SquareDomain[rows, cols];
 
-            // initialise all squares to None
-            for (int sr = 0; sr < rows; sr++)
-                for (int sc = 0; sc < cols; sc++)
-                    grid[sr, sc] = new SquareDomain
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < cols; col++)
+                {
+                    grid[row, col] = new SquareDomain
                     {
-                        Row = sr,
-                        Col = sc,
+                        Row = row,
+                        Col = col,
                         SquareType = CollisionType.None,
-                        TileType = TileType.Ground,
+                        TileType = TileType.Ground
                     };
+                }
+            }
 
-            // paint collision objects — DB stores tile coords, convert to square coords
-            foreach (var obj in map.CollisionObjects)
+            ApplyVisualTiles(grid, rows, cols, map.BackgroundBlocks);
+            ApplyVisualTiles(grid, rows, cols, map.Blocks);
+            ApplyCollisionObjects(grid, rows, cols, map.CollisionObjects);
+
+            return grid;
+        }
+        private static void ApplyVisualTiles(
+    SquareDomain[,] grid,
+    int rows,
+    int cols,
+    IEnumerable<TileDomain> tiles)
+        {
+            int tps = MapConstants.TilesPerSquare;
+
+            foreach (var tile in tiles)
+            {
+                int row = tile.Y / tps;
+                int col = tile.X / tps;
+
+                if ((uint)row >= (uint)rows ||
+                    (uint)col >= (uint)cols)
+                {
+                    continue;
+                }
+
+                var square = grid[row, col];
+
+                if (tile.TileType != TileType.Ground)
+                    square.TileType = tile.TileType;
+
+                if (tile.collisionType != CollisionType.None)
+                {
+                    PaintCollision(square, tile.collisionType);
+                    continue;
+                }
+
+                if (tile.TileType == TileType.Water &&
+                    square.SquareType == CollisionType.None)
+                {
+                    square.SquareType = CollisionType.HM;
+                }
+
+                if (tile.TileType == TileType.Objects &&
+                    square.SquareType == CollisionType.None)
+                {
+                    square.SquareType = CollisionType.Blocked;
+                }
+
+                if (tile.TileType == TileType.Grass &&
+                    square.SquareType == CollisionType.None)
+                {
+                    square.SquareType = CollisionType.WildGrass;
+                }
+            }
+        }
+
+        private static void ApplyCollisionObjects(
+            SquareDomain[,] grid,
+            int rows,
+            int cols,
+            IEnumerable<CollisionObjectDomain> objects)
+        {
+            int tps = MapConstants.TilesPerSquare;
+
+            foreach (var obj in objects)
             {
                 int startRow = obj.Y / tps;
                 int startCol = obj.X / tps;
                 int endRow = (obj.Y + obj.Height - 1) / tps;
                 int endCol = (obj.X + obj.Width - 1) / tps;
 
-                for (int sr = startRow; sr <= endRow; sr++)
+                for (int row = startRow; row <= endRow; row++)
                 {
-                    for (int sc = startCol; sc <= endCol; sc++)
+                    for (int col = startCol; col <= endCol; col++)
                     {
-                        if ((uint)sr >= (uint)rows || (uint)sc >= (uint)cols)
-                            continue;
-
-                        // Blocked always wins
-                        if (grid[sr, sc].SquareType == CollisionType.Blocked)
-                            continue;
-
-                        if (obj.CollisionType == CollisionType.Blocked ||
-                            grid[sr, sc].SquareType == CollisionType.None)
+                        if ((uint)row >= (uint)rows ||
+                            (uint)col >= (uint)cols)
                         {
-                            grid[sr, sc].SquareType = obj.CollisionType;
-                            grid[sr, sc].TileType = CollisionToTileType(obj.CollisionType);
+                            continue;
                         }
+
+                        PaintCollision(grid[row, col], obj.CollisionType);
                     }
                 }
             }
-
-            return grid;
         }
 
+        private static void PaintCollision(
+            SquareDomain square,
+            CollisionType collision)
+        {
+            if (square.SquareType == CollisionType.Blocked)
+                return;
+
+            if (collision == CollisionType.Blocked ||
+                square.SquareType == CollisionType.None)
+            {
+                square.SquareType = collision;
+                square.TileType = CollisionToTileType(collision);
+            }
+        }
         /// <summary>
         /// Expands every CollisionObject rectangle into a per-tile lookup array.
         /// </summary>
-      
-   
+
+
 
         // ── Private — TileType from CollisionType ─────────────────────────────
 
         private static TileType CollisionToTileType(CollisionType ct) => ct switch
         {
             CollisionType.HM => TileType.Water,
-            _ => TileType.Ground,
+            CollisionType.CutTree => TileType.Objects,
+            CollisionType.WildGrass => TileType.Grass,
+            CollisionType.Blocked => TileType.Objects,
+            _ => TileType.Ground
         };
 
         // ── Private — NPC collision helpers ──────────────────────────────────
 
-        private bool HasStationaryBlockerAt(int row, int col)
-            => _map.Npc.Any((Func<NpcObjectDomain, bool>)(n =>
-                n.MovementType != MovementType.Walking &&
-                n.CollisionType == CollisionType.Blocked &&
-                NpcSquare(n) == (row, col)));
+        private bool HasBlockingNpcAt(int row, int col)
+        {
+            return _map.Npc.Any(n =>
+            {
+                if (n.CollisionType != CollisionType.Blocked)
+                    return false;
 
-        private bool HasWalkingNpcAt(int row, int col)
-            => _map.Npc.Any((Func<NpcObjectDomain, bool>)(n =>
-                n.MovementType == MovementType.Walking &&
-                n.CollisionType == CollisionType.Blocked &&
-                NpcSquare(n) == (row, col)));
+                var (npcRow, npcCol) =
+                    TileToSquare(n.Location.y, n.Location.x);
+
+                return npcRow == row && npcCol == col;
+            });
+        }
 
         // ── Private — vision ─────────────────────────────────────────────────
 
-        private void PaintLineVision(NpcObjectDomain npc, int npcRow, int npcCol)
+        private void PaintLineVision(
+             NpcObjectDomain npc,
+             int npcRow,
+             int npcCol)
         {
             var (dRow, dCol) = Delta(npc.Direction);
-            if (dRow == 0 && dCol == 0) return;
+
+            if (dRow == 0 && dCol == 0)
+                return;
 
             for (int step = 1; step <= npc.VisionRange; step++)
             {
-                int r = npcRow + dRow * step;
-                int c = npcCol + dCol * step;
-                if (!InBounds(r, c)) break;
-                _visionLayer[r, c] = npc.NpcInfo.Id;
-                var col = GetCollision(r, c);
-                if (col != CollisionType.None && col != CollisionType.WildGrass) break;
+                int row = npcRow + dRow * step;
+                int col = npcCol + dCol * step;
+
+                if (!InBounds(row, col))
+                    break;
+
+                if (IsVisionBlocking(row, col))
+                    break;
+
+                _visionLayer[row, col] = npc.NpcInfo.Id;
             }
         }
-
-        private void PaintCircularVision(NpcObjectDomain npc, int npcRow, int npcCol)
+        private bool IsVisionBlocking(int row, int col)
         {
-            for (int dr = -npc.VisionRange; dr <= npc.VisionRange; dr++)
-                for (int dc = -npc.VisionRange; dc <= npc.VisionRange; dc++)
-                {
-                    if (Math.Max(Math.Abs(dr), Math.Abs(dc)) > npc.VisionRange) continue;
-                    int r = npcRow + dr;
-                    int c = npcCol + dc;
-                    if (InBounds(r, c) && HasLineOfSight(npcRow, npcCol, r, c))
-                        _visionLayer[r, c] = npc.NpcInfo.Id;
-                }
+            CollisionType collision = GetCollision(row, col);
+
+            return collision != CollisionType.None &&
+                   collision != CollisionType.WildGrass;
         }
-
-        private bool HasLineOfSight(int fromRow, int fromCol, int toRow, int toCol)
+        private void PaintCircularVision(
+     NpcObjectDomain npc,
+     int npcRow,
+     int npcCol)
         {
-            int dr = toRow - fromRow;
-            int dc = toCol - fromCol;
-            int steps = Math.Max(Math.Abs(dr), Math.Abs(dc));
-            if (steps == 0) return true;
-            for (int i = 1; i < steps; i++)
+            int radius = npc.VisionRange;
+            int radiusSquared = radius * radius;
+
+            for (int dRow = -radius; dRow <= radius; dRow++)
             {
-                int r = fromRow + (int)Math.Round((double)dr * i / steps);
-                int c = fromCol + (int)Math.Round((double)dc * i / steps);
-                var col = GetCollision(r, c);
-                if (col != CollisionType.None && col != CollisionType.WildGrass) return false;
+                for (int dCol = -radius; dCol <= radius; dCol++)
+                {
+                    if (dRow == 0 && dCol == 0)
+                        continue;
+
+                    if (dRow * dRow + dCol * dCol > radiusSquared)
+                        continue;
+
+                    int row = npcRow + dRow;
+                    int col = npcCol + dCol;
+
+                    if (!InBounds(row, col))
+                        continue;
+
+                    if (IsVisionBlocking(row, col))
+                        continue;
+
+                    if (HasLineOfSight(npcRow, npcCol, row, col))
+                        _visionLayer[row, col] = npc.NpcInfo.Id;
+                }
             }
-            return true;
+        }
+        private bool HasLineOfSight(
+     int fromRow,
+     int fromCol,
+     int toRow,
+     int toCol)
+        {
+            int x0 = fromCol;
+            int y0 = fromRow;
+            int x1 = toCol;
+            int y1 = toRow;
+
+            int dx = Math.Abs(x1 - x0);
+            int dy = Math.Abs(y1 - y0);
+
+            int sx = x0 < x1 ? 1 : -1;
+            int sy = y0 < y1 ? 1 : -1;
+
+            int err = dx - dy;
+
+            int x = x0;
+            int y = y0;
+
+            while (true)
+            {
+                if (x == x1 && y == y1)
+                    return true;
+
+                int e2 = 2 * err;
+
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    x += sx;
+                }
+
+                if (e2 < dx)
+                {
+                    err += dx;
+                    y += sy;
+                }
+
+                if (x == x1 && y == y1)
+                    return true;
+
+                if (!InBounds(y, x))
+                    return false;
+
+                if (IsVisionBlocking(y, x))
+                    return false;
+            }
         }
 
         // ── Private — shared helpers ──────────────────────────────────────────
