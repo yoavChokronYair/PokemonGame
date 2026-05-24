@@ -10,10 +10,8 @@ namespace PokemonGame.Services.Data.Repositories
         // Records a new battle and returns the assigned BattleID
         public int CreateBattle()
         {
-            // Using SQLite's datetime('now') directly is safer for consistency
-            _db.Execute("INSERT INTO Battle (BattleDate) VALUES (datetime('now'))");
-
-            return _db.QuerySingle<int>("SELECT last_insert_rowid()");
+            _db.Execute("INSERT INTO Battle DEFAULT VALUES");
+            return _db.QueryScalar<int>("SELECT last_insert_rowid()");
         }
 
         // Note: FinalizeBattle is removed here because winners are now updated 

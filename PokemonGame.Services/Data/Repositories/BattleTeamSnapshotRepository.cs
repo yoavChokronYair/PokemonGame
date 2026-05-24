@@ -23,8 +23,12 @@ namespace PokemonGame.Services.Data.Repositories
 
         public void SaveSnapshot(int battleId, int battlePlayerId, int teamId)
         {
-            var members = _db.Query<(int Slot, int PokemonId)>(
-                "SELECT slot_number AS Slot, pokemonID AS PokemonId FROM team_members WHERE team_id = @tid",
+            var members = _db.Query<TeamMemberData>(
+                @"SELECT team_id AS Team_id,
+                         pokemonID AS PokemonID,
+                         slot_number AS Slot_number
+                  FROM team_members
+                  WHERE team_id = @tid",
                 new { tid = teamId }).ToList();
 
             foreach (var member in members)
@@ -32,7 +36,7 @@ namespace PokemonGame.Services.Data.Repositories
                 _db.Execute(
                     @"INSERT OR IGNORE INTO BattleTeamSnapshot (BattleID, BattlePlayerID, Slot, PokemonID)
               VALUES (@bid, @bpid, @slot, @pid)",
-                    new { bid = battleId, bpid = battlePlayerId, slot = member.Slot, pid = member.PokemonId });
+                    new { bid = battleId, bpid = battlePlayerId, slot = member.Slot_number, pid = member.PokemonID });
             }
         }
 

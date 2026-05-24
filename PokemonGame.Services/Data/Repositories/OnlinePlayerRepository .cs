@@ -39,12 +39,6 @@ namespace PokemonGame.Services.Data.Repositories
                 () => _db.Query<BattlePlayerData>("SELECT * FROM BattlePlayer WHERE UserID = @uid", new { uid = user.UserID }).ToList(),
                 p => Key(p.Name, user.UserID));
 
-        public BattlePlayerData? LoadOpponentPlayer(BattlePlayerData player, int battleID) =>
-            _db.QuerySingle<BattlePlayerData>(@"
-            SELECT bp.* FROM BattleTeam bt
-            JOIN BattlePlayer bp ON bp.BattlePlayerID = bt.BattlePlayerID
-            WHERE bt.BattleID = @battleID AND bt.BattlePlayerID != @playerID LIMIT 1;",
-                new { battleID, playerID = player.BattlePlayerID });
         public void Upsert(BattlePlayerData r)
         {
             _db.Execute(

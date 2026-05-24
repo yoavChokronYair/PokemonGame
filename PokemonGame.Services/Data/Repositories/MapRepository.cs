@@ -57,12 +57,6 @@ namespace PokemonGame.Services.Data.Repositories
     {
         internal TileMetadataRepository(IDbConnectionService db) : base(db) { }
 
-        public TileMetadataData? GetTileMetadataById(int id) =>
-            GetCached(id, () =>
-                _db.QuerySingle<TileMetadataData>(
-                    "SELECT * FROM TileMetadata WHERE Id = @id",
-                    new { id }));
-
         public List<TileMetadataData> GetMetadataForTileset(int tilesetId) =>
             _db.Query<TileMetadataData>(
                 @"SELECT * 

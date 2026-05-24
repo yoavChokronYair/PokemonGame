@@ -27,49 +27,51 @@ namespace PokemonGame.Services.Data.Repositories
 
         public void Save(StoryPlayerPokemonData pokemon)
         {
+            pokemon.BattlerPokemonId = EnsureBattlerPokemonExists(pokemon);
+
             _db.Execute(@"
-            INSERT OR REPLACE INTO StoryPlayerPokemon
-            (
-                PlayerID,
-                BattlerPokemonId,
-                Nickname,
-                PokemonUID,
-                OriginalTrainerID,
-                OriginalTrainerName,
-                ObtainMethod,
-                ObtainedAtRoute,
-                ObtainedAt,
-                ObtainedAtLevel,
-                CaughtWithBall,
-                MetLocationText,
-                Experience,
-                GrowthRate,
-                CurrentHP,
-                StatusId,
-                Friendship,
-                Affection
-            )
-            VALUES
-            (
-                @PlayerID,
-                @BattlerPokemonId,
-                @Nickname,
-                @PokemonUID,
-                @OriginalTrainerID,
-                @OriginalTrainerName,
-                @ObtainMethod,
-                @ObtainedAtRoute,
-                @ObtainedAt,
-                @ObtainedAtLevel,
-                @CaughtWithBall,
-                @MetLocationText,
-                @Experience,
-                @GrowthRate,
-                @CurrentHP,
-                @StatusId,
-                @Friendship,
-                @Affection
-            )",
+                INSERT OR REPLACE INTO StoryPlayerPokemon
+                (
+                    PlayerID,
+                    BattlerPokemonId,
+                    Nickname,
+                    PokemonUID,
+                    OriginalTrainerID,
+                    OriginalTrainerName,
+                    ObtainMethod,
+                    ObtainedAtRoute,
+                    ObtainedAt,
+                    ObtainedAtLevel,
+                    CaughtWithBall,
+                    MetLocationText,
+                    Experience,
+                    GrowthRate,
+                    CurrentHP,
+                    StatusId,
+                    Friendship,
+                    Affection
+                )
+                VALUES
+                (
+                    @PlayerID,
+                    @BattlerPokemonId,
+                    @Nickname,
+                    @PokemonUID,
+                    @OriginalTrainerID,
+                    @OriginalTrainerName,
+                    @ObtainMethod,
+                    @ObtainedAtRoute,
+                    @ObtainedAt,
+                    @ObtainedAtLevel,
+                    @CaughtWithBall,
+                    @MetLocationText,
+                    @Experience,
+                    @GrowthRate,
+                    @CurrentHP,
+                    @StatusId,
+                    @Friendship,
+                    @Affection
+                )",
                 new
                 {
                     pokemon.PlayerID,
@@ -94,7 +96,151 @@ namespace PokemonGame.Services.Data.Repositories
 
             StoreAndReturn(pokemon.Id, () => pokemon);
         }
+        private int EnsureBattlerPokemonExists(StoryPlayerPokemonData pokemon)
+        {
+            // 1. If BattlerPokemonId already points to a real battler_pokemon row,
+            // keep it.
+            int existingInstance = _db.QueryScalar<int>(
+                @"SELECT COUNT(*)
+                FROM battler_pokemon
+                WHERE pokemonID = @id",
+                new { id = pokemon.BattlerPokemonId });
 
+            if (existingInstance > 0)
+                return pokemon.BattlerPokemonId;
+
+            // 2. If it does not exist, treat the current value as a PokedexID.
+            // Example: 25 means Pikachu species.
+            int pokedexId = pokemon.BattlerPokemonId;
+
+            int speciesExists = _db.QueryScalar<int>(
+                @"SELECT COUNT(*)
+                FROM pokemon_general
+                WHERE pokedexID = @pokedexId",
+                new { pokedexId });
+
+            if (speciesExists == 0)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot create battler_pokemon. Value {pokedexId} is neither an existing pokemonID nor a valid pokedexID.");
+            }
+
+            int abilityId = _db.QueryScalar<int>(
+                @"SELECT COALESCE(firstAbilityID, secondAbilityID, hiddenAbilityID)
+                FROM pokemon_general
+                WHERE pokedexID = @pokedexId",
+                new { pokedexId });
+
+            if (abilityId <= 0)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot create battler_pokemon for PokedexID {pokedexId}: no ability found.");
+            }
+
+            var moveIds = _db.QueryScalarList<int>(
+                @"SELECT moveID
+                FROM levelup_moves
+                WHERE pokedexID = @pokedexId
+                AND level <= @level
+                ORDER BY level DESC, moveID ASC
+                LIMIT 4",
+                new
+                {
+                    pokedexId,
+                    level = pokemon.ObtainedAtLevel <= 0 ? 1 : pokemon.ObtainedAtLevel
+                });
+
+            if (moveIds.Count == 0)
+            {
+                moveIds = _db.QueryScalarList<int>(
+                    @"SELECT moveID
+              FROM levelup_moves
+              WHERE pokedexID = @pokedexId
+              ORDER BY level ASC, moveID ASC
+              LIMIT 4",
+                    new { pokedexId });
+            }
+
+            if (moveIds.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot create battler_pokemon for PokedexID {pokedexId}: no moves found.");
+            }
+
+            while (moveIds.Count < 4)
+                moveIds.Add(moveIds[0]);
+
+            int level = pokemon.ObtainedAtLevel <= 0 ? 1 : pokemon.ObtainedAtLevel;
+
+            int newBattlerPokemonId = _db.ExecuteAndGetLastId(@"
+                INSERT INTO battler_pokemon
+                (
+                    pokedexID,
+                    abilityID,
+                    itemID,
+                    shiny,
+                    gender,
+                    level,
+                    move1ID,
+                    move2ID,
+                    move3ID,
+                    move4ID,
+                    iv_hp,
+                    iv_atk,
+                    iv_def,
+                    iv_spAtk,
+                    iv_spDef,
+                    iv_speed,
+                    ev_hp,
+                    ev_atk,
+                    ev_def,
+                    ev_spAtk,
+                    ev_spDef,
+                    ev_speed,
+                    nature
+                )
+                VALUES
+                (
+                    @PokedexID,
+                    @AbilityID,
+                    NULL,
+                    0,
+                    NULL,
+                    @Level,
+                    @Move1ID,
+                    @Move2ID,
+                    @Move3ID,
+                    @Move4ID,
+                    31,
+                    31,
+                    31,
+                    31,
+                    31,
+                    31,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    'Hardy'
+                );",
+                new
+                {
+                    PokedexID = pokedexId,
+                    AbilityID = abilityId,
+                    Level = level,
+                    Move1ID = moveIds[0],
+                    Move2ID = moveIds[1],
+                    Move3ID = moveIds[2],
+                    Move4ID = moveIds[3],
+                });
+
+            System.Diagnostics.Debug.WriteLine(
+                $"Created missing battler_pokemon row. PokedexID={pokedexId}, New pokemonID={newBattlerPokemonId}");
+
+            return newBattlerPokemonId;
+        }
         public void SaveAll(IEnumerable<StoryPlayerPokemonData> pokemon)
         {
             foreach (var p in pokemon)

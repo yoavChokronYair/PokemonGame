@@ -47,34 +47,51 @@ namespace PokemonGame.Services.Data.ConnectionsService
         /// The reader is not advanced or closed by this method.
         /// </param>
         /// <returns>A new <typeparamref name="T"/> instance populated from the current row.</returns>
-        protected static T MapReaderToObject<T>(IDataReader reader) where T : new()
+        protected static T MapReaderToObject<T>(IDataReader reader)
         {
-            var result = new T();
+            Type type = typeof(T);
 
-            var columnMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (type.IsPrimitive ||
+                type == typeof(string) ||
+                type == typeof(decimal) ||
+                type == typeof(DateTime) ||
+                type == typeof(Guid))
+            {
+                object value = reader.GetValue(0);
+
+                if (value == DBNull.Value)
+                    return default!;
+
+                return (T)Convert.ChangeType(value, type);
+            }
+
+            T obj = Activator.CreateInstance<T>();
+
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                columnMap[reader.GetName(i)] = reader.GetName(i);
-            }
+                string columnName = reader.GetName(i);
+                object value = reader.GetValue(i);
 
-            foreach (var prop in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
-            {
-                if (!columnMap.TryGetValue(prop.Name, out var actualColumnName))
-                {
-                    continue;
-                }
-
-                var value = reader[actualColumnName];
                 if (value == DBNull.Value)
-                {
                     continue;
-                }
 
-                var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                prop.SetValue(result, ConvertValue(value, targetType));
+                var property = type.GetProperty(
+                    columnName,
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.IgnoreCase
+                );
+                if (property == null || !property.CanWrite)
+                    continue;
+
+                Type propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+                object convertedValue = Convert.ChangeType(value, propertyType);
+
+                property.SetValue(obj, convertedValue);
             }
 
-            return result;
+            return obj;
         }
 
         /// <summary>

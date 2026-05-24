@@ -229,7 +229,7 @@ namespace PokemonGame.ViewModels.Translators
                     ServiceFactory.Instance.ItemService,
                     new MoveTranslator(ServiceFactory.Instance.MoveService)));
 
-            foreach (var slot in party.OrderBy(p => p.Id))
+            foreach (var slot in party)
             {
                 PokemonLoadResult? result =
                     pokemonService.LoadPokemon(slot.BattlerPokemonId);

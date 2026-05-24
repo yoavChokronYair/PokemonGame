@@ -156,16 +156,26 @@ namespace PokemonGame.Services.Handler
             }
             foreach (var pokedex in save.Pokedex)
                 pokedex.PlayerID = pid;
+
             // ── 2. TrainerInfo ───────────────────────────────────────────────
+            save.TrainerInfo.PlayerID = pid;
             _trainerInfoRepo.Save(save.TrainerInfo);
+            
+            foreach (var badge in save.Badges)
+                badge.PlayerID = pid;
+            foreach (var partyPokemon in save.Party)
+                partyPokemon.PlayerID = pid;
+
+            
+            save.TrainerInfo.PlayerID = pid;
+
 
             // ── 3. Everything else ───────────────────────────────────────────
             _badgeRepo.SaveAll(save.Badges);
             _pokedexRepo.SaveAll(save.Pokedex);
 
             _partyRepo.Clear(pid);
-            foreach (var pokemon in save.Party)
-                pokemon.PlayerID = pid;
+
             
             _partyRepo.SaveAll(save.Party);
 

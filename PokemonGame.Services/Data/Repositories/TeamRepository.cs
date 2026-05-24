@@ -63,17 +63,17 @@ namespace PokemonGame.Services.Data.Repositories
                 new { name = newName, tid = teamId });
         public bool IsFavoriteTeam(int teamId)
         {
-            // Check if any player has this team set as their favorite
-            int count = _db.QuerySingle<int>(
+            int count = _db.QueryScalar<int>(
                 "SELECT COUNT(1) FROM BattlePlayerStats WHERE FaveTeamID = @tid",
                 new { tid = teamId }
             );
+
             return count > 0;
         }
         public void DeleteTeam(int teamId)
         {
             // Get all pokemon IDs for this team
-            var pokemonIds = _db.Query<int>(
+            var pokemonIds = _db.QueryScalarList<int>(
                 "SELECT pokemonID FROM team_members WHERE team_id = @tid",
                 new { tid = teamId }).ToList();
 

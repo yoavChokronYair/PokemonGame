@@ -36,8 +36,6 @@ namespace PokemonGame.Services.Data.ConnectionsService
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                for (int i = 0; i < reader.FieldCount; i++)
-                    Console.WriteLine($"[Reader] col[{i}] name='{reader.GetName(i)}' value='{reader.GetValue(i)}'");
                 return MapReaderToObject<T>(reader);
             }
             return default!;
