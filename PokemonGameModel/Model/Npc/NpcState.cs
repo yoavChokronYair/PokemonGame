@@ -107,11 +107,11 @@ namespace PokemonGame.Model.Model.Npc
     public class GymLeaderNpcState : TrainerNpcState
     {
         private readonly int _badgeId;
-        private readonly itemsDomain _tm;
+        private readonly ItemsDomain _tm;
 
-        public event Action<int, itemsDomain>? GymCleared; // badgeId + TM
+        public event Action<int, ItemsDomain>? GymCleared; // badgeId + TM
 
-        public GymLeaderNpcState(TrainerDomain trainerInfo, int badgeId, itemsDomain tm)
+        public GymLeaderNpcState(TrainerDomain trainerInfo, int badgeId, ItemsDomain tm)
             : base(trainerInfo)
         {
             _badgeId = badgeId;
@@ -219,7 +219,7 @@ namespace PokemonGame.Model.Model.Npc
     public enum ShopMode { Buy, Sell }
     public class ShopKeeperNpcState : NpcDomain
     {
-        public List<itemsDomain> ItemsForSale { get; set; } = new();
+        public List<ItemsDomain> ItemsForSale { get; set; } = new();
 
         public override void OnDialogueFinishedTrue()  // buy node landed
         {

@@ -169,7 +169,7 @@ namespace PokemonGame.ViewModels.Translators
 
                 try
                 {
-                    itemsDomain item =
+                    ItemsDomain item =
                         itemTranslator.TranslateById(row.ItemId);
 
                     player.trainerItemDomain.BagInventory[item] =

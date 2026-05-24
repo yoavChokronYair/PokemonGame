@@ -152,7 +152,7 @@ namespace PokemonGame.Model.Domain.Player
     }
     public class TrainerItemDomain
     {
-        public Dictionary<itemsDomain, int> BagInventory { get; set; } = new();
+        public Dictionary<ItemsDomain, int> BagInventory { get; set; } = new();
         public Dictionary<string, (List<PokemonPlayerDomain>, string)> BoxStorage { get; set; } = new(); // name - pokemon list - wallpaper
         public KeyItemState RegisterKey { get; set; }
         public bool HasRunningShoes { get; set; }

@@ -22,19 +22,19 @@ namespace PokemonGame.Model.Domain.Item
     //  Base item
     // ─────────────────────────────────────────
 
-    public class itemsDomain
+    public class ItemsDomain
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public ItemType Type { get; set; }
-        public IEffect Effect { get; set; }
-        public string Description { get; set; }
+        public IEffect? Effect { get; set; }
+        public string? Description { get; set; }
         public bool UsableInBattle { get; set; }
         public bool UsableInField { get; set; }
         public int Price { get; set; } = 0;
 
         public override bool Equals(object? obj) =>
-            obj is itemsDomain other && Id == other.Id;
+            obj is ItemsDomain other && Id == other.Id;
 
         public override int GetHashCode() => Id.GetHashCode();
     }
@@ -43,14 +43,8 @@ namespace PokemonGame.Model.Domain.Item
     //  Key item
     // ─────────────────────────────────────────
 
-    public class KeyItemState : itemsDomain
+    public class KeyItemState : ItemsDomain
     {
-        /// <summary>
-        /// Maps to keyitems.usageid — the effect triggered when
-        /// the player uses this item from the bag / registered slot.
-        /// </summary>
-        public IEffect UsageEffect { get; set; }
-
         /// <summary>
         /// Maps to keyitems.conditionid — optional gate on when
         /// the item can be used (e.g. only near a specific tile).
@@ -67,7 +61,6 @@ namespace PokemonGame.Model.Domain.Item
                             ICondition<BattleState> condition,
                             bool registerable = false)
         {
-            UsageEffect = usageEffect;
             _condition = condition;
             Registerable = registerable;
             Type = ItemType.KeyItem;
@@ -83,7 +76,7 @@ namespace PokemonGame.Model.Domain.Item
     //  Held item
     // ─────────────────────────────────────────
 
-    public class HeldItemState : itemsDomain, IHeldItem
+    public class HeldItemState : ItemsDomain, IHeldItem
     {
         /// <summary>
         /// Maps to held_items.conditionid — the battle-state
@@ -132,7 +125,7 @@ namespace PokemonGame.Model.Domain.Item
     //  Poké Ball
     // ─────────────────────────────────────────
 
-    public class PokeballState : itemsDomain
+    public class PokeballState : ItemsDomain
     {
         /// <summary>
         /// Maps to pokeballs.caughteffectid — the effect applied
@@ -192,7 +185,7 @@ namespace PokemonGame.Model.Domain.Item
     //  TM / HM
     // ─────────────────────────────────────────
 
-    public class TmHmState : itemsDomain
+    public class TmHmState : ItemsDomain
     {
         /// <summary>
         /// Maps to tms_hms.moveid — the move this disc teaches.

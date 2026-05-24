@@ -33,7 +33,7 @@ namespace PokemonGame.ViewModels.Translators
         // Public entry points
         // ─────────────────────────────────────────────────────────────
 
-        public itemsDomain TranslateById(int itemId)
+        public ItemsDomain TranslateById(int itemId)
         {
             var tree = _itemService.GetItemById(itemId)
                 ?? throw new InvalidOperationException($"Item id '{itemId}' not found.");
@@ -41,7 +41,7 @@ namespace PokemonGame.ViewModels.Translators
             return TranslateTree(tree);
         }
 
-        public itemsDomain Translate(string itemName)
+        public ItemsDomain Translate(string itemName)
         {
             var tree = _itemService.GetItem(itemName)
                 ?? throw new InvalidOperationException($"Item '{itemName}' not found.");
@@ -53,7 +53,7 @@ namespace PokemonGame.ViewModels.Translators
         // Main translator
         // ─────────────────────────────────────────────────────────────
 
-        private itemsDomain TranslateTree(ItemTree tree)
+        private ItemsDomain TranslateTree(ItemTree tree)
         {
             var item = tree.Item;
 
@@ -65,7 +65,7 @@ namespace PokemonGame.ViewModels.Translators
                 ? TranslateCondition(tree.Condition)
                 : null;
 
-            itemsDomain result;
+            ItemsDomain result;
 
             if (tree.IsPokeball)
             {
@@ -93,7 +93,7 @@ namespace PokemonGame.ViewModels.Translators
             return result;
         }
 
-        private static void ApplyBaseItemData(itemsDomain result, ItemData item)
+        private static void ApplyBaseItemData(ItemsDomain result, ItemData item)
         {
             result.Id = item.Id;
             result.Name = item.Name ?? string.Empty;
@@ -107,9 +107,9 @@ namespace PokemonGame.ViewModels.Translators
         // Builders
         // ─────────────────────────────────────────────────────────────
 
-        private static itemsDomain BuildNormalItem(ItemData item, IEffect effect)
+        private static ItemsDomain BuildNormalItem(ItemData item, IEffect effect)
         {
-            return new itemsDomain
+            return new ItemsDomain
             {
                 Type = ParseItemType(item.Item_type),
                 Effect = effect
@@ -148,7 +148,7 @@ namespace PokemonGame.ViewModels.Translators
             };
         }
 
-        private itemsDomain BuildTmHm(ItemData item, ItemTree tree)
+        private ItemsDomain BuildTmHm(ItemData item, ItemTree tree)
         {
             var tmHmRow = tree.TmHm
                 ?? throw new InvalidOperationException($"Item id '{item.Id}' is marked as TM/HM but has no tms_hms row.");
@@ -180,13 +180,13 @@ namespace PokemonGame.ViewModels.Translators
                 registerable: keyRow.Registerable == 1);
         }
 
-        private itemsDomain BuildHeldItem(ItemData item, ItemTree tree)
+        private ItemsDomain BuildHeldItem(ItemData item, ItemTree tree)
         {
             IEffect effect = tree.HeldItemEffect != null
                 ? TranslateEffect(tree.HeldItemEffect)
                 : new NoEffect();
 
-            return new itemsDomain
+            return new ItemsDomain
             {
                 Type = ItemType.HeldItem,
                 Effect = effect

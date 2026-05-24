@@ -635,9 +635,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
                 PokemonEntries.Add(new BagItemEntryViewModel
                 {
-                    Name = ball.Name ?? ball.BallType.ToString(),
-                    Amount = kv.Value,
-                    Description = ball.Description
+                    Item = ball,
+                    Amount = kv.Value
                 });
             }
 

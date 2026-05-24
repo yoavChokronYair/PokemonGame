@@ -5,6 +5,7 @@ using PokemonGame.Model.Domain.Item;
 using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Helper;
 using PokemonGame.Model.Model.DesignPatterns;
+using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
 namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
@@ -197,45 +198,38 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private void OnUse()
         {
             var entry = SelectedEntry;
-            if (entry == null) return;
+            if (entry == null)
+                return;
 
-            // Look up the real domain item by Id match so we get the Effect reference
-            var domainItem = _player.trainerItemDomain.BagInventory
-                .Keys.FirstOrDefault(k => k.Name == entry.Name);
+            var domainItem = entry.Item;
 
-            if (domainItem == null) return;
+            if (domainItem == null)
+                return;
 
-            // Must be usable outside battle
             if (!domainItem.UsableInField)
             {
                 CloseActionMenu();
                 return;
             }
 
-            // Effect must implement IDualEffect (covers RestoreHp, status cures, etc.)
             if (domainItem.Effect is not IDualEffect dualEffect)
             {
-                // Item is field-usable but has no IDualEffect wired up yet — do nothing
                 CloseActionMenu();
                 return;
             }
 
             CloseActionMenu();
 
-            // Navigate to team selection. Selecting a Pokémon applies the effect
-            // and consumes one item, then navigation returns here.
             _navigationStore.CurrentViewModel = new TeamSelectionViewModel(
-                userStore: null!,
+                userStore: UserStore.Instance,
                 navigationStore: _navigationStore,
-                createCancelViewModel: () => this,      // X / Esc → back to bag
+                createCancelViewModel: () => this,
                 options: new TeamSelectionOptions
                 {
                     CanSwitch = false,
                     CanMove = false,
                     CanSummary = true,
                     IsUsingUserStore = false,
-
-                    // NEW
                     AutoConfirmSelection = true
                 },
                 onSwitchChosen: slotIndex => ApplyItemToSlot(domainItem, dualEffect, slotIndex)
@@ -246,44 +240,62 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         /// Applies the item effect to the chosen Pokémon and removes one from the bag.
         /// Called by TeamSelectionViewModel via onSwitchChosen.
         /// </summary>
-        private void ApplyItemToSlot(itemsDomain item, IDualEffect effect, int slotIndex)
+        private void ApplyItemToSlot(ItemsDomain item, IDualEffect effect, int slotIndex)
         {
             var target = _player.Team?.GetAt(slotIndex);
-            if (target == null) return;
+
+            if (target == null)
+                return;
+
+            if (!_player.trainerItemDomain.BagInventory.ContainsKey(item))
+                return;
 
             effect.Apply(_player, target);
 
-            // Consume one
-            var qty = _player.trainerItemDomain.BagInventory[item];
-            if (qty <= 1)
-                _player.trainerItemDomain.BagInventory.Remove(item);
-            else
-                _player.trainerItemDomain.BagInventory[item] = qty - 1;
+            RemoveOneItem(item);
 
-            // Refresh so the updated quantity shows when we return to the bag
             LoadEntries();
+
+            _navigationStore.CurrentViewModel = this;
         }
 
         // ── Delete ────────────────────────────────────────────────────────────
         private void OnDelete()
         {
             var entry = SelectedEntry;
-            if (entry == null ||CurrentCategoryName == "Key Items") return;
 
-            var key = _player.trainerItemDomain.BagInventory
-                .Keys.FirstOrDefault(k => k.Name == entry.Name);
+            if (entry == null)
+                return;
 
-            if (key != null)
+            var item = entry.Item;
+
+            if (item == null)
+                return;
+
+            if (item is KeyItemState || item.Type == ItemType.KeyItem)
             {
-                var qty = _player.trainerItemDomain.BagInventory[key];
-                if (qty <= 1)
-                    _player.trainerItemDomain.BagInventory.Remove(key);
-                else
-                    _player.trainerItemDomain.BagInventory[key] = qty - 1;
+                CloseActionMenu();
+                return;
             }
+
+            RemoveOneItem(item);
 
             CloseActionMenu();
             LoadEntries();
+        }
+        private bool RemoveOneItem(ItemsDomain item)
+        {
+            var bag = _player.trainerItemDomain.BagInventory;
+
+            if (!bag.TryGetValue(item, out int qty))
+                return false;
+
+            if (qty <= 1)
+                bag.Remove(item);
+            else
+                bag[item] = qty - 1;
+
+            return true;
         }
 
         // ── Tab switching ─────────────────────────────────────────────────────
@@ -311,9 +323,8 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             {
                 PokemonEntries.Add(new BagItemEntryViewModel
                 {
-                    Name = kv.Key.Name,
-                    Amount = kv.Value,
-                    Description = kv.Key.Description,
+                    Item = kv.Key,
+                    Amount = kv.Value
                 });
             }
 
@@ -321,7 +332,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             NotifyScrollAndSelection();
         }
 
-        private static bool MatchesTab(itemsDomain item, BagTab tab) => tab switch
+        private static bool MatchesTab(ItemsDomain item, BagTab tab) => tab switch
         {
             BagTab.Items => item is not TmHmState
                                 && item is not PokeballState
@@ -355,9 +366,13 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
     // ── Entry display model ───────────────────────────────────────────────────
     public class BagItemEntryViewModel : ViewModelBase
     {
-        public string Name { get; set; } = string.Empty;
+        public ItemsDomain Item { get; set; } = null!;
+
+        public string Name => Item?.Name ?? string.Empty;
+
         public int Amount { get; set; }
-        public string Description { get; set; } = string.Empty;
+
+        public string Description => Item?.Description ?? string.Empty;
 
         private bool _isSelected;
         public bool IsSelected

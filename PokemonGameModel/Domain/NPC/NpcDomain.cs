@@ -43,13 +43,13 @@ namespace PokemonGame.Model.Domain.Npc
 
     public class ItemGivingDomain
     {
-        private readonly itemsDomain _item;
+        private readonly ItemsDomain _item;
 
         private bool _hasBeenGiven;
 
         public int Id { get; set; }
 
-        public ItemGivingDomain(itemsDomain item)
+        public ItemGivingDomain(ItemsDomain item)
         {
             _item = item ?? throw new ArgumentNullException(nameof(item));
         }

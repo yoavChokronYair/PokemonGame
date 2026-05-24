@@ -1844,7 +1844,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             /// </summary>
             public static bool UseOnSlot(
                 IFieldEffect effect,
-                itemsDomain item,
+                ItemsDomain item,
                 PlayerDomain player,
                 int slotIndex)
             {
@@ -1862,7 +1862,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             /// </summary>
             public static void UsePartyEffect(
                 IPartyEffect effect,
-                itemsDomain item,
+                ItemsDomain item,
                 PlayerDomain player)
             {
                 effect.Apply(player);
@@ -1872,14 +1872,14 @@ namespace PokemonGame.Model.Model.DesignPatterns
             /// <summary>
             /// Returns true if the player has at least one of the given item.
             /// </summary>
-            public static bool HasItem(PlayerDomain player, itemsDomain item) =>
+            public static bool HasItem(PlayerDomain player, ItemsDomain item) =>
                 player.trainerItemDomain.BagInventory
                       .TryGetValue(item, out int qty) && qty > 0;
 
             /// <summary>
             /// Returns the quantity of an item the player is holding. 0 if none.
             /// </summary>
-            public static int GetCount(PlayerDomain player, itemsDomain item)
+            public static int GetCount(PlayerDomain player, ItemsDomain item)
             {
                 player.trainerItemDomain.BagInventory.TryGetValue(item, out int qty);
                 return qty;
@@ -1888,7 +1888,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             /// <summary>
             /// Adds qty copies of an item to BagInventory.
             /// </summary>
-            public static void AddToBag(PlayerDomain player, itemsDomain item, int qty = 1)
+            public static void AddToBag(PlayerDomain player, ItemsDomain item, int qty = 1)
             {
                 var bag = player.trainerItemDomain.BagInventory;
                 if (bag.ContainsKey(item))
@@ -1900,7 +1900,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             /// <summary>
             /// Removes qty copies of an item. Removes the entry when quantity hits 0.
             /// </summary>
-            public static void RemoveFromBag(PlayerDomain player, itemsDomain item, int qty = 1)
+            public static void RemoveFromBag(PlayerDomain player, ItemsDomain item, int qty = 1)
             {
                 var bag = player.trainerItemDomain.BagInventory;
                 if (!bag.ContainsKey(item)) return;
@@ -1913,7 +1913,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
             /// Returns all items in the bag of the given ItemType, sorted by name.
             /// Useful for rendering bag pockets (e.g. show only Poké Balls pocket).
             /// </summary>
-            public static IEnumerable<(itemsDomain item, int qty)> GetPocket(
+            public static IEnumerable<(ItemsDomain item, int qty)> GetPocket(
                 PlayerDomain player,
                 ItemType type) =>
                 player.trainerItemDomain.BagInventory

@@ -271,8 +271,8 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
     public class HasItem : ICondition<PlayerDomain>
     {
-        private readonly itemsDomain _item;
-        public HasItem(itemsDomain item) { _item = item; }
+        private readonly ItemsDomain _item;
+        public HasItem(ItemsDomain item) { _item = item; }
         public bool Check(PlayerDomain player) => player.trainerItemDomain.BagInventory.ContainsKey(_item);
     }
 
