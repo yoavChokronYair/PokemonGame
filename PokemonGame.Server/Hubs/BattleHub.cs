@@ -86,28 +86,52 @@ namespace PokemonGame.Server.Hubs
 
         public async Task SendAction(BattleActionMessage msg)
         {
-            if (!_sessionRegistry.TryGet(msg.SessionId, out var session))
-                return;
-
-            if (session.IsOver)
-                return;
-
-            session.RecordAction(msg.PlayerId, msg.ActionType, msg.Index);
-            _sessionRegistry.Touch(msg.SessionId);
-
-            if (!session.BothActionsReady)
+            try
             {
-                await Clients.Caller.SendAsync("WaitingForOpponent");
-                return;
+                if (!_sessionRegistry.TryGet(msg.SessionId, out var session))
+                    return;
+
+                if (session.IsOver)
+                    return;
+
+                if (!Enum.TryParse<BattleActionType>(
+                        msg.ActionType,
+                        ignoreCase: true,
+                        out var actionType))
+                {
+                    await Clients.Caller.SendAsync(
+                        "Error",
+                        $"Invalid action type received: {msg.ActionType}");
+
+                    return;
+                }
+
+                session.RecordAction(msg.PlayerId, actionType, msg.Index);
+                _sessionRegistry.Touch(msg.SessionId);
+
+                if (!session.BothActionsReady)
+                {
+                    await Clients.Caller.SendAsync("WaitingForOpponent");
+                    return;
+                }
+
+                session.RunPvPTurn();
+                session.ClearActions();
+
+                await PushStateAsync(msg.SessionId, session);
+
+                if (session.IsOver)
+                    _sessionRegistry.Remove(msg.SessionId);
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[BattleHub.SendAction] CRASH:");
+                Console.WriteLine(ex.ToString());
 
-            session.RunPvPTurn();
-            session.ClearActions();
-
-            await PushStateAsync(msg.SessionId, session);
-
-            if (session.IsOver)
-                _sessionRegistry.Remove(msg.SessionId);
+                await Clients.Caller.SendAsync(
+                    "Error",
+                    ex.ToString());
+            }
         }
 
         public async Task Forfeit(string sessionId, int playerId)
@@ -166,7 +190,10 @@ namespace PokemonGame.Server.Hubs
     {
         public string SessionId { get; set; } = string.Empty;
         public int PlayerId { get; set; }
-        public BattleActionType ActionType { get; set; } = BattleActionType.Move;
+
+        // Client sends "Move", "Switch", "Forfeit" as strings.
+        public string ActionType { get; set; } = "Move";
+
         public int Index { get; set; }
     }
 }

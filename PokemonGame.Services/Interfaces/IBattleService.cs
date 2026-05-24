@@ -1,7 +1,4 @@
-﻿
-using static System.Net.Mime.MediaTypeNames;
-
-namespace PokemonGame.Services.Interfaces
+﻿namespace PokemonGame.Services.Interfaces
 {
     public interface IBattleService
     {
@@ -14,6 +11,7 @@ namespace PokemonGame.Services.Interfaces
         string? WinnerName { get; }
 
         Task ConnectAsync();
+        Task WaitForInitialStateAsync(int timeoutMs = 10000);
         Task RunTurnAsync(int index, string action = "Move");
         Task ForfeitAsync();
         Task DisconnectAsync();

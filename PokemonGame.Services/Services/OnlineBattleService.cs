@@ -33,7 +33,8 @@ namespace PokemonGame.Services.Services
         public bool HasInitialState => _lastSnapshot != null;
         public bool IsOver => _lastSnapshot?.IsOver ?? false;
         public string? WinnerName => _lastSnapshot?.WinnerName;
-
+        private TaskCompletionSource<bool> _initialStateTcs =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
         public OnlineBattleService(string sessionId, int playerId, string serverBaseUrl)
         {
             _sessionId = sessionId;
@@ -80,6 +81,9 @@ namespace PokemonGame.Services.Services
             _connection.On<BattleSnapshot>("StateUpdated", snapshot =>
             {
                 _lastSnapshot = snapshot;
+
+                _initialStateTcs.TrySetResult(true);
+
                 OnStateUpdated?.Invoke();
             });
 
@@ -87,6 +91,23 @@ namespace PokemonGame.Services.Services
             {
                 NotifyError(new InvalidOperationException(message));
             });
+        }
+        public async Task WaitForInitialStateAsync(int timeoutMs = 10000)
+        {
+            if (HasInitialState)
+                return;
+
+            Task completedTask = await Task.WhenAny(
+                _initialStateTcs.Task,
+                Task.Delay(timeoutMs));
+
+            if (completedTask != _initialStateTcs.Task)
+            {
+                throw new TimeoutException(
+                    "Battle initial state was not received from the server.");
+            }
+
+            await _initialStateTcs.Task;
         }
 
         public async Task ConnectAsync()

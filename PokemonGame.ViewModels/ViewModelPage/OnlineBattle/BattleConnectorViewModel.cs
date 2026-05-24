@@ -22,7 +22,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         private readonly string _serverBaseUrl;
 
         private readonly List<dynamic> _rivalResults = new();
-
+        private bool _matchFoundHandled;
         public int RequiredCount { get; }
 
         public string RequiredCountLabel => $"{SelectedCount} / {RequiredCount} selected";
@@ -225,7 +225,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         // ─────────────────────────────────────────────────────────────
         // Selection
         // ─────────────────────────────────────────────────────────────
+        private void UnsubscribeFromMatchmakingEvents()
+        {
+            if (_matchmaking is null)
+                return;
 
+            _matchmaking.OnMatchFound -= OnMatchFound;
+            _matchmaking.OnQueued -= OnQueued;
+            _matchmaking.OnCancelled -= OnCancelled;
+            _matchmaking.OnError -= OnMatchmakingError;
+        }
         private void ToggleSlot(ConnectorSlotEntry? slot)
         {
             if (slot == null)
@@ -297,7 +306,15 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
         {
             if (_matchmaking == null)
                 return;
+            if (_userStore.BattlePlayerID <= 0)
+            {
+                Console.WriteLine(
+                    $"[FindMatch] BLOCKED: invalid BattlePlayerID={_userStore.BattlePlayerID}, User={_userStore.Username}");
 
+                IsSearching = false;
+                ConfirmCommand.NotifyCanExecuteChanged();
+                return;
+            }
             try
             {
                 IsSearching = true;
@@ -404,9 +421,42 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         private async void OnMatchFound(MatchFoundData data)
         {
+            if (_matchFoundHandled)
+                return;
+
+            _matchFoundHandled = true;
+
+            UnsubscribeFromMatchmakingEvents();
+
             try
             {
+                if (_userStore.BattlePlayerID <= 0)
+                {
+                    Console.WriteLine(
+                        $"[OnMatchFound] BLOCKED: invalid BattlePlayerID={_userStore.BattlePlayerID}, User={_userStore.Username}");
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        IsSearching = false;
+                        ConfirmCommand.NotifyCanExecuteChanged();
+                    });
+
+                    return;
+                }
+
                 _userStore.ActiveSessionId = data.SessionId;
+
+                if (_userStore.BattleService is not null)
+                {
+                    try
+                    {
+                        await _userStore.BattleService.DisconnectAsync();
+                    }
+                    catch
+                    {
+                        // ignore old connection cleanup failure
+                    }
+                }
 
                 _userStore.BattleService = new OnlineBattleService(
                     data.SessionId,
@@ -414,6 +464,10 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
                     _serverBaseUrl);
 
                 await _userStore.BattleService.ConnectAsync();
+
+                // Real fix:
+                // Do not open BattleViewModel until the first StateUpdated snapshot arrives.
+                await _userStore.BattleService.WaitForInitialStateAsync();
 
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -469,15 +523,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
 
         public void Dispose()
         {
-            if (_matchmaking is null)
-                return;
+            UnsubscribeFromMatchmakingEvents();
 
-            _matchmaking.OnMatchFound -= OnMatchFound;
-            _matchmaking.OnQueued -= OnQueued;
-            _matchmaking.OnCancelled -= OnCancelled;
-            _matchmaking.OnError -= OnMatchmakingError;
-
-            _ = _matchmaking.DisconnectAsync();
+            if (_matchmaking is not null)
+            {
+                _ = _matchmaking.DisconnectAsync();
+            }
         }
     }
 

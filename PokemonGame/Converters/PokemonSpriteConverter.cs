@@ -86,7 +86,7 @@ namespace PokemonGame.Converters
             var uri = new Uri($"pack://application:,,,/Assets/Images/PokemonSprites/back/{id}.png");
             var original = new BitmapImage(uri);
 
-            return TrimAndScaleSprite(new BitmapImage(uri), displayMaxSize: 192);
+            return TrimAndScaleSprite(new BitmapImage(uri), displayMaxSize: 160);
         }
 
         public static BitmapSource TrimAndScaleSprite(BitmapImage source, int displayMaxSize = 192)

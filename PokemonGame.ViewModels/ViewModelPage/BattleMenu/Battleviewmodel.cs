@@ -131,6 +131,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                         return null;
 
                     var snap = _service.GetState();
+
                     return snap.IsOver ? snap.WinnerName : null;
                 }
 
@@ -528,7 +529,16 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                     return;
 
                 var snap = _service.GetState();
+                if (snap.Player == null || snap.Enemy == null)
+                    return;
 
+                if (snap.Player.PokedexId <= 0 || snap.Enemy.PokedexId <= 0)
+                {
+                    Console.WriteLine(
+                        $"[CLIENT SyncAll] Ignored invalid snapshot. PlayerDex={snap.Player.PokedexId}, EnemyDex={snap.Enemy.PokedexId}");
+
+                    return;
+                }
                 PlayerStatus.PokedexId = snap.Player.PokedexId;
                 PlayerStatus.PokemonName = snap.Player.Name;
                 PlayerStatus.Level = snap.Player.Level;

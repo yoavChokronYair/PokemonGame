@@ -50,6 +50,27 @@ namespace PokemonGame.Server.Hubs
 
         public void RegisterPlayer(int playerId, string connectionId, MatchmakingEntry entry)
         {
+            if (playerId <= 0)
+                throw new InvalidOperationException("Cannot register battle player with id 0.");
+
+            // Existing player 1 reconnect / duplicate connection
+            if (_p1Registered && Player1Id == playerId)
+            {
+                _p1Conn = connectionId;
+                _player1Name = entry.PlayerName;
+                _p1Entry = entry;
+                return;
+            }
+
+            // Existing player 2 reconnect / duplicate connection
+            if (_p2Registered && Player2Id == playerId)
+            {
+                _p2Conn = connectionId;
+                _player2Name = entry.PlayerName;
+                _p2Entry = entry;
+                return;
+            }
+
             if (!_p1Registered)
             {
                 Player1Id = playerId;
@@ -57,17 +78,25 @@ namespace PokemonGame.Server.Hubs
                 _p1Conn = connectionId;
                 _p1Entry = entry;
                 _p1Registered = true;
+                return;
             }
-            else
+
+            if (!_p2Registered)
             {
                 Player2Id = playerId;
                 _player2Name = entry.PlayerName;
                 _p2Conn = connectionId;
                 _p2Entry = entry;
-                _p2Entry = entry;
                 _p2Registered = true;
-                InitialiseBattle(); // Manager is set HERE, inside the lock
+
+                if (Manager == null)
+                    InitialiseBattle();
+
+                return;
             }
+
+            throw new InvalidOperationException(
+                $"Session {SessionId} is already full. Cannot register player {playerId}.");
         }
 
         public bool IsPlayer1(int playerId) => playerId == Player1Id;
