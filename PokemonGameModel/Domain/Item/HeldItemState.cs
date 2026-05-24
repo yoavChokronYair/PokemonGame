@@ -1,7 +1,10 @@
-﻿using PokemonGame.Model.Domain.Battle;
+﻿using System.Runtime.CompilerServices;
+using PokemonGame.Model.Domain.Battle;
 using PokemonGame.Model.Domain.Move;
+using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Interface;
+using PokemonGame.Model.Model.DesignPatterns;
 
 namespace PokemonGame.Model.Domain.Item
 {
@@ -13,6 +16,7 @@ namespace PokemonGame.Model.Domain.Item
     {
         HeldItem,
         Consumable,
+        Tm,
         Hm,
         Pokeball,
         KeyItem
@@ -25,18 +29,37 @@ namespace PokemonGame.Model.Domain.Item
     public class ItemsDomain
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
         public ItemType Type { get; set; }
-        public IEffect? Effect { get; set; }
-        public string? Description { get; set; }
+
+        public IEffect Effect { get; set; } = new NoEffect();
+
+        public string Description { get; set; } = string.Empty;
+
         public bool UsableInBattle { get; set; }
+
         public bool UsableInField { get; set; }
+
         public int Price { get; set; } = 0;
 
-        public override bool Equals(object? obj) =>
-            obj is ItemsDomain other && Id == other.Id;
+        public bool IsFullyLoaded { get; set; } = true;
 
-        public override int GetHashCode() => Id.GetHashCode();
+        public override bool Equals(object? obj)
+        {
+            return ReferenceEquals(this, obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return RuntimeHelpers.GetHashCode(this);
+        }
+
+        public bool SameDatabaseItemAs(ItemsDomain other)
+        {
+            return other != null && Id > 0 && Id == other.Id;
+        }
     }
 
     // ─────────────────────────────────────────
@@ -45,31 +68,40 @@ namespace PokemonGame.Model.Domain.Item
 
     public class KeyItemState : ItemsDomain
     {
-        /// <summary>
-        /// Maps to keyitems.conditionid — optional gate on when
-        /// the item can be used (e.g. only near a specific tile).
-        /// </summary>
-        private readonly ICondition<BattleState> _condition;
+        public IEffect UsageEffect { get; set; } = new NoEffect();
 
-        /// <summary>
-        /// Maps to keyitems.registerable — can the player
-        /// hotkey this item to the Y / shortcut button.
-        /// </summary>
+        public ICondition<PlayerDomain>? FieldCondition { get; set; }
+
         public bool Registerable { get; set; }
 
-        public KeyItemState(IEffect usageEffect,
-                            ICondition<BattleState> condition,
-                            bool registerable = false)
+        public KeyItemState(
+            IEffect? usageEffect = null,
+            ICondition<PlayerDomain>? fieldCondition = null,
+            bool registerable = false)
         {
-            _condition = condition;
+            UsageEffect = usageEffect ?? new NoEffect();
+            Effect = UsageEffect;
+
+            FieldCondition = fieldCondition;
             Registerable = registerable;
+
             Type = ItemType.KeyItem;
             UsableInBattle = false;
             UsableInField = true;
         }
 
-        public bool CanUse(BattleState context) =>
-            _condition?.Check(context) ?? true;
+        public bool CanUseInField(PlayerDomain player)
+        {
+            return FieldCondition?.Check(player) ?? true;
+        }
+
+        public void UseInField(PlayerDomain player)
+        {
+            if (!CanUseInField(player))
+                return;
+
+           // UsageEffect.Apply(player);
+        }
     }
 
     // ─────────────────────────────────────────
@@ -132,7 +164,7 @@ namespace PokemonGame.Model.Domain.Item
         /// to a Pokémon that was caught in this ball
         /// (e.g. Heal Ball restores HP, Friend Ball sets friendship).
         /// </summary>
-        public IEffect CaughtEffect { get; set; }
+        public IEffect CaughtEffect { get; set; } = new NoEffect();
 
         /// <summary>
         /// Maps to pokeballs.conditionid — extra catch condition
@@ -177,8 +209,10 @@ namespace PokemonGame.Model.Domain.Item
         /// <summary>
         /// Applies the on-caught effect to the newly caught Pokémon.
         /// </summary>
-        public void ApplyCaughtEffect(BattleState battle) =>
-            CaughtEffect?.Apply(battle);
+        public void ApplyCaughtEffect(BattleState battle)
+        {
+            CaughtEffect.Apply(battle);
+        }
     }
 
     // ─────────────────────────────────────────
@@ -187,37 +221,42 @@ namespace PokemonGame.Model.Domain.Item
 
     public class TmHmState : ItemsDomain
     {
-        /// <summary>
-        /// Maps to tms_hms.moveid — the move this disc teaches.
-        /// </summary>
         public MoveState Move { get; set; }
 
-        /// <summary>
-        /// Maps to tms_hms.isHm — HMs cannot be discarded and
-        /// their moves cannot be forgotten without the Move Deleter.
-        /// </summary>
         public bool IsHm { get; set; }
 
-        public TmHmState(string name,
-                         MoveState move,
-                         bool isHm = false,
-                         string description = "")
+        public bool IsReusable { get; set; }
+
+        public bool WasUsed { get; private set; }
+
+        public TmHmState(
+            string name,
+            MoveState move,
+            bool isHm = false,
+            bool isReusable = false,
+            string description = "")
         {
             Name = name;
             Move = move;
             IsHm = isHm;
+            IsReusable = isReusable || isHm;
             Description = description;
-            Type = isHm ? ItemType.Hm : ItemType.Consumable;
+
+            Type = isHm ? ItemType.Hm : ItemType.Tm;
+
             UsableInBattle = false;
             UsableInField = true;
         }
 
-        /// <summary>
-        /// Returns false if a TM has already been used and single-use
-        /// semantics are in effect (Gen 1-4 behaviour).
-        /// Always returns true for HMs and reusable TMs (Gen 5+).
-        /// </summary>
-        public bool CanTeach(bool alreadyUsed) =>
-            IsHm || !alreadyUsed;
+        public bool CanTeach()
+        {
+            return IsReusable || !WasUsed;
+        }
+
+        public void MarkUsed()
+        {
+            if (!IsReusable)
+                WasUsed = true;
+        }
     }
 }

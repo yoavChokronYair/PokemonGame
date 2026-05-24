@@ -13,8 +13,6 @@
 // =============================================================================
 
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Model.Domain.Item;
@@ -23,7 +21,6 @@ using PokemonGame.Model.Domain.Player;
 using PokemonGame.Model.Domain.Pokemon;
 using PokemonGame.Model.Enums;
 using PokemonGame.Model.Helper;
-using PokemonGame.Model.Interface;
 using PokemonGame.Model.Model.Managers;
 using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.Store;
