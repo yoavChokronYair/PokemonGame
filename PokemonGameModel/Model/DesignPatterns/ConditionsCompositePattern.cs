@@ -114,12 +114,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         public bool Check(BattleState battle)
         {
-            if (battle.LastUsedMove is MoveState lastMove)
-            {
-                
-                return lastMove.Category == MoveCategory.Physical;
-            }
-            return false;
+            return battle.LastMoveHit && battle.LastMoveMadeContact;
         }
     }
     public class WasHitByMoveType : ICondition<BattleState>
@@ -133,9 +128,17 @@ namespace PokemonGame.Model.Model.DesignPatterns
     public class MoveHasTag : ICondition<BattleState>
     {
         private readonly MoveTag _tag;
-        public MoveHasTag(MoveTag tag) { _tag = tag; }
-        public bool Check(BattleState battle) =>
-            battle.LastUsedMove is MoveState lastMove && lastMove.Tag == _tag;
+
+        public MoveHasTag(MoveTag tag)
+        {
+            _tag = tag;
+        }
+
+        public bool Check(BattleState battle)
+        {
+            return battle.LastUsedMove is MoveState lastMove &&
+                   lastMove.Tag.HasFlag(_tag);
+        }
     }
 
     public class MoveIsCategory : ICondition<BattleState>
@@ -184,7 +187,11 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
     public class HasBaseStatChanged : ICondition<BattleState>
     {
-        public bool Check(BattleState battle) => battle.Attacker.WasStatLoweredThisTurn;
+        public bool Check(BattleState battle)
+        {
+            return battle.Attacker.WasStatLoweredThisTurn ||
+                   battle.Attacker.WasStatRaisedThisTurn;
+        }
     }
     public class IsFainted : ICondition<BattleState>
     {
@@ -198,7 +205,7 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         private readonly double _fraction;
         public HPBelow(double fraction) { _fraction = fraction; }
-        public bool Check(BattleState battle) => battle.Attacker.GetHPFraction() < _fraction;
+        public bool Check(BattleState battle) => battle.Attacker.GetHPFraction() <= _fraction;
     }
     public class HasType : ICondition<BattleState>
     {
@@ -215,12 +222,34 @@ namespace PokemonGame.Model.Model.DesignPatterns
     }
     public class IsGrounded : ICondition<BattleState>
     {
-        public bool Check(BattleState battle) =>
-            !battle.Defender.HasType(PokemonType.Flying) ||
-            battle.Defender.HeldItem is HeldItemState item && item.Name == "Iron Ball" ||
-            battle.Defender.HasVolatileStatus(VolatileStatus.Ingrain) ||
-            battle.Defender.HasVolatileStatus(VolatileStatus.SmackDown) ||
-            battle.IsGravityActive;
+        private readonly ITarget _target;
+
+        public IsGrounded()
+            : this(new AttackerTarget())
+        {
+        }
+
+        public IsGrounded(ITarget target)
+        {
+            _target = target;
+        }
+
+        public bool Check(BattleState battle)
+        {
+            PokemonState pokemon = _target.Resolve(battle);
+
+            bool forcedGrounded =
+                battle.IsGravityActive ||
+                pokemon.HasVolatileStatus(VolatileStatus.Ingrain) ||
+                pokemon.HasVolatileStatus(VolatileStatus.SmackDown) ||
+                pokemon.HeldItem is HeldItemState item &&
+                item.Name == "Iron Ball";
+
+            bool naturallyFlying =
+                pokemon.HasType(PokemonType.Flying);
+
+            return forcedGrounded || !naturallyFlying;
+        }
     }
     public class OpponentCondition : ICondition<BattleState>
     {

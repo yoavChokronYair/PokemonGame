@@ -34,16 +34,24 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         private readonly INumber _numerator;
         private readonly INumber _denominator;
-        public Quotient(INumber numerator, INumber denominator) { _numerator = numerator; _denominator = denominator; }
+
+        public Quotient(INumber numerator, INumber denominator)
+        {
+            _numerator = numerator;
+            _denominator = denominator;
+        }
+
         public double Evaluate(BattleState battle)
         {
-            double d = _denominator.Evaluate(battle);
-            if (d == 0)
+            double denominator = _denominator.Evaluate(battle);
+
+            if (Math.Abs(denominator) < double.Epsilon)
             {
-                return 0;
+                throw new DivideByZeroException(
+                    "Cannot evaluate Quotient because denominator evaluated to zero.");
             }
 
-            return _numerator.Evaluate(battle) / d;
+            return _numerator.Evaluate(battle) / denominator;
         }
     }
 
@@ -60,13 +68,22 @@ namespace PokemonGame.Model.Model.DesignPatterns
     // Uniform random in [min, max] — uses RandomHelper, no new Random().
     public class Between : INumber
     {
-        private readonly double _min;
-        private readonly double _max;
+        private readonly int _min;
+        private readonly int _max;
 
-        public Between(double min, double max) { _min = min; _max = max; }
+        public Between(int min, int max)
+        {
+            if (min > max)
+                throw new ArgumentException("Between min cannot be greater than max.");
+
+            _min = min;
+            _max = max;
+        }
 
         public double Evaluate(BattleState battle)
-            => RandomHelper.NextDouble() * (_max - _min) + _min;
+        {
+            return RandomHelper.Next(_min, _max + 1);
+        }
     }
 
     // Weighted random pick — e.g. { (2, 35%), (3, 35%), (4, 15%), (5, 15%) } for multi-hit.
@@ -75,22 +92,37 @@ namespace PokemonGame.Model.Model.DesignPatterns
     {
         private readonly List<(double value, double weight)> _entries;
 
-        public Weighted(List<(double value, double weight)> entries) { _entries = entries; }
+        public Weighted(List<(double value, double weight)> entries)
+        {
+            if (entries == null || entries.Count == 0)
+                throw new ArgumentException("Weighted requires at least one entry.");
+
+            if (entries.Any(e => e.weight < 0))
+                throw new ArgumentException("Weighted entries cannot have negative weight.");
+
+            double total = entries.Sum(e => e.weight);
+
+            if (total <= 0)
+                throw new ArgumentException("Weighted total weight must be greater than zero.");
+
+            _entries = entries;
+        }
 
         public double Evaluate(BattleState battle)
         {
             double total = _entries.Sum(e => e.weight);
             double roll = RandomHelper.NextDouble() * total;
             double cumulative = 0;
+
             foreach (var (value, weight) in _entries)
             {
                 cumulative += weight;
-                if (roll <= cumulative)
-                {
+
+                if (roll < cumulative)
                     return value;
-                }
             }
-            return _entries.Last().value;
+
+            return _entries[_entries.Count - 1].value;
         }
     }
 
@@ -119,8 +151,9 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
     public class LastDamageDealt : INumber
     {
-        private readonly ITarget _target;
-        public LastDamageDealt(ITarget target) { _target = target; }
-        public double Evaluate(BattleState battle) => _target.Resolve(battle).LastDamageDealt;
+        public double Evaluate(BattleState battle)
+        {
+            return battle.LastDamageDealt;
+        }
     }
 }

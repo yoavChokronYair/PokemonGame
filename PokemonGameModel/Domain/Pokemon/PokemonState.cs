@@ -64,6 +64,7 @@ namespace PokemonGame.Model.Domain.Pokemon
             { Stat.Speed, 0 }, { Stat.Accuracy, 0 }, { Stat.Evasion, 0 }
         };
         public bool WasStatLoweredThisTurn { get; set; }
+        public bool WasStatRaisedThisTurn { get; set; }
 
         // ── Multipliers ───────────────────────────────────────────────────────
         public int CritStage { get; private set; }

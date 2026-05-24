@@ -20,6 +20,10 @@ namespace PokemonGame.Model.Domain.Battle
         public PokemonType? ActiveTypeOverride { get; set; } = null;
         public int TurnNumber { get; set; } = 0;
         public int LastDamageDealt { get; set; } = 0;
+        public bool LastMoveHit { get; set; }
+        public bool LastMoveWasCritical { get; set; }
+        public bool LastMoveMadeContact { get; set; }
+        public int LastDamageTaken { get; set; }
 
         // ── Services ──────────────────────────────────────────────────────────
         public BattleWeatherService WeatherService { get; }
@@ -56,7 +60,14 @@ namespace PokemonGame.Model.Domain.Battle
         public BattleSideState GetSide(BattleSide side)
             => side == BattleSide.Attacker ? AttackerSide : DefenderSide;
         public void IncrementTurn() => TurnNumber++;
-        public void ResetDamage() => LastDamageDealt = 0;
+        public void ResetDamage()
+        {
+            LastDamageDealt = 0;
+            LastDamageTaken = 0;
+            LastMoveHit = false;
+            LastMoveWasCritical = false;
+            LastMoveMadeContact = false;
+        }
         public bool IsBattleOver => Attacker.IsFainted || Defender.IsFainted;
     }
 }

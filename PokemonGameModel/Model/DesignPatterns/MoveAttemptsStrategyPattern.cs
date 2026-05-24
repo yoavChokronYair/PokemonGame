@@ -35,14 +35,14 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
         public void Execute(BattleState battle)
         {
-            if (accuracy.Check(battle))
-            {
+            bool hit = accuracy.Check(battle);
+
+            battle.LastMoveHit = hit;
+
+            if (hit)
                 onHit?.Apply(battle);
-            }
             else
-            {
                 onMiss?.Apply(battle);
-            }
 
             after?.Apply(battle);
         }
@@ -71,12 +71,15 @@ namespace PokemonGame.Model.Model.DesignPatterns
         {
             foreach (var attempt in _attempts)
             {
-                bool hitLanded = attempt is Attempt a && a.accuracy.Check(battle);
+                battle.LastMoveHit = false;
+
                 attempt.Execute(battle);
-                if (_stopOnMiss && !hitLanded)
-                {
+
+                if (_stopOnMiss && !battle.LastMoveHit)
                     return;
-                }
+
+                if (battle.Defender.IsFainted)
+                    return;
             }
         }
     }
@@ -107,18 +110,25 @@ namespace PokemonGame.Model.Model.DesignPatterns
 
         public void Execute(BattleState battle)
         {
-            int hitCount = (int)_hits.Evaluate(battle);
+            int hitCount = Math.Max(1, (int)_hits.Evaluate(battle));
+
+            bool hit = _accuracy.Check(battle);
+
+            battle.LastMoveHit = hit;
+
+            if (!hit)
+            {
+                _onEachMiss?.Apply(battle);
+                _after?.Apply(battle);
+                return;
+            }
 
             for (int i = 0; i < hitCount; i++)
             {
-                if (_accuracy.Check(battle))
-                {
-                    _onEachHit.Apply(battle);
-                }
-                else
-                {
-                    _onEachMiss?.Apply(battle);
-                }
+                _onEachHit.Apply(battle);
+
+                if (battle.Defender.IsFainted)
+                    break;
             }
 
             _after?.Apply(battle);
