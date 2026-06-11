@@ -102,6 +102,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 OnFlee,
                 OnOpenBag,
                 OnOpenSwitch,
+                OnDisconnectFromMatch,
                 Logger);
 
             // Register wild Pokémon as "seen" in the Pokédex
@@ -109,6 +110,12 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                                  _wildPokemon.pokemonState.Name);
 
             SyncAll(flushSetup: true);
+        }
+        private void OnDisconnectFromMatch()
+        {
+            // Wild battles are offline only.
+            // This method exists only because BattleMenuViewModel also supports
+            // online reconnect escape behavior.
         }
 
         // ── Move ──────────────────────────────────────────────────────────────

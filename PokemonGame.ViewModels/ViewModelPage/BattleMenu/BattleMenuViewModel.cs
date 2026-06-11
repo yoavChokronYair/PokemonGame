@@ -1,7 +1,5 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using PokemonGame.Model.Domain.Move;
-using PokemonGame.Model.Interface;
 using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.ViewModelHelper;
 using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
@@ -63,7 +61,8 @@ public class BattleMenuViewModel : ViewModelBase
     public bool IsMainMenuVisible =>
         !IsMovesetVisible &&
         !_isWaitingForLog &&
-        !_waitingForOpponent;
+        !_waitingForOpponent &&
+        !IsReconnectEscapeVisible;
 
     // ─────────────────────────────────────────────────────────────
     // Callbacks
@@ -75,6 +74,7 @@ public class BattleMenuViewModel : ViewModelBase
     private readonly Action _onBag;
     private readonly Action _onSwitch;
     private readonly BattleLoggerViewModel _logger;
+    private readonly Action _onDisconnectFromMatch;
 
     public BattleLoggerViewModel Logger => _logger;
 
@@ -190,8 +190,9 @@ public class BattleMenuViewModel : ViewModelBase
         Action onForfeit,
         Action onBag,
         Action onSwitch,
+        Action onDisconnectFromMatch,
         BattleLoggerViewModel logger)
-    {
+    { 
         _onMoveChosen = onMoveChosen;
         _onSwitchChosen = onSwitchChosen;
         _onForfeit = onForfeit;
@@ -279,16 +280,47 @@ public class BattleMenuViewModel : ViewModelBase
                 ((RelayCommand)LoggerNextCommand).NotifyCanExecuteChanged();
             }
         };
-
+        _onDisconnectFromMatch = onDisconnectFromMatch;
+        DisconnectFromMatchCommand = new RelayCommand(
+            () => _onDisconnectFromMatch(),
+            () => IsReconnectEscapeVisible);
         MenuSelectedIndex = 0;
         SetState(BattleUiState.Logger);
         RefreshCommands();
     }
+    public void SetReconnectEscapeVisible(bool visible)
+    {
+        IsReconnectEscapeVisible = visible;
 
+        if (visible)
+        {
+            IsMovesetVisible = false;
+            SelectedSnapshot = null;
+            IsBackSelected = false;
+            SetState(BattleUiState.Logger);
+        }
+
+        OnPropertyChanged(nameof(IsMainMenuVisible));
+    }
     // ─────────────────────────────────────────────────────────────
     // Main menu
     // ─────────────────────────────────────────────────────────────
+    private bool _isReconnectEscapeVisible;
 
+    public bool IsReconnectEscapeVisible
+    {
+        get => _isReconnectEscapeVisible;
+        set
+        {
+            if (SetProperty(ref _isReconnectEscapeVisible, value))
+            {
+                OnPropertyChanged(nameof(IsMainMenuVisible));
+                ((RelayCommand)DisconnectFromMatchCommand).NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    public ICommand DisconnectFromMatchCommand { get; }
     private void NavigateMainMenu(string? param)
     {
         if (IsMovesetVisible || !AreInputsEnabled)
@@ -495,5 +527,6 @@ public class BattleMenuViewModel : ViewModelBase
         ((RelayCommand)OpenBagCommand).NotifyCanExecuteChanged();
         ((RelayCommand)ForfeitCommand).NotifyCanExecuteChanged();
         ((RelayCommand)OpenSwitchCommand).NotifyCanExecuteChanged();
+        ((RelayCommand)DisconnectFromMatchCommand).NotifyCanExecuteChanged();
     }
 }

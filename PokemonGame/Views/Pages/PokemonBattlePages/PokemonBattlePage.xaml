@@ -95,11 +95,43 @@
                     Text="Waiting for opponent..." />
             </Border>
 
+
             <!--  Bottom battle menu  -->
             <uc:BattleSelectionMenuUserControl
                 Grid.Row="3"
                 Grid.ColumnSpan="3"
                 DataContext="{Binding BattleMenu}" />
+
+            <!--  Leave match button while reconnecting  -->
+            <Border
+                Grid.Row="3"
+                Grid.ColumnSpan="3"
+                Background="#CC000000"
+                Visibility="{Binding BattleMenu.IsReconnectEscapeVisible, Converter={StaticResource BoolToVisibility}}">
+
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Vertical">
+
+                    <TextBlock
+                        Margin="0,0,0,12"
+                        HorizontalAlignment="Center"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="Connection lost. Trying to reconnect..." />
+
+                    <Button
+                        Width="220"
+                        Height="44"
+                        Command="{Binding BattleMenu.DisconnectFromMatchCommand}"
+                        Content="Leave Match"
+                        Cursor="Hand"
+                        FontSize="18"
+                        FontWeight="Bold" />
+                </StackPanel>
+            </Border>
 
             <!--  Enemy status bar  -->
             <uc:EnemyBattleStatusControl

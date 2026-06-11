@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Interfaces;
+using PokemonGame.Services.Services;
 using PokemonGame.ViewModels.Store;
 using PokemonGame.ViewModels.ViewModelHelper;
 
@@ -100,7 +101,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             }
         }
 
-        public ICommand PlayCommand { get; }
+        public IAsyncRelayCommand PlayCommand { get; }
 
         public OnlineBattleMenuViewModel(
             UserStore userStore,
@@ -117,26 +118,86 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             // Subscribe to navigation changes
             _rootNavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
-            PlayCommand = new RelayCommand(() =>
+            PlayCommand = new AsyncRelayCommand(PlayAsync);
+        }
+        private async Task PlayAsync()
+        {
+            if (IsOnline)
             {
-                if (IsOnline && !userStore.IsOnline)
+                bool connected = await TryConnectToServerAsync();
+
+                if (!connected)
                 {
                     System.Windows.MessageBox.Show(
-                        "You are not connected to the server.\nPlease check your connection and try again.",
+                        "Could not connect to the server.\nYou can play offline or try online again later.",
                         "Connection Error",
                         System.Windows.MessageBoxButton.OK,
                         System.Windows.MessageBoxImage.Warning);
-                    return;
 
+                    return;
                 }
-                userStore.BattleSesion.IsOnlineMode = IsOnline;
-                userStore.BattleSesion.IsOneVOne = Is1v1;
-                userStore.BattleSesion.BattleMode = IsRandom ? BattleMode.halfTeam
-                                                     : IsSetTeam ? BattleMode.fullTeam
-                                                     : BattleMode.TwoThirdsTeam;
-                userStore.BattleSesion.SelectedTeamId = SelectedTeam?.Id;
-                _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
-            });
+            }
+
+            _userStore.BattleSesion.IsOnlineMode = IsOnline;
+            _userStore.BattleSesion.IsOneVOne = Is1v1;
+            _userStore.BattleSesion.BattleMode = IsRandom
+                ? BattleMode.halfTeam
+                : IsSetTeam
+                    ? BattleMode.fullTeam
+                    : BattleMode.TwoThirdsTeam;
+
+            _userStore.BattleSesion.SelectedTeamId = SelectedTeam?.Id;
+
+            _rootNavigationStore.CurrentViewModel = _createBattleViewModel();
+        }
+        private async Task<bool> TryConnectToServerAsync()
+        {
+            if (_userStore.IsOnline && _userStore.Matchmaking != null)
+                return true;
+
+            if (string.IsNullOrWhiteSpace(_userStore.ServerBaseUrl))
+            {
+                _userStore.IsOnline = false;
+                return false;
+            }
+
+            try
+            {
+                var matchmaking = new OnlineMatchmakingService(_userStore.ServerBaseUrl);
+
+                Task connectTask = matchmaking.ConnectAsync();
+                Task timeoutTask = Task.Delay(2000);
+
+                Task completed = await Task.WhenAny(connectTask, timeoutTask);
+
+                if (completed != connectTask)
+                {
+                    await matchmaking.DisconnectAsync();
+
+                    _userStore.IsOnline = false;
+                    _userStore.Matchmaking = null;
+                    _userStore.BattleSesion.IsOnlineMode = false;
+
+                    return false;
+                }
+
+                await connectTask;
+
+                _userStore.Matchmaking = matchmaking;
+                _userStore.IsOnline = true;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[OnlineBattleMenu] Server connection failed: {ex.Message}");
+
+                _userStore.IsOnline = false;
+                _userStore.Matchmaking = null;
+                _userStore.BattleSesion.IsOnlineMode = false;
+
+                return false;
+            }
         }
 
         private void OnCurrentViewModelChanged()
