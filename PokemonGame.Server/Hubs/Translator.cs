@@ -176,7 +176,6 @@ namespace PokemonGame.Server.Hubs
         public INumber TranslateNumber(MoveNumber n) => n.Type switch
         {
             "Exactly" => new Exactly(n.ExactValue ?? 0),
-            "Between" => new Between(n.RangeMin ?? 0, n.RangeMax ?? 0),
             "Weighted" => new Weighted(n.WeightedEntries.Select(e => (e.Value, e.Weight)).ToList()),
             "Product" => new Product(TranslateNumber(n.Left!), TranslateNumber(n.Right!)),
             "Sum" => new Sum(TranslateNumber(n.Left!), TranslateNumber(n.Right!)),
@@ -184,7 +183,6 @@ namespace PokemonGame.Server.Hubs
             "MaxHP" => new MaxHP(ResolveTarget(n.Target)),
             "CurrentHP" => new CurrentHP(ResolveTarget(n.Target)),
             "Level" => new Level(ResolveTarget(n.Target)),
-            "LastDamageDealt" => new LastDamageDealt(ResolveTarget(n.Target)),
             _ => throw new NotSupportedException($"Unknown number type: '{n.Type}'")
         };
 

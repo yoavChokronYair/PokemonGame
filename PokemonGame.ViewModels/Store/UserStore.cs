@@ -16,8 +16,9 @@ namespace PokemonGame.ViewModels.Store
         private UserStore()
         {
             BattleSesion = new BattleSession();
+            
         }
-
+        
         // ── Identity ──────────────────────────────────────────────────────────
         public string Username { get; set; } = "Guest";
         public int BattlePlayerID { get; set; }
