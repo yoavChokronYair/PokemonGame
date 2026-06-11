@@ -47,6 +47,8 @@ namespace PokemonGame.Services.Factory
         public IBattleHistoryService GetBattleHistoryService() => IsOnline
             ? new OnlineBattleHistoryService(new BattleHistoryApiClient(_serverUrl!))
             : new LocalBattleHistoryService();
+        public IBattleRatingService GetBattleRatingService() => new BattleRatingService();
+        
 
         // ── Matchmaking — only valid in online mode ────────────────────────────
         // Note: BattleConnectorViewModel reads UserStore.Matchmaking directly

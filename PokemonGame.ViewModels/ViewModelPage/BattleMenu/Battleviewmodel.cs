@@ -29,8 +29,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private readonly Func<ViewModelBase> _createGameModeChooserViewModel;
         private readonly UserStore _playerUserStore;
 
-        private const int STARTING_ELO = 1525;
-        private bool _serverFailureHandled;
+        private readonly IBattleRatingService _ratingService;
         public PokemonBattleStatusViewModel PlayerStatus { get; set; }
         public EnemyBattleStatusViewModel EnemyStatus { get; set; }
         public BattleMenuViewModel BattleMenu { get; set; }
@@ -154,7 +153,7 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             _dialogService = dialogService;
             _createGameModeChooserViewModel = createGameModeChooserViewModel;
             _playerUserStore = playerUserStore;
-
+            _ratingService = playerUserStore.Resolver.GetBattleRatingService();
             _isOnline = playerUserStore.Resolver.IsOnline
                         && playerUserStore.BattleService is not null;
 
@@ -822,49 +821,6 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 }
             });
         }
-        private async void HandleServerCrashOrDisconnect(string message)
-        {
-            if (_serverFailureHandled)
-                return;
-
-            _serverFailureHandled = true;
-
-            try
-            {
-                BattleMenu.SetWaitingForOpponent(false);
-
-                Logger.EnqueueStringEntries(new[]
-                {
-            message
-        });
-
-                _playerUserStore.BattleSesion.IsOnlineMode = false;
-                _playerUserStore.IsOnline = false;
-                _playerUserStore.ActiveSessionId = null;
-
-                if (_playerUserStore.BattleService != null)
-                {
-                    try
-                    {
-                        await _playerUserStore.BattleService.DisconnectAsync();
-                    }
-                    catch
-                    {
-                        // Server is already dead or unreachable. Ignore cleanup failure.
-                    }
-                }
-
-                _playerUserStore.BattleService = null;
-
-                StartBackgroundOnlineReconnect();
-
-                _navigationStore.CurrentViewModel = _createGameModeChooserViewModel();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ServerCrashHandling] Failed: {ex.Message}");
-            }
-        }
         private bool _deadOnlineSessionHandled;
 
         private async void ReturnToOnlineMenuAfterDeadSession()
@@ -956,20 +912,38 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 playerWon = _manager.Winner == _manager.PlayerTeam;
             }
 
-            RankDelta = playerWon ? 22 : -18;
-
-            int newTotalElo = Math.Max(0, STARTING_ELO + RankDelta);
-
-            var rankInfo = RankManager.GetRank(newTotalElo);
-
             WinnerText = playerWon ? "YOU WON!" : "YOU LOST!";
             ResultMethod = playerWon
                 ? "All opposing Pokémon fainted"
                 : "Your party fainted";
 
-            RankName = rankInfo.RankName;
-            RatingCurrent = rankInfo.CurrentProgress;
-            RatingMax = rankInfo.MaxProgress;
+            if (_isOnline)
+            {
+                bool isSingles = _playerUserStore.BattleSesion.IsOneVOne;
+
+                var ratingResult = _ratingService.ApplyBattleResult(
+                    _playerUserStore.BattlePlayerID,
+                    isSingles,
+                    playerWon);
+
+                RankDelta = ratingResult.Delta;
+
+                // RankManager stays here in the ViewModel / UI layer.
+                // The service only updates DB ELO.
+                var rankInfo = RankManager.GetRank(ratingResult.NewElo);
+
+                RankName = rankInfo.RankName;
+                RatingCurrent = rankInfo.CurrentProgress;
+                RatingMax = rankInfo.MaxProgress;
+            }
+            else
+            {
+                // Offline bot battles should not affect online ELO.
+                RankDelta = 0;
+                RankName = "Offline Battle";
+                RatingCurrent = 0;
+                RatingMax = 100;
+            }
 
             BattleResultAction action =
                 await _dialogService.ShowBattleResultAsync(this);

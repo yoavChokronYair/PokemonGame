@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokemonGame.Model.Model.Managers
+﻿namespace PokemonGame.Model.Model.Managers
 {
     public class RankManager
     {
         // Constants based on your requirements
-        private const int PointsPerStage = 100;
-        private const int StagesPerTier = 5;
-        private const int PointsPerTier = PointsPerStage * StagesPerTier; // 500
+        private const int _pointsPerStage = 100;
+        private const int _stagesPerTier = 5;
+        private const int _pointsPerTier = _pointsPerStage * _stagesPerTier; // 500
 
-        private static readonly string[] TierNames =
+        private static readonly string[] _tierNames =
         {
             "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master"
         };
@@ -26,33 +22,33 @@ namespace PokemonGame.Model.Model.Managers
             int elo = Math.Max(0, totalElo);
 
             // 2. Determine Tier (Gold, Silver, etc.)
-            int tierIndex = elo / PointsPerTier;
+            int tierIndex = elo / _pointsPerTier;
 
             // Cap at the highest tier (Master)
-            if (tierIndex >= TierNames.Length)
-                tierIndex = TierNames.Length - 1;
+            if (tierIndex >= _tierNames.Length)
+                tierIndex = _tierNames.Length - 1;
 
-            string tier = TierNames[tierIndex];
+            string tier = _tierNames[tierIndex];
 
             // 3. Determine Stage (V, IV, III, II, I)
             // Points remaining within the current 500-point tier
-            int eloInTier = elo % PointsPerTier;
+            int eloInTier = elo % _pointsPerTier;
 
             // Calculate stage index (0 to 4)
-            int stageIndex = eloInTier / PointsPerStage;
+            int stageIndex = eloInTier / _pointsPerStage;
 
             // Invert so higher points = lower Roman Numeral (100pts = IV, 400pts = I)
             int stageValue = 5 - stageIndex;
             string romanNumeral = GetRomanNumeral(stageValue);
 
             // 4. Determine Slider Progress (0-100)
-            int progress = eloInTier % PointsPerStage;
+            int progress = eloInTier % _pointsPerStage;
 
             return new RankResult
             {
                 RankName = $"{tier} {romanNumeral}",
                 CurrentProgress = progress,
-                MaxProgress = PointsPerStage,
+                MaxProgress = _pointsPerStage,
                 Tier = tier,
                 Stage = romanNumeral
             };
