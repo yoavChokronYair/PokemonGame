@@ -3,6 +3,7 @@ using PokemonGame.Services.Data.GameData.OnlineBattleData;
 using PokemonGame.Services.Factory;
 using PokemonGame.Services.Interfaces;
 using PokemonGame.ViewModels.ViewModelHelper;
+using PokemonGame.ViewModels.ViewModelPage.BattleMenu;
 
 namespace PokemonGame.ViewModels.Store
 {
@@ -26,6 +27,7 @@ namespace PokemonGame.ViewModels.Store
         public int PlayerID { get; set; }
 
         private UserSettings _settings = new();
+        public OnlineReconnectMonitor? ReconnectMonitor { get; set; }
         public UserSettings Settings
         {
             get => _settings;

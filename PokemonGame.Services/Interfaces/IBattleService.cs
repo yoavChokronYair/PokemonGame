@@ -1,9 +1,17 @@
 ﻿namespace PokemonGame.Services.Interfaces
 {
+    public enum OnlineConnectionStatus
+    {
+        Connected,
+        Reconnecting,
+        Disconnected
+    }
     public interface IBattleService
     {
         event Action? OnStateUpdated;
         event Action<Exception>? OnError;
+
+        event Action<OnlineConnectionStatus>? OnConnectionStatusChanged;
 
         bool IsConnected { get; }
         bool HasInitialState { get; }

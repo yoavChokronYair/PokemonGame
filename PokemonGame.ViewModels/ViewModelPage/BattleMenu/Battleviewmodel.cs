@@ -23,13 +23,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         private readonly BattleManager? _manager;
         private readonly bool _isOnline;
 
+
         private readonly NavigationStore _navigationStore;
         private readonly IDialogService _dialogService;
         private readonly Func<ViewModelBase> _createGameModeChooserViewModel;
         private readonly UserStore _playerUserStore;
 
         private const int STARTING_ELO = 1525;
-
+        private bool _serverFailureHandled;
         public PokemonBattleStatusViewModel PlayerStatus { get; set; }
         public EnemyBattleStatusViewModel EnemyStatus { get; set; }
         public BattleMenuViewModel BattleMenu { get; set; }
@@ -160,7 +161,22 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             if (_isOnline)
             {
                 _service = playerUserStore.BattleService!;
+                _service.OnConnectionStatusChanged += OnOnlineConnectionStatusChanged;
 
+                _service.OnError += ex =>
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (IsDeadOnlineSessionError(ex))
+                        {
+                            ReturnToOnlineMenuAfterDeadSession();
+                            return;
+                        }
+
+                        Logger.EnqueueStringEntries(new[]
+                        {
+                            $"Online error: {ex.Message}"
+                        });
+                    });
                 _service.OnStateUpdated += () =>
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -309,6 +325,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 {
                     $"Online action failed: {ex.Message}"
                 });
+
+                HandleServerCrashOrDisconnect(
+                    "Online battle failed because the server is unreachable.");
             }
         }
 
@@ -333,6 +352,9 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
                 {
                     $"Online switch failed: {ex.Message}"
                 });
+
+                HandleServerCrashOrDisconnect(
+                    "Online battle failed because the server is unreachable.");
             }
         }
 
@@ -347,10 +369,14 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
             }
             catch (Exception ex)
             {
+                BattleMenu.SetWaitingForOpponent(false);
+
                 Logger.EnqueueStringEntries(new[]
                 {
                     $"Forfeit failed: {ex.Message}"
                 });
+                HandleServerCrashOrDisconnect(
+                    "Online battle failed because the server is unreachable.");
             }
         }
 
@@ -706,7 +732,147 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
         // ─────────────────────────────────────────────────────────────
         // Battle result
         // ─────────────────────────────────────────────────────────────
+        private void OnOnlineConnectionStatusChanged(OnlineConnectionStatus status)
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                switch (status)
+                {
+                    case OnlineConnectionStatus.Reconnecting:
+                        Logger.EnqueueStringEntries(new[]
+                        {
+                    "Connection lost. Trying to reconnect..."
+                });
+                        BattleMenu.SetWaitingForOpponent(true);
+                        break;
 
+                    case OnlineConnectionStatus.Connected:
+                        Logger.EnqueueStringEntries(new[]
+                        {
+                    "Connection restored."
+                });
+                        BattleMenu.SetWaitingForOpponent(false);
+                        break;
+
+                    case OnlineConnectionStatus.Disconnected:
+                        HandleServerCrashOrDisconnect(
+                            "The server connection was lost. Returning to offline mode.");
+                        break;
+                }
+            });
+        }
+        private async void HandleServerCrashOrDisconnect(string message)
+        {
+            if (_serverFailureHandled)
+                return;
+
+            _serverFailureHandled = true;
+
+            try
+            {
+                BattleMenu.SetWaitingForOpponent(false);
+
+                Logger.EnqueueStringEntries(new[]
+                {
+            message
+        });
+
+                _playerUserStore.BattleSesion.IsOnlineMode = false;
+                _playerUserStore.IsOnline = false;
+                _playerUserStore.ActiveSessionId = null;
+
+                if (_playerUserStore.BattleService != null)
+                {
+                    try
+                    {
+                        await _playerUserStore.BattleService.DisconnectAsync();
+                    }
+                    catch
+                    {
+                        // Server is already dead or unreachable. Ignore cleanup failure.
+                    }
+                }
+
+                _playerUserStore.BattleService = null;
+
+                StartBackgroundOnlineReconnect();
+
+                _navigationStore.CurrentViewModel = _createGameModeChooserViewModel();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ServerCrashHandling] Failed: {ex.Message}");
+            }
+        }
+        private bool _deadOnlineSessionHandled;
+
+        private async void ReturnToOnlineMenuAfterDeadSession()
+        {
+            if (_deadOnlineSessionHandled)
+                return;
+
+            _deadOnlineSessionHandled = true;
+
+            try
+            {
+                BattleMenu.SetWaitingForOpponent(false);
+
+                // Important:
+                // This prevents the battle result popup from opening.
+                _isBattleOverHandled = true;
+
+                Logger.EnqueueStringEntries(new[]
+                {
+                    "Online battle session was lost. Returning to menu."
+                });
+
+                _playerUserStore.BattleSesion.IsOnlineMode = false;
+                _playerUserStore.IsOnline = false;
+                _playerUserStore.ActiveSessionId = null;
+
+                if (_playerUserStore.BattleService != null)
+                {
+                    try
+                    {
+                        await _playerUserStore.BattleService.DisconnectAsync();
+                    }
+                    catch
+                    {
+                        // The server/session is already gone, so cleanup failure is ignored.
+                    }
+                }
+
+                _playerUserStore.BattleService = null;
+
+                _navigationStore.CurrentViewModel = _createGameModeChooserViewModel();
+            }
+            catch (Exception cleanupError)
+            {
+                Console.WriteLine($"[DeadOnlineSession] Cleanup failed: {cleanupError.Message}");
+            }
+        }
+        private void StartBackgroundOnlineReconnect()
+        {
+            if (string.IsNullOrWhiteSpace(_playerUserStore.ServerBaseUrl))
+                return;
+
+            _playerUserStore.ReconnectMonitor ??=
+                new OnlineReconnectMonitor(
+                    _playerUserStore,
+                    _playerUserStore.ServerBaseUrl);
+
+            _playerUserStore.ReconnectMonitor.Start();
+        }
+        private bool IsDeadOnlineSessionError(Exception ex)
+        {
+            string message = ex.Message.ToLower();
+
+            return message.Contains("session not found")
+                   || message.Contains("not a participant")
+                   || message.Contains("connection closed")
+                   || message.Contains("cannot send data")
+                   || message.Contains("server timeout");
+        }
         private async Task OnBattleEndedAsync()
         {
             bool playerWon;
@@ -978,6 +1144,61 @@ namespace PokemonGame.ViewModels.ViewModelPage.BattleMenu
 
             OnPropertyChanged(nameof(IsEnabled));
             ((RelayCommand)ClickCommand).NotifyCanExecuteChanged();
+        }
+    }
+    public class OnlineReconnectMonitor : IDisposable
+    {
+        private readonly UserStore _userStore;
+        private readonly string _serverBaseUrl;
+        private readonly CancellationTokenSource _cts = new();
+        private bool _isRunning;
+
+        public OnlineReconnectMonitor(UserStore userStore, string serverBaseUrl)
+        {
+            _userStore = userStore;
+            _serverBaseUrl = serverBaseUrl;
+        }
+
+        public void Start()
+        {
+            if (_isRunning)
+                return;
+
+            _isRunning = true;
+            _ = RunAsync();
+        }
+
+        private async Task RunAsync()
+        {
+            while (!_cts.IsCancellationRequested)
+            {
+                try
+                {
+                    var matchmaking = new OnlineMatchmakingService(_serverBaseUrl);
+                    await matchmaking.ConnectAsync();
+
+                    _userStore.Matchmaking = matchmaking;
+                    _userStore.IsOnline = true;
+                    _userStore.BattleSesion.IsOnlineMode = true;
+
+                    Console.WriteLine("[Reconnect] Online mode restored.");
+
+                    return;
+                }
+                catch
+                {
+                    _userStore.IsOnline = false;
+                    _userStore.BattleSesion.IsOnlineMode = false;
+
+                    await Task.Delay(5000, _cts.Token);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            _cts.Cancel();
+            _cts.Dispose();
         }
     }
 }

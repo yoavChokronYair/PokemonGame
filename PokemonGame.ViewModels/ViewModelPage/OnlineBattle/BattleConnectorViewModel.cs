@@ -511,12 +511,35 @@ namespace PokemonGame.ViewModels.ViewModelPage.OnlineBattle
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 IsSearching = false;
+
+                _userStore.IsOnline = false;
+                _userStore.BattleSesion.IsOnlineMode = false;
+                _userStore.BattleService = null;
+                _userStore.ActiveSessionId = null;
+
+                OnPropertyChanged(nameof(IsOffline));
+                OnPropertyChanged(nameof(ConfirmLabel));
+
                 ConfirmCommand.NotifyCanExecuteChanged();
+
+                StartBackgroundOnlineReconnect();
             });
 
             Console.WriteLine($"[Matchmaking] ERROR: {ex.Message}");
         }
+        private void StartBackgroundOnlineReconnect()
+        {
+            if (string.IsNullOrWhiteSpace(_userStore.ServerBaseUrl))
+                return;
 
+            _userStore.ReconnectMonitor ??=
+                new OnlineReconnectMonitor(
+                    _userStore,
+                    _userStore.ServerBaseUrl);
+
+            _userStore.ReconnectMonitor.Start();
+        }
+       
         // ─────────────────────────────────────────────────────────────
         // Cleanup
         // ─────────────────────────────────────────────────────────────

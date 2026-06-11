@@ -22,6 +22,7 @@ namespace PokemonGame.Services.Services
         private readonly HubConnection _connection;
         private readonly string _sessionId;
         private readonly int _playerId;
+        public event Action<OnlineConnectionStatus>? OnConnectionStatusChanged;
 
         private BattleSnapshot? _lastSnapshot;
         private Task? _connectTask;
@@ -47,28 +48,34 @@ namespace PokemonGame.Services.Services
 
             RegisterHandlers();
 
-            _connection.Reconnected += async _ =>
+            _connection.Reconnecting += error =>
             {
-                try
-                {
-                    await JoinSessionAsync();
-                }
-                catch (Exception ex)
-                {
-                    NotifyError(ex);
-                }
-            };
+                OnConnectionStatusChanged?.Invoke(OnlineConnectionStatus.Reconnecting);
 
-            _connection.Closed += error =>
-            {
                 if (error != null)
                     NotifyError(error);
 
                 return Task.CompletedTask;
             };
 
-            _connection.Reconnecting += error =>
+            _connection.Reconnected += async _ =>
             {
+                try
+                {
+                    await JoinSessionAsync();
+                    OnConnectionStatusChanged?.Invoke(OnlineConnectionStatus.Connected);
+                }
+                catch (Exception ex)
+                {
+                    NotifyError(ex);
+                    OnConnectionStatusChanged?.Invoke(OnlineConnectionStatus.Disconnected);
+                }
+            };
+
+            _connection.Closed += error =>
+            {
+                OnConnectionStatusChanged?.Invoke(OnlineConnectionStatus.Disconnected);
+
                 if (error != null)
                     NotifyError(error);
 
